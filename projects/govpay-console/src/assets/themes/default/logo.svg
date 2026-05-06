@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" role="img" aria-label="GovPay Console">
+  <g fill="none" font-family="Prompt, system-ui, -apple-system, sans-serif">
+    <rect x="2" y="6" width="36" height="36" rx="8" fill="#ff4050"/>
+    <text x="20" y="32" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle">G</text>
+    <text x="48" y="22" font-size="16" font-weight="700" fill="#213349">GovPay</text>
+    <text x="48" y="40" font-size="12" font-weight="500" fill="#6a8da5">Console</text>
+  </g>
+</svg>

@@ -1,0 +1,25 @@
+{
+  "table": {
+    "columns": [
+      {
+        "key": "id",
+        "header": "Ruoli.Columns.Id",
+        "cellClass": "font-mono text-xs",
+        "cell": {
+          "type": "text",
+          "field": "id"
+        },
+        "link": true
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "id",
+        "class": "font-mono text-sm"
+      }
+    ]
+  }
+}

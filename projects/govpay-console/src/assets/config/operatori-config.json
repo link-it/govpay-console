@@ -1,0 +1,77 @@
+{
+  "options": {
+    "BOOLEANI": {
+      "values": {
+        "true": {
+          "label": "Common.Yes",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "false": {
+          "label": "Common.No",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "principal",
+        "header": "Operatori.Columns.Principal",
+        "cellClass": "font-mono text-xs",
+        "width": "14rem",
+        "cell": {
+          "type": "text",
+          "field": "principal"
+        },
+        "link": true
+      },
+      {
+        "key": "ragioneSociale",
+        "header": "Operatori.Columns.RagioneSociale",
+        "cell": {
+          "type": "text",
+          "field": "ragioneSociale"
+        }
+      },
+      {
+        "key": "abilitato",
+        "header": "Operatori.Columns.Abilitato",
+        "width": "8rem",
+        "cell": {
+          "type": "status",
+          "field": "abilitato",
+          "options": "BOOLEANI"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "ragioneSociale"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "principal",
+          "class": "font-mono",
+          "tooltip": "Operatori.Detail.Principal"
+        }
+      ],
+      "label": []
+    },
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "abilitato",
+        "options": "BOOLEANI"
+      }
+    ]
+  }
+}

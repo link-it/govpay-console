@@ -1,0 +1,65 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="incasso()?.idIncasso || '—'" subtitleKey="Incassi.Detail.Subtitle">
+    <a routerLink="/incassi" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+    @if (incasso()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/incassi" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !incasso()) {
+    <lnk-loading />
+  } @else if (incasso(); as i) {
+
+    <lnk-detail-section titleKey="Incassi.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    <lnk-detail-section titleKey="Incassi.Detail.EnteCreditore">
+      <lnk-info-grid [items]="enteItems()" />
+    </lnk-detail-section>
+
+    @if (i.riscossioni && i.riscossioni.length > 0) {
+      <lnk-detail-section titleKey="Incassi.Detail.RiscossioniRiconciliate">
+        <table class="w-full text-sm">
+          <thead class="text-left text-[var(--muted-foreground)]">
+            <tr>
+              <th class="py-2 pr-2 font-normal">{{ 'Incassi.Detail.Iur' | translate }}</th>
+              <th class="py-2 pr-2 font-normal">{{ 'Incassi.Detail.Iuv' | translate }}</th>
+              <th class="py-2 pr-2 font-normal">{{ 'Incassi.Detail.DataRisc' | translate }}</th>
+              <th class="py-2 pr-0 font-normal text-right">{{ 'Incassi.Detail.ImportoRisc' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of i.riscossioni; track r.iur + '-' + r.indice) {
+              <tr class="border-t border-[var(--border)] hover:bg-[var(--muted)] cursor-pointer"
+                  (click)="0">
+                <td class="py-2 pr-2 font-mono text-xs">{{ r.iur }}</td>
+                <td class="py-2 pr-2 font-mono text-xs">{{ r.iuv }}</td>
+                <td class="py-2 pr-2">{{ formatRiscossioneData(r) }}</td>
+                <td class="py-2 pr-0 font-mono text-right">{{ formatRiscossioneImporto(r) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

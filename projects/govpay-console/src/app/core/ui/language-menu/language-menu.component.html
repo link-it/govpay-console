@@ -1,0 +1,61 @@
+<div class="relative">
+  <button
+    type="button"
+    class="btn btn-ghost btn-icon"
+    (click)="toggle($event)"
+    [attr.aria-expanded]="isOpen()"
+    aria-haspopup="true"
+    [matTooltip]="'Language.Tooltip' | translate: { name: current().label }"
+    [matTooltipDisabled]="isOpen()"
+    [matTooltipPosition]="tooltipPosition()"
+    matTooltipShowDelay="300"
+    [attr.aria-label]="'Language.AriaSelect' | translate: { name: current().label }"
+  >
+    @if (current().flag; as flag) {
+      <span class="text-base leading-none">{{ flag }}</span>
+    } @else {
+      <ng-icon name="bootstrapGlobe" size="1.125rem" />
+    }
+  </button>
+
+  @if (isOpen()) {
+    <div
+      class="z-[1000] min-w-44 rounded-md border border-[var(--card-border)] bg-[var(--card-bg)] shadow-lg p-1"
+      [class.fixed]="collapsed()"
+      [class.absolute]="!collapsed()"
+      [class.right-0]="!collapsed()"
+      [class.top-full]="!collapsed() && !openUp()"
+      [class.mt-1]="!collapsed() && !openUp()"
+      [class.bottom-full]="!collapsed() && openUp()"
+      [class.mb-1]="!collapsed() && openUp()"
+      [style.bottom.px]="collapsed() ? flyoutBottom() : null"
+      [style.left.px]="collapsed() ? flyoutLeft() : null"
+      role="listbox"
+      [attr.aria-label]="'Language.Select' | translate"
+    >
+      @if (collapsed()) {
+        <!-- Bridge invisibile per non perdere l'hover attraversando il gap. -->
+        <span aria-hidden="true" class="absolute -left-1.5 top-0 bottom-0 w-1.5"></span>
+      }
+      @for (lang of languages(); track lang.code) {
+        <button
+          type="button"
+          (click)="select(lang.code)"
+          [attr.aria-selected]="current().code === lang.code"
+          class="w-full flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--foreground)] hover:bg-[var(--muted)]"
+          [class.font-medium]="current().code === lang.code"
+        >
+          @if (lang.flag) {
+            <span class="text-base leading-none">{{ lang.flag }}</span>
+          } @else {
+            <span class="text-xs font-mono opacity-70 w-6 text-center">{{ lang.short || lang.code.toUpperCase() }}</span>
+          }
+          <span class="flex-1 text-left truncate">{{ lang.label }}</span>
+          @if (current().code === lang.code) {
+            <ng-icon name="bootstrapCheck2" size="1rem" class="text-[var(--primary)]" />
+          }
+        </button>
+      }
+    </div>
+  }
+</div>

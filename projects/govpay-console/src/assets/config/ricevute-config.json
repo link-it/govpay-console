@@ -1,0 +1,190 @@
+{
+  "options": {
+    "STATI_RPP": {
+      "values": {
+        "RT_ACCETTATA_PA": {
+          "label": "Ricevute.Stati.Eseguito",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "RT_RIFIUTATA_PA": {
+          "label": "Ricevute.Stati.RtRifiutata",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        },
+        "RT_ESITO_SCONOSCIUTO_PA": {
+          "label": "Ricevute.Stati.Sconosciuto",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        },
+        "RPT_ATTIVATA": {
+          "label": "Ricevute.Stati.InCorso",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "RPT_ACCETTATA_NODO": {
+          "label": "Ricevute.Stati.InCorso",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "RPT_ACCETTATA_PSP": {
+          "label": "Ricevute.Stati.InCorso",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "RPT_RIFIUTATA_NODO": {
+          "label": "Ricevute.Stati.Fallito",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        },
+        "RPT_RIFIUTATA_PSP": {
+          "label": "Ricevute.Stati.Fallito",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        },
+        "RPT_ERRORE_INVIO_A_PSP": {
+          "label": "Ricevute.Stati.Fallito",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        },
+        "RPT_ANNULLATA": {
+          "label": "Ricevute.Stati.Annullato",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "RPT_SCADUTA": {
+          "label": "Ricevute.Stati.Scaduto",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "iuv",
+        "header": "Ricevute.Columns.Iuv",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "text",
+          "field": "pendenza.iuvPagamento",
+          "default": "—"
+        },
+        "link": true
+      },
+      {
+        "key": "dominio",
+        "header": "Ricevute.Columns.Dominio",
+        "cell": {
+          "type": "text",
+          "field": "pendenza.dominio.ragioneSociale",
+          "truncate": 30
+        }
+      },
+      {
+        "key": "soggettoPagatore",
+        "header": "Ricevute.Columns.Pagatore",
+        "cell": {
+          "type": "text",
+          "field": "pendenza.soggettoPagatore.anagrafica",
+          "truncate": 30
+        }
+      },
+      {
+        "key": "causale",
+        "header": "Ricevute.Columns.Causale",
+        "cell": {
+          "type": "text",
+          "field": "pendenza.causale",
+          "truncate": 80
+        }
+      },
+      {
+        "key": "dataPagamento",
+        "header": "Ricevute.Columns.DataRicevuta",
+        "width": "11rem",
+        "cell": {
+          "type": "datetime",
+          "field": "rt.paymentDateTime"
+        }
+      },
+      {
+        "key": "importo",
+        "header": "Ricevute.Columns.Importo",
+        "align": "right",
+        "cellClass": "font-mono",
+        "width": "8rem",
+        "cell": {
+          "type": "currency",
+          "field": "pendenza.importoPagato"
+        }
+      },
+      {
+        "key": "stato",
+        "header": "Ricevute.Columns.Stato",
+        "sortable": true,
+        "width": "10rem",
+        "cell": {
+          "type": "status",
+          "field": "stato",
+          "options": "STATI_RPP"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "pendenza.causale",
+        "truncate": 80,
+        "class": "opacity-90"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "pendenza.dominio.ragioneSociale",
+          "hideEmpty": true,
+          "tooltip": "Ricevute.Detail.Dominio"
+        },
+        {
+          "type": "text",
+          "field": "pendenza.iuvPagamento",
+          "class": "font-mono text-sm",
+          "hideEmpty": true,
+          "tooltip": "Ricevute.Detail.Iuv"
+        },
+        {
+          "type": "text",
+          "field": "pendenza.soggettoPagatore.anagrafica",
+          "hideEmpty": true,
+          "tooltip": "Ricevute.Detail.Pagatore"
+        }
+      ],
+      "label": []
+    },
+    "secondaryText": [
+      {
+        "type": "currency",
+        "field": "pendenza.importoPagato",
+        "class": "font-semibold"
+      }
+    ],
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "stato",
+        "options": "STATI_RPP"
+      },
+      {
+        "type": "datetime",
+        "field": "rt.paymentDateTime",
+        "hideEmpty": true
+      }
+    ]
+  }
+}

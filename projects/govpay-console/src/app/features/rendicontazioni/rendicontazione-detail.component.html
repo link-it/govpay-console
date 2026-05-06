@@ -1,0 +1,87 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="flusso()?.idFlusso || '—'" subtitleKey="Rendicontazioni.Detail.Subtitle">
+    <a routerLink="/rendicontazioni" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+    @if (flusso()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/rendicontazioni" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !flusso()) {
+    <lnk-loading />
+  } @else if (flusso(); as r) {
+
+    <lnk-detail-section titleKey="Rendicontazioni.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    <lnk-detail-section titleKey="Rendicontazioni.Detail.EnteCreditore">
+      <lnk-info-grid [items]="enteItems()" />
+    </lnk-detail-section>
+
+    <lnk-detail-section titleKey="Rendicontazioni.Detail.Psp">
+      <lnk-info-grid [items]="pspItems()" />
+    </lnk-detail-section>
+
+    @if (r.segnalazioni && r.segnalazioni.length > 0) {
+      <lnk-detail-section titleKey="Rendicontazioni.Detail.Segnalazioni">
+        <ul class="flex flex-col gap-2 text-sm">
+          @for (s of r.segnalazioni; track s.codice) {
+            <li class="flex flex-col gap-0.5 rounded border border-[var(--border)] p-2">
+              <span class="font-mono text-xs text-[var(--muted-foreground)]">{{ s.codice }}</span>
+              <span>{{ s.descrizione }}</span>
+            </li>
+          }
+        </ul>
+      </lnk-detail-section>
+    }
+
+    @if (r.rendicontazioni && r.rendicontazioni.length > 0) {
+      <lnk-detail-section titleKey="Rendicontazioni.Detail.Pagamenti">
+        <table class="w-full text-sm">
+          <thead class="text-left text-[var(--muted-foreground)]">
+            <tr>
+              <th class="py-2 pr-2 font-normal">{{ 'Rendicontazioni.Detail.Iuv' | translate }}</th>
+              <th class="py-2 pr-2 font-normal">{{ 'Rendicontazioni.Detail.Iur' | translate }}</th>
+              <th class="py-2 pr-2 font-normal text-right">{{ 'Rendicontazioni.Detail.Indice' | translate }}</th>
+              <th class="py-2 pr-2 font-normal">{{ 'Rendicontazioni.Detail.Data' | translate }}</th>
+              <th class="py-2 pr-2 font-normal text-right">{{ 'Rendicontazioni.Detail.Importo' | translate }}</th>
+              <th class="py-2 pr-0 font-normal">{{ 'Rendicontazioni.Detail.Esito' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of r.rendicontazioni; track v.iur + '-' + v.indice) {
+              <tr class="border-t border-[var(--border)]">
+                <td class="py-2 pr-2 font-mono text-xs">{{ v.iuv }}</td>
+                <td class="py-2 pr-2 font-mono text-xs">{{ v.iur }}</td>
+                <td class="py-2 pr-2 font-mono text-right">{{ v.indice }}</td>
+                <td class="py-2 pr-2">{{ formatVoceData(v) }}</td>
+                <td class="py-2 pr-2 font-mono text-right">{{ formatVoceImporto(v) }}</td>
+                <td class="py-2 pr-0">
+                  <lnk-status-badge [tone]="esitoVoceTone(v)" [labelKey]="esitoVoceLabelKey(v)" />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

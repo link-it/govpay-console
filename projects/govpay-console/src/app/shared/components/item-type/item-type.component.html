@@ -1,0 +1,136 @@
+@if (visible()) {
+  @switch (elem().type) {
+    @case ('text') {
+      <span [ngClass]="elem().class || ''"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >{{ value() | translate }}</span>
+    }
+    @case ('html') {
+      <span [ngClass]="elem().class || ''" [innerHTML]="value()"></span>
+    }
+    @case ('markdown') {
+      <span [ngClass]="'break-words ' + (elem().class || '')">{{ value() }}</span>
+    }
+    @case ('number') {
+      <span [ngClass]="elem().class || ''"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >@if (elem().icon) {<ng-icon [name]="elem().icon!" size="0.875rem" class="inline-block mr-1" />}{{ value() }}</span>
+    }
+    @case ('currency') {
+      <span [ngClass]="'font-mono ' + (elem().class || '')">{{ value() }}</span>
+    }
+    @case ('date') {
+      <span [ngClass]="elem().class || ''"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >{{ value() || '—' }}</span>
+    }
+    @case ('datetime') {
+      <span [ngClass]="elem().class || ''"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >{{ value() || '—' }}</span>
+    }
+    @case ('mstime') {
+      <span [ngClass]="'font-mono ' + (elem().class || '')"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >{{ value() || '—' }}</span>
+    }
+    @case ('timeago') {
+      <span [ngClass]="elem().class || ''"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >{{ value() || '—' }}</span>
+    }
+    @case ('message') {
+      <span [ngClass]="elem().class || ''">{{ value() | translate }}</span>
+    }
+    @case ('cardinal') {
+      <span [ngClass]="elem().class || ''">{{ value() }}</span>
+    }
+    @case ('label') {
+      <span class="inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline"
+            [ngStyle]="{
+              'background-color': style()?.background,
+              color: style()?.color
+            }"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >@if (labelText()) {<span class="opacity-80">{{ labelText() | translate }}</span><span>{{ value() | translate }}</span>} @else {<span>{{ value() | translate }}</span>}</span>
+    }
+    @case ('simplelabel') {
+      <span [ngClass]="elem().class || ''">{{ value() | translate }}</span>
+    }
+    @case ('status') {
+      <span class="inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline"
+            [ngStyle]="{
+              'background-color': style()?.background,
+              color: style()?.color
+            }"
+            [matTooltip]="tooltip()"
+            [matTooltipPosition]="tooltipPlacement()"
+            [matTooltipDisabled]="!tooltip()"
+      >{{ value() | translate }}</span>
+    }
+    @case ('tag') {
+      <span class="inline-block rounded-full px-2 py-0.5 text-[10.5px] font-bold"
+            [ngClass]="elem().class || ''"
+            [ngStyle]="{
+              'background-color': style()?.background,
+              color: style()?.color
+            }"
+      >{{ value() | translate }}</span>
+    }
+    @case ('tags') {
+      <span class="inline-flex flex-wrap gap-1" [ngClass]="elem().class || ''">@for (tag of tagList(); track tag) {<span class="inline-block rounded border border-[var(--border)] px-1.5 py-0.5 text-xs">{{ tag }}</span>}</span>
+    }
+    @case ('progress') {
+      <span class="block w-full bg-[var(--muted)] rounded-full h-2">
+        <span class="bg-[var(--primary)] h-2 rounded-full block" [style.width.%]="value()"></span>
+      </span>
+    }
+    @case ('icon') {
+      <ng-icon
+        [name]="value()"
+        size="1rem"
+        [ngClass]="elem().class || ''"
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPlacement()"
+        [matTooltipDisabled]="!tooltip()" />
+    }
+    @case ('iconBs') {
+      <ng-icon [name]="elem().icon!" size="1rem" [ngClass]="elem().class || ''" />
+    }
+    @case ('icontext') {
+      <span class="inline-flex items-center gap-1 text-sm" [ngClass]="elem().class || ''"
+      >@if (elem().icon) {<ng-icon [name]="elem().icon!" size="1rem" />}{{ value() }}</span>
+    }
+    @case ('image') {
+      <span class="inline-flex items-center justify-center overflow-hidden border border-[var(--border)]"
+            [class.rounded-sm]="elem().square"
+            [class.rounded-full]="!elem().square"
+            style="width: 1.25rem; height: 1.25rem;">
+        <img class="w-full h-full" [style.object-fit]="elem().mode || 'contain'" [alt]="elem().label || ''" [src]="imageUrl()" />
+      </span>
+    }
+    @case ('avatar-image') {
+      <span class="relative inline-flex items-center justify-center w-12 h-12 overflow-hidden bg-[var(--muted)]"
+            [class.rounded-sm]="elem().square"
+            [class.rounded-full]="!elem().square"
+      >@if (imageUrl()) {<span class="block w-10 h-10 bg-cover bg-center" [ngStyle]="{ 'background-image': 'url(' + imageUrl() + ')' }"></span>} @else {<span class="flex items-center justify-center w-10 h-10 text-sm font-semibold text-[var(--muted-foreground)]">{{ initials() || '·' }}</span>}</span>
+    }
+    @case ('labelI18n') {
+      <span [ngClass]="elem().class || ''">{{ value() | translate }}</span>
+    }
+  }
+}

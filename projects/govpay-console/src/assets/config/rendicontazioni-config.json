@@ -1,0 +1,157 @@
+{
+  "options": {
+    "STATI_RENDICONTAZIONE": {
+      "values": {
+        "Acquisito": {
+          "label": "Rendicontazioni.Stati.Acquisito",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "Anomalo": {
+          "label": "Rendicontazioni.Stati.Anomalo",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        },
+        "Rifiutato": {
+          "label": "Rendicontazioni.Stati.Rifiutato",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "idFlusso",
+        "header": "Rendicontazioni.Columns.IdFlusso",
+        "cellClass": "font-mono text-xs",
+        "width": "18rem",
+        "cell": {
+          "type": "text",
+          "field": "idFlusso"
+        },
+        "link": true
+      },
+      {
+        "key": "idDominio",
+        "header": "Rendicontazioni.Columns.Dominio",
+        "cell": {
+          "type": "text",
+          "field": "ragioneSocialeDominio",
+          "truncate": 30
+        }
+      },
+      {
+        "key": "idPsp",
+        "header": "Rendicontazioni.Columns.Psp",
+        "cell": {
+          "type": "text",
+          "field": "ragioneSocialePsp",
+          "truncate": 30
+        }
+      },
+      {
+        "key": "data",
+        "header": "Rendicontazioni.Columns.DataFlusso",
+        "sortable": true,
+        "width": "8rem",
+        "cell": {
+          "type": "date",
+          "field": "dataFlusso"
+        }
+      },
+      {
+        "key": "dataRegolamento",
+        "header": "Rendicontazioni.Columns.DataRegolamento",
+        "width": "9rem",
+        "cell": {
+          "type": "date",
+          "field": "dataRegolamento",
+          "default": "—"
+        }
+      },
+      {
+        "key": "numeroPagamenti",
+        "header": "Rendicontazioni.Columns.NumPagamenti",
+        "align": "right",
+        "cellClass": "font-mono",
+        "width": "6rem",
+        "cell": {
+          "type": "number",
+          "field": "numeroPagamenti"
+        }
+      },
+      {
+        "key": "importoTotale",
+        "header": "Rendicontazioni.Columns.Importo",
+        "align": "right",
+        "cellClass": "font-mono",
+        "width": "9rem",
+        "cell": {
+          "type": "currency",
+          "field": "importoTotale"
+        }
+      },
+      {
+        "key": "stato",
+        "header": "Rendicontazioni.Columns.Stato",
+        "width": "10rem",
+        "cell": {
+          "type": "status",
+          "field": "stato",
+          "options": "STATI_RENDICONTAZIONE"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "idFlusso",
+        "class": "font-mono text-sm"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "ragioneSocialeDominio",
+          "hideEmpty": true,
+          "tooltip": "Rendicontazioni.Detail.Dominio"
+        },
+        {
+          "type": "text",
+          "field": "ragioneSocialePsp",
+          "hideEmpty": true,
+          "tooltip": "Rendicontazioni.Detail.Psp"
+        },
+        {
+          "type": "number",
+          "field": "numeroPagamenti",
+          "tooltip": "Rendicontazioni.Detail.NumeroPagamenti"
+        }
+      ],
+      "label": []
+    },
+    "secondaryText": [
+      {
+        "type": "currency",
+        "field": "importoTotale",
+        "class": "font-semibold"
+      }
+    ],
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "stato",
+        "options": "STATI_RENDICONTAZIONE"
+      },
+      {
+        "type": "date",
+        "field": "dataFlusso"
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4">
+  <lnk-page-header [titleKey]="tipo()?.descrizione || tipo()?.idTipoPendenza || '—'" subtitleKey="TipiPendenza.Detail.Subtitle">
+    <a routerLink="/tipi-pendenza" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/tipi-pendenza" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !tipo()) {
+    <lnk-loading />
+  } @else if (tipo(); as t) {
+    <div class="flex items-center gap-2">
+      <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
+      @if (t.pagaTerzi) {
+        <lnk-status-badge tone="info" labelKey="TipiPendenza.Detail.PagaTerzi" />
+      }
+    </div>
+
+    <lnk-detail-section titleKey="TipiPendenza.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    @if (t.portaleBackoffice) {
+      <lnk-detail-section titleKey="TipiPendenza.Detail.PortaleBackoffice">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portaleBackoffice) }}</pre>
+      </lnk-detail-section>
+    }
+
+    @if (t.portalePagamento) {
+      <lnk-detail-section titleKey="TipiPendenza.Detail.PortalePagamento">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portalePagamento) }}</pre>
+      </lnk-detail-section>
+    }
+
+    @if (t.visualizzazione) {
+      <lnk-detail-section titleKey="TipiPendenza.Detail.Visualizzazione">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.visualizzazione) }}</pre>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

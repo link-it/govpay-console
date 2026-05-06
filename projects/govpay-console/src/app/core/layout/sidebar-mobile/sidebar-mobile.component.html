@@ -1,0 +1,49 @@
+@if (open()) {
+  <div
+    class="lg:hidden fixed inset-0 z-50 flex"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'Layout.MainNavigation' | translate"
+  >
+    <button
+      type="button"
+      class="absolute inset-0 bg-black/50"
+      (click)="close()"
+      [attr.aria-label]="'Layout.CloseMenu' | translate"
+    ></button>
+
+    <aside
+      class="relative flex flex-col w-72 max-w-[85vw] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] shadow-xl"
+    >
+      <div class="flex h-[var(--header-height)] items-center gap-2 px-4 border-b border-[var(--sidebar-border)]">
+        @if (logo()) {
+          <img [src]="logo()" alt="" class="h-8 w-auto" />
+        } @else {
+          <span class="font-semibold truncate">{{ title() }}</span>
+        }
+        <button
+          type="button"
+          class="ml-auto p-2 rounded hover:bg-[var(--sidebar-item-hover)]"
+          (click)="close()"
+          [attr.aria-label]="'Layout.CloseMenu' | translate"
+        >
+          <ng-icon name="bootstrapXLg" size="1.25rem" />
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto scrollbar-thin py-3 px-3">
+        <ul class="flex flex-col gap-1">
+          @for (item of navItems(); track item.label) {
+            <li>
+              <lnk-sidebar-item [item]="item" [collapsed]="false" />
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <div class="border-t border-[var(--sidebar-footer-border)] bg-[var(--sidebar-footer-bg)] p-3">
+        <lnk-profile-menu [collapsed]="false" />
+      </div>
+    </aside>
+  </div>
+}

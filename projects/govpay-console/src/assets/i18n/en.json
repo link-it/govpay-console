@@ -1,0 +1,826 @@
+{
+  "App": {
+    "Title": "GovPay Console",
+    "DefaultUser": "User"
+  },
+  "Common": {
+    "Loading": "Loading…",
+    "Save": "Save",
+    "Cancel": "Cancel",
+    "Search": "Search",
+    "Close": "Close",
+    "Open": "Open",
+    "Confirm": "Confirm",
+    "Back": "Back",
+    "Next": "Next",
+    "Yes": "Yes",
+    "No": "No",
+    "Refresh": "Refresh",
+    "NoResults": "No results",
+    "NoResultsForFilters": "No results match the current filters.",
+    "LoadError": "Failed to load data.",
+    "All": "All",
+    "Clear": "Clear",
+    "ResetFilters": "Reset filters",
+    "DateFrom": "From",
+    "DateTo": "To",
+    "GotoTop": "Back to top",
+    "Unknown": "Unknown"
+  },
+  "Pagination": {
+    "RowsPerPage": "Rows per page",
+    "RangeOf": "{{from}}–{{to}} of {{total}}",
+    "NoResults": "No results",
+    "First": "First page",
+    "Previous": "Previous",
+    "Next": "Next",
+    "Last": "Last page",
+    "LoadMoreHint": "Scroll to load more…",
+    "AllLoaded": "All {{total}} results loaded."
+  },
+  "Tweaks": {
+    "Title": "Customize view",
+    "Subtitle": "Tweak the look of the current page on the fly.",
+    "Reset": "Reset to defaults",
+    "Layout": "Layout",
+    "View": "List view",
+    "ViewHint": "Table for dense data, rows for descriptive layout.",
+    "View.Table": "Table",
+    "View.Rows": "Rows",
+    "Range": "Date range (dataDa)",
+    "RangeHint": "Set dataDa to a preset range relative to today.",
+    "Range.Month": "1 month",
+    "Range.ThreeMonths": "3 months",
+    "Range.SixMonths": "6 months",
+    "Range.Year": "1 year",
+    "Global": "Global",
+    "GlobalHint": "Session-level overrides of Layout flags. Applied to every page until refresh.",
+    "ListMaxWidth": "List max width",
+    "DetailMaxWidth": "Detail max width",
+    "MaxWidthHint": "Constrain the page container for lists/details.",
+    "MaxWidth.Full": "Full",
+    "MaxWidth.M": "M",
+    "MaxWidth.L": "L",
+    "MaxWidth.XL": "XL",
+    "HelpButton": "Help button",
+    "GotoTopButton": "Go to top button",
+    "LanguagePosition": "Language selector",
+    "DarkModePosition": "Dark mode toggle",
+    "PositionHint": "Where to show the control in the layout.",
+    "Position.Header": "Header",
+    "Position.Sidebar": "Sidebar",
+    "Position.None": "Hidden",
+    "ResetGlobals": "Reset globals",
+    "Login": "Login",
+    "Cardless": "No card",
+    "CardlessHint": "Show the login form directly on the background, without the central card."
+  },
+  "Ricevute": {
+    "Subtitle": "Electronic receipts for payments.",
+    "Filters": {
+      "SearchPlaceholder": "Search by IUV…",
+      "Esito": "Outcome"
+    },
+    "Empty": {
+      "Title": "No receipts",
+      "Description": "There are no receipts matching the current filters."
+    },
+    "Columns": {
+      "Iuv": "IUV",
+      "Dominio": "Creditor",
+      "Pagatore": "Payer",
+      "Causale": "Reason",
+      "DataRicevuta": "Payment date",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Esiti": {
+      "InCorso": "In progress",
+      "Rifiutato": "Rejected",
+      "Eseguito": "Executed",
+      "NonEseguito": "Not executed",
+      "EseguitoParziale": "Partial",
+      "Decorrenza": "Timeout",
+      "DecorrenzaParziale": "Partial timeout"
+    },
+    "Stati": {
+      "InCorso": "In progress",
+      "Eseguito": "Paid",
+      "RtRifiutata": "Receipt rejected",
+      "Sconosciuto": "Unknown outcome",
+      "Fallito": "Failed",
+      "Annullato": "Cancelled",
+      "Scaduto": "Expired"
+    },
+    "Detail": {
+      "Subtitle": "Electronic receipt details.",
+      "Generali": "General",
+      "EnteCreditore": "Creditor",
+      "SoggettoPagatore": "Payer",
+      "Iuv": "IUV",
+      "NumeroAvviso": "Notice number",
+      "Ccp": "Payment context code",
+      "DataRicevuta": "Payment date",
+      "Importo": "Amount",
+      "Causale": "Reason",
+      "IdDominio": "Domain ID",
+      "RagioneSociale": "Name",
+      "Anagrafica": "Full name",
+      "Identificativo": "Identifier",
+      "Email": "Email",
+      "Download": "Download RT",
+      "Dominio": "Domain",
+      "Pagatore": "Payer",
+      "TabDati": "Receipt data",
+      "TabEventi": "Events",
+      "EventiEmpty": "No events linked to this receipt."
+    }
+  },
+  "Pagamenti": {
+    "Subtitle": "Payment requests and flows.",
+    "Filters": {
+      "SearchPlaceholder": "Search by payer ID…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No payments",
+      "Description": "There are no payments matching the current filters."
+    },
+    "Columns": {
+      "Id": "ID",
+      "Versante": "Payer",
+      "NumPendenze": "# items",
+      "DataRichiesta": "Request date",
+      "Importo": "Amount",
+      "ImportoPagato": "Paid amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "InCorso": "In progress",
+      "Eseguito": "Executed",
+      "EseguitoParziale": "Partial",
+      "NonEseguito": "Not executed",
+      "Annullato": "Cancelled",
+      "Fallito": "Failed",
+      "Decorrenza": "Timeout",
+      "DecorrenzaParziale": "Partial timeout"
+    },
+    "Detail": {
+      "Subtitle": "Payment details.",
+      "Generali": "General",
+      "SoggettoVersante": "Payer",
+      "Id": "Identifier",
+      "DataRichiesta": "Request date",
+      "Importo": "Amount",
+      "ImportoPagato": "Paid amount",
+      "NumeroPendenze": "Items count",
+      "Nodo": "Node",
+      "Anagrafica": "Full name",
+      "Identificativo": "Identifier",
+      "Email": "Email",
+      "Versante": "Payer"
+    }
+  },
+  "Pendenze": {
+    "Subtitle": "List of items uploaded to the portal.",
+    "Filters": {
+      "SearchPlaceholder": "Search by notice number or IUV…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No items",
+      "Description": "There are no items matching the current filters."
+    },
+    "Columns": {
+      "Numero": "Number / IUV",
+      "Tipo": "Type",
+      "Pagatore": "Payer",
+      "Causale": "Reason",
+      "DataCaricamento": "Uploaded",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "NonEseguita": "To pay",
+      "Eseguita": "Paid",
+      "EseguitaParziale": "Partially paid",
+      "Annullata": "Cancelled",
+      "Scaduta": "Expired",
+      "Incassata": "Reconciled",
+      "Anomala": "Anomalous"
+    },
+    "Detail": {
+      "Subtitle": "Item details.",
+      "Generali": "General",
+      "EnteCreditore": "Creditor",
+      "SoggettoPagatore": "Payer",
+      "RicevuteAssociate": "Linked receipts",
+      "NumeroAvviso": "Notice number",
+      "Iuv": "IUV",
+      "IdPendenza": "Item ID",
+      "Tipo": "Type",
+      "Importo": "Amount",
+      "DataCaricamento": "Upload date",
+      "DataValidita": "Valid until",
+      "DataScadenza": "Due date",
+      "Causale": "Reason",
+      "IdDominio": "Domain ID",
+      "RagioneSociale": "Name",
+      "UnitaOperativa": "Office",
+      "Anagrafica": "Full name",
+      "Identificativo": "Identifier",
+      "TipoSoggetto": "Subject type",
+      "Email": "Email",
+      "Cellulare": "Mobile",
+      "Dominio": "Domain",
+      "TabDati": "Pendenza data",
+      "TabEventi": "Events",
+      "EventiEmpty": "No events linked to this pendenza."
+    }
+  },
+  "Riscossioni": {
+    "Subtitle": "Collections acquired from the payment node.",
+    "Filters": {
+      "SearchPlaceholder": "Search by IUR…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No collections",
+      "Description": "No collections match the current filters."
+    },
+    "Columns": {
+      "Iur": "IUR",
+      "Iuv": "IUV",
+      "Dominio": "Creditor",
+      "Pagatore": "Payer",
+      "DataRiscossione": "Collection date",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "Riscossa": "Collected",
+      "Incassata": "Reconciled"
+    },
+    "Detail": {
+      "Subtitle": "Collection detail.",
+      "Generali": "General",
+      "VocePendenza": "Pending item line",
+      "Riferimenti": "References",
+      "Iur": "IUR",
+      "Iuv": "IUV",
+      "IdDominio": "Domain ID",
+      "Indice": "Line index",
+      "Tipo": "Collection type",
+      "Data": "Collection date",
+      "Importo": "Amount",
+      "Commissioni": "Fees",
+      "IdVocePendenza": "Line ID",
+      "Descrizione": "Description",
+      "ImportoVoce": "Line amount",
+      "CodiceContabilita": "Accounting code",
+      "TipoContabilita": "Accounting type",
+      "IbanAccredito": "Credit IBAN",
+      "PendenzaUrl": "Pending item",
+      "RppUrl": "Payment request",
+      "IncassoRef": "Credit"
+    }
+  },
+  "Rendicontazioni": {
+    "Subtitle": "Reconciliation flows received from PSPs.",
+    "Filters": {
+      "SearchPlaceholder": "Search by flow code…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No reconciliations",
+      "Description": "No reconciliation flows match the current filters."
+    },
+    "Columns": {
+      "IdFlusso": "Flow ID",
+      "Dominio": "Creditor",
+      "Psp": "PSP",
+      "DataFlusso": "Flow date",
+      "DataRegolamento": "Settlement",
+      "NumPagamenti": "# Pmts",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "Acquisito": "Acquired",
+      "Anomalo": "Anomalous",
+      "Rifiutato": "Rejected"
+    },
+    "Detail": {
+      "Subtitle": "Reconciliation flow detail.",
+      "Generali": "General",
+      "EnteCreditore": "Creditor",
+      "Psp": "PSP",
+      "Segnalazioni": "Notices",
+      "Pagamenti": "Reconciled payments",
+      "IdFlusso": "Flow ID",
+      "DataFlusso": "Flow date",
+      "DataRegolamento": "Settlement date",
+      "DataPubblicazione": "Publication",
+      "Importo": "Total amount",
+      "NumeroPagamenti": "Payment count",
+      "Trn": "TRN",
+      "IdDominio": "Domain ID",
+      "RagioneSocialeDominio": "Creditor name",
+      "IdPsp": "PSP ID",
+      "RagioneSocialePsp": "PSP name",
+      "Iuv": "IUV",
+      "Iur": "IUR",
+      "Indice": "Index",
+      "Data": "Date",
+      "Esito": "Outcome",
+      "Dominio": "Domain"
+    },
+    "Esiti": {
+      "Eseguito": "Executed",
+      "Revocato": "Revoked",
+      "EseguitoStandin": "Executed (standin)",
+      "EseguitoStandinNoRPT": "Executed (standin, no RPT)",
+      "Riconciliato": "Reconciled"
+    }
+  },
+  "Incassi": {
+    "Subtitle": "Treasury credits reconciled to GovPay.",
+    "Filters": {
+      "SearchPlaceholder": "Search by credit ID…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No credits",
+      "Description": "No credits match the current filters."
+    },
+    "Columns": {
+      "IdIncasso": "Credit ID",
+      "Trn": "TRN / SCT",
+      "Dominio": "Creditor",
+      "Causale": "Reason",
+      "DataIncasso": "Credit date",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "Acquisito": "Acquired",
+      "InElaborazione": "Processing",
+      "Errore": "Error"
+    },
+    "Detail": {
+      "Subtitle": "Credit detail.",
+      "Generali": "General",
+      "EnteCreditore": "Creditor",
+      "RiscossioniRiconciliate": "Reconciled collections",
+      "IdIncasso": "Credit ID",
+      "Causale": "Reason",
+      "Importo": "Amount",
+      "Data": "Credit date",
+      "DataValuta": "Value date",
+      "DataContabile": "Accounting date",
+      "IbanAccredito": "Credit IBAN",
+      "Sct": "SCT",
+      "Iuv": "Reference IUV",
+      "IdFlusso": "Reference flow",
+      "DescrizioneStato": "Status description",
+      "IdDominio": "Domain ID",
+      "RagioneSociale": "Name",
+      "Iur": "IUR",
+      "DataRisc": "Collection date",
+      "ImportoRisc": "Amount",
+      "Dominio": "Domain"
+    }
+  },
+  "GiornaleEventi": {
+    "Subtitle": "System events log.",
+    "Filters": {
+      "SearchPlaceholder": "Search by IUV…",
+      "Esito": "Outcome",
+      "Categoria": "Category"
+    },
+    "Empty": {
+      "Title": "No events",
+      "Description": "No events match the current filters."
+    },
+    "Columns": {
+      "Data": "Date",
+      "Categoria": "Category",
+      "Tipo": "Type",
+      "Componente": "Component",
+      "Iuv": "IUV",
+      "Durata": "Duration",
+      "Esito": "Outcome"
+    },
+    "Esiti": {
+      "Ok": "OK",
+      "Ko": "KO",
+      "Fail": "Failed"
+    },
+    "Categorie": {
+      "Interfaccia": "Interface",
+      "Interno": "Internal",
+      "Utente": "User"
+    },
+    "Componenti": {
+      "API_ENTE": "Entity API",
+      "API_PAGAMENTO": "Payment API",
+      "API_RAGIONERIA": "Treasury API",
+      "API_BACKOFFICE": "Backoffice API",
+      "API_PAGOPA": "PagoPA API",
+      "API_PENDENZE": "Receivables API",
+      "API_BACKEND_IO": "AppIO API",
+      "API_GOVPAY": "GovPay API",
+      "API_HYPERSIC_APK": "HyperSIC APK API",
+      "API_MAGGIOLI_JPPA": "Maggioli API",
+      "API_MYPIVOT": "MyPivot API",
+      "API_SECIM": "Secim API",
+      "GOVPAY": "GovPay Core"
+    },
+    "Detail": {
+      "Subtitle": "Event detail.",
+      "Generali": "General",
+      "Riferimenti": "References",
+      "ParametriRichiesta": "Request parameters",
+      "ParametriRisposta": "Response parameters",
+      "DataEvento": "Date and time",
+      "Categoria": "Category",
+      "Componente": "Component",
+      "Tipo": "Event type",
+      "Sottotipo": "Subtype",
+      "Ruolo": "Role",
+      "Durata": "Duration",
+      "IdDominio": "Domain ID",
+      "Iuv": "IUV",
+      "Ccp": "CCP",
+      "IdA2A": "Application ID",
+      "IdPendenza": "Pending item ID",
+      "IdSessione": "Session ID"
+    }
+  },
+  "Tracciati": {
+    "Subtitle": "Bulk import of pending items.",
+    "Filters": {
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No batches",
+      "Description": "No batches match the current filters."
+    },
+    "Columns": {
+      "NomeFile": "File name",
+      "Dominio": "Creditor",
+      "DataCaricamento": "Uploaded",
+      "DataAggiornamento": "Updated",
+      "Esito": "OK / Tot",
+      "Operatore": "Operator",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "InAttesa": "Pending",
+      "InElaborazione": "Processing",
+      "Eseguito": "Done",
+      "EseguitoConErrori": "Done with errors",
+      "Scartato": "Rejected",
+      "ElaborazioneStampa": "Printing"
+    },
+    "Detail": {
+      "Subtitle": "Batch detail.",
+      "Generali": "General",
+      "EnteCreditore": "Creditor",
+      "Contatori": "Operations",
+      "NomeFile": "File name",
+      "DataCaricamento": "Upload date",
+      "DataAggiornamento": "Last update",
+      "Operatore": "Operator",
+      "DescrizioneStato": "Status description",
+      "IdDominio": "Domain ID",
+      "RagioneSociale": "Name",
+      "OperazioniTotali": "Total operations",
+      "OperazioniEseguite": "Successful operations",
+      "OperazioniFallite": "Failed operations",
+      "AvvisiTotali": "Total notices",
+      "AvvisiStampati": "Printed notices",
+      "AvvisiFalliti": "Failed notices",
+      "Dominio": "Domain"
+    }
+  },
+  "Domini": {
+    "Subtitle": "Creditor entities registered on the platform.",
+    "Filters": {
+      "SearchPlaceholder": "Search by name…",
+      "Abilitato": "Enabled",
+      "Intermediato": "Brokered"
+    },
+    "Empty": {
+      "Title": "No creditors",
+      "Description": "No creditors match the current filters."
+    },
+    "Columns": {
+      "IdDominio": "Fiscal code",
+      "RagioneSociale": "Name",
+      "Localita": "Location",
+      "Stazione": "Station",
+      "Abilitato": "Enabled",
+      "Intermediato": "Brokered"
+    },
+    "Detail": {
+      "Subtitle": "Creditor entity detail.",
+      "Anagrafica": "Identity",
+      "Contatti": "Contacts",
+      "PagoPA": "PagoPA configuration",
+      "SubResources": "Linked resources",
+      "Intermediato": "Brokered",
+      "ScaricaFr": "Downloads flows",
+      "IdDominio": "Fiscal code",
+      "RagioneSociale": "Name",
+      "Area": "Area",
+      "Gln": "GLN",
+      "Cbill": "CBILL code",
+      "Indirizzo": "Address",
+      "Localita": "Location",
+      "Email": "Email",
+      "Pec": "PEC",
+      "Tel": "Phone",
+      "Fax": "Fax",
+      "Web": "Website",
+      "Stazione": "Station",
+      "AuxDigit": "Aux digit",
+      "SegregationCode": "Segregation code",
+      "IuvPrefix": "IUV prefix",
+      "AutStampa": "Poste print authorization",
+      "UnitaOperative": "Operating units",
+      "ContiAccredito": "Credit accounts",
+      "Entrate": "Revenues",
+      "TipiPendenza": "Pending types"
+    }
+  },
+  "TipiPendenza": {
+    "Subtitle": "Registered pending types.",
+    "Filters": {
+      "SearchPlaceholder": "Search by description…",
+      "Abilitato": "Enabled"
+    },
+    "Empty": {
+      "Title": "No types",
+      "Description": "No pending types match the current filters."
+    },
+    "Columns": {
+      "IdTipoPendenza": "Type ID",
+      "Descrizione": "Description",
+      "CodificaIUV": "IUV code",
+      "PagaTerzi": "Third-party",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Pending type detail.",
+      "Generali": "General",
+      "PortaleBackoffice": "Backoffice portal",
+      "PortalePagamento": "Payment portal",
+      "Visualizzazione": "Display",
+      "PagaTerzi": "Third-party payable",
+      "IdTipoPendenza": "Type ID",
+      "Descrizione": "Description",
+      "CodificaIUV": "IUV code"
+    }
+  },
+  "Applicazioni": {
+    "Subtitle": "Registered A2A applications.",
+    "Filters": {
+      "Abilitato": "Enabled"
+    },
+    "Empty": {
+      "Title": "No applications",
+      "Description": "No applications match the current filters."
+    },
+    "Columns": {
+      "IdA2A": "Application ID",
+      "Principal": "Principal",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Application detail.",
+      "Generali": "General",
+      "ApiAbilitate": "Enabled APIs",
+      "Domini": "Authorized creditors",
+      "TipiPendenza": "Pending types",
+      "Ruoli": "Roles",
+      "IdA2A": "Application ID",
+      "Principal": "Principal",
+      "ApiPagamenti": "Payments API",
+      "ApiPendenze": "Pending API",
+      "ApiRagioneria": "Accounting API"
+    }
+  },
+  "Operatori": {
+    "Subtitle": "Console operators.",
+    "Filters": {
+      "Abilitato": "Enabled"
+    },
+    "Empty": {
+      "Title": "No operators",
+      "Description": "No operators match the current filters."
+    },
+    "Columns": {
+      "Principal": "Principal",
+      "RagioneSociale": "Operator name",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Operator detail.",
+      "Generali": "General",
+      "Domini": "Authorized creditors",
+      "TipiPendenza": "Pending types",
+      "Ruoli": "Roles",
+      "Principal": "Principal",
+      "RagioneSociale": "Full name"
+    }
+  },
+  "Intermediari": {
+    "Subtitle": "Registered PagoPA brokers.",
+    "Empty": {
+      "Title": "No brokers",
+      "Description": "No brokers registered."
+    },
+    "Columns": {
+      "IdIntermediario": "Broker ID",
+      "Denominazione": "Name",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Broker detail.",
+      "Generali": "General",
+      "ServizioPagoPa": "PagoPA service",
+      "ServizioFtp": "FTP service",
+      "IdIntermediario": "Broker ID",
+      "Denominazione": "Name",
+      "PrincipalPagoPa": "PagoPA principal"
+    }
+  },
+  "Ruoli": {
+    "Subtitle": "Roles and ACLs.",
+    "Empty": {
+      "Title": "No roles",
+      "Description": "No roles registered."
+    },
+    "Columns": {
+      "Id": "Role ID"
+    },
+    "Detail": {
+      "Subtitle": "Permissions for the role.",
+      "Acl": "Services and authorizations",
+      "Servizio": "Service",
+      "Lettura": "Read",
+      "Scrittura": "Write",
+      "NoAcl": "No ACL assigned."
+    }
+  },
+  "Auth": {
+    "Title": "Sign in",
+    "Login": "Sign in",
+    "Logout": "Sign out",
+    "Username": "Username",
+    "Password": "Password",
+    "InProgress": "Signing in…",
+    "Success": "Signed in.",
+    "Failed": "Sign in failed.",
+    "InvalidCredentials": "Invalid credentials.",
+    "GenericError": "Authentication error.",
+    "EnterWith": "Sign in with {{provider}}",
+    "DevOnly": "Development only — fake user with all permissions.",
+    "MockLogin": "Mock login (dev)",
+    "MockLoginDone": "Mock login: {{name}}",
+    "Logout.InProgress": "Signing out…"
+  },
+  "Layout": {
+    "OpenMenu": "Open menu",
+    "CloseMenu": "Close menu",
+    "ExpandSidebar": "Expand menu",
+    "CollapseSidebar": "Collapse menu",
+    "MainNavigation": "Main navigation",
+    "MobileNavigation": "Mobile navigation",
+    "Breadcrumbs": "Breadcrumbs",
+    "More": "More",
+    "Help": "Help",
+    "OpenHelp": "Open help",
+    "SkipToContent": "Skip to main content"
+  },
+  "Profile": {
+    "Title": "Profile",
+    "Settings": "Application settings",
+    "About": "About",
+    "Menu": "User menu",
+    "MenuLabel": "User menu for {{name}}",
+    "MenuItems": {
+      "UserGuide": "User guide",
+      "Support": "Support"
+    }
+  },
+  "Impostazioni": {
+    "Subtitle": "Global system configuration.",
+    "ReadOnlyHint": "Configuration updates require the PATCH /configurazioni API and are not yet exposed in the UI.",
+    "Empty": "Empty configuration."
+  },
+  "Profilo": {
+    "Subtitle": "Connected user data, scope and ACLs.",
+    "NotAuthenticated": {
+      "Title": "Not authenticated",
+      "Description": "Sign in to view the profile."
+    },
+    "Detail": {
+      "Anagrafica": "Identity",
+      "Domini": "Creditors in scope",
+      "TipiPendenza": "Pending types in scope",
+      "Acl": "Permissions (ACL)",
+      "Servizio": "Service",
+      "Lettura": "Read",
+      "Scrittura": "Write",
+      "Nome": "Name",
+      "Username": "Username",
+      "Email": "Email",
+      "Autenticazione": "Authentication mode",
+      "NoDomini": "No creditors in scope.",
+      "NoTipiPendenza": "No pending types in scope.",
+      "NoAcl": "No ACL assigned."
+    }
+  },
+  "Theme": {
+    "Light": "Light theme",
+    "Dark": "Dark theme",
+    "Auto": "Auto theme",
+    "CycleHint": {
+      "Light": "Light theme (click for dark)",
+      "Dark": "Dark theme (click for auto)",
+      "Auto": "Auto theme (click for light)"
+    }
+  },
+  "Language": {
+    "Select": "Select language",
+    "Current": "Current language: {{name}}",
+    "AriaSelect": "Select language, currently {{name}}",
+    "Tooltip": "Language: {{name}}"
+  },
+  "Snackbar": {
+    "Close": "Close notification"
+  },
+  "Help": {
+    "Title": "Help: {{context}}",
+    "Section": "Section: {{section}}",
+    "Close": "Close help",
+    "ContextNotAvailable": "Contextual help is not yet available for this section. Content will be loaded dynamically in later phases of the project."
+  },
+  "Maintenance": {
+    "Title": "Service under maintenance",
+    "Message": "The service is temporarily unavailable for maintenance. Please try again later.",
+    "EstimatedEnd": "Expected restore"
+  },
+  "About": {
+    "Title": "Application information",
+    "Version": "Version",
+    "Build": "Build",
+    "Branch": "Branch",
+    "Commit": "Commit",
+    "Tag": "Tag",
+    "Status": "Status",
+    "Dirty": "working tree dirty"
+  },
+  "Dashboard": {
+    "Title": "Dashboard",
+    "Welcome": "Welcome back. From here you can access summary statistics, recent items, reconciliation flows and the main backoffice KPIs.",
+    "Cards": {
+      "PendenzeAttive": "Active items",
+      "PendenzeAttiveHint": "Items in NON_ESEGUITA state",
+      "RiscossioniMese": "Collections this month",
+      "RiscossioniMeseHint": "From the first day of the current month",
+      "TracciatiInLavorazione": "Batches in progress",
+      "TracciatiInLavorazioneHint": "Pending batches being processed",
+      "WaitingApi": "Available once connected to the API",
+      "EmptyHint": "—"
+    }
+  },
+  "Placeholder": {
+    "NotImplemented": "Section not yet implemented. It will be developed in a later phase of the project."
+  },
+  "Nav": {
+    "Dashboard": "Dashboard",
+    "Pagamenti": "Payments",
+    "Pendenze": "Items",
+    "Ricevute": "Receipts",
+    "Riconciliazioni": "Reconciliation",
+    "Riscossioni": "Collections",
+    "Rendicontazioni": "Reporting",
+    "Incassi": "Cash-ins",
+    "Monitoraggio": "Monitoring",
+    "GiornaleEventi": "Event log",
+    "Tracciati": "Streams",
+    "Anagrafiche": "Master data",
+    "Domini": "Domains",
+    "TipiPendenza": "Item types",
+    "Applicazioni": "Applications",
+    "RegistroIntermediari": "Intermediaries registry",
+    "Sicurezza": "Security",
+    "Operatori": "Operators",
+    "Ruoli": "Roles",
+    "Impostazioni": "Settings",
+    "Profilo": "Profile"
+  }
+}

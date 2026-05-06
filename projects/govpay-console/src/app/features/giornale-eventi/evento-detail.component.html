@@ -1,0 +1,51 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="(evento()?.id || '—') + ''" subtitleKey="GiornaleEventi.Detail.Subtitle">
+    <a [routerLink]="backUrl()" [queryParams]="backQueryParams() || null" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ backLabelKey() | translate }}</span>
+    </a>
+  </lnk-page-header>
+    @if (evento()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="esitoTone()" [labelKey]="esitoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a [routerLink]="backUrl()" [queryParams]="backQueryParams() || null" class="btn btn-secondary btn-sm">{{ backLabelKey() | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !evento()) {
+    <lnk-loading />
+  } @else if (evento(); as e) {
+
+    <lnk-detail-section titleKey="GiornaleEventi.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    <lnk-detail-section titleKey="GiornaleEventi.Detail.Riferimenti">
+      <lnk-info-grid [items]="riferimentiItems()" />
+    </lnk-detail-section>
+
+    @if (e.parametriRichiesta) {
+      <lnk-detail-section titleKey="GiornaleEventi.Detail.ParametriRichiesta">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRichiesta) }}</pre>
+      </lnk-detail-section>
+    }
+
+    @if (e.parametriRisposta) {
+      <lnk-detail-section titleKey="GiornaleEventi.Detail.ParametriRisposta">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRisposta) }}</pre>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

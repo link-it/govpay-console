@@ -1,0 +1,159 @@
+{
+  "options": {
+    "STATI_PAGAMENTO": {
+      "values": {
+        "IN_CORSO": {
+          "label": "Pagamenti.Stati.InCorso",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "ESEGUITO": {
+          "label": "Pagamenti.Stati.Eseguito",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "ESEGUITO_PARZIALE": {
+          "label": "Pagamenti.Stati.EseguitoParziale",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "NON_ESEGUITO": {
+          "label": "Pagamenti.Stati.NonEseguito",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        },
+        "ANNULLATO": {
+          "label": "Pagamenti.Stati.Annullato",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "FALLITO": {
+          "label": "Pagamenti.Stati.Fallito",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        },
+        "DECORRENZA": {
+          "label": "Pagamenti.Stati.Decorrenza",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        },
+        "DECORRENZA_PARZIALE": {
+          "label": "Pagamenti.Stati.DecorrenzaParziale",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "id",
+        "header": "Pagamenti.Columns.Id",
+        "cellClass": "font-mono text-xs",
+        "width": "11rem",
+        "cell": {
+          "type": "text",
+          "field": "id",
+          "truncate": 16
+        },
+        "link": true
+      },
+      {
+        "key": "soggettoVersante",
+        "header": "Pagamenti.Columns.Versante",
+        "cell": {
+          "type": "text",
+          "field": "soggettoVersante.anagrafica",
+          "truncate": 30
+        }
+      },
+      {
+        "key": "numeroPendenze",
+        "header": "Pagamenti.Columns.NumPendenze",
+        "align": "center",
+        "width": "6rem",
+        "cell": {
+          "type": "number",
+          "field": "numeroPendenze",
+          "default": "1"
+        }
+      },
+      {
+        "key": "dataRichiestaPagamento",
+        "header": "Pagamenti.Columns.DataRichiesta",
+        "sortable": true,
+        "width": "11rem",
+        "cell": {
+          "type": "datetime",
+          "field": "dataRichiestaPagamento"
+        }
+      },
+      {
+        "key": "importo",
+        "header": "Pagamenti.Columns.Importo",
+        "align": "right",
+        "cellClass": "font-mono",
+        "sortable": true,
+        "width": "8rem",
+        "cell": {
+          "type": "currency",
+          "field": "importo"
+        }
+      },
+      {
+        "key": "stato",
+        "header": "Pagamenti.Columns.Stato",
+        "width": "11rem",
+        "cell": {
+          "type": "status",
+          "field": "stato",
+          "options": "STATI_PAGAMENTO"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "id",
+        "class": "font-mono text-sm"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "soggettoVersante.anagrafica",
+          "hideEmpty": true,
+          "tooltip": "Pagamenti.Detail.Versante"
+        },
+        {
+          "type": "number",
+          "field": "numeroPendenze",
+          "tooltip": "Pagamenti.Detail.NumeroPendenze"
+        }
+      ],
+      "label": []
+    },
+    "secondaryText": [
+      {
+        "type": "currency",
+        "field": "importo",
+        "class": "font-semibold"
+      }
+    ],
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "stato",
+        "options": "STATI_PAGAMENTO"
+      },
+      {
+        "type": "datetime",
+        "field": "dataRichiestaPagamento"
+      }
+    ]
+  }
+}

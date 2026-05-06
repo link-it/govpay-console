@@ -1,0 +1,109 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header [titleKey]="iuvDisplay()" subtitleKey="Ricevute.Detail.Subtitle">
+      <a routerLink="/ricevute" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+    @if (ricevuta()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+      </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/ricevute" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !ricevuta()) {
+    <lnk-loading />
+  } @else if (ricevuta(); as r) {
+    @if (activeTab() === 'dati') {
+      <div role="tabpanel" id="tabpanel-dati" aria-labelledby="tab-dati" class="space-y-4">
+        <lnk-detail-section titleKey="Ricevute.Detail.Generali">
+          <lnk-info-grid [items]="generaliItems()" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Ricevute.Detail.EnteCreditore">
+          <lnk-info-grid [items]="dominioItems()" />
+        </lnk-detail-section>
+
+        @if (r.pendenza.soggettoPagatore) {
+          <lnk-detail-section titleKey="Ricevute.Detail.SoggettoPagatore">
+            <lnk-info-grid [items]="pagatoreItems()" />
+          </lnk-detail-section>
+        }
+
+        @if (r.pendenza; as pend) {
+          <lnk-detail-section titleKey="Ricevute.Detail.Riferimenti">
+            <ul class="flex flex-col gap-2 text-sm">
+              @if (pend.idA2A && pend.idPendenza) {
+                <li class="flex items-center gap-2">
+                  <span class="text-[var(--muted-foreground)]">{{ 'Ricevute.Detail.PendenzaOrigine' | translate }}:</span>
+                  <a
+                    [routerLink]="['/pendenze', pend.idA2A, pend.idPendenza]"
+                    class="font-mono text-xs text-[var(--primary)] hover:underline"
+                  >
+                    {{ pend.numeroAvviso || pend.iuvAvviso }}
+                  </a>
+                </li>
+              }
+            </ul>
+          </lnk-detail-section>
+        }
+      </div>
+    }
+
+    @if (activeTab() === 'eventi') {
+      <div role="tabpanel" id="tabpanel-eventi" aria-labelledby="tab-eventi" class="space-y-4">
+        @if (eventiLoading() && !eventi()) {
+          <lnk-loading />
+        } @else if (eventi()?.length === 0) {
+          <lnk-empty-state
+            icon="bootstrapInboxes"
+            titleKey="GiornaleEventi.Empty.Title"
+            descriptionKey="Ricevute.Detail.EventiEmpty"
+          />
+        } @else if (eventi(); as ev) {
+          <lnk-data-table
+            [columns]="eventiColumns()"
+            [rows]="ev"
+            [loading]="false"
+            emptyKey="GiornaleEventi.Empty.Title"
+            (rowClick)="onEventClick($event)"
+          />
+
+          @if (eventiHasMore() || eventiLoading()) {
+            <div
+              class="py-4 flex items-center justify-center text-sm text-[var(--muted-foreground)]"
+              lnkInfiniteScroll
+              [enabled]="eventiCanLoadMore()"
+              rootMargin="400px"
+              (scrolled)="loadMoreEventi()"
+            >
+              @if (eventiLoading()) {
+                <lnk-loading [inline]="true" size="sm" [labelKey]="null" />
+              } @else {
+                <span>{{ 'Pagination.LoadMoreHint' | translate }}</span>
+              }
+            </div>
+          } @else if (ev.length > 0) {
+            <p class="py-3 text-center text-xs text-[var(--muted-foreground)]">
+              {{ 'Pagination.AllLoaded' | translate: { total: eventiTotal() } }}
+            </p>
+          }
+        }
+      </div>
+    }
+  }
+  </div>
+</section>

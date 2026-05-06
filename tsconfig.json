@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "baseUrl": "./",
+    "paths": {
+      "@core/*": ["projects/govpay-console/src/app/core/*"],
+      "@core": ["projects/govpay-console/src/app/core"],
+      "@feature/*": ["projects/govpay-console/src/app/features/*"],
+      "@shared/*": ["projects/govpay-console/src/app/shared/*"],
+      "@shared": ["projects/govpay-console/src/app/shared"],
+      "@environment": ["projects/govpay-console/src/environments/environment"],
+      "@environments": ["projects/govpay-console/src/environments"],
+      "@assets/*": ["projects/govpay-console/src/assets/*"]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    { "path": "./projects/govpay-console/tsconfig.app.json" },
+    { "path": "./projects/govpay-console/tsconfig.spec.json" }
+  ]
+}

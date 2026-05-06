@@ -1,0 +1,97 @@
+@if (hasContent()) {
+  <header
+    class="flex h-[var(--header-height)] items-center gap-3 px-4 transition-all duration-150"
+    [class.lnk-header--scrolled]="scrolled()"
+  >
+    <button
+      type="button"
+      class="btn btn-ghost btn-icon lg:hidden"
+      (click)="toggleMobileMenu()"
+      [attr.aria-label]="'Layout.OpenMenu' | translate"
+    >
+      <ng-icon name="bootstrapList" size="1.25rem" />
+    </button>
+
+    <nav class="flex-1 min-w-0" [attr.aria-label]="'Layout.Breadcrumbs' | translate">
+      @if (breadcrumbs().length > 0) {
+        <ol class="flex items-center gap-1.5 text-sm overflow-hidden">
+          @for (crumb of breadcrumbs(); track $index; let last = $last) {
+            <li class="flex items-center gap-1.5 min-w-0">
+              @if (crumb.url && !last) {
+                <a
+                  [routerLink]="crumb.url"
+                  [queryParams]="crumb.queryParams || null"
+                  class="lnk-link-hover flex items-center gap-1.5 truncate text-[var(--muted-foreground)] focus-visible:outline-none"
+                >
+                  @if (crumb.icon) {
+                    <ng-icon [name]="crumb.icon" size="1rem" class="flex-shrink-0" />
+                  }
+                  <span class="truncate">{{ crumb.label | translate }}</span>
+                </a>
+              } @else if (last) {
+                <span class="flex items-center gap-1.5 truncate font-medium">
+                  @if (crumb.icon) {
+                    <ng-icon [name]="crumb.icon" size="1rem" class="flex-shrink-0" />
+                  }
+                  <span class="truncate">{{ crumb.label | translate }}</span>
+                </span>
+              } @else {
+                <span class="flex items-center gap-1.5 truncate text-[var(--muted-foreground)]">
+                  @if (crumb.icon) {
+                    <ng-icon [name]="crumb.icon" size="1rem" class="flex-shrink-0" />
+                  }
+                  <span class="truncate">{{ crumb.label | translate }}</span>
+                </span>
+              }
+              @if (!last) {
+                <ng-icon name="bootstrapChevronRight" size="0.875rem" class="text-[var(--muted-foreground)] opacity-60 flex-shrink-0" />
+              }
+            </li>
+          }
+        </ol>
+      }
+    </nav>
+
+    @if (showLanguageMenu()) {
+      <lnk-language-menu />
+    }
+
+    @if (showDarkToggle()) {
+      <lnk-color-scheme-toggle />
+    }
+
+    @if (showHelpButton()) {
+      <button
+        type="button"
+        class="btn btn-ghost btn-icon"
+        (click)="openHelp()"
+        [attr.aria-label]="'Layout.OpenHelp' | translate"
+        [title]="'Layout.Help' | translate"
+      >
+        <ng-icon name="bootstrapInfoCircle" size="1.125rem" />
+      </button>
+    }
+
+    @if (showProfileInHeader()) {
+      @if (user(); as u) {
+        <a routerLink="/profilo" class="btn btn-ghost btn-sm">
+          <ng-icon name="bootstrapPerson" size="1.125rem" />
+          <span class="hidden sm:inline">{{ u.displayName || u.username }}</span>
+        </a>
+        <a
+          routerLink="/auth/logout"
+          class="btn btn-ghost btn-icon"
+          [title]="'Auth.Logout' | translate"
+          [attr.aria-label]="'Auth.Logout' | translate"
+        >
+          <ng-icon name="bootstrapBoxArrowRight" size="1.125rem" />
+        </a>
+      } @else {
+        <a routerLink="/auth/login" class="btn btn-primary btn-sm">
+          <ng-icon name="bootstrapBoxArrowInRight" size="1.125rem" />
+          <span>{{ 'Auth.Login' | translate }}</span>
+        </a>
+      }
+    }
+  </header>
+}

@@ -1,0 +1,66 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="riscossione()?.iur || '—'" subtitleKey="Riscossioni.Detail.Subtitle">
+    <a routerLink="/riscossioni" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+    @if (riscossione()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/riscossioni" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !riscossione()) {
+    <lnk-loading />
+  } @else if (riscossione(); as r) {
+
+    <lnk-detail-section titleKey="Riscossioni.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    @if (r.vocePendenza) {
+      <lnk-detail-section titleKey="Riscossioni.Detail.VocePendenza">
+        <lnk-info-grid [items]="voceItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (r.pendenza || r.rpp || r.incasso) {
+      <lnk-detail-section titleKey="Riscossioni.Detail.Riferimenti">
+        <ul class="flex flex-col gap-2 text-sm">
+          @if (r.pendenza) {
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--muted-foreground)]">{{ 'Riscossioni.Detail.PendenzaUrl' | translate }}:</span>
+              <span class="font-mono text-xs">{{ r.pendenza }}</span>
+            </li>
+          }
+          @if (r.rpp) {
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--muted-foreground)]">{{ 'Riscossioni.Detail.RppUrl' | translate }}:</span>
+              <span class="font-mono text-xs">{{ r.rpp }}</span>
+            </li>
+          }
+          @if (r.incasso) {
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--muted-foreground)]">{{ 'Riscossioni.Detail.IncassoRef' | translate }}:</span>
+              <span class="font-mono text-xs">{{ r.incasso }}</span>
+            </li>
+          }
+        </ul>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

@@ -1,0 +1,145 @@
+{
+  "options": {
+    "STATI_RISCOSSIONE": {
+      "values": {
+        "RISCOSSA": {
+          "label": "Riscossioni.Stati.Riscossa",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "INCASSATA": {
+          "label": "Riscossioni.Stati.Incassata",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "iur",
+        "header": "Riscossioni.Columns.Iur",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "text",
+          "field": "iur"
+        },
+        "link": true
+      },
+      {
+        "key": "iuv",
+        "header": "Riscossioni.Columns.Iuv",
+        "cellClass": "font-mono text-xs",
+        "sortable": true,
+        "width": "14rem",
+        "cell": {
+          "type": "text",
+          "field": "iuv"
+        }
+      },
+      {
+        "key": "idDominio",
+        "header": "Riscossioni.Columns.Dominio",
+        "width": "11rem",
+        "cell": {
+          "type": "text",
+          "field": "idDominio",
+          "truncate": 30
+        }
+      },
+      {
+        "key": "tipo",
+        "header": "Riscossioni.Columns.Tipo",
+        "width": "8rem",
+        "cell": {
+          "type": "text",
+          "field": "tipo"
+        }
+      },
+      {
+        "key": "data",
+        "header": "Riscossioni.Columns.DataRiscossione",
+        "sortable": true,
+        "width": "8rem",
+        "cell": {
+          "type": "date",
+          "field": "data"
+        }
+      },
+      {
+        "key": "importo",
+        "header": "Riscossioni.Columns.Importo",
+        "align": "right",
+        "cellClass": "font-mono",
+        "width": "8rem",
+        "cell": {
+          "type": "currency",
+          "field": "importo"
+        }
+      },
+      {
+        "key": "stato",
+        "header": "Riscossioni.Columns.Stato",
+        "sortable": true,
+        "width": "9rem",
+        "cell": {
+          "type": "status",
+          "field": "stato",
+          "options": "STATI_RISCOSSIONE"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "iur",
+        "class": "font-mono text-sm"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "iuv",
+          "class": "font-mono",
+          "tooltip": "Riscossioni.Detail.Iuv"
+        },
+        {
+          "type": "text",
+          "field": "idDominio",
+          "class": "font-mono",
+          "tooltip": "Riscossioni.Detail.IdDominio"
+        },
+        {
+          "type": "text",
+          "field": "tipo",
+          "hideEmpty": true,
+          "tooltip": "Riscossioni.Detail.Tipo"
+        }
+      ],
+      "label": []
+    },
+    "secondaryText": [
+      {
+        "type": "currency",
+        "field": "importo",
+        "class": "font-semibold"
+      }
+    ],
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "stato",
+        "options": "STATI_RISCOSSIONE"
+      },
+      {
+        "type": "date",
+        "field": "data"
+      }
+    ]
+  }
+}

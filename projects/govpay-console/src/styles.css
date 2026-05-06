@@ -1,0 +1,460 @@
+/* Angular Material — tema prebuilt (rose-red, vicino al CTA coral Link.it)
+   + CSS dell'overlay CDK necessario per tooltip, dialog, menu, ecc. */
+@import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/material/prebuilt-themes/rose-red.css';
+
+@import 'tailwindcss';
+
+/* Tailwind 4: abilita la variante `dark:` basata sulla classe `.dark` su <html>.
+   Il `ThemeLoaderService` aggiunge/rimuove questa classe quando lo schema cambia. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   THEME — variabili default. Vengono sovrascritte a runtime da
+   ThemeLoaderService leggendo `assets/config/theme.json`.
+
+   Palette: Link.it (allineata a GovHub).
+   - CTA coral:   #ff4050
+   - denim:       #213349
+   - accent-light:#cce3ed
+   - canvas:      #f4f8fa
+   - text-secondary: #6a8da5
+   ========================================================================== */
+:root {
+  /* Brand */
+  --primary: #ff4050;
+  --primary-foreground: #ffffff;
+  --secondary: #213349;
+  --secondary-foreground: #ffffff;
+  --accent: #8ce1d8;
+  --accent-foreground: #213349;
+
+  /* Hover sui titoli cliccabili dei `<lnk-item-row>` (override-able dal tema). */
+  --item-row-hover: var(--primary);
+
+  /* Stati */
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #ff4050;
+  --info: #0071a9;
+
+  /* Layout: top bar / header / sidebar / content */
+  --topbar-bg: #ffffff;
+  --topbar-text: #213349;
+  --topbar-border: #cce3ed;
+  --topbar-height: 3.5rem;
+
+  --header-bg: #ffffff;
+  --header-text: #213349;
+  --header-border: #cce3ed;
+  --header-height: 3.5rem;
+  --header-shadow: none;
+  /* Sfondo header in stato "scrolled": bianco leggermente trasparente + blur. */
+  --header-bg-scrolled: rgba(255, 255, 255, 0.85);
+  --header-blur-scrolled: saturate(180%) blur(8px);
+
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #cce3ed;
+  --sidebar-text: #213349;
+  --sidebar-text-secondary: #6a8da5;
+  --sidebar-item-hover: #cce3ed80;
+  --sidebar-item-active: #cce3ed;
+  --sidebar-item-active-text: #ff4050;
+  --sidebar-footer-bg: #ffffff;
+  --sidebar-footer-border: #cce3ed;
+  --sidebar-width: 16rem;
+  --sidebar-width-collapsed: 4rem;
+
+  --background: #f4f8fa;
+  --foreground: #213349;
+  --muted: #f4f8fa;
+  --muted-foreground: #6a8da5;
+  --border: #cce3ed;
+  --ring: #ff4050;
+
+  --card-bg: #ffffff;
+  --card-border: #cce3ed;
+  --card-hover: #f4f8fa;
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  /* Buttons */
+  --btn-primary-bg: #ff4050;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #e6394a;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-text: #213349;
+  --btn-secondary-border: #cce3ed;
+  --btn-secondary-hover: #cce3ed80;
+
+  --footer-height: 0px;
+  --font-sans: 'Prompt', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Fallback dark — usato solo se `theme.json` non si carica.
+   ThemeLoaderService sovrascrive comunque queste variabili con i valori da
+   `theme.dark` quando lo schema è `dark`. */
+:where(.dark) {
+  --topbar-bg: #0f172a;
+  --topbar-text: #e2e8f0;
+  --topbar-border: #1e293b;
+
+  --header-bg: #0f172a;
+  --header-text: #e2e8f0;
+  --header-border: #1e293b;
+  --header-bg-scrolled: rgba(15, 23, 42, 0.75);
+
+  --sidebar-bg: #0f172a;
+  --sidebar-border: #1e293b;
+  --sidebar-text: #e2e8f0;
+  --sidebar-text-secondary: #94a3b8;
+  --sidebar-item-hover: #1e293b;
+  --sidebar-item-active: #1e293b;
+  --sidebar-item-active-text: #ff4050;
+  --sidebar-footer-bg: #0f172a;
+  --sidebar-footer-border: #1e293b;
+
+  --background: #020617;
+  --foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --border: #1e293b;
+
+  --card-bg: #0f172a;
+  --card-border: #1e293b;
+  --card-hover: #1e293b;
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+
+  --btn-secondary-bg: #1e293b;
+  --btn-secondary-text: #e2e8f0;
+  --btn-secondary-border: #334155;
+  --btn-secondary-hover: #334155;
+
+  --info: #38bdf8;
+}
+
+/* Esposizione Tailwind 4: classnames bg-primary, text-foreground, ecc. */
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --font-sans: var(--font-sans);
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+/* `min-height: 100%` invece di `height: 100%`: il body può crescere oltre la
+   viewport e lo scroll avviene a livello window. Necessario perché
+   `position: sticky` del header usa il viewport come containing block. */
+html,
+body {
+  min-height: 100%;
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+}
+
+/* ==========================================================================
+   ANGULAR MATERIAL — propaga il font del tema (`--font-sans`, alimentato
+   da `theme.json:fonts.primary.family`) a tutti i token Material 3 (`mat-sys-*`)
+   e ai componenti `mat-mdc-*`. Senza questo override Material userebbe Roboto
+   dal prebuilt theme.
+   ========================================================================== */
+html {
+  --mat-sys-plain-family: var(--font-sans);
+  --mat-sys-brand-family: var(--font-sans);
+  --mat-sys-headline-large-font: var(--font-sans);
+  --mat-sys-headline-medium-font: var(--font-sans);
+  --mat-sys-headline-small-font: var(--font-sans);
+  --mat-sys-title-large-font: var(--font-sans);
+  --mat-sys-title-medium-font: var(--font-sans);
+  --mat-sys-title-small-font: var(--font-sans);
+  --mat-sys-body-large-font: var(--font-sans);
+  --mat-sys-body-medium-font: var(--font-sans);
+  --mat-sys-body-small-font: var(--font-sans);
+  --mat-sys-label-large-font: var(--font-sans);
+  --mat-sys-label-medium-font: var(--font-sans);
+  --mat-sys-label-small-font: var(--font-sans);
+  --mat-sys-display-large-font: var(--font-sans);
+  --mat-sys-display-medium-font: var(--font-sans);
+  --mat-sys-display-small-font: var(--font-sans);
+}
+
+.mat-typography,
+.mat-mdc-button,
+.mat-mdc-icon-button,
+.mat-mdc-form-field,
+.mat-mdc-tooltip,
+.mat-mdc-snack-bar-container,
+.mat-mdc-dialog-container,
+.mat-mdc-menu-content,
+.mat-mdc-select-panel,
+.mat-mdc-tab,
+.mat-mdc-list,
+.mat-mdc-card,
+.mat-mdc-table {
+  font-family: var(--font-sans);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   HEADER — stato "scrolled".
+   Default: trasparente, nessun bordo, nessuna ombra.
+   `.lnk-header--scrolled` (LIGHT) → bianco semi-trasparente con
+   backdrop-filter (frosted glass) e bordo inferiore visibile.
+   In DARK il frosted-glass diventa "muddy" sopra al fondo già scuro
+   (`#020617`); manteniamo solo il bordo inferiore per la separazione
+   visiva, niente bg semi-trasparente né blur.
+   ========================================================================== */
+.lnk-header--scrolled {
+  background-color: var(--header-bg-scrolled);
+  border-bottom: 1px solid var(--header-border);
+  -webkit-backdrop-filter: var(--header-blur-scrolled, blur(8px));
+  backdrop-filter: var(--header-blur-scrolled, blur(8px));
+  box-shadow: var(--header-shadow);
+}
+.dark .lnk-header--scrolled {
+  background-color: transparent;
+}
+
+/* ==========================================================================
+   BUTTONS — classi utility usabili su `<button>` e `<a>` indistintamente.
+   Centralizzano colore, padding, focus ring, disabled e applicano le CSS
+   variables del tema (`--btn-primary-*`, `--btn-secondary-*`).
+
+   Avvolte in `@layer components` così le utility Tailwind (es. `lg:hidden`,
+   `hidden`, `block`) hanno priorità maggiore e possono sovrascrivere
+   `display: inline-flex` o `width` in modo responsive.
+   ========================================================================== */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    cursor: pointer;
+    transition-property: background-color, border-color, color, opacity;
+    transition-duration: 150ms;
+    text-decoration: none;
+    border: 1px solid transparent;
+    user-select: none;
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled='true'],
+  .btn.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* primary */
+  .btn-primary {
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text) !important;
+    border-color: var(--btn-primary-bg);
+  }
+
+  .btn-primary:hover:not(:disabled):not([aria-disabled='true']) {
+    background-color: var(--btn-primary-hover);
+    border-color: var(--btn-primary-hover);
+    color: var(--btn-primary-text);
+  }
+
+  /* secondary (outlined) */
+  .btn-secondary {
+    background-color: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border-color: var(--btn-secondary-border);
+  }
+
+  .btn-secondary:hover:not(:disabled):not([aria-disabled='true']) {
+    background-color: var(--btn-secondary-hover);
+    color: var(--btn-secondary-text);
+  }
+
+  /* ghost (testuale, hover background tenue) */
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--foreground);
+    border-color: transparent;
+  }
+
+  .btn-ghost:hover:not(:disabled):not([aria-disabled='true']) {
+    background-color: var(--muted);
+  }
+
+  /* varianti dimensione */
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .btn-icon {
+    padding: 0.5rem;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  /* full width */
+  .btn-block {
+    width: 100%;
+  }
+}
+
+/* Scrollbar sottile riusabile */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+}
+
+/* ==========================================================================
+   ANGULAR MATERIAL — override delle CSS variables per allinearsi al tema
+   Link.it (denim su accent-light, niente colori rose-red del prebuilt).
+   ========================================================================== */
+:root {
+  /* Tooltip: testo chiaro su sfondo denim. */
+  --mdc-plain-tooltip-container-color: var(--secondary, #213349);
+  --mdc-plain-tooltip-supporting-text-color: var(--secondary-foreground, #ffffff);
+  --mdc-plain-tooltip-supporting-text-font: var(--font-family, 'Prompt', system-ui, sans-serif);
+  --mdc-plain-tooltip-supporting-text-size: 0.75rem;
+  --mdc-plain-tooltip-supporting-text-weight: 500;
+
+  /* Tonal status colors usati da `<lnk-item-type type="status|tag|label">`
+     via `var(--status-{tono}-bg|text)`. Coerenti con `StatusBadgeComponent`
+     (color-mix-based). I tono sono gli stessi di `STATO_*_COLOR` dei modelli. */
+  --status-success-bg: color-mix(in srgb, #16a34a 18%, transparent);
+  --status-success-text: #166534;
+  --status-info-bg: color-mix(in srgb, #2563eb 18%, transparent);
+  --status-info-text: #1d4ed8;
+  --status-warning-bg: color-mix(in srgb, #f59e0b 18%, transparent);
+  --status-warning-text: #92400e;
+  --status-danger-bg: color-mix(in srgb, #ef4444 18%, transparent);
+  --status-danger-text: #991b1b;
+  --status-muted-bg: color-mix(in srgb, var(--muted-foreground) 18%, transparent);
+  --status-muted-text: var(--muted-foreground);
+}
+
+/* ==========================================================================
+   ITEM ROW — separatore visivo "·" tra elementi della stessa sezione di
+   `<lnk-item-row>`. Ogni figlio diretto (incluso `<lnk-item-type>`, che
+   è un host element a sé) riceve un separatore prima del successivo.
+
+   Override `lnk-no-sep` (mappato da `ItemTypeElement.noSeparator: true`):
+   sopprime il puntino prima del singolo item, utile per agganciare un
+   valore subito dopo una `simplelabel` (es. `IUV: 12345`).
+   ========================================================================== */
+.lnk-sep > * + *::before {
+  content: '·';
+  display: inline-block;
+  margin: 0 0.3rem;
+  opacity: 0.5;
+}
+
+/* Sopprime il puntino ma mantiene un piccolo spazio orizzontale tra i due termini. */
+.lnk-sep > .lnk-no-sep::before {
+  content: '';
+  margin: 0 0.15rem;
+}
+
+/* ==========================================================================
+   PAGE CONTAINERS — larghezza massima centrata, configurabile via
+   `Layout.listMaxWidth` / `Layout.detailMaxWidth` (vedi
+   `ConfigService`). Default `none` (full-width).
+   ========================================================================== */
+.lnk-list-page {
+  max-width: var(--lnk-list-max-w, none);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lnk-detail-page {
+  max-width: var(--lnk-detail-max-w, none);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ==========================================================================
+   LINK HOVER — colore primary in hover/focus per link breadcrumb,
+   celle link del data-table e altre azioni testuali "secondarie".
+   Override esplicito per battere `text-[var(--muted-foreground)]` sui
+   link di default in stato muted.
+   ========================================================================== */
+.lnk-link-hover {
+  transition: color 0.15s;
+}
+.lnk-link-hover:hover,
+.lnk-link-hover:focus-visible {
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   ROW HOVER — sfondo dell'hover row riusato da `<lnk-data-table>` e
+   `<lnk-item-row>`. Definito qui per evitare il quoting-hell di
+   `[class.hover:bg-\[var\(--card-hover\)\]]` nei template Angular.
+   ========================================================================== */
+.lnk-row-hover:hover {
+  background-color: var(--card-hover);
+}
+
+/* ==========================================================================
+   LIST STICKY TOOLBAR — ombra tenue applicata solo durante lo scroll
+   (vedi `ListStickyToolbarDirective`). La transizione è gestita via
+   `transition-shadow` sull'host.
+   Usa un offset Y positivo + spread negativo della stessa entità del
+   blur per limitare l'ombra al solo bordo inferiore (no bleed laterale).
+   ========================================================================== */
+.lnk-toolbar-stuck {
+  box-shadow: 0 6px 8px -6px rgb(0 0 0 / 0.12);
+}
+
+.dark .lnk-toolbar-stuck {
+  box-shadow: 0 6px 8px -6px rgb(0 0 0 / 0.4);
+}

@@ -1,0 +1,24 @@
+<nav
+  class="lg:hidden fixed bottom-0 inset-x-0 z-30 flex items-stretch bg-[var(--header-bg)] text-[var(--header-text)] border-t border-[var(--header-border)]"
+  [attr.aria-label]="'Layout.MobileNavigation' | translate"
+>
+  @for (item of items(); track item.route) {
+    <a
+      [routerLink]="item.route"
+      routerLinkActive="text-[var(--primary)]"
+      class="flex-1 flex flex-col items-center justify-center gap-1 py-2 text-[10px] hover:bg-[var(--muted)]"
+    >
+      <ng-icon [name]="item.icon" size="1.25rem" />
+      <span class="truncate max-w-full px-1">{{ item.label | translate }}</span>
+    </a>
+  }
+  <button
+    type="button"
+    class="flex-1 flex flex-col items-center justify-center gap-1 py-2 text-[10px] hover:bg-[var(--muted)]"
+    (click)="openMore()"
+    [attr.aria-label]="'Layout.OpenMenu' | translate"
+  >
+    <ng-icon name="bootstrapList" size="1.25rem" />
+    <span>{{ 'Layout.More' | translate }}</span>
+  </button>
+</nav>

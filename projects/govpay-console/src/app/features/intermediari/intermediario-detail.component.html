@@ -1,0 +1,47 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="intermediario()?.denominazione || intermediario()?.idIntermediario || '—'" subtitleKey="Intermediari.Detail.Subtitle">
+    <a routerLink="/registro-intermediari" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+    @if (intermediario()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/registro-intermediari" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !intermediario()) {
+    <lnk-loading />
+  } @else if (intermediario(); as i) {
+
+    <lnk-detail-section titleKey="Intermediari.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    @if (i.servizioPagoPa) {
+      <lnk-detail-section titleKey="Intermediari.Detail.ServizioPagoPa">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(i.servizioPagoPa) }}</pre>
+      </lnk-detail-section>
+    }
+
+    @if (i.servizioFtp) {
+      <lnk-detail-section titleKey="Intermediari.Detail.ServizioFtp">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(i.servizioFtp) }}</pre>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

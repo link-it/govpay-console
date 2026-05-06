@@ -1,0 +1,76 @@
+{
+  "name": "govpay-console",
+  "version": "4.0.0",
+  "description": "GovPay Web Console v2 — backoffice Link.it (Angular 21+, standalone, signals, TailwindCSS, Material).",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --proxy-config proxy.config.js",
+    "start:dev": "GP_BACKEND=dev-cloud ng serve --proxy-config proxy.config.js",
+    "start:demo": "GP_BACKEND=demo ng serve --proxy-config proxy.config.js",
+    "start:local-alt": "GP_BACKEND=local-alt ng serve --proxy-config proxy.config.js",
+    "start:port": "ng serve --port 5300 --proxy-config proxy.config.js",
+    "prebuild": "node scripts/generate-version.js",
+    "build": "ng build",
+    "build:prod": "node scripts/generate-version.js && ng build --configuration production",
+    "watch": "ng build --watch --configuration development",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "version:generate": "node scripts/generate-version.js",
+    "version:patch": "node scripts/bump-version.js patch && node scripts/generate-version.js",
+    "version:minor": "node scripts/bump-version.js minor && node scripts/generate-version.js",
+    "version:major": "node scripts/bump-version.js major && node scripts/generate-version.js",
+    "version:set": "node scripts/bump-version.js"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "packageManager": "npm@10.9.0",
+  "dependencies": {
+    "@angular/animations": "^21.0.6",
+    "@angular/cdk": "^21.0.5",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/material": "^21.0.5",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/platform-browser-dynamic": "^21.0.6",
+    "@angular/router": "^21.0.0",
+    "@ng-icons/bootstrap-icons": "^33.0.0",
+    "@ng-icons/core": "^33.0.0",
+    "@ngx-translate/core": "^17.0.0",
+    "@ngx-translate/http-loader": "^17.0.0",
+    "@tailwindcss/postcss": "^4.1.18",
+    "date-fns": "^4.1.0",
+    "ngx-cookie-service": "^21.0.0",
+    "rxjs": "~7.8.0",
+    "tailwindcss": "^4.1.18",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.15.1"
+  },
+  "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^2.2.0",
+    "@angular/build": "^21.0.4",
+    "@angular/cli": "^21.0.4",
+    "@angular/compiler-cli": "^21.0.0",
+    "@testing-library/angular": "^18.1.1",
+    "@vitest/coverage-v8": "^4.0.16",
+    "happy-dom": "^20.0.11",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.16"
+  }
+}

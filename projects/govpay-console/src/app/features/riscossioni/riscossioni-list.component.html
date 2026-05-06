@@ -1,0 +1,85 @@
+<section class="space-y-4 pb-6 lnk-list-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
+  <lnk-page-header titleKey="Nav.Riscossioni" subtitleKey="Riscossioni.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+      {{ 'Common.Refresh' | translate }}
+    </button>
+  </lnk-page-header>
+
+  <div class="flex flex-wrap items-end gap-3">
+    <div class="flex-1 min-w-[12rem]">
+      <lnk-search-input
+        [value]="filters().search"
+        placeholderKey="Riscossioni.Filters.SearchPlaceholder"
+        (valueChange)="onSearchChange($event)"
+      />
+    </div>
+    <lnk-select-input
+      labelKey="Riscossioni.Filters.Stato"
+      placeholderKey="Common.All"
+      [value]="filters().stato"
+      [options]="statoOptions"
+      (valueChange)="onStatoChange($event)"
+    />
+    <lnk-date-input labelKey="Common.DateFrom" [value]="filters().dataDa" [max]="filters().dataA || undefined" (valueChange)="onDataDaChange($event)" />
+    <lnk-date-input labelKey="Common.DateTo" [value]="filters().dataA" [min]="filters().dataDa || undefined" (valueChange)="onDataAChange($event)" />
+    @if (hasActiveFilters()) {
+      <button type="button" class="btn btn-ghost btn-sm self-end" (click)="resetFilters()">
+        {{ 'Common.ResetFilters' | translate }}
+      </button>
+    }
+  </div>
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (showEmptyState()) {
+    <lnk-empty-state
+      icon="bootstrapInboxes"
+      titleKey="Riscossioni.Empty.Title"
+      [descriptionKey]="hasActiveFilters() ? 'Common.NoResultsForFilters' : 'Riscossioni.Empty.Description'"
+    />
+  } @else {
+    @if (viewMode() === 'rows' && rowConfig(); as cfg) {
+      <lnk-item-list
+        [rows]="rows()"
+        [config]="cfg"
+        [loading]="loading() && rows().length === 0"
+        emptyKey="Riscossioni.Empty.Title"
+        (rowClick)="onRowClick($any($event))"
+      />
+    } @else {
+      <lnk-data-table
+        [columns]="columns()"
+        [rows]="rows()"
+        [loading]="loading() && rows().length === 0"
+        [sort]="sort()"
+        [displayConfig]="rowConfig()"
+        emptyKey="Riscossioni.Empty.Title"
+        (sortChange)="onSortChange($event)"
+        (rowClick)="onRowClick($event)"
+      />
+    }
+
+    @if (hasMore() || loading()) {
+      <div
+        class="py-4 flex items-center justify-center text-sm text-[var(--muted-foreground)]"
+        lnkInfiniteScroll
+        [enabled]="canLoadMore()"
+        rootMargin="400px"
+        (scrolled)="loadMore()"
+      >
+        @if (loading()) {
+          <lnk-loading [inline]="true" size="md" [labelKey]="null" />
+        } @else {
+          <span>{{ 'Pagination.LoadMoreHint' | translate }}</span>
+        }
+      </div>
+    } @else if (rows().length > 0) {
+      <p class="py-3 text-center text-xs text-[var(--muted-foreground)]">
+        {{ 'Pagination.AllLoaded' | translate: { total: total() } }}
+      </p>
+    }
+  }
+  </div>
+</section>

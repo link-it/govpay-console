@@ -1,0 +1,165 @@
+{
+  "options": {
+    "ESITI_EVENTO": {
+      "values": {
+        "OK": {
+          "label": "GiornaleEventi.Esiti.Ok",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "KO": {
+          "label": "GiornaleEventi.Esiti.Ko",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        },
+        "FAIL": {
+          "label": "GiornaleEventi.Esiti.Fail",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        }
+      }
+    },
+    "CATEGORIE_EVENTO": {
+      "values": {
+        "INTERFACCIA": {
+          "label": "GiornaleEventi.Categorie.Interfaccia",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "INTERNO": {
+          "label": "GiornaleEventi.Categorie.Interno",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "UTENTE": {
+          "label": "GiornaleEventi.Categorie.Utente",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "dataEvento",
+        "header": "GiornaleEventi.Columns.Data",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "datetime",
+          "field": "dataEvento"
+        },
+        "link": true
+      },
+      {
+        "key": "categoriaEvento",
+        "header": "GiornaleEventi.Columns.Categoria",
+        "width": "8rem",
+        "cell": {
+          "type": "label",
+          "field": "categoriaEvento",
+          "options": "CATEGORIE_EVENTO",
+          "default": "—"
+        }
+      },
+      {
+        "key": "tipoEvento",
+        "header": "GiornaleEventi.Columns.Tipo",
+        "cell": {
+          "type": "text",
+          "field": "tipoEvento",
+          "i18nPrefix": "GiornaleEventi.Tipi",
+          "i18nPrefixField": "componente",
+          "truncate": 60
+        }
+      },
+      {
+        "key": "componente",
+        "header": "GiornaleEventi.Columns.Componente",
+        "cell": {
+          "type": "text",
+          "field": "componente",
+          "i18nPrefix": "GiornaleEventi.Componenti",
+          "truncate": 30
+        }
+      },
+      {
+        "key": "durataEvento",
+        "header": "GiornaleEventi.Columns.Durata",
+        "align": "right",
+        "cellClass": "font-mono text-xs",
+        "width": "6rem",
+        "cell": {
+          "type": "mstime",
+          "field": "durataEvento",
+          "default": "—"
+        }
+      },
+      {
+        "key": "esito",
+        "header": "GiornaleEventi.Columns.Esito",
+        "width": "7rem",
+        "cell": {
+          "type": "status",
+          "field": "esito",
+          "options": "ESITI_EVENTO"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "tipoEvento",
+        "i18nPrefix": "GiornaleEventi.Tipi",
+        "i18nPrefixField": "componente",
+        "class": "font-mono text-sm"
+      },
+      {
+        "type": "text",
+        "field": "sottotipoEvento",
+        "class": "opacity-80",
+        "hideEmpty": true
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "label",
+          "field": "categoriaEvento",
+          "options": "CATEGORIE_EVENTO",
+          "tooltip": "GiornaleEventi.Detail.Categoria"
+        },
+        {
+          "type": "text",
+          "field": "componente",
+          "i18nPrefix": "GiornaleEventi.Componenti",
+          "hideEmpty": true,
+          "tooltip": "GiornaleEventi.Detail.Componente"
+        }
+      ],
+      "label": []
+    },
+    "secondaryText": [
+      {
+        "type": "mstime",
+        "field": "durataEvento",
+        "hideEmpty": true,
+        "tooltip": "GiornaleEventi.Detail.Durata"
+      }
+    ],
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "esito",
+        "options": "ESITI_EVENTO"
+      },
+      {
+        "type": "datetime",
+        "field": "dataEvento"
+      }
+    ]
+  }
+}

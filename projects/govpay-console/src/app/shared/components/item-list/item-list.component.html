@@ -1,0 +1,27 @@
+@if (showEmpty()) {
+  <lnk-empty-state
+    [icon]="emptyIcon()"
+    [titleKey]="emptyKey()"
+    [descriptionKey]="emptyDescriptionKey()" />
+} @else if (hasRows()) {
+  <ul class="rounded-md border border-[var(--border)] overflow-hidden bg-[var(--card-bg)]">
+    @for (row of rows(); track $index) {
+      <li>
+        <lnk-item-row
+          [data]="row"
+          [config]="config()"
+          [configRow]="configRow()"
+          [selected]="isSelected(row)"
+          (rowClick)="onRowClick($event)" />
+      </li>
+    }
+  </ul>
+}
+<!-- Loading iniziale (no righe ancora). Lo mostriamo solo se il consumer
+     NON ha già un loader esterno (es. trailing infinite-scroll). Il flag
+     `[showInternalLoading]` lo disattiva. -->
+@if (loading() && !hasRows() && showInternalLoading()) {
+  <p class="py-6 text-center text-sm text-[var(--muted-foreground)]">
+    {{ 'Common.Loading' | translate }}
+  </p>
+}

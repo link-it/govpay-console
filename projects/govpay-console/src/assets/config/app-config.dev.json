@@ -1,0 +1,78 @@
+{
+  "AppConfig": {
+    "app": {
+      "name": "govpay-console",
+      "title": "GovPay Console (DEV)",
+      "description": "Console di backoffice GovPay — ambiente di sviluppo"
+    },
+    "STANDALONE": true,
+    "GOVAPI": {
+      "GOVPAY": "/govpay-api-backoffice/rs/form/v1",
+      "GOVHUB": ""
+    },
+    "Auth": {
+      "Modes": ["Basic", "Spid", "Iam", "OAuth2"],
+      "Default": "Basic",
+      "Endpoints": {
+        "login": "/login",
+        "logout": "/logout",
+        "spid": "/spid/login",
+        "oauth2": "/oauth2/authorize",
+        "iam": "/iam/login"
+      }
+    },
+    "Layout": {
+      "showHeaderBar": true,
+      "showFooterBar": false,
+      "profileMenuPosition": "sidebar",
+      "darkModeTogglePosition": "sidebar",
+      "languageSelectorPosition": "sidebar",
+      "languages": [
+        { "code": "it", "label": "Italiano", "short": "IT", "flag": "🇮🇹" },
+        { "code": "en", "label": "English", "short": "EN", "flag": "🇬🇧" }
+      ],
+      "defaultLanguage": "it",
+      "showAbout": true,
+      "showVersion": true,
+      "showBuild": true,
+      "profileMenuExtraItems": [
+        {
+          "labelKey": "Profile.MenuItems.UserGuide",
+          "icon": "bootstrapQuestionCircle",
+          "link": "https://lab.link.it/documentazione/govpay/",
+          "target": "_blank"
+        }
+      ],
+      "sidebarFooterItems": [],
+      "listView": "table",
+      "listViewByFeature": {
+        "pendenze": "rows",
+        "domini": "rows",
+        "giornale-eventi": "table",
+        "applicazioni": "rows",
+        "tracciati": "rows",
+        "rendicontazioni": "rows"
+      },
+      "gotoTopButton": true,
+      "helpButton": true,
+      "tweaksPanel": true,
+      "listMaxWidth": "none",
+      "detailMaxWidth": "64rem"
+    },
+    "Features": {
+      "GESTIONE_PAGAMENTI": true,
+      "GESTIONE_RISCOSSIONI": true,
+      "MANUTENZIONE": false
+    },
+    "Preferences": {
+      "TIMEOUT": 30000,
+      "PAGE_SIZE": 25
+    },
+    "Maintenance": {
+      "enabled": false,
+      "title": "Servizio in manutenzione",
+      "message": "Il portale è temporaneamente non disponibile per interventi di manutenzione. Riprova più tardi.",
+      "icon": "bootstrapGear"
+    }
+  }
+}

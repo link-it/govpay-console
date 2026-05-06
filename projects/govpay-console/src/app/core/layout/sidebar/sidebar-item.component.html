@@ -1,0 +1,94 @@
+<div class="relative" (mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave()">
+
+  @if (!hasChildren()) {
+    <a
+      [routerLink]="item().route"
+      routerLinkActive
+      #rla="routerLinkActive"
+      class="group flex items-center gap-3 rounded-md text-sm transition-colors"
+      [class.px-3]="!collapsed()"
+      [class.py-2]="!collapsed()"
+      [class.h-10]="collapsed()"
+      [class.justify-center]="collapsed()"
+      [class.pl-9]="nested() && !collapsed()"
+      [class]="rla.isActive
+        ? 'bg-[var(--sidebar-item-active)] text-[var(--sidebar-item-active-text)] font-medium'
+        : 'text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]'"
+      [matTooltip]="item().label | translate"
+      [matTooltipDisabled]="!collapsed()"
+      matTooltipPosition="right"
+      matTooltipShowDelay="300"
+    >
+      <ng-icon [name]="item().icon" size="1.125rem" class="flex-shrink-0" />
+      @if (!collapsed()) {
+        <span class="truncate">{{ item().label | translate }}</span>
+      }
+    </a>
+  } @else {
+    <button
+      type="button"
+      class="w-full flex items-center gap-3 rounded-md text-sm transition-colors"
+      [class.px-3]="!collapsed()"
+      [class.py-2]="!collapsed()"
+      [class.h-10]="collapsed()"
+      [class.justify-center]="collapsed()"
+      [class]="hasActiveChild()
+        ? 'text-[var(--sidebar-item-active-text)] font-medium hover:bg-[var(--sidebar-item-hover)]'
+        : 'text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]'"
+      (click)="toggle($event)"
+      [attr.aria-expanded]="collapsed() ? null : expanded()"
+    >
+      <ng-icon [name]="item().icon" size="1.125rem" class="flex-shrink-0" />
+      @if (!collapsed()) {
+        <span class="flex-1 text-left truncate">{{ item().label | translate }}</span>
+        <ng-icon
+          [name]="expanded() ? 'bootstrapChevronDown' : 'bootstrapChevronRight'"
+          size="1rem"
+          class="opacity-60 flex-shrink-0"
+        />
+      }
+    </button>
+
+    @if (!collapsed() && expanded()) {
+      <ul class="mt-0.5 flex flex-col gap-0.5">
+        @for (child of item().children; track child.label) {
+          <li>
+            <lnk-sidebar-item [item]="child" [collapsed]="false" [nested]="true" />
+          </li>
+        }
+      </ul>
+    }
+
+    @if (collapsed() && flyoutOpen()) {
+      <div
+        class="fixed z-[1000] min-w-56 rounded-md border border-[var(--sidebar-footer-border)] bg-[var(--sidebar-bg)] shadow-lg p-1"
+        [style.top.px]="flyoutTop()"
+        [style.left.px]="flyoutLeft()"
+        (mouseenter)="onFlyoutEnter()"
+        (mouseleave)="onFlyoutLeave()"
+      >
+        <!-- Bridge invisibile: estende la hit area del pannello a sinistra
+             di 6px per coprire il gap visivo col trigger. Il cursore può
+             attraversarlo senza chiudere il flyout. -->
+        <span aria-hidden="true" class="absolute -left-1.5 top-0 bottom-0 w-1.5"></span>
+        <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--sidebar-text-secondary)]">
+          {{ item().label | translate }}
+        </div>
+        <ul class="flex flex-col gap-0.5">
+          @for (child of item().children; track child.label) {
+            <li>
+              <a
+                [routerLink]="child.route"
+                routerLinkActive="bg-[var(--sidebar-item-active)] text-[var(--sidebar-item-active-text)] font-medium"
+                class="flex items-center gap-3 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
+              >
+                <ng-icon [name]="child.icon" size="1.125rem" />
+                <span class="truncate">{{ child.label | translate }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  }
+</div>

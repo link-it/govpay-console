@@ -1,0 +1,126 @@
+<aside
+  id="main-navigation"
+  class="fixed inset-y-0 left-0 z-40 flex flex-col bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] border-r border-[var(--sidebar-border)] transition-all duration-150"
+  [style.width]="collapsed() ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width)'"
+  role="navigation"
+  [attr.aria-label]="'Layout.MainNavigation' | translate"
+>
+  <!-- Header sidebar: logo + toggle -->
+  <div
+    class="flex items-center gap-2 border-b border-[var(--sidebar-border)] h-[var(--header-height)]"
+    [class.px-4]="!collapsed()"
+    [class.justify-center]="collapsed()"
+  >
+    @if (!collapsed()) {
+      <a [routerLink]="['/']" class="flex items-center gap-2 min-w-0">
+        @if (logoFull()) {
+          <img [src]="logoFull()" alt="" class="h-8 w-auto flex-shrink-0" />
+        }
+      </a>
+      <button
+        type="button"
+        class="ml-auto p-2 rounded hover:bg-[var(--sidebar-item-hover)]"
+        (click)="toggle()"
+        [attr.aria-label]="'Layout.CollapseSidebar' | translate"
+        [title]="'Layout.CollapseSidebar' | translate"
+      >
+        <ng-icon name="bootstrapChevronLeft" size="1.125rem" />
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="p-2 rounded hover:bg-[var(--sidebar-item-hover)]"
+        (click)="toggle()"
+        [attr.aria-label]="'Layout.ExpandSidebar' | translate"
+        [title]="'Layout.ExpandSidebar' | translate"
+      >
+        @if (logoCompact()) {
+          <img [src]="logoCompact()" alt="" class="h-8 w-8" />
+        } @else {
+          <ng-icon name="bootstrapList" size="1.5rem" />
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Voci di navigazione -->
+  <nav class="flex-1 overflow-y-auto scrollbar-thin py-3">
+    <ul
+      class="flex flex-col gap-1"
+      [class.px-3]="!collapsed()"
+      [class.px-2]="collapsed()"
+    >
+      @for (item of navItems(); track item.label) {
+        <li>
+          <lnk-sidebar-item [item]="item" [collapsed]="collapsed()" />
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Footer sidebar: dark toggle (opzionale) + profile menu (dropup) o pulsante Accedi -->
+  <div
+    class="border-t border-[var(--sidebar-footer-border)] bg-[var(--sidebar-footer-bg)]"
+    [class.px-3]="!collapsed()"
+    [class.px-2]="collapsed()"
+  >
+    @if (footerItems().length > 0 && !collapsed()) {
+      <ul class="pt-2 flex flex-col gap-0.5">
+        @for (item of footerItems(); track item.link) {
+          <li>
+            @if (isExternalLink(item.link)) {
+              <a
+                [href]="item.link"
+                [target]="item.target ?? '_blank'"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2 px-3 py-1.5 rounded text-sm text-[var(--sidebar-text-secondary)] hover:bg-[var(--sidebar-item-hover)] hover:text-[var(--sidebar-text)]"
+              >
+                @if (item.icon; as i) { <ng-icon [name]="i" size="1rem" /> }
+                <span class="truncate">{{ item.labelKey | translate }}</span>
+              </a>
+            } @else {
+              <a
+                [routerLink]="item.link"
+                [attr.target]="item.target ?? null"
+                class="flex items-center gap-2 px-3 py-1.5 rounded text-sm text-[var(--sidebar-text-secondary)] hover:bg-[var(--sidebar-item-hover)] hover:text-[var(--sidebar-text)]"
+              >
+                @if (item.icon; as i) { <ng-icon [name]="i" size="1rem" /> }
+                <span class="truncate">{{ item.labelKey | translate }}</span>
+              </a>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    @if (hasFooterControls()) {
+      <!-- Riga di controlli: allineata a destra (espansa) o centrata (collassata).
+           Toggle dark mode è sempre solo-icona (compact). -->
+      <div
+        class="pt-2 flex items-center gap-1"
+        [class.justify-end]="!collapsed()"
+        [class.justify-center]="collapsed()"
+        [class.flex-col]="collapsed()"
+      >
+        @if (showLanguageMenu()) {
+          <lnk-language-menu tooltipPosition="right" [collapsed]="collapsed()" />
+        }
+        @if (showDarkToggle()) {
+          <lnk-color-scheme-toggle variant="compact" tooltipPosition="right" />
+        }
+      </div>
+    }
+
+    @if (showProfileMenu()) {
+      <div class="py-2">
+        <lnk-profile-menu [collapsed]="collapsed()" />
+      </div>
+    }
+
+    @if (showVersion() && !collapsed()) {
+      <div class="px-1 pb-2 text-[10px] uppercase tracking-wide text-[var(--sidebar-text-secondary)]">
+        v{{ version }}@if (showBuild()) { <span class="opacity-70">· {{ gitHash }}</span> }
+      </div>
+    }
+  </div>
+</aside>

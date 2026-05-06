@@ -1,0 +1,80 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="title()" subtitleKey="Pagamenti.Detail.Subtitle">
+    <a routerLink="/pagamenti" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+    @if (pagamento()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/pagamenti" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !pagamento()) {
+    <lnk-loading />
+  } @else if (pagamento(); as p) {
+
+    <lnk-detail-section titleKey="Pagamenti.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    @if (p.soggettoVersante) {
+      <lnk-detail-section titleKey="Pagamenti.Detail.SoggettoVersante">
+        <lnk-info-grid [items]="versanteItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (p.pendenze && p.pendenze.length > 0) {
+      <lnk-detail-section titleKey="Pagamenti.Detail.Pendenze">
+        <ul class="flex flex-col gap-1 text-sm">
+          @for (pend of p.pendenze; track pend.numeroAvviso || pend.iuv) {
+            <li>
+              <a
+                [routerLink]="['/pendenze', pend.idDominio, pend.numeroAvviso || pend.iuv]"
+                class="font-mono text-xs text-[var(--primary)] hover:underline"
+              >
+                {{ pend.numeroAvviso || pend.iuv }}
+              </a>
+              @if (pend.causale) {
+                <span class="ml-2 text-[var(--muted-foreground)]">{{ pend.causale }}</span>
+              }
+            </li>
+          }
+        </ul>
+      </lnk-detail-section>
+    }
+
+    @if (p.ricevute && p.ricevute.length > 0) {
+      <lnk-detail-section titleKey="Pagamenti.Detail.Ricevute">
+        <ul class="flex flex-col gap-1 text-sm">
+          @for (ric of p.ricevute; track ric.iuv) {
+            <li>
+              <a
+                [routerLink]="ric.ccp
+                  ? ['/ricevute', ric.idDominio, ric.iuv, ric.ccp]
+                  : ['/ricevute', ric.idDominio, ric.iuv]"
+                class="font-mono text-xs text-[var(--primary)] hover:underline"
+              >
+                {{ ric.iuv }}
+              </a>
+            </li>
+          }
+        </ul>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

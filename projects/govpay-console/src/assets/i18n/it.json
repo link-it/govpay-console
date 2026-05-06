@@ -1,0 +1,1046 @@
+{
+  "App": {
+    "Title": "GovPay Console",
+    "DefaultUser": "Utente"
+  },
+  "Common": {
+    "Loading": "Caricamento…",
+    "Save": "Salva",
+    "Cancel": "Annulla",
+    "Search": "Cerca",
+    "Close": "Chiudi",
+    "Open": "Apri",
+    "Confirm": "Conferma",
+    "Back": "Indietro",
+    "Next": "Avanti",
+    "Yes": "Sì",
+    "No": "No",
+    "Refresh": "Aggiorna",
+    "NoResults": "Nessun risultato",
+    "NoResultsForFilters": "Nessun risultato per i filtri impostati.",
+    "LoadError": "Errore nel caricamento dei dati.",
+    "All": "Tutti",
+    "Clear": "Cancella",
+    "ResetFilters": "Azzera filtri",
+    "DateFrom": "Da",
+    "DateTo": "A",
+    "GotoTop": "Torna su",
+    "Unknown": "Sconosciuto"
+  },
+  "Pagination": {
+    "RowsPerPage": "Righe per pagina",
+    "RangeOf": "{{from}}–{{to}} di {{total}}",
+    "NoResults": "Nessun risultato",
+    "First": "Prima pagina",
+    "Previous": "Precedente",
+    "Next": "Successiva",
+    "Last": "Ultima pagina",
+    "LoadMoreHint": "Scorri per caricare altri risultati…",
+    "AllLoaded": "Tutti i {{total}} risultati caricati."
+  },
+  "Tweaks": {
+    "Title": "Personalizza vista",
+    "Subtitle": "Modifica al volo l'aspetto della pagina corrente.",
+    "Reset": "Ripristina default",
+    "Layout": "Layout",
+    "View": "Vista lista",
+    "ViewHint": "Tabella per dati densi, righe per layout descrittivo.",
+    "View.Table": "Tabella",
+    "View.Rows": "Righe",
+    "Range": "Periodo (dataDa)",
+    "RangeHint": "Imposta dataDa a un range pre-definito relativo a oggi.",
+    "Range.Month": "1 mese",
+    "Range.ThreeMonths": "3 mesi",
+    "Range.SixMonths": "6 mesi",
+    "Range.Year": "1 anno",
+    "Global": "Globale",
+    "GlobalHint": "Override session-level dei flag Layout. Si applicano a tutte le pagine fino al refresh.",
+    "ListMaxWidth": "Larghezza max liste",
+    "DetailMaxWidth": "Larghezza max dettagli",
+    "MaxWidthHint": "Limita il container per le pagine di lista/dettaglio.",
+    "MaxWidth.Full": "Full",
+    "MaxWidth.M": "M",
+    "MaxWidth.L": "L",
+    "MaxWidth.XL": "XL",
+    "HelpButton": "Pulsante aiuto",
+    "GotoTopButton": "Pulsante torna su",
+    "LanguagePosition": "Selettore lingua",
+    "DarkModePosition": "Toggle tema scuro",
+    "PositionHint": "Dove mostrare il control nel layout.",
+    "Position.Header": "Header",
+    "Position.Sidebar": "Sidebar",
+    "Position.None": "Nascosto",
+    "ResetGlobals": "Azzera globali",
+    "Login": "Login",
+    "Cardless": "Senza box",
+    "CardlessHint": "Mostra il form di login direttamente sullo sfondo, senza la card centrale."
+  },
+  "Ricevute": {
+    "Subtitle": "Ricevute telematiche dei pagamenti.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per IUV…",
+      "Esito": "Esito"
+    },
+    "Empty": {
+      "Title": "Nessuna ricevuta",
+      "Description": "Non ci sono ricevute che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "Iuv": "IUV",
+      "Dominio": "Ente creditore",
+      "Pagatore": "Pagatore",
+      "Causale": "Causale",
+      "DataRicevuta": "Data pagamento",
+      "Importo": "Importo",
+      "Stato": "Stato"
+    },
+    "Esiti": {
+      "InCorso": "In corso",
+      "Rifiutato": "Rifiutato",
+      "Eseguito": "Eseguito",
+      "NonEseguito": "Non eseguito",
+      "EseguitoParziale": "Eseguito parziale",
+      "Decorrenza": "Decorrenza termini",
+      "DecorrenzaParziale": "Decorrenza parziale"
+    },
+    "Stati": {
+      "InCorso": "In corso",
+      "Eseguito": "Pagata",
+      "RtRifiutata": "Ricevuta rifiutata",
+      "Sconosciuto": "Esito sconosciuto",
+      "Fallito": "Fallita",
+      "Annullato": "Annullata",
+      "Scaduto": "Scaduta"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio della ricevuta telematica.",
+      "Generali": "Informazioni generali",
+      "EnteCreditore": "Ente creditore",
+      "SoggettoPagatore": "Soggetto pagatore",
+      "Iuv": "IUV",
+      "NumeroAvviso": "Numero avviso",
+      "Ccp": "Codice contesto pagamento",
+      "DataRicevuta": "Data pagamento",
+      "Importo": "Importo",
+      "Causale": "Causale",
+      "IdDominio": "ID Dominio",
+      "RagioneSociale": "Ragione sociale",
+      "Anagrafica": "Anagrafica",
+      "Identificativo": "Identificativo",
+      "Email": "Email",
+      "Download": "Scarica RT",
+      "Dominio": "Dominio",
+      "Pagatore": "Pagatore",
+      "TabDati": "Dati ricevuta",
+      "TabEventi": "Eventi",
+      "EventiEmpty": "Nessun evento associato a questa ricevuta."
+    }
+  },
+  "Pagamenti": {
+    "Subtitle": "Richieste di pagamento e relativi flussi.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per identificativo versante…",
+      "Stato": "Stato"
+    },
+    "Empty": {
+      "Title": "Nessun pagamento",
+      "Description": "Non ci sono pagamenti che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "Id": "ID",
+      "Versante": "Versante",
+      "NumPendenze": "N° pendenze",
+      "DataRichiesta": "Data richiesta",
+      "Importo": "Importo",
+      "ImportoPagato": "Importo pagato",
+      "Stato": "Stato"
+    },
+    "Stati": {
+      "InCorso": "In corso",
+      "Eseguito": "Eseguito",
+      "EseguitoParziale": "Eseguito parziale",
+      "NonEseguito": "Non eseguito",
+      "Annullato": "Annullato",
+      "Fallito": "Fallito",
+      "Decorrenza": "Decorrenza termini",
+      "DecorrenzaParziale": "Decorrenza parziale"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio del pagamento.",
+      "Generali": "Informazioni generali",
+      "SoggettoVersante": "Soggetto versante",
+      "Id": "Identificativo",
+      "DataRichiesta": "Data richiesta",
+      "Importo": "Importo",
+      "ImportoPagato": "Importo pagato",
+      "NumeroPendenze": "Numero pendenze",
+      "Nodo": "Nodo",
+      "Anagrafica": "Anagrafica",
+      "Identificativo": "Identificativo",
+      "Email": "Email",
+      "Versante": "Versante"
+    }
+  },
+  "Pendenze": {
+    "Subtitle": "Elenco delle pendenze caricate sul portale.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per numero avviso o IUV…",
+      "Stato": "Stato"
+    },
+    "Empty": {
+      "Title": "Nessuna pendenza",
+      "Description": "Non ci sono pendenze che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "Numero": "Numero / IUV",
+      "Tipo": "Tipo",
+      "Pagatore": "Pagatore",
+      "Causale": "Causale",
+      "DataCaricamento": "Caricamento",
+      "Importo": "Importo",
+      "Stato": "Stato"
+    },
+    "Stati": {
+      "NonEseguita": "Da pagare",
+      "Eseguita": "Pagata",
+      "EseguitaParziale": "Pagata parzialmente",
+      "Annullata": "Annullata",
+      "Scaduta": "Scaduta",
+      "Incassata": "Riconciliata",
+      "Anomala": "Anomala"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio della pendenza.",
+      "Generali": "Informazioni generali",
+      "EnteCreditore": "Ente creditore",
+      "SoggettoPagatore": "Soggetto pagatore",
+      "RicevuteAssociate": "Ricevute associate",
+      "NumeroAvviso": "Numero avviso",
+      "Iuv": "IUV",
+      "IdPendenza": "ID pendenza",
+      "Tipo": "Tipo pendenza",
+      "Importo": "Importo",
+      "DataCaricamento": "Data caricamento",
+      "DataValidita": "Data validità",
+      "DataScadenza": "Data scadenza",
+      "Causale": "Causale",
+      "IdDominio": "ID Dominio",
+      "RagioneSociale": "Ragione sociale",
+      "UnitaOperativa": "Unità operativa",
+      "Anagrafica": "Anagrafica",
+      "Identificativo": "Identificativo",
+      "TipoSoggetto": "Tipo soggetto",
+      "Email": "Email",
+      "Cellulare": "Cellulare",
+      "Dominio": "Dominio",
+      "TabDati": "Dati pendenza",
+      "TabEventi": "Eventi",
+      "EventiEmpty": "Nessun evento associato a questa pendenza."
+    }
+  },
+  "Riscossioni": {
+    "Subtitle": "Riscossioni acquisite dal nodo dei pagamenti.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per IUR…",
+      "Stato": "Stato"
+    },
+    "Empty": {
+      "Title": "Nessuna riscossione",
+      "Description": "Non ci sono riscossioni che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "Iur": "IUR",
+      "Iuv": "IUV",
+      "Dominio": "Ente creditore",
+      "Pagatore": "Pagatore",
+      "DataRiscossione": "Data riscossione",
+      "Importo": "Importo",
+      "Stato": "Stato"
+    },
+    "Stati": {
+      "Riscossa": "Riscossa",
+      "Incassata": "Incassata"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio della riscossione.",
+      "Generali": "Informazioni generali",
+      "VocePendenza": "Voce di pendenza",
+      "Riferimenti": "Riferimenti",
+      "Iur": "IUR",
+      "Iuv": "IUV",
+      "IdDominio": "ID dominio",
+      "Indice": "Indice voce",
+      "Tipo": "Tipo riscossione",
+      "Data": "Data riscossione",
+      "Importo": "Importo",
+      "Commissioni": "Commissioni",
+      "IdVocePendenza": "ID voce pendenza",
+      "Descrizione": "Descrizione",
+      "ImportoVoce": "Importo voce",
+      "CodiceContabilita": "Codice contabilità",
+      "TipoContabilita": "Tipo contabilità",
+      "IbanAccredito": "IBAN accredito",
+      "PendenzaUrl": "Pendenza",
+      "RppUrl": "Richiesta di pagamento",
+      "IncassoRef": "Incasso"
+    }
+  },
+  "Rendicontazioni": {
+    "Subtitle": "Flussi di rendicontazione ricevuti dai PSP.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per codice flusso…",
+      "Stato": "Stato"
+    },
+    "Empty": {
+      "Title": "Nessuna rendicontazione",
+      "Description": "Non ci sono flussi di rendicontazione che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "IdFlusso": "Identificativo flusso",
+      "Dominio": "Ente creditore",
+      "Psp": "PSP",
+      "DataFlusso": "Data flusso",
+      "DataRegolamento": "Data regolamento",
+      "NumPagamenti": "N° pag.",
+      "Importo": "Importo",
+      "Stato": "Stato"
+    },
+    "Stati": {
+      "Acquisito": "Acquisito",
+      "Anomalo": "Anomalo",
+      "Rifiutato": "Rifiutato"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio del flusso di rendicontazione.",
+      "Generali": "Informazioni generali",
+      "EnteCreditore": "Ente creditore",
+      "Psp": "PSP",
+      "Segnalazioni": "Segnalazioni",
+      "Pagamenti": "Pagamenti rendicontati",
+      "IdFlusso": "Identificativo flusso",
+      "DataFlusso": "Data flusso",
+      "DataRegolamento": "Data regolamento",
+      "DataPubblicazione": "Data pubblicazione",
+      "Importo": "Importo totale",
+      "NumeroPagamenti": "Numero pagamenti",
+      "Trn": "TRN",
+      "IdDominio": "ID dominio",
+      "RagioneSocialeDominio": "Ragione sociale ente",
+      "IdPsp": "ID PSP",
+      "RagioneSocialePsp": "Ragione sociale PSP",
+      "Iuv": "IUV",
+      "Iur": "IUR",
+      "Indice": "Indice",
+      "Data": "Data",
+      "Esito": "Esito",
+      "Dominio": "Dominio"
+    },
+    "Esiti": {
+      "Eseguito": "Eseguito",
+      "Revocato": "Revocato",
+      "EseguitoStandin": "Eseguito (standin)",
+      "EseguitoStandinNoRPT": "Eseguito (standin, no RPT)",
+      "Riconciliato": "Riconciliato"
+    }
+  },
+  "Incassi": {
+    "Subtitle": "Incassi riconciliati con la Tesoreria.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per identificativo incasso…",
+      "Stato": "Stato"
+    },
+    "Empty": {
+      "Title": "Nessun incasso",
+      "Description": "Non ci sono incassi che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "IdIncasso": "ID incasso",
+      "Trn": "TRN / SCT",
+      "Dominio": "Ente creditore",
+      "Causale": "Causale",
+      "DataIncasso": "Data incasso",
+      "Importo": "Importo",
+      "Stato": "Stato"
+    },
+    "Stati": {
+      "Acquisito": "Acquisito",
+      "InElaborazione": "In elaborazione",
+      "Errore": "Errore"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio dell'incasso.",
+      "Generali": "Informazioni generali",
+      "EnteCreditore": "Ente creditore",
+      "RiscossioniRiconciliate": "Riscossioni riconciliate",
+      "IdIncasso": "ID incasso",
+      "Causale": "Causale",
+      "Importo": "Importo",
+      "Data": "Data incasso",
+      "DataValuta": "Data valuta",
+      "DataContabile": "Data contabile",
+      "IbanAccredito": "IBAN accredito",
+      "Sct": "SCT",
+      "Iuv": "IUV di riferimento",
+      "IdFlusso": "Flusso di riferimento",
+      "DescrizioneStato": "Descrizione stato",
+      "IdDominio": "ID dominio",
+      "RagioneSociale": "Ragione sociale",
+      "Iur": "IUR",
+      "DataRisc": "Data riscossione",
+      "ImportoRisc": "Importo",
+      "Dominio": "Dominio"
+    }
+  },
+  "GiornaleEventi": {
+    "Subtitle": "Tracciamento degli eventi di sistema.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per IUV…",
+      "Esito": "Esito",
+      "Categoria": "Categoria"
+    },
+    "Empty": {
+      "Title": "Nessun evento",
+      "Description": "Non ci sono eventi che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "Data": "Data",
+      "Categoria": "Categoria",
+      "Tipo": "Tipo",
+      "Componente": "Componente",
+      "Iuv": "IUV",
+      "Durata": "Durata",
+      "Esito": "Esito"
+    },
+    "Esiti": {
+      "Ok": "OK",
+      "Ko": "KO",
+      "Fail": "Fallito"
+    },
+    "Categorie": {
+      "Interfaccia": "Interfaccia",
+      "Interno": "Interno",
+      "Utente": "Utente"
+    },
+    "Componenti": {
+      "API_ENTE": "API Ente",
+      "API_PAGAMENTO": "API Pagamento",
+      "API_RAGIONERIA": "API Ragioneria",
+      "API_BACKOFFICE": "API Backoffice",
+      "API_PAGOPA": "API PagoPA",
+      "API_PENDENZE": "API Pendenze",
+      "API_BACKEND_IO": "API AppIO",
+      "API_GOVPAY": "API GovPay",
+      "API_HYPERSIC_APK": "API HyperSIC APK",
+      "API_MAGGIOLI_JPPA": "API Maggioli",
+      "API_MYPIVOT": "API MyPivot",
+      "API_SECIM": "API Secim",
+      "GOVPAY": "Core GovPay"
+    },
+    "Tipi": {
+      "API_BACKOFFICE": {
+        "addApplicazione": "Configura applicazione",
+        "addConfigurazioni": "Configura sistema",
+        "addContiAccredito": "Configura conto accredito",
+        "addDominio": "Configura dominio",
+        "addEntrata": "Configura entrata",
+        "addEntrataDominio": "Configura entrata dominio",
+        "addIntermediario": "Configura intermediario",
+        "addOperatore": "Configura operatore",
+        "addPendenza": "Ricevuta nuova pendenza dall'Ente",
+        "addPendenzaCustom": "Ricevuta nuova pendenza dall'Ente",
+        "addPendenzaPOST": "Ricevuta nuova pendenza dall'Ente",
+        "addRiconciliazione": "Riconciliazione pagamenti",
+        "addRuolo": "Configura ruolo",
+        "addStazione": "Configura stazione",
+        "addTipoPendenza": "Configura tipo pendenza",
+        "addTipoPendenzaDominio": "Configura tipo pendenza dominio",
+        "addTracciatoPendenze": "Inserisci tracciato pendenze",
+        "addTracciatoPendenzeDominio": "Inserisci tracciato pendenze",
+        "addTracciatoPendenzeDominioTipoPendenza": "Inserisci tracciato pendenze",
+        "addUnitaOperativa": "Configura unita operativa",
+        "aggiornaConfigurazioni": "Configurazione puntuale del sistema",
+        "findApplicazioni": "Cerca applicazioni",
+        "findContiAccredito": "Cerca conti accredito",
+        "findDomini": "Cerca domini",
+        "findEntrate": "Cerca entrate",
+        "findEntrateDominio": "Cerca entrate dominio",
+        "findEnumerazioniServiziACL": "Elenco servizi acl",
+        "findEnumerazioniVersioneConnettore": "Elenco versioni connettore",
+        "findEventi": "Cerca eventi",
+        "findFlussiRendicontazione": "Cerca flussi rendicontazione",
+        "findIntermediari": "Cerca intermediari",
+        "findNotifiche": "Cerca notifiche",
+        "findOperatori": "Cerca operatori",
+        "findOperazioni": "Cerca operazioni",
+        "findOperazioniTracciatoPendenze": "Cerca operazioni tracciato",
+        "findPagamenti": "Cerca pagamenti",
+        "findPendenze": "Cerca pendenze",
+        "findPromemoria": "Cerca promemoria",
+        "findQuadratureRendicontazioni": "Cerca statistiche rendicontazioni",
+        "findQuadratureRiscossioni": "Cerca statistiche riscossioni",
+        "findRendicontazioni": "Cerca rendicontazioni",
+        "findRiconciliazioni": "Cerca riconciliazioni",
+        "findRiscossioni": "Cerca riscossioni",
+        "findRpps": "Cerca transazioni",
+        "findRuoli": "Cerca ruoli",
+        "findStazioni": "Cerca stazioni",
+        "findTipiPendenza": "Cerca tipi pendenza",
+        "findTipiPendenzaDominio": "Cerca tipi pendenza dominio",
+        "findTracciatiPendenze": "Cerca tracciati pendenze",
+        "findUnitaOperative": "Cerca unita operative",
+        "getApplicazione": "Leggi applicazione",
+        "getAllegatoPendenza": "Leggi allegato pendenza",
+        "getAvvisiDocumento": "Richiesta verifica avviso documento all'Ente",
+        "getAvviso": "Richiesta verifica avviso all'Ente",
+        "getConfigurazioni": "Leggi configurazione sistema",
+        "getContiAccredito": "Leggi conto accredito",
+        "getDominio": "Leggi dominio",
+        "getEntrata": "Leggi entrata",
+        "getEntrataDominio": "Leggi entrata dominio",
+        "getEsitoTracciatoPendenze": "Leggi tracciato esito",
+        "getEvento": "Leggi evento",
+        "getFlussoRendicontazione": "Leggi flusso di rendicontazione",
+        "getFlussoRendicontazioneByIdEData": "Leggi flusso di rendicontazione",
+        "getFlussoRendicontazioneByDominioIdEData": "Leggi flusso di rendicontazione",
+        "getInfo": "Leggi info sistema",
+        "getIntermediario": "Leggi intermediario",
+        "getLogo": "Leggi logo dominio",
+        "getOperatore": "Leggi operatore",
+        "getOperazione": "Leggi operazione",
+        "getPagamento": "Leggi pagamento",
+        "getPendenza": "Leggi pendenza",
+        "getPendenzaByAvviso": "Leggi pendenza tramite riferimento avviso",
+        "getProfilo": "Leggi profilo",
+        "getReportEntratePreviste": "Leggi report riscossioni",
+        "getRichiestaTracciatoPendenze": "Leggi tracciato richiesta",
+        "getRiconciliazione": "Leggi riconciliazione",
+        "getRiscossione": "Leggi riscossione",
+        "getRpp": "Leggi Transazione",
+        "getRpt": "Leggi RPT",
+        "getRt": "Leggi RT",
+        "getRuolo": "Leggi ruolo",
+        "getStampeTracciatoPendenze": "Leggi avvisi pagamento",
+        "getStatoOperazione": "Leggi stato operazione",
+        "getStazione": "Leggi stazione",
+        "getTipoPendenza": "Leggi tipo pendenza",
+        "getTipoPendenzaDominio": "Leggi tipo pendenza dominio",
+        "getTracciatoPendenze": "Leggi tracciato pendenze",
+        "getTracciatoNotificaPagamenti": "Leggi tracciato notifica pagamenti",
+        "getUnitaOperativa": "Leggi unita operativa",
+        "logout": "Logout",
+        "updateApplicazione": "Configura applicazione",
+        "updateOperatore": "Configura operatore",
+        "updatePagamento": "Configura pagamento",
+        "updatePendenza": "Configura pendenza",
+        "updateProfilo": "Configura profilo",
+        "updateRpp": "Configura transazione",
+        "updateRuolo": "Configura ruolo"
+      },
+      "API_ENTE": {
+        "deletePagamento": "Annulla pagamento",
+        "getAvviso": "Spedita verifica avviso all'Ente",
+        "inviaFlussoRendicontazione": "Spedito flusso rendicontazioni alle API Ente Rendicontazione",
+        "inviaRpp": "Spedita RPP rendicontazioni alle API Ente Rendicontazione",
+        "inviaSintesiFlussiRendicontazione": "Spedito file sintesi flussi rendicontazioni alle API Ente Rendicontazione",
+        "inviaSintesiPagamenti": "Spedito file sintesi pagamenti alle API Ente Rendicontazione",
+        "notificaRicevuta": "Spedita ricevuta pagamento all'Ente",
+        "notifyPagamento": "Spedita notifica pagamento all'Ente",
+        "verifyPendenza": "Spedita verifica RPT all'Ente",
+        "verifyPendenzaMod4": "Spedita verifica pendenza modello 4"
+      },
+      "API_PAGAMENTO": {
+        "addPagamento": "Ricevuta richiesta pagamento da Portale",
+        "addPendenza": "Ricevuta nuova pendenza dall'Ente",
+        "findDomini": "Cerca domini",
+        "findPagamenti": "Cerca pagamenti",
+        "findPendenze": "Cerca pendenze",
+        "findRpp": "Cerca transazioni",
+        "findTipiPendenzaDominio": "Cerca tipi pendenza",
+        "findUnitaOperative": "Cerca unita operative",
+        "getAllegatoPendenza": "Leggi allegato pendenza",
+        "getAvviso": "Richiesta verifica avviso all'Ente",
+        "getPagamento": "Leggi pagamento",
+        "getPagamentoByIdSession": "Leggi pagamento",
+        "getPendenza": "Leggi pendenza",
+        "getProfilo": "Leggi profilo",
+        "getRpp": "Leggi Transazione",
+        "getRpt": "Leggi RPT",
+        "getRt": "Leggi RT",
+        "logout": "Logout"
+      },
+      "API_PAGOPA": {
+        "nodoChiediCopiaRT": "Inviata richiesta copia RT a pagoPA",
+        "nodoChiediElencoFlussiRendicontazione": "Richiesto elenco FR a pagoPA",
+        "nodoChiediFlussoRendicontazione": "Richiesto flusso rendicontazioni a pagoPA",
+        "nodoChiediListaPendentiRPT": "Richiesto elenco pagamenti sospesi a pagoPA",
+        "nodoChiediStatoRPT": "Richiesto stato del pagamento a pagoPA",
+        "nodoInviaAvvisoDigitale": "Inviato avviso digitale a pagoPA",
+        "nodoInviaCarrelloRPT": "Inviato carrello RPT a pagoPA",
+        "nodoInviaRichiestaStorno": "Inviata richiesta revoca a pagoPA",
+        "nodoInviaRispostaRevoca": "Inviata RR a pagoPA",
+        "nodoInviaRPT": "Inviata RPT attivata a pagoPA",
+        "paaAttivaRPT": "Ricevuta attivazione RPT da pagoPA",
+        "paaInviaEsitoStorno": "Ricevuta ER da pagoPA",
+        "paaInviaRichiestaRevoca": "Ricevuta ER da pagoPA",
+        "paaInviaRT": "Ricevuta RT da pagoPA",
+        "paaVerificaRPT": "Ricevuta verifica RPT da pagoPA",
+        "paSendRT": "Ricevuta RT da pagoPA (v2)",
+        "paVerifyPaymentNotice": "Ricevuta verifica RPT da pagoPA (v2)",
+        "paGetPayment": "Ricevuta attivazione RPT da pagoPA (v2)"
+      },
+      "API_PENDENZE": {
+        "addPendenza": "Ricevuta nuova pendenza dall'Ente",
+        "findPendenze": "Cerca pendenze",
+        "findRpp": "Cerca transazioni",
+        "getAllegatoPendenza": "Leggi allegato pendenza",
+        "getAvvisiDocumento": "Richiesta verifica avviso documento all'Ente",
+        "getAvviso": "Richiesta verifica avviso all'Ente",
+        "getPendenza": "Leggi pendenza",
+        "getPendenzaByAvviso": "Leggi pendenza by riferimento avviso",
+        "getProfilo": "Leggi profilo",
+        "getRpp": "Leggi Transazione",
+        "getRpt": "Leggi RPT",
+        "getRt": "Leggi RT",
+        "updatePendenza": "Configura pendenza"
+      },
+      "API_RAGIONERIA": {
+        "addRiconciliazione": "Riconciliazione pagamenti",
+        "findFlussiRendicontazione": "Cerca flussi rendicontazione",
+        "findRicevute": "Cerca ricevute",
+        "findRiconciliazioni": "Cerca riconciliazioni",
+        "findRiscossioni": "Cerca riscossioni",
+        "getAllegatoPendenza": "Leggi allegato pendenza",
+        "getFlussoRendicontazione": "Leggi flusso di rendicontazione",
+        "getFlussoRendicontazioneByIdEData": "Leggi flusso di rendicontazione",
+        "getFlussoRendicontazioneDominio": "Leggi flusso di rendicontazione",
+        "getFlussoRendicontazioneDominioByIdEData": "Leggi flusso di rendicontazione",
+        "getProfilo": "Leggi profilo",
+        "getRicevuta": "Leggi ricevuta",
+        "getRiconciliazione": "Leggi riconciliazione",
+        "getRiscossione": "Leggi riscossione"
+      },
+      "API_BACKEND_IO": {
+        "getProfile": "Leggi profilo utente da backend AppIO",
+        "submitMessageforUserWithFiscalCodeInBody": "Inviata avvisatura a backend AppIO",
+        "submitMessageforUserWithFiscalCodeInBodyScadenza": "Inviato promemoria scadenza a backend AppIO",
+        "submitMessageforUserWithFiscalCodeInBodyRicevuta": "Inviata ricevuta di pagamento a backend AppIO",
+        "submitMessageforUserWithFiscalCodeInBodyRicevutaPagamentoSenzaRPT": "Inviata quietanza di pagamento a backend AppIO"
+      },
+      "API_GOVPAY": {
+        "govpayInviaTracciatoEmail": "Spedito tracciato di rendicontazione pagamenti GovPay via Email",
+        "govpayInviaTracciatoFileSystem": "Salvato flusso GovPay su file system",
+        "govpayInviaTracciatoRest": "Spedito tracciato di rendicontazione pagamenti GovPay via API Rest"
+      },
+      "API_HYPERSIC_APK": {
+        "hyperSicAPKappaInviaTracciatoEmail": "Spedito flusso HyperSIC - APKappa via Email",
+        "hyperSicAPKappaInviaTracciatoFileSystem": "Salvato flusso HyperSIC - APKappa su file system"
+      },
+      "API_MAGGIOLI_JPPA": {
+        "maggioliInviaEsitoPagamento": "Inviata notifica di pagamento al connettore Maggioli JPPA",
+        "maggioliJppaInviaTracciatoEmail": "Spedito tracciato di esito Maggioli JPPA via Email",
+        "maggioliRecuperaRT": "Richiesta recupera RT dal client Maggioli JPPA",
+        "maggioliVerificaPagamentoInAttesa": "Richiesta verifica pagamento dal client Maggioli JPPA"
+      },
+      "API_MYPIVOT": {
+        "pivotInviaTracciatoEmail": "Spedito flusso myPivot via Email",
+        "pivotInviaTracciatoFileSystem": "Salvato flusso myPivot su file system",
+        "pivotSILAutorizzaImportFlusso": "Richiesta autorizzazione import flusso myPivot",
+        "pivotSILChiediStatoImportFlusso": "Richiesta stato import flusso myPivot",
+        "pivotSILInviaFlusso": "Inviato flusso myPivot"
+      },
+      "API_SECIM": {
+        "secimInviaTracciatoEmail": "Spedito flusso Secim via Email",
+        "secimInviaTracciatoFileSystem": "Salvato flusso Secim su file system"
+      },
+      "GOVPAY": {
+        "govpayPagamentoEseguitoSenzaRPT": "Pagamento eseguito senza RPT"
+      }
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio dell'evento.",
+      "Generali": "Informazioni generali",
+      "Riferimenti": "Riferimenti",
+      "ParametriRichiesta": "Parametri richiesta",
+      "ParametriRisposta": "Parametri risposta",
+      "DataEvento": "Data e ora",
+      "Categoria": "Categoria",
+      "Componente": "Componente",
+      "Tipo": "Tipo evento",
+      "Sottotipo": "Sottotipo",
+      "Ruolo": "Ruolo",
+      "Durata": "Durata",
+      "IdDominio": "ID dominio",
+      "Iuv": "IUV",
+      "Ccp": "CCP",
+      "IdA2A": "ID applicazione",
+      "IdPendenza": "ID pendenza",
+      "IdSessione": "ID sessione"
+    }
+  },
+  "Tracciati": {
+    "Subtitle": "Tracciati di caricamento massivo delle pendenze.",
+    "Filters": {
+      "Stato": "Stato"
+    },
+    "Empty": {
+      "Title": "Nessun tracciato",
+      "Description": "Non ci sono tracciati che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "NomeFile": "Nome file",
+      "Dominio": "Ente creditore",
+      "DataCaricamento": "Caricamento",
+      "DataAggiornamento": "Aggiornamento",
+      "Esito": "OK / Tot",
+      "Operatore": "Operatore",
+      "Stato": "Stato"
+    },
+    "Stati": {
+      "InAttesa": "In attesa",
+      "InElaborazione": "In elaborazione",
+      "Eseguito": "Eseguito",
+      "EseguitoConErrori": "Eseguito con errori",
+      "Scartato": "Scartato",
+      "ElaborazioneStampa": "Elaborazione stampa"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio del tracciato.",
+      "Generali": "Informazioni generali",
+      "EnteCreditore": "Ente creditore",
+      "Contatori": "Operazioni",
+      "NomeFile": "Nome file",
+      "DataCaricamento": "Data caricamento",
+      "DataAggiornamento": "Ultimo aggiornamento",
+      "Operatore": "Operatore",
+      "DescrizioneStato": "Descrizione stato",
+      "IdDominio": "ID dominio",
+      "RagioneSociale": "Ragione sociale",
+      "OperazioniTotali": "Operazioni totali",
+      "OperazioniEseguite": "Operazioni eseguite",
+      "OperazioniFallite": "Operazioni fallite",
+      "AvvisiTotali": "Avvisi totali",
+      "AvvisiStampati": "Avvisi stampati",
+      "AvvisiFalliti": "Avvisi falliti",
+      "Dominio": "Dominio"
+    }
+  },
+  "Domini": {
+    "Subtitle": "Enti creditori censiti sulla piattaforma.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per ragione sociale…",
+      "Abilitato": "Abilitato",
+      "Intermediato": "Intermediato"
+    },
+    "Empty": {
+      "Title": "Nessun dominio",
+      "Description": "Non ci sono enti creditori che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "IdDominio": "Codice fiscale",
+      "RagioneSociale": "Ragione sociale",
+      "Localita": "Località",
+      "Stazione": "Stazione",
+      "Abilitato": "Abilitato",
+      "Intermediato": "Intermediato"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio dell'ente creditore.",
+      "Anagrafica": "Anagrafica",
+      "Contatti": "Contatti",
+      "PagoPA": "Configurazione PagoPA",
+      "SubResources": "Risorse collegate",
+      "Intermediato": "Intermediato",
+      "ScaricaFr": "Scarica flussi",
+      "IdDominio": "Codice fiscale",
+      "RagioneSociale": "Ragione sociale",
+      "Area": "Area",
+      "Gln": "GLN",
+      "Cbill": "Codice CBILL",
+      "Indirizzo": "Indirizzo",
+      "Localita": "Località",
+      "Email": "Email",
+      "Pec": "PEC",
+      "Tel": "Telefono",
+      "Fax": "Fax",
+      "Web": "Sito web",
+      "Stazione": "Stazione",
+      "AuxDigit": "Aux digit",
+      "SegregationCode": "Codice segregazione",
+      "IuvPrefix": "Prefisso IUV",
+      "AutStampa": "Autorizzazione stampa Poste",
+      "UnitaOperative": "Unità operative",
+      "ContiAccredito": "Conti di accredito",
+      "Entrate": "Entrate",
+      "TipiPendenza": "Tipi pendenza"
+    }
+  },
+  "TipiPendenza": {
+    "Subtitle": "Tipologie di pendenza censite.",
+    "Filters": {
+      "SearchPlaceholder": "Cerca per descrizione…",
+      "Abilitato": "Abilitato"
+    },
+    "Empty": {
+      "Title": "Nessuna tipologia",
+      "Description": "Non ci sono tipi pendenza che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "IdTipoPendenza": "ID tipo",
+      "Descrizione": "Descrizione",
+      "CodificaIUV": "Codifica IUV",
+      "PagaTerzi": "Paga terzi",
+      "Abilitato": "Abilitato"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio tipologia di pendenza.",
+      "Generali": "Informazioni generali",
+      "PortaleBackoffice": "Portale backoffice",
+      "PortalePagamento": "Portale pagamenti",
+      "Visualizzazione": "Visualizzazione",
+      "PagaTerzi": "Paga terzi",
+      "IdTipoPendenza": "ID tipo pendenza",
+      "Descrizione": "Descrizione",
+      "CodificaIUV": "Codifica IUV"
+    }
+  },
+  "Applicazioni": {
+    "Subtitle": "Applicazioni A2A registrate.",
+    "Filters": {
+      "Abilitato": "Abilitato"
+    },
+    "Empty": {
+      "Title": "Nessuna applicazione",
+      "Description": "Non ci sono applicazioni che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "IdA2A": "ID applicazione",
+      "Principal": "Principal",
+      "Abilitato": "Abilitato"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio applicazione.",
+      "Generali": "Informazioni generali",
+      "ApiAbilitate": "API abilitate",
+      "Domini": "Domini autorizzati",
+      "TipiPendenza": "Tipi pendenza",
+      "Ruoli": "Ruoli",
+      "IdA2A": "ID applicazione",
+      "Principal": "Principal",
+      "ApiPagamenti": "API Pagamenti",
+      "ApiPendenze": "API Pendenze",
+      "ApiRagioneria": "API Ragioneria"
+    }
+  },
+  "Operatori": {
+    "Subtitle": "Operatori del cruscotto.",
+    "Filters": {
+      "Abilitato": "Abilitato"
+    },
+    "Empty": {
+      "Title": "Nessun operatore",
+      "Description": "Non ci sono operatori che corrispondono ai filtri correnti."
+    },
+    "Columns": {
+      "Principal": "Principal",
+      "RagioneSociale": "Nome operatore",
+      "Abilitato": "Abilitato"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio operatore.",
+      "Generali": "Informazioni generali",
+      "Domini": "Domini autorizzati",
+      "TipiPendenza": "Tipi pendenza",
+      "Ruoli": "Ruoli",
+      "Principal": "Principal",
+      "RagioneSociale": "Nome e cognome"
+    }
+  },
+  "Intermediari": {
+    "Subtitle": "Intermediari PagoPA censiti.",
+    "Empty": {
+      "Title": "Nessun intermediario",
+      "Description": "Non ci sono intermediari registrati."
+    },
+    "Columns": {
+      "IdIntermediario": "ID intermediario",
+      "Denominazione": "Denominazione",
+      "Abilitato": "Abilitato"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio intermediario.",
+      "Generali": "Informazioni generali",
+      "ServizioPagoPa": "Servizio PagoPA",
+      "ServizioFtp": "Servizio FTP",
+      "IdIntermediario": "ID intermediario",
+      "Denominazione": "Denominazione",
+      "PrincipalPagoPa": "Principal PagoPA"
+    }
+  },
+  "Ruoli": {
+    "Subtitle": "Ruoli e relative ACL.",
+    "Empty": {
+      "Title": "Nessun ruolo",
+      "Description": "Non ci sono ruoli censiti."
+    },
+    "Columns": {
+      "Id": "Identificativo ruolo"
+    },
+    "Detail": {
+      "Subtitle": "Permessi associati al ruolo.",
+      "Acl": "Servizi e autorizzazioni",
+      "Servizio": "Servizio",
+      "Lettura": "Lettura",
+      "Scrittura": "Scrittura",
+      "NoAcl": "Nessuna ACL associata."
+    }
+  },
+  "Auth": {
+    "Title": "Accedi",
+    "Login": "Accedi",
+    "Logout": "Esci",
+    "Username": "Nome utente",
+    "Password": "Password",
+    "InProgress": "Accesso in corso…",
+    "Success": "Accesso effettuato.",
+    "Failed": "Accesso non riuscito.",
+    "InvalidCredentials": "Credenziali non valide.",
+    "GenericError": "Errore durante l’autenticazione.",
+    "EnterWith": "Entra con {{provider}}",
+    "DevOnly": "Solo sviluppo — utente fittizio con tutte le ACL.",
+    "MockLogin": "Mock login (dev)",
+    "MockLoginDone": "Mock login: {{name}}",
+    "Logout.InProgress": "Disconnessione in corso…"
+  },
+  "Layout": {
+    "OpenMenu": "Apri menu",
+    "CloseMenu": "Chiudi menu",
+    "ExpandSidebar": "Espandi menu",
+    "CollapseSidebar": "Comprimi menu",
+    "MainNavigation": "Navigazione principale",
+    "MobileNavigation": "Navigazione mobile",
+    "Breadcrumbs": "Breadcrumbs",
+    "More": "Altro",
+    "Help": "Aiuto",
+    "OpenHelp": "Apri aiuto",
+    "SkipToContent": "Vai al contenuto principale"
+  },
+  "Profile": {
+    "Title": "Profilo",
+    "Settings": "Impostazioni applicazione",
+    "About": "Informazioni",
+    "Menu": "Menu utente",
+    "MenuLabel": "Menu utente di {{name}}",
+    "MenuItems": {
+      "UserGuide": "Guida utente",
+      "Support": "Supporto"
+    }
+  },
+  "Impostazioni": {
+    "Subtitle": "Configurazione generale del sistema.",
+    "ReadOnlyHint": "La modifica della configurazione richiede l'API PATCH /configurazioni e non è ancora esposta dall'interfaccia.",
+    "Empty": "Configurazione vuota."
+  },
+  "Profilo": {
+    "Subtitle": "Dati dell'utente connesso, domini e ACL.",
+    "NotAuthenticated": {
+      "Title": "Non autenticato",
+      "Description": "Effettua l'accesso per visualizzare il profilo."
+    },
+    "Detail": {
+      "Anagrafica": "Anagrafica",
+      "Domini": "Domini in scope",
+      "TipiPendenza": "Tipi pendenza in scope",
+      "Acl": "Permessi (ACL)",
+      "Servizio": "Servizio",
+      "Lettura": "Lettura",
+      "Scrittura": "Scrittura",
+      "Nome": "Nome",
+      "Username": "Username",
+      "Email": "Email",
+      "Autenticazione": "Modalità autenticazione",
+      "NoDomini": "Nessun dominio in scope.",
+      "NoTipiPendenza": "Nessun tipo pendenza in scope.",
+      "NoAcl": "Nessuna ACL associata."
+    }
+  },
+  "Theme": {
+    "Light": "Tema chiaro",
+    "Dark": "Tema scuro",
+    "Auto": "Tema automatico",
+    "CycleHint": {
+      "Light": "Tema chiaro (clicca per scuro)",
+      "Dark": "Tema scuro (clicca per auto)",
+      "Auto": "Tema automatico (clicca per chiaro)"
+    }
+  },
+  "Language": {
+    "Select": "Seleziona lingua",
+    "Current": "Lingua corrente: {{name}}",
+    "AriaSelect": "Seleziona lingua, attuale {{name}}",
+    "Tooltip": "Lingua: {{name}}"
+  },
+  "Snackbar": {
+    "Close": "Chiudi notifica"
+  },
+  "Help": {
+    "Title": "Aiuto: {{context}}",
+    "Section": "Sezione: {{section}}",
+    "Close": "Chiudi aiuto",
+    "ContextNotAvailable": "Aiuto contestuale non ancora disponibile per questa sezione. I contenuti verranno caricati dinamicamente in fasi successive del piano di lavoro."
+  },
+  "Maintenance": {
+    "Title": "Servizio in manutenzione",
+    "Message": "Il servizio è temporaneamente non disponibile per interventi di manutenzione. Riprova più tardi.",
+    "EstimatedEnd": "Ripristino previsto"
+  },
+  "About": {
+    "Title": "Informazioni applicazione",
+    "Version": "Versione",
+    "Build": "Build",
+    "Branch": "Branch",
+    "Commit": "Commit",
+    "Tag": "Tag",
+    "Status": "Stato",
+    "Dirty": "working tree dirty"
+  },
+  "Dashboard": {
+    "Title": "Dashboard",
+    "Welcome": "Bentornato. Da qui potrai accedere alle statistiche di sintesi, alle pendenze recenti, ai flussi di rendicontazione e ai principali KPI di backoffice.",
+    "Cards": {
+      "PendenzeAttive": "Pendenze attive",
+      "PendenzeAttiveHint": "Pendenze in stato NON_ESEGUITA",
+      "RiscossioniMese": "Riscossioni del mese",
+      "RiscossioniMeseHint": "Dal primo giorno del mese corrente",
+      "TracciatiInLavorazione": "Tracciati in lavorazione",
+      "TracciatiInLavorazioneHint": "Tracciati pendenze in elaborazione",
+      "WaitingApi": "Disponibile dopo il collegamento alle API",
+      "EmptyHint": "—"
+    }
+  },
+  "Placeholder": {
+    "NotImplemented": "Sezione non ancora implementata. Verrà sviluppata in una fase successiva del piano di lavoro."
+  },
+  "Nav": {
+    "Dashboard": "Dashboard",
+    "Pagamenti": "Pagamenti",
+    "Pendenze": "Pendenze",
+    "Ricevute": "Ricevute",
+    "Riconciliazioni": "Riconciliazioni",
+    "Riscossioni": "Riscossioni",
+    "Rendicontazioni": "Rendicontazioni",
+    "Incassi": "Incassi",
+    "Monitoraggio": "Monitoraggio",
+    "GiornaleEventi": "Giornale eventi",
+    "Tracciati": "Tracciati",
+    "Anagrafiche": "Anagrafiche",
+    "Domini": "Domini",
+    "TipiPendenza": "Tipi pendenza",
+    "Applicazioni": "Applicazioni",
+    "RegistroIntermediari": "Registro intermediari",
+    "Sicurezza": "Sicurezza",
+    "Operatori": "Operatori",
+    "Ruoli": "Ruoli",
+    "Impostazioni": "Impostazioni",
+    "Profilo": "Profilo"
+  }
+}

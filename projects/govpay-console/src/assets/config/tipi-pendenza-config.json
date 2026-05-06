@@ -1,0 +1,113 @@
+{
+  "options": {
+    "BOOLEANI": {
+      "values": {
+        "true": {
+          "label": "Common.Yes",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "false": {
+          "label": "Common.No",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "idTipoPendenza",
+        "header": "TipiPendenza.Columns.IdTipoPendenza",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "text",
+          "field": "idTipoPendenza"
+        }
+      },
+      {
+        "key": "descrizione",
+        "header": "TipiPendenza.Columns.Descrizione",
+        "sortable": true,
+        "cell": {
+          "type": "text",
+          "field": "descrizione",
+          "truncate": 30
+        },
+        "link": true
+      },
+      {
+        "key": "codificaIUV",
+        "header": "TipiPendenza.Columns.CodificaIUV",
+        "cellClass": "font-mono text-xs",
+        "width": "8rem",
+        "cell": {
+          "type": "text",
+          "field": "codificaIUV",
+          "default": "—"
+        }
+      },
+      {
+        "key": "pagaTerzi",
+        "header": "TipiPendenza.Columns.PagaTerzi",
+        "width": "8rem",
+        "cell": {
+          "type": "status",
+          "field": "pagaTerzi",
+          "options": "BOOLEANI"
+        }
+      },
+      {
+        "key": "abilitato",
+        "header": "TipiPendenza.Columns.Abilitato",
+        "width": "8rem",
+        "cell": {
+          "type": "status",
+          "field": "abilitato",
+          "options": "BOOLEANI"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "descrizione"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "idTipoPendenza",
+          "class": "font-mono",
+          "tooltip": "TipiPendenza.Detail.IdTipoPendenza"
+        },
+        {
+          "type": "text",
+          "field": "codificaIUV",
+          "class": "font-mono",
+          "hideEmpty": true,
+          "tooltip": "TipiPendenza.Detail.CodificaIUV"
+        }
+      ],
+      "label": []
+    },
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "abilitato",
+        "options": "BOOLEANI"
+      },
+      {
+        "type": "label",
+        "field": "pagaTerzi",
+        "options": "BOOLEANI",
+        "class": "opacity-80"
+      }
+    ]
+  }
+}

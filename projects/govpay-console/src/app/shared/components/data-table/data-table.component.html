@@ -1,0 +1,94 @@
+<div class="rounded-md border border-[var(--card-border)] bg-[var(--card-bg)] overflow-clip">
+  <table class="w-full text-sm" role="table">
+    <thead
+      class="sticky z-10 bg-[var(--muted)] text-[var(--muted-foreground)] text-xs uppercase tracking-wide"
+      style="top: calc(var(--header-height) + var(--lnk-list-toolbar-h, 7rem));"
+    >
+        <tr>
+          @for (col of columns(); track col.key) {
+            <th
+              scope="col"
+              class="px-4 py-3 font-medium"
+              [class.cursor-pointer]="col.sortable"
+              [class.select-none]="col.sortable"
+              [class]="alignClass(col.align) + ' ' + (col.headerClass || '')"
+              [style.width]="col.width"
+              (click)="onHeaderClick(col)"
+            >
+              <span class="inline-flex items-center gap-1">
+                {{ col.header | translate }}
+                @if (col.sortable) {
+                  <ng-icon
+                    [name]="sortIcon(col)"
+                    size="0.875rem"
+                    [class.opacity-30]="!isSorted(col)"
+                    [class.opacity-100]="isSorted(col)"
+                  />
+                }
+              </span>
+            </th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (loading()) {
+          @for (i of skeletonArray(); track i) {
+            <tr class="border-t border-[var(--card-border)]">
+              @for (col of columns(); track col.key) {
+                <td class="px-4 py-3">
+                  <span class="block h-4 rounded bg-[var(--muted)] animate-pulse"></span>
+                </td>
+              }
+            </tr>
+          }
+        } @else if (rows().length === 0) {
+          <tr class="border-t border-[var(--card-border)]">
+            <td [attr.colspan]="columns().length" class="px-4 py-12 text-center text-[var(--muted-foreground)]">
+              {{ emptyKey() | translate }}
+            </td>
+          </tr>
+        } @else {
+          @for (row of rows(); track $index) {
+            <tr
+              class="border-t border-[var(--card-border)] transition-colors"
+              [class.cursor-pointer]="clickable() && !hasLinkCol()"
+              [class.lnk-row-hover]="clickable()"
+              (click)="onRowClick(row)"
+            >
+              @for (col of columns(); track col.key) {
+                <td
+                  class="px-4 py-3 align-middle"
+                  [class]="alignClass(col.align) + ' ' + (col.cellClass || '')"
+                >
+                  @if (clickable() && col.link) {
+                    <button
+                      type="button"
+                      class="text-left cursor-pointer transition-colors hover:text-[var(--primary)] focus-visible:text-[var(--primary)] focus-visible:outline-none"
+                      (click)="onLinkClick(row, $event)"
+                    >
+                      @if (col.cell; as elem) {
+                        <lnk-item-type [data]="row" [elem]="elem" [config]="displayConfig()" />
+                      } @else if (col.cellType === 'badge') {
+                        <lnk-status-badge [tone]="cellTone(row, col)" [labelKey]="cellValue(row, col)" />
+                      } @else {
+                        {{ cellValue(row, col) }}
+                      }
+                    </button>
+                  } @else {
+                    @if (col.cell; as elem) {
+                      <lnk-item-type [data]="row" [elem]="elem" [config]="displayConfig()" />
+                    } @else if (col.cellType === 'badge') {
+                      <lnk-status-badge [tone]="cellTone(row, col)" [labelKey]="cellValue(row, col)" />
+                    } @else {
+                      {{ cellValue(row, col) }}
+                    }
+                  }
+                </td>
+              }
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+</div>

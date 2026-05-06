@@ -1,0 +1,65 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="operatore()?.ragioneSociale || operatore()?.principal || '—'" subtitleKey="Operatori.Detail.Subtitle">
+    <a routerLink="/operatori" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+    @if (operatore()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/operatori" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !operatore()) {
+    <lnk-loading />
+  } @else if (operatore(); as o) {
+
+    <lnk-detail-section titleKey="Operatori.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+
+    @if (dominiList().length > 0) {
+      <lnk-detail-section titleKey="Operatori.Detail.Domini">
+        <ul class="flex flex-wrap gap-2 text-sm">
+          @for (d of dominiList(); track d) {
+            <li class="rounded border border-[var(--border)] px-2 py-1 font-mono text-xs">{{ d }}</li>
+          }
+        </ul>
+      </lnk-detail-section>
+    }
+
+    @if (o.tipiPendenza && o.tipiPendenza.length > 0) {
+      <lnk-detail-section titleKey="Operatori.Detail.TipiPendenza">
+        <ul class="flex flex-wrap gap-2 text-sm">
+          @for (t of o.tipiPendenza; track t) {
+            <li class="rounded border border-[var(--border)] px-2 py-1 font-mono text-xs">{{ t }}</li>
+          }
+        </ul>
+      </lnk-detail-section>
+    }
+
+    @if (o.ruoli && o.ruoli.length > 0) {
+      <lnk-detail-section titleKey="Operatori.Detail.Ruoli">
+        <ul class="flex flex-wrap gap-2 text-sm">
+          @for (r of o.ruoli; track r) {
+            <li class="rounded border border-[var(--border)] px-2 py-1 text-xs">{{ r }}</li>
+          }
+        </ul>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

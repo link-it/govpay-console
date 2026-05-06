@@ -1,0 +1,156 @@
+{
+  "options": {
+    "STATI_TRACCIATO": {
+      "values": {
+        "IN_ATTESA": {
+          "label": "Tracciati.Stati.InAttesa",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "IN_ELABORAZIONE": {
+          "label": "Tracciati.Stati.InElaborazione",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        },
+        "ESEGUITO": {
+          "label": "Tracciati.Stati.Eseguito",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "ESEGUITO_CON_ERRORI": {
+          "label": "Tracciati.Stati.EseguitoConErrori",
+          "background": "var(--status-warning-bg)",
+          "color": "var(--status-warning-text)"
+        },
+        "SCARTATO": {
+          "label": "Tracciati.Stati.Scartato",
+          "background": "var(--status-danger-bg)",
+          "color": "var(--status-danger-text)"
+        },
+        "ELABORAZIONE_STAMPA": {
+          "label": "Tracciati.Stati.ElaborazioneStampa",
+          "background": "var(--status-info-bg)",
+          "color": "var(--status-info-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "nomeFile",
+        "header": "Tracciati.Columns.NomeFile",
+        "cellClass": "font-mono text-xs",
+        "cell": {
+          "type": "text",
+          "field": "nomeFile",
+          "truncate": 40
+        },
+        "link": true
+      },
+      {
+        "key": "dominio",
+        "header": "Tracciati.Columns.Dominio",
+        "cell": {
+          "type": "text",
+          "field": "dominio.ragioneSociale",
+          "truncate": 30,
+          "default": "—"
+        }
+      },
+      {
+        "key": "dataOraCaricamento",
+        "header": "Tracciati.Columns.DataCaricamento",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "datetime",
+          "field": "dataOraCaricamento"
+        }
+      },
+      {
+        "key": "dataOraUltimoAggiornamento",
+        "header": "Tracciati.Columns.DataAggiornamento",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "datetime",
+          "field": "dataOraUltimoAggiornamento",
+          "default": "—"
+        }
+      },
+      {
+        "key": "esito",
+        "header": "Tracciati.Columns.Esito",
+        "align": "right",
+        "cellClass": "font-mono text-xs",
+        "width": "7rem",
+        "cell": {
+          "type": "number",
+          "field": "numeroOperazioniEseguite",
+          "default": "—"
+        }
+      },
+      {
+        "key": "operatoreMittente",
+        "header": "Tracciati.Columns.Operatore",
+        "cell": {
+          "type": "text",
+          "field": "operatoreMittente",
+          "default": "—"
+        }
+      },
+      {
+        "key": "stato",
+        "header": "Tracciati.Columns.Stato",
+        "width": "12rem",
+        "cell": {
+          "type": "status",
+          "field": "stato",
+          "options": "STATI_TRACCIATO"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "nomeFile",
+        "class": "font-mono text-sm",
+        "truncate": 60
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "datetime",
+          "field": "dataOraCaricamento",
+          "tooltip": "Tracciati.Detail.DataCaricamento"
+        },
+        {
+          "type": "text",
+          "field": "numeroOperazioniEseguite",
+          "class": "font-mono",
+          "tooltip": "Tracciati.Detail.OperazioniEseguite"
+        },
+        {
+          "type": "text",
+          "field": "operatoreMittente",
+          "hideEmpty": true,
+          "tooltip": "Tracciati.Detail.Operatore"
+        }
+    ],
+      "label": []
+    },
+    "secondaryText": [
+      {
+        "type": "status",
+        "field": "stato",
+        "options": "STATI_TRACCIATO"
+      }
+    ],
+    "secondaryMetadata": [
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "options": {
+    "BOOLEANI": {
+      "values": {
+        "true": {
+          "label": "Common.Yes",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "false": {
+          "label": "Common.No",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "idIntermediario",
+        "header": "Intermediari.Columns.IdIntermediario",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "text",
+          "field": "idIntermediario"
+        }
+      },
+      {
+        "key": "denominazione",
+        "header": "Intermediari.Columns.Denominazione",
+        "cell": {
+          "type": "text",
+          "field": "denominazione",
+          "truncate": 30
+        },
+        "link": true
+      },
+      {
+        "key": "abilitato",
+        "header": "Intermediari.Columns.Abilitato",
+        "width": "8rem",
+        "cell": {
+          "type": "status",
+          "field": "abilitato",
+          "options": "BOOLEANI"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "denominazione"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "idIntermediario",
+          "class": "font-mono",
+          "hideEmpty": true,
+          "tooltip": "Intermediari.Detail.IdIntermediario"
+        }
+      ],
+      "label": []
+    },
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "abilitato",
+        "options": "BOOLEANI"
+      }
+    ]
+  }
+}

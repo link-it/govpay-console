@@ -1,0 +1,62 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4">
+  <lnk-page-header [titleKey]="ruolo()?.id || '—'" subtitleKey="Ruoli.Detail.Subtitle">
+    <a routerLink="/ruoli" class="btn btn-secondary btn-sm">
+      <ng-icon name="bootstrapChevronLeft" size="1rem" />
+      <span>{{ 'Common.Back' | translate }}</span>
+    </a>
+  </lnk-page-header>
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/ruoli" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !ruolo()) {
+    <lnk-loading />
+  } @else if (ruolo(); as r) {
+    <lnk-detail-section titleKey="Ruoli.Detail.Acl">
+      @if (r.acl && r.acl.length > 0) {
+        <table class="w-full text-sm">
+          <thead class="text-left text-[var(--muted-foreground)]">
+            <tr>
+              <th class="py-2 pr-2 font-normal">{{ 'Ruoli.Detail.Servizio' | translate }}</th>
+              <th class="py-2 pr-2 font-normal text-center">{{ 'Ruoli.Detail.Lettura' | translate }}</th>
+              <th class="py-2 pr-0 font-normal text-center">{{ 'Ruoli.Detail.Scrittura' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of r.acl; track a.servizio) {
+              <tr class="border-t border-[var(--border)]">
+                <td class="py-2 pr-2">{{ a.servizio }}</td>
+                <td class="py-2 pr-2 text-center">
+                  @if (hasRead(a)) {
+                    <lnk-status-badge tone="success" labelKey="Common.Yes" />
+                  } @else {
+                    <lnk-status-badge tone="muted" labelKey="Common.No" />
+                  }
+                </td>
+                <td class="py-2 pr-0 text-center">
+                  @if (hasWrite(a)) {
+                    <lnk-status-badge tone="success" labelKey="Common.Yes" />
+                  } @else {
+                    <lnk-status-badge tone="muted" labelKey="Common.No" />
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="text-sm text-[var(--muted-foreground)]">{{ 'Ruoli.Detail.NoAcl' | translate }}</p>
+      }
+    </lnk-detail-section>
+  }
+  </div>
+</section>

@@ -1,0 +1,27 @@
+<section class="p-6 space-y-4 lnk-detail-page">
+  <lnk-page-header titleKey="Nav.Impostazioni" subtitleKey="Impostazioni.Subtitle">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+      {{ 'Common.Refresh' | translate }}
+    </button>
+  </lnk-page-header>
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    />
+  } @else if (loading() && !config()) {
+    <lnk-loading />
+  } @else if (config()) {
+    <p class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.ReadOnlyHint' | translate }}</p>
+
+    @for (sezione of sezioni(); track sezione.key) {
+      <lnk-detail-section [titleKey]="sezione.key">
+        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(sezione.value) }}</pre>
+      </lnk-detail-section>
+    } @empty {
+      <p class="text-sm text-[var(--muted-foreground)]">{{ 'Impostazioni.Empty' | translate }}</p>
+    }
+  }
+</section>

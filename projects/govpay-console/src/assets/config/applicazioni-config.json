@@ -1,0 +1,78 @@
+{
+  "options": {
+    "BOOLEANI": {
+      "values": {
+        "true": {
+          "label": "Common.Yes",
+          "background": "var(--status-success-bg)",
+          "color": "var(--status-success-text)"
+        },
+        "false": {
+          "label": "Common.No",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "idA2A",
+        "header": "Applicazioni.Columns.IdA2A",
+        "cellClass": "font-mono text-xs",
+        "cell": {
+          "type": "text",
+          "field": "idA2A"
+        },
+        "link": true
+      },
+      {
+        "key": "principal",
+        "header": "Applicazioni.Columns.Principal",
+        "cellClass": "font-mono text-xs",
+        "cell": {
+          "type": "text",
+          "field": "principal"
+        }
+      },
+      {
+        "key": "abilitato",
+        "header": "Applicazioni.Columns.Abilitato",
+        "width": "8rem",
+        "cell": {
+          "type": "status",
+          "field": "abilitato",
+          "options": "BOOLEANI"
+        }
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "idA2A",
+        "class": "font-mono text-sm"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "principal",
+          "class": "font-mono",
+          "tooltip": "Applicazioni.Detail.Principal"
+        }
+      ],
+      "label": []
+    },
+    "secondaryMetadata": [
+      {
+        "type": "status",
+        "field": "abilitato",
+        "options": "BOOLEANI"
+      }
+    ]
+  }
+}

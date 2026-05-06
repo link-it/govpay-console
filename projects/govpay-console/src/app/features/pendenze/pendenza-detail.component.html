@@ -1,0 +1,110 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header [titleKey]="title()" subtitleKey="Pendenze.Detail.Subtitle">
+      <a routerLink="/pendenze" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+    @if (pendenza()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+      </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a routerLink="/pendenze" class="btn btn-secondary btn-sm">
+        {{ 'Common.Back' | translate }}
+      </a>
+    </lnk-empty-state>
+  } @else if (loading() && !pendenza()) {
+    <lnk-loading />
+  } @else if (pendenza(); as p) {
+    @if (activeTab() === 'dati') {
+      <div role="tabpanel" id="tabpanel-dati" aria-labelledby="tab-dati" class="space-y-4">
+        <lnk-detail-section titleKey="Pendenze.Detail.Generali">
+          <lnk-info-grid [items]="generaliItems()" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Pendenze.Detail.EnteCreditore">
+          <lnk-info-grid [items]="dominioItems()" />
+        </lnk-detail-section>
+
+        @if (p.soggettoPagatore) {
+          <lnk-detail-section titleKey="Pendenze.Detail.SoggettoPagatore">
+            <lnk-info-grid [items]="pagatoreItems()" />
+          </lnk-detail-section>
+        }
+
+        @if (p.ricevute && p.ricevute.length > 0) {
+          <lnk-detail-section titleKey="Pendenze.Detail.RicevuteAssociate">
+            <ul class="flex flex-col gap-1 text-sm">
+              @for (r of p.ricevute; track r.iuv) {
+                <li>
+                  <a
+                    [routerLink]="['/ricevute', r.idDominio, r.iuv]"
+                    class="font-mono text-xs text-[var(--primary)] hover:underline"
+                  >
+                    {{ r.iuv }}
+                  </a>
+                </li>
+              }
+            </ul>
+          </lnk-detail-section>
+        }
+      </div>
+    }
+
+    @if (activeTab() === 'eventi') {
+      <div role="tabpanel" id="tabpanel-eventi" aria-labelledby="tab-eventi" class="space-y-4">
+        @if (eventiLoading() && !eventi()) {
+          <lnk-loading />
+        } @else if (eventi()?.length === 0) {
+          <lnk-empty-state
+            icon="bootstrapInboxes"
+            titleKey="GiornaleEventi.Empty.Title"
+            descriptionKey="Pendenze.Detail.EventiEmpty"
+          />
+        } @else if (eventi(); as ev) {
+          <lnk-data-table
+            [columns]="eventiColumns()"
+            [rows]="ev"
+            [loading]="false"
+            emptyKey="GiornaleEventi.Empty.Title"
+            (rowClick)="onEventClick($event)"
+          />
+
+          @if (eventiHasMore() || eventiLoading()) {
+            <div
+              class="py-4 flex items-center justify-center text-sm text-[var(--muted-foreground)]"
+              lnkInfiniteScroll
+              [enabled]="eventiCanLoadMore()"
+              rootMargin="400px"
+              (scrolled)="loadMoreEventi()"
+            >
+              @if (eventiLoading()) {
+                <lnk-loading [inline]="true" size="sm" [labelKey]="null" />
+              } @else {
+                <span>{{ 'Pagination.LoadMoreHint' | translate }}</span>
+              }
+            </div>
+          } @else if (ev.length > 0) {
+            <p class="py-3 text-center text-xs text-[var(--muted-foreground)]">
+              {{ 'Pagination.AllLoaded' | translate: { total: eventiTotal() } }}
+            </p>
+          }
+        }
+      </div>
+    }
+  }
+  </div>
+</section>
