@@ -1,0 +1,10 @@
+{
+  "exceptions": [
+    {
+      "groupId": "govpay-console",
+      "artifactId": "govpay-console",
+      "reason": "Progetto principale - licenza GPLv3 interna",
+      "exclude_from_reports": true
+    }
+  ]
+}
