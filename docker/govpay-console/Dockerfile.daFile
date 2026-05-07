@@ -1,0 +1,36 @@
+FROM nginx:alpine
+
+ARG govpay_console_fullversion
+ARG govpay_console_home=/usr/share/nginx/html
+ARG govpay_console_log=/var/log/govpay-console
+
+LABEL maintainer="Link.it s.r.l."
+LABEL description="GovPay Console"
+LABEL govpay.console.version="${govpay_console_fullversion}"
+
+ENV GOVPAY_CONSOLE_FULLVERSION=${govpay_console_fullversion} \
+GOVPAY_CONSOLE_LOGDIR=${govpay_console_log} \
+GOVPAY_CONSOLE_HOME=${govpay_console_home} \
+TZ=Europe/Rome
+
+RUN set -eux; \
+apk update; \
+apk upgrade; \
+apk add --no-cache bash curl tar unzip tzdata; \
+rm -rf /var/cache/apk/*; \
+echo "${TZ}" > /etc/timezone; \
+mkdir -p ${GOVPAY_CONSOLE_LOGDIR}
+
+WORKDIR ${GOVPAY_CONSOLE_HOME}
+
+# Copy Console dist from local build context
+COPY app/ ${GOVPAY_CONSOLE_HOME}/
+
+# Copy entrypoint
+COPY commons/entrypoint.sh /usr/local/bin/
+RUN chmod ug=rx /usr/local/bin/entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD []
