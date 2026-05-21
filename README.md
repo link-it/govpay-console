@@ -21,7 +21,7 @@ L'app risponderà su `http://localhost:4200`.
 
 ### Proxy di sviluppo
 
-Tutte le chiamate `/govpay/backend/api/backoffice/rs/*` (e `/govway/in/RegioneSiciliana/*`) sono inoltrate al backend tramite `proxy.config.js`. Il backend è selezionabile via preset:
+Tutte le chiamate `/govpay/backend/api/backoffice/rs/*` sono inoltrate al backend tramite `proxy.config.js`. Il backend è selezionabile via preset:
 
 | Comando | Preset | Target |
 |---|---|---|
@@ -29,7 +29,6 @@ Tutte le chiamate `/govpay/backend/api/backoffice/rs/*` (e `/govway/in/RegioneSi
 | `npm run start:local-alt` | `local-alt` | `http://172.16.1.121:8082` |
 | `npm run start:dev` | `dev-cloud` | `https://dev.govcloud.it` |
 | `npm run start:demo` | `demo` | `https://demo.govcloud.it` |
-| `npm run start:sicilia` | `sicilia` | `https://gestionepagopatest.regione.sicilia.it` |
 
 Override manuale:
 
@@ -76,8 +75,7 @@ La pagina **About** (`/about`) mostra `getFullVersion()`.
 
 L'applicazione carica al boot un file di configurazione JSON (vedi
 `src/assets/config/app-config*.json`). La selezione tra dev/prod avviene tramite
-`environment.configFile`. La struttura è documentata in
-[`CALUDE-NOTE/ARCHITETTURA.md`](../CALUDE-NOTE/ARCHITETTURA.md).
+`environment.configFile`.
 
 ### Multi-tenant runtime
 
@@ -99,9 +97,6 @@ projects/govpay-console/src/app/
 ├── features/    dashboard, pendenze, ricevute, pagamenti, … (placeholder M1)
 └── shared/      componenti / directive / pipe condivise
 ```
-
-Vedi [`CALUDE-NOTE/PIANO-LAVORO.md`](../CALUDE-NOTE/PIANO-LAVORO.md) per il piano
-completo e le fasi di lavoro.
 
 ## Convenzioni
 
