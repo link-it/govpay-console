@@ -27,6 +27,14 @@ yarn-error.log
 testem.log
 /typings
 
+# Docker
+docker/buildcontext/
+
+# CI/CD artifacts
+/reports
+/third-party-licenses
+/.npm
+
 # System files
 .DS_Store
 Thumbs.db
