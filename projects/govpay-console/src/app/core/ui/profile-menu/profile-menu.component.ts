@@ -25,8 +25,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '@core/auth';
-import { ConfigService } from '@core/config';
-import type { ExtraMenuItem } from '@core/config';
+import { ConfigService } from '@linkit/shared-ui';
+import type { ExtraMenuItem } from '@linkit/shared-ui';
 
 /**
  * Componente per il menu profilo nel footer della sidebar.

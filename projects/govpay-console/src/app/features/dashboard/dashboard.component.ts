@@ -22,7 +22,7 @@ import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from '@core/services/api.service';
-import { SystemFacade } from '@core/system';
+import { SystemFacade } from '@linkit/shared-ui';
 import type { Pageable } from '@core/models';
 
 interface KpiCard {

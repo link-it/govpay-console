@@ -20,8 +20,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { SystemFacade } from '@linkit/shared-ui';
+import { SnackbarService } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
@@ -29,7 +29,7 @@ import {
   ListStickyToolbarDirective,
   PageHeaderComponent,
   StatusBadgeComponent,
-} from '@shared';
+} from '@linkit/shared-ui';
 import { RuoliApi } from './ruoli.api';
 import type { Ruolo, RuoloAcl } from './ruolo.model';
 

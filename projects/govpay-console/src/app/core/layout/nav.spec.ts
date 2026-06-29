@@ -11,7 +11,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { type NavItem, filterNav, flattenMobile, NAV_ITEMS } from './nav';
-import type { AppConfig } from '@core/config';
+import type { AppConfig } from '@linkit/shared-ui';
 
 const cfg = (features: Record<string, boolean> = {}): AppConfig =>
   ({

@@ -10,7 +10,7 @@
  */
 
 import type { AuthAcl } from '@core/auth';
-import type { AppConfig } from '@core/config';
+import type { AppConfig } from '@linkit/shared-ui';
 
 /**
  * Voce di navigazione della sidebar.

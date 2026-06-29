@@ -14,13 +14,13 @@ import { MainLayoutComponent } from '@core/layout';
 import { aclGuard, authGuard, maintenanceGuard } from '@core/auth';
 
 const placeholder = () =>
-  import('@core/ui/placeholder/placeholder.component').then((m) => m.PlaceholderComponent);
+  import('@linkit/shared-ui').then((m) => m.PlaceholderComponent);
 
 export const routes: Routes = [
   {
     path: 'maintenance',
     loadComponent: () =>
-      import('@core/layout/maintenance/maintenance.component').then((m) => m.MaintenanceComponent),
+      import('@linkit/shared-ui').then((m) => m.MaintenanceComponent),
   },
   {
     path: '',

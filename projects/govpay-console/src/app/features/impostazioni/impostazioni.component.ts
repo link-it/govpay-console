@@ -19,14 +19,14 @@ import {
 } from '@angular/core';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { SystemFacade } from '@linkit/shared-ui';
+import { SnackbarService } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
   LoadingComponent,
   PageHeaderComponent,
-} from '@shared';
+} from '@linkit/shared-ui';
 import { ImpostazioniApi, type Configurazione } from './impostazioni.api';
 
 @Component({

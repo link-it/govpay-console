@@ -14,7 +14,7 @@ import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthService } from './auth.service';
 import { AuthApi } from './auth.api';
-import { ConfigService } from '@core/config';
+import { ConfigService } from '@linkit/shared-ui';
 import { mapProfileToUser, type AuthUser, type ProfiloResponse } from '../models/auth.model';
 
 class FakeAuthApi {

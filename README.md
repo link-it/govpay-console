@@ -41,18 +41,43 @@ Per aggiungere/modificare un preset, edita `BACKENDS` in `proxy.config.js`.
 ## Build
 
 ```bash
-npm run build          # development
-npm run build:prod     # production con outputHashing
+npm run build          # development (app)
+npm run build:prod     # production con outputHashing (app)
+npm run build:lib      # libreria @linkit/shared-ui (development, ng-packagr)
+npm run build:lib:prod # libreria (production)
 ```
 
-L'output finisce in `dist/govpay-console/browser/`.
+L'output dell'app finisce in `dist/govpay-console/browser/`, quello della
+libreria in `dist/lnk-shared-ui/`.
+
+## Libreria condivisa `@linkit/shared-ui`
+
+Il workspace è **multi-progetto**: oltre all'app `govpay-console` ospita la
+libreria `projects/lnk-shared-ui` (componenti, direttive, utility e servizi
+condivisi — data-table, pagination, page-header, item-row/list, ConfigService,
+ThemeLoaderService, SystemFacade, LanguageService, snackbar, tweaks, …).
+
+È una **copia mirror** di un'unica source-of-truth upstream
+(`[GOVPAY]/govpay-console/projects/lnk-shared-ui`). In sviluppo viene risolta
+buildless via i path alias TypeScript (`@linkit/shared-ui`); in produzione la
+compila `ng-packagr`.
+
+```bash
+npm run sync:lib status              # diff read-only vs upstream
+npm run sync:lib sync                # rsync della lib dall'upstream (con conferma)
+npm run sync:lib sync -- --build     # rsync + build di validazione
+```
+
+Dettagli e workflow completo: `NOTE-CLAUDE/LNK-SHARED-UI-INTEGRATION/`.
 
 ## Test
 
 ```bash
-npm test               # vitest watch
-npm run test:run       # singolo run
+npm test               # vitest watch (app + libreria)
+npm run test:run       # singolo run (app + libreria)
 npm run test:coverage  # con coverage v8
+npm run test:lib       # solo libreria @linkit/shared-ui
+npm run test:app       # solo app
 ```
 
 ## Versionamento
@@ -92,11 +117,16 @@ ordine:
 ## Struttura
 
 ```text
-projects/govpay-console/src/app/
-├── core/        config, auth, interceptors, layout, system, version
-├── features/    dashboard, pendenze, ricevute, pagamenti, … (placeholder M1)
-└── shared/      componenti / directive / pipe condivise
+projects/
+├── govpay-console/src/app/
+│   ├── core/        auth, interceptors, layout, services, models, ui (profile-menu), version
+│   ├── features/    dashboard, pendenze, ricevute, pagamenti, …
+│   └── (i componenti/servizi condivisi vivono nella libreria @linkit/shared-ui)
+└── lnk-shared-ui/   libreria condivisa (components, directives, utils, core/{config,system,i18n,ui,layout})
 ```
+
+> Nota: `@shared` e `@core/{config,system,i18n}` **non esistono più** nell'app —
+> i loro contenuti sono in `@linkit/shared-ui`.
 
 ## Convenzioni
 
@@ -104,7 +134,8 @@ projects/govpay-console/src/app/
 - Tutti i componenti **standalone** + **OnPush**.
 - Stato globale **signals-only**, no NgRx.
 - Header licenza GPL v3 in cima ad ogni file `.ts`.
-- Path alias: `@core/*`, `@feature/*`, `@shared/*`, `@environment`, `@environments`.
+- Path alias: `@core/*`, `@feature/*`, `@environment`, `@environments`, `@assets/*`,
+  `@linkit/shared-ui`.
 
 ## Licenza
 

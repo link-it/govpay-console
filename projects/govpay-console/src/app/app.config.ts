@@ -16,7 +16,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { LanguageService } from '@core/i18n';
+import { BREADCRUMB_ICON_RESOLVER, LanguageService } from '@linkit/shared-ui';
 import { registerLocaleData } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
@@ -29,6 +29,7 @@ import localeEn from '@angular/common/locales/en';
 import { routes } from './app.routes';
 import { provideCore } from '@core/core.provider';
 import { APP_ICONS } from '@core/layout/icons.config';
+import { iconForNavLabel } from '@core/layout/nav';
 
 registerLocaleData(localeIt);
 registerLocaleData(localeEn);
@@ -39,6 +40,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideAnimationsAsync(),
     provideCore(),
+    { provide: BREADCRUMB_ICON_RESOLVER, useValue: iconForNavLabel },
     { provide: LOCALE_ID, useValue: 'it' },
     { provide: MAT_DATE_LOCALE, useValue: 'it' },
     provideNativeDateAdapter(),

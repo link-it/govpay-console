@@ -9,7 +9,7 @@
  * the Free Software Foundation.
  */
 
-import type { AuthMode } from '../../config/app-config.model';
+import type { AuthMode } from '@linkit/shared-ui';
 
 /**
  * Risposta grezza di `GET /profilo` del backend GovPay.

@@ -1,3 +1,26 @@
+2026-06-29  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat: adozione della libreria condivisa
+    `@linkit/shared-ui` (v0.9.4) come copia mirror in
+    `projects/lnk-shared-ui`. Il workspace diventa multi-progetto
+    (app + libreria, build via ng-packagr). I componenti, le
+    direttive, le utility (ex `@shared`) e i servizi `ConfigService`,
+    `ThemeLoaderService`, `SystemFacade`, `LanguageService`
+    (ex `@core/{config,system,i18n}`), più snackbar/spinner/tweaks/
+    color-scheme-toggle/language-menu/goto-top/placeholder/
+    maintenance/help-sidebar ora provengono dalla libreria. Rimossi
+    i duplicati locali; in `@core/ui` resta solo `profile-menu`.
+
+  * [Frontend] feat: i18n splittato in `src/i18n-domain/{it,en}.json`
+    (chiavi di dominio) + i18n della libreria, mergiati al boot da
+    `scripts/merge-i18n.js`. `assets/i18n/*.json` ora è generato
+    (gitignored).
+
+  * [Frontend] chore: script `scripts/sync-shared-ui.mjs` per
+    sincronizzare la copia mirror dall'upstream
+    `[GOVPAY]/govpay-console` e `scripts/resolve-i18n-conflict.mjs`
+    per i conflitti i18n post-merge.
+
 2026-05-01  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] Prima implementazione

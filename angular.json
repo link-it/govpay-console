@@ -85,6 +85,39 @@
           "defaultConfiguration": "development"
         }
       }
+    },
+    "lnk-shared-ui": {
+      "projectType": "library",
+      "root": "projects/lnk-shared-ui",
+      "sourceRoot": "projects/lnk-shared-ui/src",
+      "prefix": "lnk",
+      "schematics": {
+        "@schematics/angular:component": {
+          "skipTests": true,
+          "changeDetection": "OnPush",
+          "style": "css",
+          "standalone": true
+        },
+        "@schematics/angular:directive": { "skipTests": true, "standalone": true },
+        "@schematics/angular:pipe": { "skipTests": true, "standalone": true }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/lnk-shared-ui/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/lnk-shared-ui/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/lnk-shared-ui/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

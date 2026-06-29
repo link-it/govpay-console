@@ -19,8 +19,8 @@ import {
   type AuthUser,
   type ProfiloResponse,
 } from '../models/auth.model';
-import type { AuthMode } from '../../config/app-config.model';
-import { ConfigService } from '@core/config';
+import type { AuthMode } from '@linkit/shared-ui';
+import { ConfigService } from '@linkit/shared-ui';
 import { AuthApi } from './auth.api';
 
 const AUTH_STORAGE_KEY = 'lnk-auth';

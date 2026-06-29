@@ -12,7 +12,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { type Observable } from 'rxjs';
-import { ConfigService } from '@core/config';
+import { ConfigService } from '@linkit/shared-ui';
 import type { Pageable, TipoOggetto } from '@core/models';
 
 /**

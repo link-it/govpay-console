@@ -16,7 +16,7 @@ import {
   provideAppInitializer,
 } from '@angular/core';
 import { provideHttpClient, withInterceptors, withXsrfConfiguration } from '@angular/common/http';
-import { ConfigService } from './config';
+import { ConfigService } from '@linkit/shared-ui';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { errorInterceptor } from './interceptors/error.interceptor';
 import { environment } from '@environment';

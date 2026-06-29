@@ -41,3 +41,8 @@ Thumbs.db
 
 # Auto-generated build info
 projects/*/src/environments/version.ts
+
+# Auto-generated i18n bundles (merge di lib + consumer i18n-domain via
+# `scripts/merge-i18n.js`). Le fonti vivono in
+# `projects/lnk-shared-ui/src/i18n/` e `projects/<consumer>/src/i18n-domain/`.
+projects/*/src/assets/i18n/*.json

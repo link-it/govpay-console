@@ -20,17 +20,17 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
+import { ConfigService } from '@linkit/shared-ui';
 import { AuthService } from '@core/auth';
 import {
   ColorSchemeToggleComponent,
   GlobalTweaksHostComponent,
   LanguageMenuComponent,
   TweaksRegistry,
-} from '@core/ui';
-import { SnackbarService } from '@core/ui/snackbar/snackbar.service';
+} from '@linkit/shared-ui';
+import { SnackbarService } from '@linkit/shared-ui';
 import { environment } from '@environment';
-import type { AuthMode } from '@core/config';
+import type { AuthMode } from '@linkit/shared-ui';
 
 @Component({
   selector: 'lnk-login',

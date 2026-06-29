@@ -22,9 +22,9 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { ConfigService } from '@linkit/shared-ui';
+import { SystemFacade } from '@linkit/shared-ui';
+import { SnackbarService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -37,8 +37,8 @@ import {
   VIEW_OPTIONS,
   columnsFromConfig,
   type ColumnDef,
-} from '@shared';
-import { TweaksRegistry } from '@core/ui';
+} from '@linkit/shared-ui';
+import { TweaksRegistry } from '@linkit/shared-ui';
 import { RuoliApi } from './ruoli.api';
 import type { Ruolo, RuoliListFilters } from './ruolo.model';
 
