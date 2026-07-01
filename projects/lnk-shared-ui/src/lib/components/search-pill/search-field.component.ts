@@ -57,7 +57,7 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
             #txt
             type="text"
             class="fld__input"
-            [value]="value() ?? ''"
+            [value]="value()"
             [placeholder]="field().placeholder ?? 'Digita per cercare…'"
             (input)="value.set($any($event.target).value)"
             (focus)="focused.set(true)"

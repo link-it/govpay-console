@@ -64,7 +64,7 @@ import {
             <lnk-search-field
               [field]="f"
               [labels]="labels()"
-              [value]="filters()[f.id] ?? f.default ?? ''"
+              [value]="fieldValue(f)"
               (valueChange)="onFieldChange(f.id, $event)"
             />
           </div>
@@ -207,6 +207,11 @@ export class SearchFilterFormComponent {
       return n + (cur && cur !== def ? 1 : 0);
     }, 0);
   });
+
+  /** Valore corrente del campo con fallback al default (chiave assente a runtime). */
+  protected fieldValue(f: SearchField): string {
+    return this.filters()[f.id] ?? f.default ?? '';
+  }
 
   protected onFieldChange(id: string, value: string): void {
     this.filterChange.emit({ id, value });

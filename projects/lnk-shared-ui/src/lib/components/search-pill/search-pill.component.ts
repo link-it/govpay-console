@@ -117,7 +117,7 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
         @if (showSort() && sortOptions().length) {
           <button type="button" class="pill__sort" (click)="toggleDir()">
             <ng-icon [name]="value().dir === 'asc' ? 'bootstrapChevronUp' : 'bootstrapChevronDown'" size="0.8rem" />
-            {{ activeSort()?.label }}
+            {{ activeSort().label }}
           </button>
           <span class="pill__divider"></span>
         }
