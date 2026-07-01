@@ -10,3 +10,4 @@
  */
 
 export * from './api.service';
+export * from './console-api.service';

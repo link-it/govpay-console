@@ -10,3 +10,4 @@ export * from './format';
 export * from './display-options';
 export * from './sort';
 export * from './list-tweaks-options';
+export * from './download';

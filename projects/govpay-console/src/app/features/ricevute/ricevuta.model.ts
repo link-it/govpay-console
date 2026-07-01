@@ -16,7 +16,7 @@
  * `pendenza` annidata, mentre stato/dettaglio sono al livello top.
  */
 
-import type { DominioSummary, SoggettoPagatore } from '../pendenze/pendenza.model';
+import type { DominioSummary, SoggettoPagatore } from '@core/models';
 
 /**
  * Esito sintetico della RPT — usato come parametro di filtro `esito`

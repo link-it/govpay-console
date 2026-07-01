@@ -108,45 +108,54 @@
   "Pendenze": {
     "Subtitle": "Elenco delle pendenze caricate sul portale.",
     "Filters": {
-      "SearchPlaceholder": "Cerca per numero avviso o IUV…",
-      "Stato": "Stato"
+      "IdPendenza": "ID pendenza",
+      "IdPendenzaPlaceholder": "Cerca per ID pendenza…",
+      "NumeroAvviso": "Numero avviso",
+      "NumeroAvvisoPlaceholder": "18 cifre",
+      "Dominio": "Ente creditore",
+      "IdentificativoDebitore": "Identificativo debitore",
+      "IdentificativoDebitorePlaceholder": "CF / P.IVA",
+      "DebitoreHint": "La ricerca per identificativo debitore viene registrata per finalità di audit (GDPR)."
     },
     "Empty": {
       "Title": "Nessuna pendenza",
       "Description": "Non ci sono pendenze che corrispondono ai filtri correnti."
     },
     "Columns": {
-      "Numero": "Numero / IUV",
+      "Numero": "Numero avviso",
       "Tipo": "Tipo",
-      "Pagatore": "Pagatore",
       "Causale": "Causale",
-      "DataCaricamento": "Caricamento",
+      "DataAggiornamento": "Aggiornamento",
       "Importo": "Importo",
       "Stato": "Stato"
     },
     "Stati": {
-      "NonEseguita": "Da pagare",
-      "Eseguita": "Pagata",
-      "EseguitaParziale": "Pagata parzialmente",
+      "NonPagata": "Da pagare",
+      "Pagata": "Pagata",
+      "PagataParziale": "Pagata parzialmente",
       "Annullata": "Annullata",
       "Scaduta": "Scaduta",
-      "Incassata": "Riconciliata",
+      "Riconciliata": "Riconciliata",
       "Anomala": "Anomala"
     },
     "Detail": {
       "Subtitle": "Dettaglio della pendenza.",
       "Generali": "Informazioni generali",
       "EnteCreditore": "Ente creditore",
+      "Voci": "Voci",
+      "VociEmpty": "Nessuna voce presente.",
       "SoggettoPagatore": "Soggetto pagatore",
       "RicevuteAssociate": "Ricevute associate",
       "NumeroAvviso": "Numero avviso",
-      "Iuv": "IUV",
+      "IuvAvviso": "IUV avviso",
       "IdPendenza": "ID pendenza",
+      "IdA2A": "ID applicazione (A2A)",
       "Tipo": "Tipo pendenza",
       "Importo": "Importo",
-      "DataCaricamento": "Data caricamento",
+      "DataAggiornamento": "Ultimo aggiornamento",
       "DataValidita": "Data validità",
       "DataScadenza": "Data scadenza",
+      "Descrizione": "Descrizione",
       "Causale": "Causale",
       "IdDominio": "ID Dominio",
       "RagioneSociale": "Ragione sociale",
@@ -154,12 +163,36 @@
       "Anagrafica": "Anagrafica",
       "Identificativo": "Identificativo",
       "TipoSoggetto": "Tipo soggetto",
+      "Indirizzo": "Indirizzo",
+      "Localita": "Località",
+      "Nazione": "Nazione",
       "Email": "Email",
       "Cellulare": "Cellulare",
       "Dominio": "Dominio",
-      "TabDati": "Dati pendenza",
-      "TabEventi": "Eventi",
-      "EventiEmpty": "Nessun evento associato a questa pendenza."
+      "StampaAvviso": "Stampa avviso",
+      "AvvisoErrore": "Impossibile generare l'avviso PDF.",
+      "MostraDebitore": "Mostra informazioni debitore",
+      "DebitoreProtetto": "I dati anagrafici del debitore sono protetti: la visualizzazione viene registrata a fini di audit (GDPR).",
+      "DebitoreConsensoTitolo": "Visualizzare i dati del debitore?",
+      "DebitoreConsensoTesto": "Stai per visualizzare i dati anagrafici e i contatti del debitore. L'operazione viene registrata a fini di audit (GDPR).",
+      "DebitoreConsensoConferma": "Visualizza"
+    },
+    "Voci": {
+      "Indice": "N.",
+      "Descrizione": "Descrizione",
+      "Importo": "Importo",
+      "Stato": "Stato"
+    },
+    "StatiVoce": {
+      "NonPagata": "Da pagare",
+      "Pagata": "Pagata",
+      "Anomala": "Anomala"
+    },
+    "StatiAvviso": {
+      "Pagato": "Pagato",
+      "NonPagato": "Non pagato",
+      "Scaduto": "Scaduto",
+      "Annullato": "Annullato"
     }
   },
   "Riscossioni": {

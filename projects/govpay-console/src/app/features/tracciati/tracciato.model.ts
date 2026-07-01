@@ -9,7 +9,7 @@
  * the Free Software Foundation.
  */
 
-import type { DominioSummary } from '../pendenze/pendenza.model';
+import type { DominioSummary } from '@core/models';
 
 /**
  * Stato tracciato pendenze (OpenAPI `statoTracciatoPendenza`).

@@ -9,7 +9,7 @@
  * the Free Software Foundation.
  */
 
-import type { DominioSummary } from '../pendenze/pendenza.model';
+import type { DominioSummary } from '@core/models';
 import type { Riscossione } from '../riscossioni/riscossione.model';
 
 /**

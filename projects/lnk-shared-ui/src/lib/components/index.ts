@@ -22,6 +22,7 @@ export * from './detail-group/detail-group.component';
 export * from './detail-group/detail-group.token';
 export * from './info-grid/info-grid.component';
 export * from './status-badge/status-badge.component';
+export * from './confirm-dialog/confirm-dialog.component';
 
 // Driven-by-config rendering (item-type + item-row + item-list).
 export * from './item-row/display-config.types';

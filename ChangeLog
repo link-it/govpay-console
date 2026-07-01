@@ -1,3 +1,31 @@
+2026-07-01  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat: refactoring della sezione Pendenze sulla nuova
+    GovPay Console API V2. Nuovo client `ConsoleApiService`
+    (`@core/services`) su base `GOVAPI.CONSOLE` (`/govpay-console-api`),
+    con paginazione a slice (`Slice<T>` + `pagination.hasNextPage` +
+    `nextCursor`) ed errori RFC 7807 (`problemDetail`). `ApiService`/V1
+    resta per le altre feature (migrazione feature-by-feature).
+
+  * [Frontend] feat(pendenze): lista e dettaglio migrati alla V2.
+    Lista con i 4 filtri supportati (`idPendenza`, `numeroAvviso`,
+    `idDominio` come select dai domini del profilo, `identificativoDebitore`
+    con avviso audit GDPR), ordinamento `-dataUltimoAggiornamento`,
+    totale via `total=true` sulla prima pagina. Dettaglio con voci inline,
+    soggetto pagatore on-demand con consenso GDPR (`/informazioniDebitore`),
+    stampa avviso PDF e ricevute guidati dagli HAL `_links`.
+
+  * [Frontend] feat(shared-ui): nuovo `ConfirmDialogComponent`
+    (`lnk-confirm-dialog`) e util `downloadBlob` nella libreria
+    `@linkit/shared-ui`. NB: modifiche da replicare upstream
+    (`[GOVPAY]/govpay-console`) prima del prossimo `sync:lib`.
+
+  * [Frontend] chore: preset proxy `demo-v2` (`https://lab.link.it`) e
+    script `npm run start:demo-v2`; chiave config `GOVAPI.CONSOLE` (dev+prod).
+    Tipi V1 condivisi `DominioSummary`/`SoggettoPagatore` spostati in
+    `@core/models`. Documentazione in
+    `NOTE-CLAUDE/REFACTORING-NUOVE-API-PENDENZE/`.
+
 2026-06-29  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat: adozione della libreria condivisa

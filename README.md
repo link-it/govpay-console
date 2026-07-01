@@ -29,6 +29,7 @@ Tutte le chiamate `/govpay/backend/api/backoffice/rs/*` sono inoltrate al backen
 | `npm run start:local-alt` | `local-alt` | `http://172.16.1.121:8082` |
 | `npm run start:dev` | `dev-cloud` | `https://dev.govcloud.it` |
 | `npm run start:demo` | `demo` | `https://demo.govcloud.it` |
+| `npm run start:demo-v2` | `demo-v2` | `https://lab.link.it` (GovPay Console API V2) |
 
 Override manuale:
 

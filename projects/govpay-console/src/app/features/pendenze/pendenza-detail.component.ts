@@ -14,7 +14,6 @@ import {
   Component,
   OnInit,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -25,39 +24,34 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SystemFacade } from '@linkit/shared-ui';
 import { SnackbarService } from '@linkit/shared-ui';
 import {
+  ConfirmDialogComponent,
   DataTableComponent,
   DetailSectionComponent,
   EmptyStateComponent,
-  InfiniteScrollDirective,
   LoadingComponent,
   ListStickyToolbarDirective,
   InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
-  TabsComponent,
+  downloadBlob,
   formatDate,
-  formatDateTime,
   formatEuro,
-  formatMsTime,
   truncate,
   type ColumnDef,
   type InfoGridItem,
-  type TabDef,
 } from '@linkit/shared-ui';
-import { PendenzeApi } from './pendenze.api';
+import { problemDetail } from '@core/models';
+import { PendenzeConsoleApi } from './pendenze.console-api';
 import {
   STATO_PENDENZA_COLOR,
   STATO_PENDENZA_LABEL,
+  STATO_VOCE_PENDENZA_COLOR,
+  STATO_VOCE_PENDENZA_LABEL,
   type Pendenza,
+  type RicevutaSummary,
+  type Soggetto,
+  type VocePendenza,
 } from './pendenza.model';
-import { GiornaleEventiApi } from '../giornale-eventi/giornale-eventi.api';
-import {
-  CATEGORIA_EVENTO_LABEL,
-  ESITO_EVENTO_COLOR,
-  ESITO_EVENTO_LABEL,
-  severitaToEsito,
-  type Evento,
-} from '../giornale-eventi/evento.model';
 
 @Component({
   selector: 'lnk-pendenza-detail',
@@ -72,17 +66,15 @@ import {
     StatusBadgeComponent,
     EmptyStateComponent,
     LoadingComponent,
-    TabsComponent,
     DataTableComponent,
-    InfiniteScrollDirective,
     ListStickyToolbarDirective,
+    ConfirmDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pendenza-detail.component.html',
 })
 export class PendenzaDetailComponent implements OnInit {
-  private readonly api = inject(PendenzeApi);
-  private readonly eventiApi = inject(GiornaleEventiApi);
+  private readonly api = inject(PendenzeConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
@@ -93,77 +85,26 @@ export class PendenzaDetailComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  // Tabs
-  readonly activeTab = signal<'dati' | 'eventi'>('dati');
-  readonly tabs = computed<TabDef[]>(() => [
-    { id: 'dati',   labelKey: 'Pendenze.Detail.TabDati' },
-    { id: 'eventi', labelKey: 'Pendenze.Detail.TabEventi',
-      badge: this.eventi() !== null ? this.eventiTotal() : null,
-      badgeLoading: this.eventiLoading() && this.eventi() === null },
-  ]);
+  private idA2A = '';
+  private idPendenza = '';
 
-  // Eventi associati alla pendenza. La prima fetch parte non appena la
-  // pendenza è caricata (così il badge del tab mostra il totale reale,
-  // anche prima che l'utente apra il tab). `eventi === null` significa
-  // "non ancora caricati"; ulteriori pagine via infinite-scroll.
-  readonly eventi = signal<Evento[] | null>(null);
-  readonly eventiTotal = signal(0);
-  readonly eventiPage = signal(1);
-  readonly eventiLoading = signal(false);
-  private static readonly EVENTI_PAGE_SIZE = 25;
-  readonly eventiHasMore = computed(() => (this.eventi()?.length ?? 0) < this.eventiTotal());
-  readonly eventiCanLoadMore = computed(() => this.eventiHasMore() && !this.eventiLoading());
-  readonly eventiColumns = computed<ColumnDef<Evento>[]>(() => [
-    {
-      key: 'dataEvento',
-      header: 'GiornaleEventi.Columns.Data',
-      format: (r) => formatDateTime(r.dataEvento),
-      cellClass: 'font-mono text-xs',
-      width: '12rem',
-    },
-    {
-      key: 'categoriaEvento',
-      header: 'GiornaleEventi.Columns.Categoria',
-      format: (r) => (r.categoriaEvento ? CATEGORIA_EVENTO_LABEL[r.categoriaEvento] : '—'),
-      width: '8rem',
-    },
-    {
-      key: 'tipoEvento',
-      header: 'GiornaleEventi.Columns.Tipo',
-      format: (r) => truncate([r.tipoEvento, r.sottotipoEvento].filter(Boolean).join(' / ') || '—', 60),
-    },
-    {
-      key: 'durataEvento',
-      header: 'GiornaleEventi.Columns.Durata',
-      format: (r) => (r.durataEvento != null ? formatMsTime(r.durataEvento) : '—'),
-      align: 'right',
-      cellClass: 'font-mono text-xs',
-      width: '6rem',
-    },
-    {
-      key: 'esito',
-      header: 'GiornaleEventi.Columns.Esito',
-      cellType: 'badge',
-      cellTone: (r) => ESITO_EVENTO_COLOR[r.esito ?? severitaToEsito(r.severita)] ?? 'muted',
-      format: (r) => ESITO_EVENTO_LABEL[r.esito ?? severitaToEsito(r.severita)] ?? '—',
-      width: '7rem',
-    },
-  ]);
+  /* ---- Soggetto pagatore: on-demand con consenso GDPR ---------------- */
+  readonly debitore = signal<Soggetto | null>(null);
+  readonly debitoreLoading = signal(false);
+  readonly askConsenso = signal(false);
+  /** Il link è sempre presente in V2, ma gatiamo comunque sull'`_links`. */
+  readonly hasDebitoreLink = computed(() => !!this.pendenza()?._links?.informazioniDebitore);
 
-  // Effect: appena la pendenza è caricata, fetch della prima pagina di
-  // eventi (così il badge del tab è popolato anche se l'utente non apre
-  // ancora il tab Eventi).
-  private readonly _eventiLoader = effect(() => {
-    if (this.eventi() !== null) return;       // già caricati
-    if (this.eventiLoading()) return;          // request in volo
-    const p = this.pendenza();
-    if (!p) return;
-    this.fetchEventi(p);
-  });
+  /* ---- Avviso: azione PDF gated da `_links.avviso` ------------------- */
+  readonly hasAvvisoLink = computed(() => !!this.pendenza()?._links?.avviso);
+  readonly avvisoLoading = signal(false);
+
+  /* ---- Ricevute: elenco metadata-only ------------------------------- */
+  readonly ricevute = signal<RicevutaSummary[] | null>(null);
 
   readonly title = computed(() => {
     const p = this.pendenza();
-    return p?.numeroAvviso || p?.iuv || '—';
+    return p?.numeroAvviso || p?.idPendenza || '—';
   });
 
   readonly statoTone = computed(() => {
@@ -173,21 +114,23 @@ export class PendenzaDetailComponent implements OnInit {
 
   readonly statoLabelKey = computed(() => {
     const s = this.pendenza()?.stato;
-    return s ? STATO_PENDENZA_LABEL[s] : 'Pendenze.Stati.NonEseguita';
+    return s ? STATO_PENDENZA_LABEL[s] : 'Pendenze.Stati.NonPagata';
   });
 
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const p = this.pendenza();
     if (!p) return [];
     return [
-      { labelKey: 'Pendenze.Detail.NumeroAvviso', value: p.numeroAvviso, mono: true },
-      { labelKey: 'Pendenze.Detail.Iuv', value: p.iuv, mono: true },
-      { labelKey: 'Pendenze.Detail.IdPendenza', value: p.idPendenza, mono: true, hide: !p.idPendenza },
+      { labelKey: 'Pendenze.Detail.NumeroAvviso', value: p.numeroAvviso, mono: true, hide: !p.numeroAvviso },
+      { labelKey: 'Pendenze.Detail.IuvAvviso', value: p.iuvAvviso, mono: true, hide: !p.iuvAvviso },
+      { labelKey: 'Pendenze.Detail.IdPendenza', value: p.idPendenza, mono: true },
+      { labelKey: 'Pendenze.Detail.IdA2A', value: p.idA2A, mono: true },
       { labelKey: 'Pendenze.Detail.Tipo', value: p.tipoPendenza?.descrizione },
       { labelKey: 'Pendenze.Detail.Importo', value: formatEuro(p.importo) },
-      { labelKey: 'Pendenze.Detail.DataCaricamento', value: formatDate(p.dataCaricamento) },
       { labelKey: 'Pendenze.Detail.DataValidita', value: formatDate(p.dataValidita), hide: !p.dataValidita },
       { labelKey: 'Pendenze.Detail.DataScadenza', value: formatDate(p.dataScadenza), hide: !p.dataScadenza },
+      { labelKey: 'Pendenze.Detail.DataAggiornamento', value: formatDate(p.dataUltimoAggiornamento), hide: !p.dataUltimoAggiornamento },
+      { labelKey: 'Pendenze.Detail.Descrizione', value: p.descrizione, wide: true, hide: !p.descrizione },
       { labelKey: 'Pendenze.Detail.Causale', value: p.causale, wide: true },
     ];
   });
@@ -196,35 +139,61 @@ export class PendenzaDetailComponent implements OnInit {
     const p = this.pendenza();
     if (!p) return [];
     return [
-      { labelKey: 'Pendenze.Detail.IdDominio', value: p.dominio?.idDominio || p.idDominio, mono: true },
-      {
-        labelKey: 'Pendenze.Detail.RagioneSociale',
-        value: p.dominio?.ragioneSociale,
-        hide: !p.dominio?.ragioneSociale,
-      },
-      {
-        labelKey: 'Pendenze.Detail.UnitaOperativa',
-        value: p.unitaOperativa?.ragioneSociale,
-        hide: !p.unitaOperativa,
-      },
+      { labelKey: 'Pendenze.Detail.IdDominio', value: p.dominio?.idDominio, mono: true },
+      { labelKey: 'Pendenze.Detail.RagioneSociale', value: p.dominio?.ragioneSociale, hide: !p.dominio?.ragioneSociale },
+      { labelKey: 'Pendenze.Detail.UnitaOperativa', value: p.unitaOperativa?.ragioneSociale, hide: !p.unitaOperativa },
     ];
   });
 
-  readonly pagatoreItems = computed<InfoGridItem[]>(() => {
-    const sp = this.pendenza()?.soggettoPagatore;
-    if (!sp) return [];
+  readonly debitoreItems = computed<InfoGridItem[]>(() => {
+    const s = this.debitore();
+    if (!s) return [];
     return [
-      { labelKey: 'Pendenze.Detail.Anagrafica', value: sp.anagrafica, wide: true },
-      { labelKey: 'Pendenze.Detail.Identificativo', value: sp.identificativo, mono: true },
+      { labelKey: 'Pendenze.Detail.Anagrafica', value: s.anagrafica, wide: true },
+      { labelKey: 'Pendenze.Detail.Identificativo', value: s.identificativo, mono: true },
       {
         labelKey: 'Pendenze.Detail.TipoSoggetto',
-        value: sp.tipo === 'F' ? 'Persona fisica' : sp.tipo === 'G' ? 'Persona giuridica' : '',
-        hide: !sp.tipo,
+        value: s.tipo === 'F' ? 'Persona fisica' : s.tipo === 'G' ? 'Persona giuridica' : '',
+        hide: !s.tipo,
       },
-      { labelKey: 'Pendenze.Detail.Email', value: sp.email, hide: !sp.email },
-      { labelKey: 'Pendenze.Detail.Cellulare', value: sp.cellulare, hide: !sp.cellulare },
+      { labelKey: 'Pendenze.Detail.Indirizzo', value: [s.indirizzo, s.civico].filter(Boolean).join(', '), wide: true, hide: !s.indirizzo },
+      { labelKey: 'Pendenze.Detail.Localita', value: [s.cap, s.localita, s.provincia].filter(Boolean).join(' '), hide: !s.localita },
+      { labelKey: 'Pendenze.Detail.Nazione', value: s.nazione, hide: !s.nazione },
+      { labelKey: 'Pendenze.Detail.Email', value: s.email, hide: !s.email },
+      { labelKey: 'Pendenze.Detail.Cellulare', value: s.cellulare, hide: !s.cellulare },
     ];
   });
+
+  readonly vociColumns = computed<ColumnDef<VocePendenza>[]>(() => [
+    {
+      key: 'indice',
+      header: 'Pendenze.Voci.Indice',
+      format: (v) => (v.indice != null ? String(v.indice) : '—'),
+      cellClass: 'font-mono text-xs',
+      width: '4rem',
+    },
+    {
+      key: 'descrizione',
+      header: 'Pendenze.Voci.Descrizione',
+      format: (v) => truncate(v.descrizione, 80),
+    },
+    {
+      key: 'importo',
+      header: 'Pendenze.Voci.Importo',
+      format: (v) => formatEuro(v.importo),
+      align: 'right',
+      cellClass: 'font-mono',
+      width: '8rem',
+    },
+    {
+      key: 'stato',
+      header: 'Pendenze.Voci.Stato',
+      cellType: 'badge',
+      cellTone: (v) => STATO_VOCE_PENDENZA_COLOR[v.stato] ?? 'muted',
+      format: (v) => STATO_VOCE_PENDENZA_LABEL[v.stato] ?? v.stato,
+      width: '9rem',
+    },
+  ]);
 
   ngOnInit(): void {
     const params = this.route.snapshot.paramMap;
@@ -234,24 +203,23 @@ export class PendenzaDetailComponent implements OnInit {
       this.router.navigate(['/pendenze']);
       return;
     }
-    // `?tab=eventi` (es. dal back del dettaglio evento) → apri sul tab Eventi.
-    const tabParam = this.route.snapshot.queryParamMap.get('tab');
-    if (tabParam === 'eventi' || tabParam === 'dati') this.activeTab.set(tabParam);
+    this.idA2A = idA2A;
+    this.idPendenza = idPendenza;
     this.system.setBreadcrumbs([
       { label: 'Nav.Pendenze', url: '/pendenze' },
       { label: idPendenza },
     ]);
-    this.fetch(idA2A, idPendenza);
+    this.fetch();
   }
 
-  private fetch(idA2A: string, idPendenza: string): void {
+  private fetch(): void {
     this.loading.set(true);
     this.error.set(null);
     this.api
-      .get(idA2A, idPendenza)
+      .get(this.idA2A, this.idPendenza)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
           return of(null);
@@ -260,61 +228,71 @@ export class PendenzaDetailComponent implements OnInit {
       .subscribe((p) => {
         this.pendenza.set(p);
         this.loading.set(false);
+        if (p) this.fetchRicevute();
       });
   }
 
-  /** Prima fetch (pagina 1) degli eventi del giornale filtrati sulla pendenza. */
-  private fetchEventi(p: Pendenza): void {
-    this.eventiPage.set(1);
-    this.fetchEventiPage(p, false);
+  /** Elenco (metadata-only) delle ricevute; errore non bloccante. */
+  private fetchRicevute(): void {
+    this.api
+      .listRicevute(this.idA2A, this.idPendenza)
+      .pipe(catchError(() => of<RicevutaSummary[]>([])))
+      .subscribe((r) => this.ricevute.set(r));
   }
 
-  loadMoreEventi(): void {
-    if (!this.eventiCanLoadMore()) return;
-    const p = this.pendenza();
-    if (!p) return;
-    this.eventiPage.update((n) => n + 1);
-    this.fetchEventiPage(p, true);
+  formatData(value: string | undefined): string {
+    return formatDate(value);
   }
 
-  private fetchEventiPage(p: Pendenza, append: boolean): void {
-    this.eventiLoading.set(true);
-    const pageSize = PendenzaDetailComponent.EVENTI_PAGE_SIZE;
-    // Filtri: codApplicazione + idPendenza è la chiave canonica della
-    // pendenza (sempre presente). Aggiungiamo idDominio + iuv se valorizzati,
-    // così otteniamo lo stesso scope del legacy `dashboard-view` (il backend
-    // li utilizza in AND).
-    this.eventiApi
-      .list({
-        codApplicazione: p.idA2A,
-        idPendenza: p.idPendenza,
-        idDominio: p.dominio?.idDominio || p.idDominio,
-        iuv: p.iuv,
-        pagina: this.eventiPage(),
-        risPerPagina: pageSize,
-      })
+  formatImporto(value: number | undefined): string {
+    return value != null ? formatEuro(value) : '—';
+  }
+
+  /* ---- Consenso GDPR + fetch debitore -------------------------------- */
+  onMostraDebitore(): void {
+    if (this.debitore()) return; // già caricato
+    this.askConsenso.set(true);
+  }
+
+  onConsensoAnnullato(): void {
+    this.askConsenso.set(false);
+  }
+
+  onConsensoConfermato(): void {
+    this.askConsenso.set(false);
+    this.debitoreLoading.set(true);
+    this.api
+      .getInformazioniDebitore(this.idA2A, this.idPendenza)
       .pipe(
-        catchError(() => of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: pageSize })),
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of(null);
+        })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
-        if (append) this.eventi.update((prev) => [...(prev ?? []), ...results]);
-        else this.eventi.set(results);
-        this.eventiTotal.set(page.numRisultati ?? 0);
-        this.eventiLoading.set(false);
+      .subscribe((s) => {
+        this.debitore.set(s);
+        this.debitoreLoading.set(false);
       });
   }
 
-  onEventClick(e: Evento): void {
-    if (e.id == null) return;
-    const p = this.pendenza();
-    if (!p?.idA2A || !p?.idPendenza) {
-      // fallback: rotta principale del giornale eventi
-      this.router.navigate(['/giornale-eventi', e.id]);
-      return;
-    }
-    // Drilldown nested: il breadcrumb e il bottone "Indietro" del
-    // dettaglio evento riporteranno qui (sul dettaglio della pendenza).
-    this.router.navigate(['/pendenze', p.idA2A, p.idPendenza, 'eventi', e.id]);
+  /* ---- Stampa avviso PDF --------------------------------------------- */
+  onStampaAvviso(): void {
+    if (this.avvisoLoading()) return;
+    this.avvisoLoading.set(true);
+    this.api
+      .getAvvisoPdf(this.idA2A, this.idPendenza)
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Pendenze.Detail.AvvisoErrore')));
+          return of(null);
+        })
+      )
+      .subscribe((blob) => {
+        this.avvisoLoading.set(false);
+        if (!blob) return;
+        const p = this.pendenza();
+        const name = `avviso-${p?.numeroAvviso || p?.idPendenza || 'pendenza'}.pdf`;
+        downloadBlob(blob, name);
+      });
   }
 }

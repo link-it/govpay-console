@@ -27,7 +27,6 @@ import { ListStateService, SystemFacade } from '@linkit/shared-ui';
 import { SnackbarService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
-  DateInputComponent,
   DisplayConfigLoader,
   EmptyStateComponent,
   LoadingComponent,
@@ -37,48 +36,45 @@ import {
   PageHeaderComponent,
   SearchInputComponent,
   SelectInputComponent,
-  DATE_RANGE_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
-  daysAgoIso,
   formatDate,
   formatEuro,
   formatOrdinamento,
-  matchDateRangePreset,
   truncate,
   type ColumnDef,
   type SelectOption,
   type SortEvent,
 } from '@linkit/shared-ui';
 import { TweaksRegistry } from '@linkit/shared-ui';
-import { PendenzeApi } from './pendenze.api';
+import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { AuthService } from '@core/auth/services/auth.service';
+import { PendenzeConsoleApi } from './pendenze.console-api';
 import {
   STATO_PENDENZA_COLOR,
   STATO_PENDENZA_LABEL,
-  type Pendenza,
+  type PendenzaSummary,
   type PendenzeListFilters,
-  type StatoPendenza,
 } from './pendenza.model';
 
 const PAGE_SIZE = 25;
 
+/**
+ * Filtri di lista Fase 1 API V2: i **4 filtri supportati** (campi dedicati).
+ * I filtri V1 `stato`/`dataDa`/`dataA` sono rimossi (la API risponde 400).
+ */
 interface ListFilters {
-  search: string;
-  stato: StatoPendenza | '';
-  dataDa: string;
-  dataA: string;
+  idPendenza: string;
+  numeroAvviso: string;
+  idDominio: string;
+  identificativoDebitore: string;
 }
 
-/**
- * Filtri di default applicati al primo caricamento e dopo "Azzera filtri":
- * `dataDa` impostata a 7 giorni fa (ultima settimana). Funzione (non costante)
- * per ricalcolare la data ad ogni invocazione.
- */
 const defaultFilters = (): ListFilters => ({
-  search: '',
-  stato: '',
-  dataDa: daysAgoIso(7),
-  dataA: '',
+  idPendenza: '',
+  numeroAvviso: '',
+  idDominio: '',
+  identificativoDebitore: '',
 });
 
 @Component({
@@ -93,7 +89,6 @@ const defaultFilters = (): ListFilters => ({
     InfiniteScrollDirective,
     SearchInputComponent,
     SelectInputComponent,
-    DateInputComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -101,7 +96,7 @@ const defaultFilters = (): ListFilters => ({
   templateUrl: './pendenze-list.component.html',
 })
 export class PendenzeListComponent implements OnInit {
-  private readonly api = inject(PendenzeApi);
+  private readonly api = inject(PendenzeConsoleApi);
   private readonly config = inject(ConfigService);
   private readonly system = inject(SystemFacade);
   private readonly listState = inject(ListStateService);
@@ -109,26 +104,30 @@ export class PendenzeListComponent implements OnInit {
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
-  /** Default modalità lista da config: globale (`Layout.listView`) con
-   *  override per feature (`Layout.listViewByFeature.pendenze`). Default `'table'`. */
+  /** Default modalità lista da config: globale con override per feature. */
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
     const layout = this.config.appConfig()?.Layout;
     return layout?.listViewByFeature?.['pendenze'] ?? layout?.listView ?? 'table';
   });
-  /** Override locale del view mode (impostato dal pannello Tweaks). */
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  /** View mode effettivo: override locale prevale sul default da config. */
   readonly viewMode = computed<'table' | 'rows'>(
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
 
   /**
-   * Sezione del pannello tweaks globale registrata in costruttore via
-   * `TweaksRegistry`. La cleanup è bound al `DestroyRef` del component:
-   * navigando via, le righe spariscono dal pannello automaticamente.
+   * Opzioni del select "Ente creditore" (`idDominio`) dai domini in scope
+   * dell'utente (`AuthService.user().domini`), escluso il placeholder `*`
+   * (= tutti → nessun filtro).
    */
+  readonly dominiOptions = computed<SelectOption[]>(() =>
+    (this.auth.user()?.domini ?? [])
+      .filter((d) => d.idDominio && d.idDominio !== '*')
+      .map((d) => ({ value: d.idDominio, label: d.ragioneSociale || d.idDominio }))
+  );
+
   constructor() {
     const tweaks = inject(TweaksRegistry);
     inject(DestroyRef).onDestroy(
@@ -144,25 +143,13 @@ export class PendenzeListComponent implements OnInit {
             value: this.viewMode,
             onChange: (v) => this.onViewModeChange(v),
           },
-          {
-            type: 'segmented',
-            labelKey: 'Tweaks.Range',
-            hintKey: 'Tweaks.RangeHint',
-            options: DATE_RANGE_OPTIONS,
-            value: computed(() => matchDateRangePreset(this.filters().dataDa)),
-            onChange: (v) => this.onDateRangeChange(v),
-          },
         ],
         onReset: () => this.viewModeOverride.set(null),
       })
     );
   }
 
-  /**
-   * Display config caricato da `assets/config/pendenze-config.json` via HTTP.
-   * Fino al fetch completato il signal vale `null` e il template mostra il
-   * data-table (fallback).
-   */
+  /** Display config da `assets/config/pendenze-config.json` (null fino al fetch). */
   readonly rowConfig = toSignal(
     this.displayConfigLoader.load('assets/config/pendenze-config.json').pipe(
       catchError(() => {
@@ -174,39 +161,39 @@ export class PendenzeListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'dataCaricamento', direction: 'desc' });
-  readonly rows = signal<Pendenza[]>([]);
-  readonly total = signal(0);
+  readonly sort = signal<SortEvent | null>({ key: 'dataUltimoAggiornamento', direction: 'desc' });
+  readonly rows = signal<PendenzaSummary[]>([]);
+  /** `hasNextPage` dello slice: pilota l'infinite scroll. */
+  readonly hasMore = signal(false);
+  /**
+   * Totale risultati (`pagination.totalResults`), richiesto con `total=true`
+   * solo sulla prima pagina. `null` finché non arriva (o se non disponibile).
+   */
+  readonly total = signal<number | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
   readonly filters = signal<ListFilters>(defaultFilters());
   readonly hasActiveFilters = computed(() => {
     const f = this.filters();
-    const d = defaultFilters();
-    return f.search !== d.search || f.stato !== d.stato || f.dataDa !== d.dataDa || f.dataA !== d.dataA;
+    return !!(f.idPendenza || f.numeroAvviso || f.idDominio || f.identificativoDebitore);
   });
 
   readonly hasError = computed(() => this.error() !== null);
   readonly hasRows = computed(() => this.rows().length > 0);
-  readonly hasMore = computed(() => this.rows().length < this.total());
   readonly showEmptyState = computed(
     () => !this.loading() && !this.hasError() && !this.hasRows()
   );
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly statoOptions: SelectOption[] = (
-    Object.keys(STATO_PENDENZA_LABEL) as StatoPendenza[]
-  ).map((s) => ({ value: s, labelKey: STATO_PENDENZA_LABEL[s] }));
-
-  readonly columns = computed<ColumnDef<Pendenza>[]>(() => {
+  readonly columns = computed<ColumnDef<PendenzaSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<Pendenza>(tableCfg.columns);
+    if (tableCfg?.columns?.length) return columnsFromConfig<PendenzaSummary>(tableCfg.columns);
     return [
       {
         key: 'numeroAvviso',
         header: 'Pendenze.Columns.Numero',
-        format: (r) => r.numeroAvviso || r.iuv || '—',
+        format: (r) => r.numeroAvviso || r.iuvAvviso || '—',
         cellClass: 'font-mono text-xs',
         width: '12rem',
       },
@@ -216,19 +203,14 @@ export class PendenzeListComponent implements OnInit {
         format: (r) => r.tipoPendenza?.descrizione ?? '',
       },
       {
-        key: 'soggettoPagatore',
-        header: 'Pendenze.Columns.Pagatore',
-        format: (r) => truncate(r.soggettoPagatore?.anagrafica),
-      },
-      {
         key: 'causale',
         header: 'Pendenze.Columns.Causale',
         format: (r) => truncate(r.causale, 80),
       },
       {
-        key: 'dataCaricamento',
-        header: 'Pendenze.Columns.DataCaricamento',
-        format: (r) => formatDate(r.dataCaricamento),
+        key: 'dataUltimoAggiornamento',
+        header: 'Pendenze.Columns.DataAggiornamento',
+        format: (r) => formatDate(r.dataUltimoAggiornamento),
         sortable: true,
         width: '8rem',
       },
@@ -238,7 +220,6 @@ export class PendenzeListComponent implements OnInit {
         format: (r) => formatEuro(r.importo),
         align: 'right',
         cellClass: 'font-mono',
-        sortable: true,
         width: '8rem',
       },
       {
@@ -278,23 +259,23 @@ export class PendenzeListComponent implements OnInit {
     this.fetch(true);
   }
 
-  onSearchChange(value: string): void {
-    this.filters.update((f) => ({ ...f, search: value }));
+  onIdPendenzaChange(value: string): void {
+    this.filters.update((f) => ({ ...f, idPendenza: value }));
     this.reset();
   }
 
-  onStatoChange(value: string): void {
-    this.filters.update((f) => ({ ...f, stato: value as StatoPendenza | '' }));
+  onNumeroAvvisoChange(value: string): void {
+    this.filters.update((f) => ({ ...f, numeroAvviso: value }));
     this.reset();
   }
 
-  onDataDaChange(value: string): void {
-    this.filters.update((f) => ({ ...f, dataDa: value }));
+  onIdDominioChange(value: string): void {
+    this.filters.update((f) => ({ ...f, idDominio: value }));
     this.reset();
   }
 
-  onDataAChange(value: string): void {
-    this.filters.update((f) => ({ ...f, dataA: value }));
+  onIdentificativoDebitoreChange(value: string): void {
+    this.filters.update((f) => ({ ...f, identificativoDebitore: value }));
     this.reset();
   }
 
@@ -303,20 +284,11 @@ export class PendenzeListComponent implements OnInit {
     this.reset();
   }
 
-  // ---- Tweaks panel handlers -----------------------------------------
   onViewModeChange(value: string): void {
     this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
   }
 
-  onDateRangeChange(value: string): void {
-    const days = Number(value);
-    if (!Number.isFinite(days) || days <= 0) return;
-    this.filters.update((f) => ({ ...f, dataDa: daysAgoIso(days), dataA: '' }));
-    this.reset();
-  }
-
-
-  onRowClick(p: Pendenza): void {
+  onRowClick(p: PendenzaSummary): void {
     if (!p.idA2A || !p.idPendenza) return;
     this.router.navigate(['/pendenze', p.idA2A, p.idPendenza]);
   }
@@ -338,38 +310,39 @@ export class PendenzeListComponent implements OnInit {
 
     const f = this.filters();
     const filters: PendenzeListFilters = {
-      pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
-      // ordinamento: formatOrdinamento(this.sort()),
-      stato: f.stato || undefined,
-      // Il backend GovPay riceve `iuv` o `numeroAvviso` per ricerca puntuale; qui
-      // mappiamo la search generica su entrambi (preferendo numeroAvviso). Una
-      // ricerca full-text richiederebbe un endpoint dedicato.
-      numeroAvviso: f.search || undefined,
-      dataDa: f.dataDa ? `${f.dataDa}T00:00` : undefined,
-      dataA: f.dataA ? `${f.dataA}T23:59` : undefined,
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
+      // Richiedi il conteggio totale solo sulla prima pagina: non cambia tra
+      // gli append dell'infinite scroll ed evita una COUNT extra per pagina.
+      total: append ? undefined : true,
+      idPendenza: f.idPendenza || undefined,
+      numeroAvviso: f.numeroAvviso || undefined,
+      idDominio: f.idDominio || undefined,
+      identificativoDebitore: f.identificativoDebitore || undefined,
     };
 
     this.api
       .list(filters)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of<Slice<PendenzaSummary>>({ results: [] });
         })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
+      .subscribe((slice) => {
+        const results = slice.results ?? [];
         if (append) {
           this.rows.update((prev) => [...prev, ...results]);
         } else {
           this.rows.set(results);
         }
-        this.total.set(page.numRisultati ?? 0);
+        const totalResults = slice.pagination?.totalResults;
+        if (totalResults != null) this.total.set(totalResults);
+        this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
   }
-
 }

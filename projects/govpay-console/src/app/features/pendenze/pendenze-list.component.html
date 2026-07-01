@@ -6,40 +6,56 @@
     </button>
   </lnk-page-header>
 
-  <!-- Toolbar filtri -->
+  <!-- Toolbar filtri: i 4 filtri supportati dalla API V2 (Fase 1). -->
   <div class="flex flex-wrap items-end gap-3">
-    <div class="flex-1 min-w-[12rem]">
+    <label class="flex flex-col gap-1 min-w-0 flex-1 min-w-[12rem]">
+      <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Pendenze.Filters.IdPendenza' | translate }}</span>
       <lnk-search-input
-        [value]="filters().search"
-        placeholderKey="Pendenze.Filters.SearchPlaceholder"
-        (valueChange)="onSearchChange($event)"
+        [value]="filters().idPendenza"
+        placeholderKey="Pendenze.Filters.IdPendenzaPlaceholder"
+        (valueChange)="onIdPendenzaChange($event)"
       />
-    </div>
+    </label>
+
+    <label class="flex flex-col gap-1 min-w-0">
+      <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Pendenze.Filters.NumeroAvviso' | translate }}</span>
+      <lnk-search-input
+        [value]="filters().numeroAvviso"
+        placeholderKey="Pendenze.Filters.NumeroAvvisoPlaceholder"
+        (valueChange)="onNumeroAvvisoChange($event)"
+      />
+    </label>
+
     <lnk-select-input
-      labelKey="Pendenze.Filters.Stato"
+      labelKey="Pendenze.Filters.Dominio"
       placeholderKey="Common.All"
-      [value]="filters().stato"
-      [options]="statoOptions"
-      (valueChange)="onStatoChange($event)"
+      [value]="filters().idDominio"
+      [options]="dominiOptions()"
+      (valueChange)="onIdDominioChange($event)"
     />
-    <lnk-date-input
-      labelKey="Common.DateFrom"
-      [value]="filters().dataDa"
-      [max]="filters().dataA || undefined"
-      (valueChange)="onDataDaChange($event)"
-    />
-    <lnk-date-input
-      labelKey="Common.DateTo"
-      [value]="filters().dataA"
-      [min]="filters().dataDa || undefined"
-      (valueChange)="onDataAChange($event)"
-    />
+
+    <label class="flex flex-col gap-1 min-w-0">
+      <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Pendenze.Filters.IdentificativoDebitore' | translate }}</span>
+      <lnk-search-input
+        [value]="filters().identificativoDebitore"
+        placeholderKey="Pendenze.Filters.IdentificativoDebitorePlaceholder"
+        (valueChange)="onIdentificativoDebitoreChange($event)"
+      />
+    </label>
+
     @if (hasActiveFilters()) {
       <button type="button" class="btn btn-ghost btn-sm self-end" (click)="resetFilters()">
         {{ 'Common.ResetFilters' | translate }}
       </button>
     }
   </div>
+
+  <!-- La ricerca per debitore è tracciata lato server (audit GDPR). -->
+  @if (filters().identificativoDebitore) {
+    <p class="text-xs text-[var(--muted-foreground)]">
+      {{ 'Pendenze.Filters.DebitoreHint' | translate }}
+    </p>
+  }
   </div>
 
   <div class="px-6 space-y-4">
@@ -95,7 +111,7 @@
       </div>
     } @else if (rows().length > 0) {
       <p class="py-3 text-center text-xs text-[var(--muted-foreground)]">
-        {{ 'Pagination.AllLoaded' | translate: { total: total() } }}
+        {{ 'Pagination.AllLoaded' | translate: { total: total() ?? rows().length } }}
       </p>
     }
   }

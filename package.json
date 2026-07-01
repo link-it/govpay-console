@@ -9,6 +9,7 @@
     "start:dev": "npm run build:meta && GP_BACKEND=dev-cloud ng serve govpay-console --proxy-config proxy.config.js",
     "start:demo": "npm run build:meta && GP_BACKEND=demo ng serve govpay-console --proxy-config proxy.config.js",
     "start:local-alt": "npm run build:meta && GP_BACKEND=local-alt ng serve govpay-console --proxy-config proxy.config.js",
+    "start:demo-v2": "npm run build:meta && GP_BACKEND=demo-v2 ng serve govpay-console --proxy-config proxy.config.js",
     "start:port": "npm run build:meta && ng serve govpay-console --port 5300 --proxy-config proxy.config.js",
     "build:meta": "node scripts/generate-version.js && node scripts/merge-i18n.js",
     "prebuild": "npm run build:meta",

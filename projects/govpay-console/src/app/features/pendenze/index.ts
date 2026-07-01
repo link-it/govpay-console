@@ -10,7 +10,7 @@
  */
 
 export * from './pendenza.model';
-export * from './pendenze.api';
+export * from './pendenze.console-api';
 export * from './pendenze.routes';
 export * from './pendenze-list.component';
 export * from './pendenza-detail.component';

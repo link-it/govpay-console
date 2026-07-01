@@ -108,45 +108,54 @@
   "Pendenze": {
     "Subtitle": "List of items uploaded to the portal.",
     "Filters": {
-      "SearchPlaceholder": "Search by notice number or IUV…",
-      "Stato": "Status"
+      "IdPendenza": "Item ID",
+      "IdPendenzaPlaceholder": "Search by item ID…",
+      "NumeroAvviso": "Notice number",
+      "NumeroAvvisoPlaceholder": "18 digits",
+      "Dominio": "Creditor",
+      "IdentificativoDebitore": "Debtor identifier",
+      "IdentificativoDebitorePlaceholder": "Tax code / VAT no.",
+      "DebitoreHint": "Searching by debtor identifier is logged for audit purposes (GDPR)."
     },
     "Empty": {
       "Title": "No items",
       "Description": "There are no items matching the current filters."
     },
     "Columns": {
-      "Numero": "Number / IUV",
+      "Numero": "Notice number",
       "Tipo": "Type",
-      "Pagatore": "Payer",
       "Causale": "Reason",
-      "DataCaricamento": "Uploaded",
+      "DataAggiornamento": "Updated",
       "Importo": "Amount",
       "Stato": "Status"
     },
     "Stati": {
-      "NonEseguita": "To pay",
-      "Eseguita": "Paid",
-      "EseguitaParziale": "Partially paid",
+      "NonPagata": "To pay",
+      "Pagata": "Paid",
+      "PagataParziale": "Partially paid",
       "Annullata": "Cancelled",
       "Scaduta": "Expired",
-      "Incassata": "Reconciled",
+      "Riconciliata": "Reconciled",
       "Anomala": "Anomalous"
     },
     "Detail": {
       "Subtitle": "Item details.",
       "Generali": "General",
       "EnteCreditore": "Creditor",
+      "Voci": "Line items",
+      "VociEmpty": "No line items.",
       "SoggettoPagatore": "Payer",
       "RicevuteAssociate": "Linked receipts",
       "NumeroAvviso": "Notice number",
-      "Iuv": "IUV",
+      "IuvAvviso": "Notice IUV",
       "IdPendenza": "Item ID",
+      "IdA2A": "Application ID (A2A)",
       "Tipo": "Type",
       "Importo": "Amount",
-      "DataCaricamento": "Upload date",
+      "DataAggiornamento": "Last update",
       "DataValidita": "Valid until",
       "DataScadenza": "Due date",
+      "Descrizione": "Description",
       "Causale": "Reason",
       "IdDominio": "Domain ID",
       "RagioneSociale": "Name",
@@ -154,12 +163,36 @@
       "Anagrafica": "Full name",
       "Identificativo": "Identifier",
       "TipoSoggetto": "Subject type",
+      "Indirizzo": "Address",
+      "Localita": "City",
+      "Nazione": "Country",
       "Email": "Email",
       "Cellulare": "Mobile",
       "Dominio": "Domain",
-      "TabDati": "Pendenza data",
-      "TabEventi": "Events",
-      "EventiEmpty": "No events linked to this pendenza."
+      "StampaAvviso": "Print notice",
+      "AvvisoErrore": "Unable to generate the PDF notice.",
+      "MostraDebitore": "Show debtor information",
+      "DebitoreProtetto": "The debtor's personal data is protected: viewing it is logged for audit purposes (GDPR).",
+      "DebitoreConsensoTitolo": "View the debtor's data?",
+      "DebitoreConsensoTesto": "You are about to view the debtor's personal data and contacts. This action is logged for audit purposes (GDPR).",
+      "DebitoreConsensoConferma": "View"
+    },
+    "Voci": {
+      "Indice": "#",
+      "Descrizione": "Description",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "StatiVoce": {
+      "NonPagata": "To pay",
+      "Pagata": "Paid",
+      "Anomala": "Anomalous"
+    },
+    "StatiAvviso": {
+      "Pagato": "Paid",
+      "NonPagato": "Unpaid",
+      "Scaduto": "Expired",
+      "Annullato": "Cancelled"
     }
   },
   "Riscossioni": {
