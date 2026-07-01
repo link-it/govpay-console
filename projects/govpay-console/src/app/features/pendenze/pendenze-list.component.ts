@@ -22,9 +22,7 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@linkit/shared-ui';
-import { ListStateService, SystemFacade } from '@linkit/shared-ui';
-import { SnackbarService } from '@linkit/shared-ui';
+import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -34,19 +32,19 @@ import {
   ListStickyToolbarDirective,
   ItemListComponent,
   PageHeaderComponent,
-  SearchInputComponent,
-  SelectInputComponent,
+  SearchPillComponent,
   VIEW_OPTIONS,
   columnsFromConfig,
   formatDate,
   formatEuro,
   formatOrdinamento,
+  initialSearchState,
   truncate,
   type ColumnDef,
-  type SelectOption,
+  type SearchField,
+  type SearchState,
   type SortEvent,
 } from '@linkit/shared-ui';
-import { TweaksRegistry } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { AuthService } from '@core/auth/services/auth.service';
 import { PendenzeConsoleApi } from './pendenze.console-api';
@@ -59,23 +57,13 @@ import {
 
 const PAGE_SIZE = 25;
 
-/**
- * Filtri di lista Fase 1 API V2: i **4 filtri supportati** (campi dedicati).
- * I filtri V1 `stato`/`dataDa`/`dataA` sono rimossi (la API risponde 400).
- */
-interface ListFilters {
-  idPendenza: string;
-  numeroAvviso: string;
-  idDominio: string;
-  identificativoDebitore: string;
-}
-
-const defaultFilters = (): ListFilters => ({
-  idPendenza: '',
-  numeroAvviso: '',
-  idDominio: '',
-  identificativoDebitore: '',
-});
+/** Chiavi filtro (= id dei `SearchField` della pill) allineate ai 4 filtri V2. */
+const F = {
+  idPendenza: 'idPendenza',
+  numeroAvviso: 'numeroAvviso',
+  idDominio: 'idDominio',
+  identificativoDebitore: 'identificativoDebitore',
+} as const;
 
 @Component({
   selector: 'lnk-pendenze-list',
@@ -87,8 +75,7 @@ const defaultFilters = (): ListFilters => ({
     ItemListComponent,
     EmptyStateComponent,
     InfiniteScrollDirective,
-    SearchInputComponent,
-    SelectInputComponent,
+    SearchPillComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -117,16 +104,42 @@ export class PendenzeListComponent implements OnInit {
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
 
-  /**
-   * Opzioni del select "Ente creditore" (`idDominio`) dai domini in scope
-   * dell'utente (`AuthService.user().domini`), escluso il placeholder `*`
-   * (= tutti → nessun filtro).
-   */
-  readonly dominiOptions = computed<SelectOption[]>(() =>
-    (this.auth.user()?.domini ?? [])
-      .filter((d) => d.idDominio && d.idDominio !== '*')
-      .map((d) => ({ value: d.idDominio, label: d.ragioneSociale || d.idDominio }))
+  /** Domini in scope dell'utente (escluso il placeholder `*`). */
+  private readonly domini = computed(() =>
+    (this.auth.user()?.domini ?? []).filter((d) => d.idDominio && d.idDominio !== '*')
   );
+  /** Etichette dominio (ragioneSociale) usate come opzioni del select `idDominio`. */
+  private readonly dominiLabels = computed(() =>
+    this.domini().map((d) => d.ragioneSociale || d.idDominio)
+  );
+  /** Mappa ragioneSociale → idDominio per risolvere il valore del select verso l'API. */
+  private readonly dominioIdByLabel = computed(() => {
+    const map = new Map<string, string>();
+    for (const d of this.domini()) map.set(d.ragioneSociale || d.idDominio, d.idDominio);
+    return map;
+  });
+
+  /**
+   * Config dei filtri della search-pill: i 4 filtri supportati dalla API V2.
+   * `idDominio` è un select popolato dai domini del profilo (label = ragioneSociale).
+   * La ricerca libera della pill (query) è decorativa e non inviata all'API.
+   */
+  readonly searchFields = computed<SearchField[]>(() => [
+    { id: F.idPendenza, label: 'ID pendenza', kind: 'text', placeholder: 'Cerca per ID pendenza…', span: 2 },
+    { id: F.numeroAvviso, label: 'Numero avviso', kind: 'text', placeholder: '18 cifre' },
+    {
+      id: F.idDominio,
+      label: 'Ente creditore',
+      kind: 'select',
+      icon: 'bootstrapBuilding',
+      options: ['', ...this.dominiLabels()],
+      placeholder: 'Tutti',
+      // Sempre dropdown (mai segmented) e ricercabile appena c'è almeno un ente.
+      segmentedMax: 0,
+      searchableFrom: 1,
+    },
+    { id: F.identificativoDebitore, label: 'Identificativo debitore', kind: 'text', icon: 'bootstrapPerson', placeholder: 'CF / P.IVA', span: 2 },
+  ]);
 
   constructor() {
     const tweaks = inject(TweaksRegistry);
@@ -165,18 +178,17 @@ export class PendenzeListComponent implements OnInit {
   readonly rows = signal<PendenzaSummary[]>([]);
   /** `hasNextPage` dello slice: pilota l'infinite scroll. */
   readonly hasMore = signal(false);
-  /**
-   * Totale risultati (`pagination.totalResults`), richiesto con `total=true`
-   * solo sulla prima pagina. `null` finché non arriva (o se non disponibile).
-   */
+  /** Totale risultati (`total=true` sulla prima pagina). `null` se non disponibile. */
   readonly total = signal<number | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  readonly filters = signal<ListFilters>(defaultFilters());
+  /** Stato della search-pill (query + filters + sort/dir). Sort/dir non usati (sort da tabella). */
+  readonly searchState = signal<SearchState>(initialSearchState([]));
+
   readonly hasActiveFilters = computed(() => {
-    const f = this.filters();
-    return !!(f.idPendenza || f.numeroAvviso || f.idDominio || f.identificativoDebitore);
+    const f = this.searchState().filters;
+    return !!(f[F.idPendenza] || f[F.numeroAvviso] || f[F.idDominio] || f[F.identificativoDebitore]);
   });
 
   readonly hasError = computed(() => this.error() !== null);
@@ -235,10 +247,10 @@ export class PendenzeListComponent implements OnInit {
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([{ label: 'Nav.Pendenze' }]);
-    // Ripristina filtri e ordinamento dopo back da dettaglio.
-    const saved = this.listState.get<{ filters: ListFilters; sort: SortEvent | null }>(PendenzeListComponent.STATE_KEY);
+    // Ripristina stato ricerca e ordinamento dopo back da dettaglio.
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(PendenzeListComponent.STATE_KEY);
     if (saved) {
-      this.filters.set(saved.filters);
+      if (saved.search) this.searchState.set(saved.search);
       if (saved.sort) this.sort.set(saved.sort);
     }
     this.reset();
@@ -259,28 +271,14 @@ export class PendenzeListComponent implements OnInit {
     this.fetch(true);
   }
 
-  onIdPendenzaChange(value: string): void {
-    this.filters.update((f) => ({ ...f, idPendenza: value }));
-    this.reset();
-  }
-
-  onNumeroAvvisoChange(value: string): void {
-    this.filters.update((f) => ({ ...f, numeroAvviso: value }));
-    this.reset();
-  }
-
-  onIdDominioChange(value: string): void {
-    this.filters.update((f) => ({ ...f, idDominio: value }));
-    this.reset();
-  }
-
-  onIdentificativoDebitoreChange(value: string): void {
-    this.filters.update((f) => ({ ...f, identificativoDebitore: value }));
+  /** Emesso dalla search-pill (Invio o "Cerca"): riparte dalla pagina 1. */
+  onSearch(state: SearchState): void {
+    this.searchState.set(state);
     this.reset();
   }
 
   resetFilters(): void {
-    this.filters.set(defaultFilters());
+    this.searchState.set(initialSearchState(this.searchFields()));
     this.reset();
   }
 
@@ -294,9 +292,9 @@ export class PendenzeListComponent implements OnInit {
   }
 
   private reset(): void {
-    // Persisti filtri/ordinamento per il ripristino al return dal detail.
+    // Persisti stato ricerca/ordinamento per il ripristino al return dal detail.
     this.listState.set(PendenzeListComponent.STATE_KEY, {
-      filters: this.filters(),
+      search: this.searchState(),
       sort: this.sort(),
     });
     this.page.set(1);
@@ -308,18 +306,19 @@ export class PendenzeListComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    const f = this.filters();
+    const f = this.searchState().filters;
+    // Il select dominio porta la ragioneSociale: risolvi verso l'idDominio API.
+    const idDominio = f[F.idDominio] ? this.dominioIdByLabel().get(f[F.idDominio]) : undefined;
     const filters: PendenzeListFilters = {
       page: this.page(),
       limit: PAGE_SIZE,
       sort: formatOrdinamento(this.sort()),
-      // Richiedi il conteggio totale solo sulla prima pagina: non cambia tra
-      // gli append dell'infinite scroll ed evita una COUNT extra per pagina.
+      // Conteggio totale solo sulla prima pagina (evita COUNT extra per pagina).
       total: append ? undefined : true,
-      idPendenza: f.idPendenza || undefined,
-      numeroAvviso: f.numeroAvviso || undefined,
-      idDominio: f.idDominio || undefined,
-      identificativoDebitore: f.identificativoDebitore || undefined,
+      idPendenza: f[F.idPendenza] || undefined,
+      numeroAvviso: f[F.numeroAvviso] || undefined,
+      idDominio: idDominio || undefined,
+      identificativoDebitore: f[F.identificativoDebitore] || undefined,
     };
 
     this.api

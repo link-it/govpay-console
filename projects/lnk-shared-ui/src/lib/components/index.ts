@@ -24,6 +24,15 @@ export * from './info-grid/info-grid.component';
 export * from './status-badge/status-badge.component';
 export * from './confirm-dialog/confirm-dialog.component';
 
+// Search pill (barra di ricerca config-driven).
+export * from './search-pill/search-pill.types';
+export * from './search-pill/search-pill.tokens';
+export * from './search-pill/search-chip.component';
+export * from './search-pill/search-field.component';
+export * from './search-pill/search-filter-form.component';
+export * from './search-pill/search-suggestions.component';
+export * from './search-pill/search-pill.component';
+
 // Driven-by-config rendering (item-type + item-row + item-list).
 export * from './item-row/display-config.types';
 export * from './item-row/display-config.loader';

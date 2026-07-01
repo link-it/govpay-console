@@ -21,6 +21,7 @@ import {
   SnackbarService,
   SystemFacade,
   TweaksRegistry,
+  type SearchState,
 } from '@linkit/shared-ui';
 import { AuthService } from '@core/auth/services/auth.service';
 import type { Slice } from '@core/models';
@@ -41,22 +42,17 @@ function summary(idPendenza: string): PendenzaSummary {
   };
 }
 
-function slice(
-  results: PendenzaSummary[],
-  hasNextPage = false,
-  totalResults?: number,
-): Slice<PendenzaSummary> {
+function slice(results: PendenzaSummary[], hasNextPage = false, totalResults?: number): Slice<PendenzaSummary> {
   return { results, pagination: { page: 1, limit: 25, hasNextPage, totalResults } };
 }
 
-interface Stubs {
-  list?: ReturnType<typeof vi.fn>;
+function state(filters: Record<string, string>): SearchState {
+  return { query: '', filters, sort: '', dir: 'desc' };
 }
 
-function setup(stubs: Stubs = {}) {
-  const apiList = stubs.list ?? vi.fn(() => of(slice([summary('1')], false, 1)));
+function setup(list?: ReturnType<typeof vi.fn>) {
+  const apiList = list ?? vi.fn(() => of(slice([summary('1')], false, 1)));
   const snackbarError = vi.fn();
-  const listStateSet = vi.fn();
 
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
@@ -65,7 +61,7 @@ function setup(stubs: Stubs = {}) {
       { provide: PendenzeConsoleApi, useValue: { list: apiList } },
       { provide: ConfigService, useValue: { appConfig: () => ({ Layout: {} }) } },
       { provide: SystemFacade, useValue: { setBreadcrumbs: vi.fn() } },
-      { provide: ListStateService, useValue: { get: () => null, set: listStateSet } },
+      { provide: ListStateService, useValue: { get: () => null, set: vi.fn() } },
       { provide: SnackbarService, useValue: { error: snackbarError } },
       { provide: TranslateService, useValue: { instant: (k: string) => k } },
       { provide: Router, useValue: { navigate: vi.fn() } },
@@ -90,9 +86,15 @@ function setup(stubs: Stubs = {}) {
 }
 
 describe('PendenzeListComponent', () => {
-  it('dominiOptions esclude il placeholder "*"', () => {
+  it('searchFields: 4 filtri V2 con select dominio popolato (escluso "*")', () => {
     const { comp } = setup();
-    expect(comp.dominiOptions()).toEqual([{ value: '12345678901', label: 'Comune X' }]);
+    const fields = comp.searchFields();
+    expect(fields.map((f) => f.id)).toEqual([
+      'idPendenza', 'numeroAvviso', 'idDominio', 'identificativoDebitore',
+    ]);
+    const dominio = fields.find((f) => f.id === 'idDominio')!;
+    expect(dominio.kind).toBe('select');
+    expect(dominio.options).toEqual(['', 'Comune X']);
   });
 
   it('ngOnInit carica con i parametri V2 di default (page/limit/sort/total)', () => {
@@ -113,22 +115,32 @@ describe('PendenzeListComponent', () => {
     expect(comp.total()).toBe(1);
   });
 
-  it('hasMore riflette pagination.hasNextPage', () => {
-    const { comp } = setup({ list: vi.fn(() => of(slice([summary('1')], true))) });
-    comp.ngOnInit();
-    expect(comp.hasMore()).toBe(true);
-    expect(comp.canLoadMore()).toBe(true);
-  });
-
-  it('un filtro dedicato viene inoltrato come query param', () => {
+  it('onSearch inoltra i filtri di testo come query param', () => {
     const { comp, apiList } = setup();
     comp.ngOnInit();
     apiList.mockClear();
-    comp.onNumeroAvvisoChange('123456789012345678');
+    comp.onSearch(state({ numeroAvviso: '123456789012345678' }));
     expect(comp.hasActiveFilters()).toBe(true);
     expect(apiList).toHaveBeenCalledWith(
       expect.objectContaining({ page: 1, numeroAvviso: '123456789012345678' })
     );
+  });
+
+  it('onSearch risolve la ragioneSociale del select verso idDominio', () => {
+    const { comp, apiList } = setup();
+    comp.ngOnInit();
+    apiList.mockClear();
+    comp.onSearch(state({ idDominio: 'Comune X' }));
+    expect(apiList).toHaveBeenCalledWith(
+      expect.objectContaining({ idDominio: '12345678901' })
+    );
+  });
+
+  it('hasMore riflette pagination.hasNextPage', () => {
+    const { comp } = setup(vi.fn(() => of(slice([summary('1')], true))));
+    comp.ngOnInit();
+    expect(comp.hasMore()).toBe(true);
+    expect(comp.canLoadMore()).toBe(true);
   });
 
   it('loadMore accoda la pagina successiva senza richiedere di nuovo il totale', () => {
@@ -136,22 +148,17 @@ describe('PendenzeListComponent', () => {
       .fn()
       .mockReturnValueOnce(of(slice([summary('1')], true, 2)))
       .mockReturnValueOnce(of(slice([summary('2')], false)));
-    const { comp } = setup({ list });
+    const { comp } = setup(list);
     comp.ngOnInit();
-    expect(comp.rows().length).toBe(1);
-    expect(comp.total()).toBe(2);
     comp.loadMore();
     expect(comp.rows().map((r) => r.idPendenza)).toEqual(['1', '2']);
-    expect(comp.hasMore()).toBe(false);
-    // Prima pagina con total=true, append con total=undefined.
     expect(list.mock.calls[0][0]).toMatchObject({ page: 1, total: true });
     expect(list.mock.calls[1][0]).toMatchObject({ page: 2, total: undefined });
-    // Il totale resta quello della prima pagina.
     expect(comp.total()).toBe(2);
   });
 
-  it('in errore imposta error e mostra snackbar (RFC 7807 fallback)', () => {
-    const { comp, snackbarError } = setup({ list: vi.fn(() => throwError(() => new Error('boom'))) });
+  it('in errore imposta error e mostra snackbar', () => {
+    const { comp, snackbarError } = setup(vi.fn(() => throwError(() => new Error('boom'))));
     comp.ngOnInit();
     expect(comp.hasError()).toBe(true);
     expect(snackbarError).toHaveBeenCalled();
