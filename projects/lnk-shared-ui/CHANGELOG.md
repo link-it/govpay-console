@@ -13,6 +13,34 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.10.0] — 2026-07-01
+
+### Aggiunto
+
+- **`lnk-search-pill`** — barra di ricerca "a pillola" config-driven (guidata
+  da un array di `SearchField`): chip dei filtri attivi inline, popover filtri
+  con stato *draft* (le modifiche/Reset si applicano solo su "Cerca"; Annulla/
+  fuori-click le scartano), select ricercabile, toggle di ordinamento opzionale
+  e autocomplete opzionale. Se non è configurato un campo `query` la barra non
+  mostra l'input e il click apre il popover. Colori/superfici dalle variabili di
+  tema (`--primary`, `--card-bg`, …) con dark automatico; icone `@ng-icons`.
+  Sotto-componenti: `lnk-search-field`, `lnk-search-filter-form`,
+  `lnk-search-chip`, `lnk-search-suggestions`; tipi/utility
+  (`SearchField`, `SearchState`, `computeActiveChips`, `initialSearchState`, …).
+- **`lnk-confirm-dialog`** — dialog di conferma generico (backdrop + card,
+  label i18n, output `confirm`/`cancel`), controllato via input `open`.
+- **`downloadBlob(blob, filename)`** — utility per lo scarico di file binari lato
+  browser (object URL + anchor + revoke).
+
+### Modificato
+
+- **Header di licenza** — uniformato l'header di tutti i file `.ts` della
+  libreria all'header generico Link.it (Copyright + GPL v3 completo), rimossi i
+  riferimenti allo specifico applicativo "GovPay - Porta di Accesso al Nodo dei
+  Pagamenti SPC". Solo commenti: nessuna API change.
+
+---
+
 ## [0.9.4] — 2026-06-05
 
 ### Risolto

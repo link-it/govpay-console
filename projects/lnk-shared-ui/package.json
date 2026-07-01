@@ -1,6 +1,6 @@
 {
   "name": "@linkit/shared-ui",
-  "version": "0.9.4",
+  "version": "0.10.0",
   "description": "Link.it shared UI components for backoffice apps (Angular 21, standalone, signals, Tailwind 4).",
   "license": "GPL-3.0-or-later",
   "sideEffects": false,
