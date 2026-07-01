@@ -13,6 +13,18 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.10.1] — 2026-07-02
+
+### Risolto
+
+- **`lnk-search-pill` — bottone "Cerca" invisibile all'hover** — `--sb-primary-hover`
+  era mappato su `--lnk-btn-primary-hover`, variabile non sempre definita nel tema
+  del consumer: l'hover del bottone primario del popover risolveva a `background`
+  vuoto (trasparente) facendolo "sparire". Ora è derivato da `--primary` scurito
+  via `color-mix`, senza dipendenze esterne.
+
+---
+
 ## [0.10.0] — 2026-07-01
 
 ### Aggiunto

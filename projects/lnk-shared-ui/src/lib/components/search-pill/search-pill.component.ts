@@ -357,7 +357,9 @@ export class SearchPillComponent {
     return [
       // Colori/superfici → variabili di tema (dark automatico via `.dark`).
       '--sb-primary:var(--primary)',
-      '--sb-primary-hover:var(--lnk-btn-primary-hover)',
+      // Derivato da --primary (scurito) per non dipendere da --lnk-btn-primary-hover,
+      // che può non essere definita nel tema del consumer.
+      '--sb-primary-hover:color-mix(in srgb, var(--primary) 85%, #000)',
       '--sb-primary-soft:color-mix(in srgb, var(--primary) 12%, transparent)',
       '--sb-surface:var(--card-bg)',
       '--sb-surface-muted:var(--muted)',
