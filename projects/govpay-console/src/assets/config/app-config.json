@@ -77,8 +77,26 @@
     },
     "Features": {
       "GESTIONE_PAGAMENTI": true,
+      "MENU_PENDENZE": true,
+      "MENU_RICEVUTE": true,
+      "MENU_PAGAMENTI": false,
       "GESTIONE_RISCOSSIONI": true,
-      "MANUTENZIONE": false
+      "MENU_RISCOSSIONI": false,
+      "MENU_RENDICONTAZIONI": true,
+      "MENU_INCASSI": false,
+      "GESTIONE_MONITORAGGIO": true,
+      "MENU_GIORNALE_EVENTI": true,
+      "MENU_TRACCIATI": false,
+      "GESTIONE_ANAGRAFICHE": true,
+      "MENU_DOMINI": false,
+      "MENU_TIPI_PENDENZA": false,
+      "MENU_APPLICAZIONI": false,
+      "MENU_REGISTRO_INTERMEDIARI": true,
+      "GESTIONE_SICUREZZA": true,
+      "MENU_OPERATORI": true,
+      "MENU_RUOLI": true,
+      "GESTIONE_IMPOSTAZIONI": true,
+      "MENU_IMPOSTAZIONI": false
     },
     "Preferences": {
       "TIMEOUT": 30000,
