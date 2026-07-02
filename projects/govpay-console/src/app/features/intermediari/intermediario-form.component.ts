@@ -31,7 +31,7 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { RequiredLabelDirective } from '@core/ui/required-label.directive';
+import { RequiredLabelDirective } from '@linkit/shared-ui';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { IntermediarioCreate, IntermediarioReplace } from './intermediario.model';
 

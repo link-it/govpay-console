@@ -14,11 +14,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService } from '@linkit/shared-ui';
+import { SnackbarService, RequiredLabelDirective } from '@linkit/shared-ui';
 import type { DominioSummary } from '@core/models';
 import { problemDetail } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
-import { RequiredLabelDirective } from '@core/ui/required-label.directive';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { StazioneCreate, StazioneReplace, StazioneSummary, VersioneStazione } from './intermediario.model';
 

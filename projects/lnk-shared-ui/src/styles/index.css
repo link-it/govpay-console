@@ -337,6 +337,16 @@ lnk-back-button {
 }
 
 /* ==========================================================================
+   CAMPO OBBLIGATORIO — asterisco danger sul label. Applicato dalla direttiva
+   `[lnkRequiredLabel]` quando il control ha `Validators.required`.
+   ========================================================================== */
+.lnk-required::after {
+  content: " *";
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* ==========================================================================
    SCROLLBAR sottile — riusabile su qualsiasi container `.scrollbar-thin`.
    ========================================================================== */
 .scrollbar-thin {

@@ -16,3 +16,4 @@
 
 export * from './infinite-scroll.directive';
 export * from './list-sticky-toolbar.directive';
+export * from './required-label.directive';
