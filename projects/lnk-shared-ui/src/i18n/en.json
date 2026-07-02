@@ -3,6 +3,22 @@
     "Title": "GovPay Console",
     "DefaultUser": "User"
   },
+  "SearchPill": {
+    "Filters": "Filters",
+    "Reset": "Reset",
+    "Close": "Close",
+    "Search": "Search",
+    "ActiveSuffix": "active",
+    "ResultsApproxPrefix": "≈",
+    "ResultsSuffix": "results",
+    "NoResults": "No results",
+    "OptionsFilter": "Filter options…",
+    "None": "— None —",
+    "NoOptions": "No options",
+    "TextPlaceholder": "Type to search…",
+    "SelectPlaceholder": "Select…",
+    "AllFieldsHint": "Filters apply to all fields"
+  },
   "Common": {
     "Loading": "Loading…",
     "Save": "Save",

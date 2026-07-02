@@ -58,7 +58,7 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
             type="text"
             class="fld__input"
             [value]="value()"
-            [placeholder]="field().placeholder ?? 'Digita per cercare…'"
+            [placeholder]="field().placeholder ?? labels().textPlaceholder"
             (input)="value.set($any($event.target).value)"
             (focus)="focused.set(true)"
             (blur)="focused.set(false)"
@@ -102,7 +102,7 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
           <div class="seg" role="tablist">
             @for (o of field().options; track o) {
               <button type="button" role="tab" [attr.data-on]="value() === o ? '1' : '0'"
-                (click)="value.set(o)">{{ o }}</button>
+                (click)="value.set(o)">{{ optionLabel(o) }}</button>
             }
           </div>
         </div>
@@ -113,7 +113,7 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
         <div class="fld__control">
           <button type="button" class="fld__trigger" [attr.data-empty]="value() ? '0' : '1'"
             (click)="toggleOpen()">
-            <span class="fld__trigger-text">{{ value() || field().placeholder || 'Seleziona…' }}</span>
+            <span class="fld__trigger-text">{{ value() ? optionLabel(value()) : (field().placeholder || labels().selectPlaceholder) }}</span>
             <ng-icon name="bootstrapChevronDown" size="0.9rem" class="fld__chev" [class.fld__chev--open]="open()" />
           </button>
           @if (value()) {
@@ -141,12 +141,12 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
                     @if (field().icon && o) {
                       <ng-icon [name]="field().icon!" size="1rem" class="menu__icon" />
                     }
-                    <span class="menu__label">{{ o || labels().none }}</span>
+                    <span class="menu__label">{{ o ? optionLabel(o) : labels().none }}</span>
                     @if (o === value()) { <ng-icon name="bootstrapCheck2" size="0.95rem" class="menu__check" /> }
                   </button>
                 }
                 @if (filteredOptions().length === 0) {
-                  <div class="menu__empty">Nessuna opzione</div>
+                  <div class="menu__empty">{{ labels().noOptions }}</div>
                 }
               </div>
             </div>
@@ -377,8 +377,13 @@ export class SearchFieldComponent {
   protected readonly filteredOptions = computed(() => {
     const opts = this.field().options ?? [];
     const q = this.filterText().toLowerCase();
-    return q ? opts.filter((o) => (o || '').toLowerCase().includes(q)) : opts;
+    return q ? opts.filter((o) => this.optionLabel(o).toLowerCase().includes(q)) : opts;
   });
+
+  /** Etichetta visuale di un'opzione (tradotta se presente in `optionLabels`). */
+  protected optionLabel(option: string): string {
+    return this.field().optionLabels?.[option] ?? option;
+  }
 
   protected toggleOpen(): void {
     this.open.update((v) => !v);

@@ -16,7 +16,8 @@
     [(value)]="searchState"
     [resultCount]="total()"
     [showSort]="false"
-    placeholder="Cerca intermediario…"
+    [labels]="pillLabels()"
+    [placeholder]="searchPlaceholder()"
     (search)="onSearch($event)"
   />
   </div>

@@ -118,6 +118,10 @@
       "Dominio": "Creditor",
       "IdentificativoDebitore": "Debtor identifier",
       "IdentificativoDebitorePlaceholder": "Tax code / VAT no.",
+      "DominioPlaceholder": "All",
+      "DataInizio": "Date from",
+      "DataFine": "Date to",
+      "Placeholder": "Search debt position…",
       "DebitoreHint": "Searching by debtor identifier is logged for audit purposes (GDPR)."
     },
     "Empty": {
@@ -597,6 +601,17 @@
   },
   "Intermediari": {
     "Subtitle": "Registered PagoPA brokers.",
+    "Filters": {
+      "CodIntermediario": "Intermediary code",
+      "CodIntermediarioPlaceholder": "Search by code…",
+      "Denominazione": "Name",
+      "DenominazionePlaceholder": "Search by name…",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled",
+      "Placeholder": "Search intermediary…"
+    },
     "Stato": {
       "Abilitato": "Enabled",
       "Disabilitato": "Disabled"
@@ -667,7 +682,27 @@
         "Credenziali": "Credentials",
         "CredenzialiHint": "Credentials are never shown: fill only the fields you want to update.",
         "AbilitaGDE": "Enable Event Journal (GDE)",
-        "Salvato": "Connector updated."
+        "Salvato": "Connector updated.",
+        "UrlRpt": "URL RPT",
+        "Username": "Username",
+        "HeaderName": "Header name",
+        "ApiId": "API id",
+        "ClientId": "Client id",
+        "Scope": "Scope",
+        "UrlTokenEndpoint": "URL token endpoint",
+        "Ssl": "SSL",
+        "KeystoreLocation": "Keystore location",
+        "KeystoreType": "Keystore type",
+        "TruststoreLocation": "Truststore location",
+        "TruststoreType": "Truststore type",
+        "SubscriptionKey": "Subscription key",
+        "Password": "Password",
+        "HeaderValue": "Header value",
+        "ApiKey": "API key",
+        "ClientSecret": "Client secret",
+        "KeystorePassword": "Keystore password",
+        "TruststorePassword": "Truststore password",
+        "KeyPassword": "Key password"
       },
       "Tipi": {
         "Pagopa": "pagoPA connector (PDD)",

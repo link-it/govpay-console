@@ -118,6 +118,10 @@
       "Dominio": "Ente creditore",
       "IdentificativoDebitore": "Identificativo debitore",
       "IdentificativoDebitorePlaceholder": "CF / P.IVA",
+      "DominioPlaceholder": "Tutti",
+      "DataInizio": "Data da",
+      "DataFine": "Data a",
+      "Placeholder": "Cerca pendenza…",
       "DebitoreHint": "La ricerca per identificativo debitore viene registrata per finalità di audit (GDPR)."
     },
     "Empty": {
@@ -817,6 +821,17 @@
   },
   "Intermediari": {
     "Subtitle": "Intermediari PagoPA censiti.",
+    "Filters": {
+      "CodIntermediario": "Codice intermediario",
+      "CodIntermediarioPlaceholder": "Cerca per codice…",
+      "Denominazione": "Denominazione",
+      "DenominazionePlaceholder": "Cerca per denominazione…",
+      "Stato": "Stato",
+      "StatoTutti": "Tutti",
+      "StatoAbilitati": "Abilitati",
+      "StatoDisabilitati": "Disabilitati",
+      "Placeholder": "Cerca intermediario…"
+    },
     "Stato": {
       "Abilitato": "Abilitato",
       "Disabilitato": "Disabilitato"
@@ -887,7 +902,27 @@
         "Credenziali": "Credenziali",
         "CredenzialiHint": "Le credenziali non vengono mai mostrate: compila solo i campi da aggiornare.",
         "AbilitaGDE": "Abilita Giornale degli Eventi",
-        "Salvato": "Connettore aggiornato."
+        "Salvato": "Connettore aggiornato.",
+        "UrlRpt": "URL RPT",
+        "Username": "Username",
+        "HeaderName": "Nome header",
+        "ApiId": "API id",
+        "ClientId": "Client id",
+        "Scope": "Scope",
+        "UrlTokenEndpoint": "URL token endpoint",
+        "Ssl": "SSL",
+        "KeystoreLocation": "Percorso keystore",
+        "KeystoreType": "Tipo keystore",
+        "TruststoreLocation": "Percorso truststore",
+        "TruststoreType": "Tipo truststore",
+        "SubscriptionKey": "Subscription key",
+        "Password": "Password",
+        "HeaderValue": "Valore header",
+        "ApiKey": "API key",
+        "ClientSecret": "Client secret",
+        "KeystorePassword": "Password keystore",
+        "TruststorePassword": "Password truststore",
+        "KeyPassword": "Password chiave"
       },
       "Tipi": {
         "Pagopa": "Connettore pagoPA (PDD)",

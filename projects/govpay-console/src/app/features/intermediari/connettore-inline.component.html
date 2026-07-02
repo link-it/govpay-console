@@ -47,7 +47,7 @@
 
     @if (isPagopa()) {
       <label class="flex flex-col gap-1">
-        <span class="text-xs font-medium text-[var(--muted-foreground)]">URL RPT</span>
+        <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.UrlRpt' | translate }}</span>
         <input type="text" formControlName="urlRPT" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
       </label>
     } @else {
@@ -71,38 +71,38 @@
       </label>
 
       @if (authType() === 'HTTPBASIC') {
-        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Username</span>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Username' | translate }}</span>
           <input type="text" formControlName="username" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
       }
       @if (authType() === 'HEADER') {
-        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Header name</span>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.HeaderName' | translate }}</span>
           <input type="text" formControlName="headerName" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
       }
       @if (authType() === 'APIKEY') {
-        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">API id</span>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ApiId' | translate }}</span>
           <input type="text" formControlName="apiId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
       }
       @if (authType() === 'OAUTH2') {
-        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Client id</span>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ClientId' | translate }}</span>
           <input type="text" formControlName="clientId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Scope</span>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Scope' | translate }}</span>
           <input type="text" formControlName="scope" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">URL token endpoint</span>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.UrlTokenEndpoint' | translate }}</span>
           <input type="text" formControlName="urlTokenEndpoint" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
       }
       @if (authType() === 'SSL') {
-        <label class="flex flex-col gap-1 max-w-xs"><span class="text-xs font-medium text-[var(--muted-foreground)]">SSL</span>
+        <label class="flex flex-col gap-1 max-w-xs"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Ssl' | translate }}</span>
           <select formControlName="sslTipo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
             @for (s of sslTipi; track s) { <option [value]="s">{{ s }}</option> }
           </select></label>
         <div class="grid grid-cols-2 gap-3">
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore location</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeystoreLocation' | translate }}</span>
             <input type="text" formControlName="ksLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore type</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeystoreType' | translate }}</span>
             <input type="text" formControlName="ksType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore location</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.TruststoreLocation' | translate }}</span>
             <input type="text" formControlName="tsLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore type</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.TruststoreType' | translate }}</span>
             <input type="text" formControlName="tsType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         </div>
       }
@@ -113,31 +113,31 @@
         <div class="text-sm font-semibold">{{ 'Intermediari.Connettori.Form.Credenziali' | translate }}</div>
         <p class="text-xs text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.CredenzialiHint' | translate }}</p>
 
-        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Subscription key</span>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.SubscriptionKey' | translate }}</span>
           <input type="password" lnkNoAutofill formControlName="subscriptionKey" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         @if (authType() === 'HTTPBASIC') {
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Password</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Password' | translate }}</span>
             <input type="password" lnkNoAutofill formControlName="password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         }
         @if (authType() === 'HEADER') {
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Header value</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.HeaderValue' | translate }}</span>
             <input type="password" lnkNoAutofill formControlName="headerValue" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         }
         @if (authType() === 'APIKEY') {
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">API key</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ApiKey' | translate }}</span>
             <input type="password" lnkNoAutofill formControlName="apiKey" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         }
         @if (authType() === 'OAUTH2') {
-          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Client secret</span>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ClientSecret' | translate }}</span>
             <input type="password" lnkNoAutofill formControlName="clientSecret" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         }
         @if (authType() === 'SSL') {
           <div class="grid grid-cols-2 gap-3">
-            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore password</span>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeystorePassword' | translate }}</span>
               <input type="password" lnkNoAutofill formControlName="ksPassword" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore password</span>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.TruststorePassword' | translate }}</span>
               <input type="password" lnkNoAutofill formControlName="tsPassword" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Key password</span>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeyPassword' | translate }}</span>
               <input type="password" lnkNoAutofill formControlName="ksPKeyPasswd" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
           </div>
         }

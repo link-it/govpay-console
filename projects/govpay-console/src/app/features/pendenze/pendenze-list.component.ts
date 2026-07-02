@@ -22,7 +22,7 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService } from '@linkit/shared-ui';
+import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -42,6 +42,7 @@ import {
   truncate,
   type ColumnDef,
   type SearchField,
+  type SearchPillLabels,
   type SearchState,
   type SortEvent,
 } from '@linkit/shared-ui';
@@ -93,6 +94,7 @@ export class PendenzeListComponent implements OnInit {
   private static readonly STATE_KEY = 'pendenze';
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+  private readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
@@ -128,26 +130,55 @@ export class PendenzeListComponent implements OnInit {
    * La ricerca libera della pill (query) è decorativa e non inviata all'API.
    */
   readonly searchFields = computed<SearchField[]>(() => {
+    this.lang.current(); // dipendenza: ritraduce al cambio lingua
     const f = this.searchState().filters;
+    const t = (k: string) => this.translate.instant(k);
     return [
-      { id: F.idPendenza, label: 'ID pendenza', kind: 'text', placeholder: 'Cerca per ID pendenza…', span: 2 },
-      { id: F.numeroAvviso, label: 'Numero avviso', kind: 'text', placeholder: '18 cifre' },
+      { id: F.idPendenza, label: t('Pendenze.Filters.IdPendenza'), kind: 'text', placeholder: t('Pendenze.Filters.IdPendenzaPlaceholder'), span: 2 },
+      { id: F.numeroAvviso, label: t('Pendenze.Filters.NumeroAvviso'), kind: 'text', placeholder: t('Pendenze.Filters.NumeroAvvisoPlaceholder') },
       {
         id: F.idDominio,
-        label: 'Ente creditore',
+        label: t('Pendenze.Filters.Dominio'),
         kind: 'select',
         icon: 'bootstrapBuilding',
         options: ['', ...this.dominiLabels()],
-        placeholder: 'Tutti',
+        placeholder: t('Pendenze.Filters.DominioPlaceholder'),
         // Sempre dropdown (mai segmented) e ricercabile appena c'è almeno un ente.
         segmentedMax: 0,
         searchableFrom: 1,
       },
-      { id: F.identificativoDebitore, label: 'Identificativo debitore', kind: 'text', icon: 'bootstrapPerson', placeholder: 'CF / P.IVA', span: 2 },
+      { id: F.identificativoDebitore, label: t('Pendenze.Filters.IdentificativoDebitore'), kind: 'text', icon: 'bootstrapPerson', placeholder: t('Pendenze.Filters.IdentificativoDebitorePlaceholder'), span: 2 },
       // Range date (anteprima): il "fino a" non può precedere il "da" e viceversa.
-      { id: F.dataInizio, label: 'Data da', kind: 'date', icon: 'bootstrapCalendarEvent', max: f[F.dataFine] || undefined },
-      { id: F.dataFine, label: 'Data a', kind: 'date', icon: 'bootstrapCalendarEvent', min: f[F.dataInizio] || undefined },
+      { id: F.dataInizio, label: t('Pendenze.Filters.DataInizio'), kind: 'date', icon: 'bootstrapCalendarEvent', max: f[F.dataFine] || undefined },
+      { id: F.dataFine, label: t('Pendenze.Filters.DataFine'), kind: 'date', icon: 'bootstrapCalendarEvent', min: f[F.dataInizio] || undefined },
     ];
+  });
+
+  /** Placeholder della barra e label generiche della search-pill, tradotti. */
+  readonly searchPlaceholder = computed(() => {
+    this.lang.current();
+    return this.translate.instant('Pendenze.Filters.Placeholder');
+  });
+
+  readonly pillLabels = computed<SearchPillLabels>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return {
+      filters: t('SearchPill.Filters'),
+      reset: t('SearchPill.Reset'),
+      close: t('SearchPill.Close'),
+      search: t('SearchPill.Search'),
+      activeSuffix: t('SearchPill.ActiveSuffix'),
+      resultsApproxPrefix: t('SearchPill.ResultsApproxPrefix'),
+      resultsSuffix: t('SearchPill.ResultsSuffix'),
+      noResults: t('SearchPill.NoResults'),
+      optionsFilter: t('SearchPill.OptionsFilter'),
+      none: t('SearchPill.None'),
+      noOptions: t('SearchPill.NoOptions'),
+      textPlaceholder: t('SearchPill.TextPlaceholder'),
+      selectPlaceholder: t('SearchPill.SelectPlaceholder'),
+      allFieldsHint: t('SearchPill.AllFieldsHint'),
+    };
   });
 
   constructor() {

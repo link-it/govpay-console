@@ -22,7 +22,7 @@ import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService, ListStateService, SnackbarService, SystemFacade, TweaksRegistry } from '@linkit/shared-ui';
+import { ConfigService, ListStateService, SnackbarService, SystemFacade, TweaksRegistry, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -40,6 +40,7 @@ import {
   truncate,
   type ColumnDef,
   type SearchField,
+  type SearchPillLabels,
   type SearchState,
   type SortEvent,
 } from '@linkit/shared-ui';
@@ -84,6 +85,7 @@ export class IntermediariListComponent implements OnInit {
   private static readonly STATE_KEY = 'intermediari';
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+  private readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
@@ -96,11 +98,54 @@ export class IntermediariListComponent implements OnInit {
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
 
-  readonly searchFields = computed<SearchField[]>(() => [
-    { id: F.codIntermediario, label: 'Codice intermediario', kind: 'text', placeholder: 'Cerca per codice…', span: 2 },
-    { id: F.denominazione, label: 'Denominazione', kind: 'text', placeholder: 'Cerca per denominazione…', span: 2 },
-    { id: F.abilitato, label: 'Stato', kind: 'select', options: [ABIL.tutti, ABIL.si, ABIL.no], default: ABIL.tutti },
-  ]);
+  readonly searchFields = computed<SearchField[]>(() => {
+    this.lang.current(); // dipendenza: ritraduce al cambio lingua
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: F.codIntermediario, label: t('Intermediari.Filters.CodIntermediario'), kind: 'text', placeholder: t('Intermediari.Filters.CodIntermediarioPlaceholder'), span: 2 },
+      { id: F.denominazione, label: t('Intermediari.Filters.Denominazione'), kind: 'text', placeholder: t('Intermediari.Filters.DenominazionePlaceholder'), span: 2 },
+      {
+        id: F.abilitato,
+        label: t('Intermediari.Filters.Stato'),
+        kind: 'select',
+        // Valori stabili (ABIL) con etichette tradotte via optionLabels.
+        options: [ABIL.tutti, ABIL.si, ABIL.no],
+        optionLabels: {
+          [ABIL.tutti]: t('Intermediari.Filters.StatoTutti'),
+          [ABIL.si]: t('Intermediari.Filters.StatoAbilitati'),
+          [ABIL.no]: t('Intermediari.Filters.StatoDisabilitati'),
+        },
+        default: ABIL.tutti,
+      },
+    ];
+  });
+
+  /** Placeholder barra + label generiche della search-pill, tradotti. */
+  readonly searchPlaceholder = computed(() => {
+    this.lang.current();
+    return this.translate.instant('Intermediari.Filters.Placeholder');
+  });
+
+  readonly pillLabels = computed<SearchPillLabels>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return {
+      filters: t('SearchPill.Filters'),
+      reset: t('SearchPill.Reset'),
+      close: t('SearchPill.Close'),
+      search: t('SearchPill.Search'),
+      activeSuffix: t('SearchPill.ActiveSuffix'),
+      resultsApproxPrefix: t('SearchPill.ResultsApproxPrefix'),
+      resultsSuffix: t('SearchPill.ResultsSuffix'),
+      noResults: t('SearchPill.NoResults'),
+      optionsFilter: t('SearchPill.OptionsFilter'),
+      none: t('SearchPill.None'),
+      noOptions: t('SearchPill.NoOptions'),
+      textPlaceholder: t('SearchPill.TextPlaceholder'),
+      selectPlaceholder: t('SearchPill.SelectPlaceholder'),
+      allFieldsHint: t('SearchPill.AllFieldsHint'),
+    };
+  });
 
   constructor() {
     const tweaks = inject(TweaksRegistry);

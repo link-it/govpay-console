@@ -46,6 +46,12 @@ export interface SearchField {
   /** Opzioni per i `select`. Usa '' come opzione "qualsiasi / nessuna". */
   options?: string[];
   /**
+   * Etichette visuali per le `options` (mappa valore → label). Permette di
+   * tradurre l'etichetta mantenendo stabile il valore memorizzato/inviato.
+   * Se un'opzione non è presente nella mappa, si mostra il valore stesso.
+   */
+  optionLabels?: Record<string, string>;
+  /**
    * Valore di default (non filtrato). Un campo il cui valore corrente è uguale
    * al default NON produce un chip attivo. Default comuni: '' o 'Tutti'.
    */
@@ -123,6 +129,14 @@ export interface SearchPillLabels {
   noResults: string;
   optionsFilter: string;
   none: string;
+  /** Menu dropdown senza opzioni corrispondenti. */
+  noOptions: string;
+  /** Placeholder di default per i campi `text` (se il field non ne definisce uno). */
+  textPlaceholder: string;
+  /** Placeholder di default per i campi `select` (se il field non ne definisce uno). */
+  selectPlaceholder: string;
+  /** Testo del footer quando non è disponibile un conteggio risultati. */
+  allFieldsHint: string;
 }
 
 export const DEFAULT_LABELS: SearchPillLabels = {
@@ -136,6 +150,10 @@ export const DEFAULT_LABELS: SearchPillLabels = {
   noResults: 'Nessun risultato',
   optionsFilter: 'Filtra opzioni…',
   none: '— Nessuno —',
+  noOptions: 'Nessuna opzione',
+  textPlaceholder: 'Digita per cercare…',
+  selectPlaceholder: 'Seleziona…',
+  allFieldsHint: 'I filtri si applicano a tutti i campi',
 };
 
 export const DEFAULT_SUGGESTION_GROUP_LABELS: SuggestionGroupLabels = {
@@ -177,7 +195,7 @@ export function computeActiveChips(
     const value = filters[f.id];
     const def = f.default ?? '';
     if (value == null || value === '' || value === def) continue;
-    chips.push({ id: f.id, label: f.label, value });
+    chips.push({ id: f.id, label: f.label, value: f.optionLabels?.[value] ?? value });
   }
   return chips;
 }

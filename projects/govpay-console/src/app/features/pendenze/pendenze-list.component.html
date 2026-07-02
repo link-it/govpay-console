@@ -12,7 +12,8 @@
     [(value)]="searchState"
     [resultCount]="total()"
     [showSort]="false"
-    placeholder="Cerca pendenza…"
+    [labels]="pillLabels()"
+    [placeholder]="searchPlaceholder()"
     (search)="onSearch($event)"
   />
 

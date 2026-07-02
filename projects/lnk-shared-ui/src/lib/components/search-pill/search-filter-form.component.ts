@@ -77,7 +77,7 @@ import {
           @if (resultCount() != null) {
             <span>{{ labels().resultsApproxPrefix }} <b>{{ resultCount() }}</b> {{ labels().resultsSuffix }}</span>
           } @else {
-            <span>I filtri si applicano a tutti i campi</span>
+            <span>{{ labels().allFieldsHint }}</span>
           }
         </div>
         <div class="form__actions">
