@@ -10,13 +10,22 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { type Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { map, type Observable } from 'rxjs';
 import { ConfigService } from '@linkit/shared-ui';
 import type { Slice } from '@core/models';
 
 /** Valore ammissibile per un query param serializzabile. */
 export type ParamValue = string | number | boolean | undefined | null;
+
+/**
+ * Body di una risorsa insieme al suo validatore di concorrenza `ETag`.
+ * Usato per il pattern GET(+ETag) → PUT/PATCH con `If-Match`.
+ */
+export interface WithETag<T> {
+  body: T;
+  etag: string | null;
+}
 
 /** Base di default della console-api se `GOVAPI.CONSOLE` non è in config. */
 const DEFAULT_CONSOLE_BASE = '/govpay-console-api';
@@ -112,6 +121,39 @@ export class ConsoleApiService {
       params: this.toParams(options.params ?? {}),
       headers: options.headers ? new HttpHeaders(options.headers) : undefined,
     });
+  }
+
+  /* ── Concorrenza ottimistica (ETag / If-Match) ───────────────────── */
+
+  /** `GET` che espone anche l'header `ETag` (da rispedire come `If-Match`). */
+  getWithETag<T>(path: string, params: Record<string, ParamValue> = {}): Observable<WithETag<T>> {
+    return this.http
+      .get<T>(this.urlFor(path), { params: this.toParams(params), observe: 'response' })
+      .pipe(map((res) => ({ body: res.body as T, etag: res.headers.get('ETag') })));
+  }
+
+  /** `POST` per la creazione: ritorna la risposta completa (header `Location`/`ETag`). */
+  post<T>(path: string, body: unknown): Observable<HttpResponse<T>> {
+    return this.http.post<T>(this.urlFor(path), body, { observe: 'response' });
+  }
+
+  /**
+   * `PUT` (replace) con concorrenza ottimistica: invia `If-Match` se fornito e
+   * ritorna body + nuovo `ETag`. Un 412 (ETag non combacia) / 428 (If-Match
+   * mancante) arriva come `HttpErrorResponse` al `catchError` del chiamante.
+   */
+  put<T>(path: string, body: unknown, ifMatch?: string | null): Observable<WithETag<T>> {
+    return this.http
+      .put<T>(this.urlFor(path), body, {
+        observe: 'response',
+        headers: ifMatch ? new HttpHeaders({ 'If-Match': ifMatch }) : undefined,
+      })
+      .pipe(map((res) => ({ body: res.body as T, etag: res.headers.get('ETag') })));
+  }
+
+  /** `PUT` senza body di risposta (es. credenziali connettore → 204). */
+  putVoid(path: string, body: unknown): Observable<void> {
+    return this.http.put<void>(this.urlFor(path), body).pipe(map(() => undefined));
   }
 
   /** Serializza un oggetto in `HttpParams`, omettendo `undefined`/`null`/`''`. */

@@ -93,7 +93,7 @@ export const NAV_ITEMS: NavItem[] = [
       { label: 'Nav.Domini', icon: 'bootstrapBuilding', route: '/domini', acl: ['hasConfig'], feature: 'MENU_DOMINI' },
       { label: 'Nav.TipiPendenza', icon: 'bootstrapCollection', route: '/tipi-pendenza', acl: ['hasConfig'], feature: 'MENU_TIPI_PENDENZA' },
       { label: 'Nav.Applicazioni', icon: 'bootstrapShieldCheck', route: '/applicazioni', acl: ['hasApplicazioni'], feature: 'MENU_APPLICAZIONI' },
-      { label: 'Nav.RegistroIntermediari', icon: 'bootstrapBank', route: '/registro-intermediari', feature: 'MENU_REGISTRO_INTERMEDIARI' },
+      { label: 'Nav.Intermediari', icon: 'bootstrapBank', route: '/intermediari', feature: 'MENU_INTERMEDIARI' },
     ],
   },
   {

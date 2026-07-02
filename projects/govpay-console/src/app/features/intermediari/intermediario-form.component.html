@@ -1,0 +1,79 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'Intermediari.Form.ModificaTitolo' : 'Intermediari.Form.NuovoTitolo'"
+      subtitleKey="Intermediari.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <lnk-detail-section titleKey="Intermediari.Detail.Generali">
+      <form [formGroup]="form" (ngSubmit)="save()" class="max-w-2xl space-y-5">
+        <!-- ID intermediario (solo in creazione; in modifica è disabilitato) -->
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Detail.IdIntermediario' | translate }}</span>
+          <input
+            type="text"
+            formControlName="idIntermediario"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60"
+            [attr.aria-invalid]="form.controls.idIntermediario.touched && form.controls.idIntermediario.invalid"
+          />
+          @if (form.controls.idIntermediario.touched && form.controls.idIntermediario.invalid) {
+            <span class="text-xs text-[var(--danger)]">
+              @if (form.controls.idIntermediario.hasError('required')) { {{ 'Intermediari.Form.Obbligatorio' | translate }} }
+              @else { {{ 'Intermediari.Form.IdPattern' | translate }} }
+            </span>
+          }
+        </label>
+
+        <!-- Denominazione -->
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Detail.Denominazione' | translate }}</span>
+          <input
+            type="text"
+            formControlName="denominazione"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          />
+          @if (form.controls.denominazione.touched && form.controls.denominazione.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Intermediari.Form.Obbligatorio' | translate }}</span>
+          }
+        </label>
+
+        <!-- Principal PagoPA -->
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Detail.PrincipalPagoPa' | translate }}</span>
+          <input
+            type="text"
+            formControlName="principalPagoPa"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          />
+          @if (form.controls.principalPagoPa.touched && form.controls.principalPagoPa.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Intermediari.Form.Obbligatorio' | translate }}</span>
+          }
+        </label>
+
+        <!-- Abilitato -->
+        <label class="flex items-center gap-2">
+          <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+          <span class="text-sm">{{ 'Intermediari.Detail.Abilitato' | translate }}</span>
+        </label>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </div>
+      </form>
+      </lnk-detail-section>
+    }
+  </div>
+</section>

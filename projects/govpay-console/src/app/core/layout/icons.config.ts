@@ -58,6 +58,7 @@ import {
   bootstrapPersonExclamation,
   bootstrapFileEarmarkPdf,
   bootstrapEye,
+  bootstrapPencil,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -113,4 +114,5 @@ export const APP_ICONS = {
   bootstrapPersonExclamation,
   bootstrapFileEarmarkPdf,
   bootstrapEye,
+  bootstrapPencil,
 };

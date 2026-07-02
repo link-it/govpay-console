@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "Edit": "Modifica"
+  },
   "Ricevute": {
     "Subtitle": "Ricevute telematiche dei pagamenti.",
     "Filters": {
@@ -814,6 +817,10 @@
   },
   "Intermediari": {
     "Subtitle": "Intermediari PagoPA censiti.",
+    "Stato": {
+      "Abilitato": "Abilitato",
+      "Disabilitato": "Disabilitato"
+    },
     "Empty": {
       "Title": "Nessun intermediario",
       "Description": "Non ci sono intermediari registrati."
@@ -830,7 +837,66 @@
       "ServizioFtp": "Servizio FTP",
       "IdIntermediario": "ID intermediario",
       "Denominazione": "Denominazione",
-      "PrincipalPagoPa": "Principal PagoPA"
+      "PrincipalPagoPa": "Principal PagoPA",
+      "Abilitato": "Abilitato",
+      "TabDati": "Dati",
+      "TabStazioni": "Stazioni",
+      "TabConnettori": "Connettori"
+    },
+    "Form": {
+      "NuovoTitolo": "Nuovo intermediario",
+      "ModificaTitolo": "Modifica intermediario",
+      "Subtitle": "Anagrafica dell'intermediario PagoPA.",
+      "Nuovo": "Nuovo intermediario",
+      "Modifica": "Modifica",
+      "Salvato": "Intermediario creato.",
+      "Aggiornato": "Intermediario aggiornato.",
+      "Obbligatorio": "Campo obbligatorio.",
+      "IdPattern": "Ammessi lettere, cifre, '-' e '_' (max 35 caratteri).",
+      "ConflittoId": "Esiste già un intermediario con questo identificativo.",
+      "ConflittoConcorrenza": "L'intermediario è stato modificato da altri: ricarica e riprova.",
+      "SalvaErrore": "Salvataggio non riuscito."
+    },
+    "Stazioni": {
+      "IdStazione": "ID stazione",
+      "Versione": "Versione",
+      "Abilitato": "Abilitato",
+      "Domini": "Domini associati",
+      "EmptyTitle": "Nessuna stazione",
+      "EmptyDescription": "Questo intermediario non ha stazioni configurate.",
+      "Form": {
+        "NuovaTitolo": "Nuova stazione",
+        "ModificaTitolo": "Modifica stazione",
+        "Subtitle": "Stazione pagoPA dell'intermediario.",
+        "Nuova": "Nuova stazione",
+        "Creata": "Stazione creata.",
+        "Aggiornata": "Stazione aggiornata.",
+        "IdPlaceholder": "es. INTERMEDIARIO_01",
+        "IdHint": "Formato: {idIntermediario}_{codice}, con codice tra 1 e 99.",
+        "IdNonValido": "Identificativo stazione non valido (formato o codice fuori range 1–99)."
+      }
+    },
+    "Connettori": {
+      "Stato": "Abilitato",
+      "TipoAuth": "Tipo autenticazione",
+      "Url": "URL",
+      "NonConfigurato": "Non configurato",
+      "Form": {
+        "Subtitle": "Configurazione del connettore pagoPA.",
+        "Auth": "Autenticazione",
+        "Credenziali": "Credenziali",
+        "CredenzialiHint": "Le credenziali non vengono mai mostrate: compila solo i campi da aggiornare.",
+        "AbilitaGDE": "Abilita Giornale degli Eventi",
+        "Salvato": "Connettore aggiornato."
+      },
+      "Tipi": {
+        "Pagopa": "Connettore pagoPA (PDD)",
+        "PagopaAca": "Connettore pagoPA ACA",
+        "PagopaGpd": "Connettore pagoPA GPD",
+        "PagopaFr": "Connettore pagoPA FR",
+        "PagopaBackofficeEc": "Connettore pagoPA Backoffice EC",
+        "PagopaRecuperoRt": "Connettore pagoPA Recupero RT"
+      }
     }
   },
   "Ruoli": {
@@ -909,7 +975,7 @@
     "Domini": "Domini",
     "TipiPendenza": "Tipi pendenza",
     "Applicazioni": "Applicazioni",
-    "RegistroIntermediari": "Registro intermediari",
+    "Intermediari": "Intermediari",
     "Sicurezza": "Sicurezza",
     "Operatori": "Operatori",
     "Ruoli": "Ruoli",

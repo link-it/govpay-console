@@ -100,8 +100,8 @@ export const routes: Routes = [
         loadChildren: () => import('@feature/ruoli').then((m) => m.RUOLI_ROUTES),
       },
       {
-        path: 'registro-intermediari',
-        canActivate: [authGuard],
+        path: 'intermediari',
+        canActivate: [aclGuard('hasPagoPA')],
         loadChildren: () => import('@feature/intermediari').then((m) => m.INTERMEDIARI_ROUTES),
       },
       {

@@ -3,12 +3,12 @@
     "BOOLEANI": {
       "values": {
         "true": {
-          "label": "Common.Yes",
+          "label": "Intermediari.Stato.Abilitato",
           "background": "var(--status-success-bg)",
           "color": "var(--status-success-text)"
         },
         "false": {
-          "label": "Common.No",
+          "label": "Intermediari.Stato.Disabilitato",
           "background": "var(--status-muted-bg)",
           "color": "var(--status-muted-text)"
         }

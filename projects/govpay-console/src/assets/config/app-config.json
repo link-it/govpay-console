@@ -91,7 +91,7 @@
       "MENU_DOMINI": false,
       "MENU_TIPI_PENDENZA": false,
       "MENU_APPLICAZIONI": false,
-      "MENU_REGISTRO_INTERMEDIARI": true,
+      "MENU_INTERMEDIARI": true,
       "GESTIONE_SICUREZZA": true,
       "MENU_OPERATORI": true,
       "MENU_RUOLI": true,

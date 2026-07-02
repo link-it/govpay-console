@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "Edit": "Edit"
+  },
   "Ricevute": {
     "Subtitle": "Electronic receipts for payments.",
     "Filters": {
@@ -594,6 +597,10 @@
   },
   "Intermediari": {
     "Subtitle": "Registered PagoPA brokers.",
+    "Stato": {
+      "Abilitato": "Enabled",
+      "Disabilitato": "Disabled"
+    },
     "Empty": {
       "Title": "No brokers",
       "Description": "No brokers registered."
@@ -610,7 +617,66 @@
       "ServizioFtp": "FTP service",
       "IdIntermediario": "Broker ID",
       "Denominazione": "Name",
-      "PrincipalPagoPa": "PagoPA principal"
+      "PrincipalPagoPa": "PagoPA principal",
+      "Abilitato": "Enabled",
+      "TabDati": "Data",
+      "TabStazioni": "Stations",
+      "TabConnettori": "Connectors"
+    },
+    "Form": {
+      "NuovoTitolo": "New broker",
+      "ModificaTitolo": "Edit broker",
+      "Subtitle": "PagoPA broker registry data.",
+      "Nuovo": "New broker",
+      "Modifica": "Edit",
+      "Salvato": "Broker created.",
+      "Aggiornato": "Broker updated.",
+      "Obbligatorio": "Required field.",
+      "IdPattern": "Allowed: letters, digits, '-' and '_' (max 35 chars).",
+      "ConflittoId": "A broker with this identifier already exists.",
+      "ConflittoConcorrenza": "The broker was modified by someone else: reload and retry.",
+      "SalvaErrore": "Save failed."
+    },
+    "Stazioni": {
+      "IdStazione": "Station ID",
+      "Versione": "Version",
+      "Abilitato": "Enabled",
+      "Domini": "Linked domains",
+      "EmptyTitle": "No stations",
+      "EmptyDescription": "This broker has no configured stations.",
+      "Form": {
+        "NuovaTitolo": "New station",
+        "ModificaTitolo": "Edit station",
+        "Subtitle": "Broker's pagoPA station.",
+        "Nuova": "New station",
+        "Creata": "Station created.",
+        "Aggiornata": "Station updated.",
+        "IdPlaceholder": "e.g. BROKER_01",
+        "IdHint": "Format: {brokerId}_{code}, with code between 1 and 99.",
+        "IdNonValido": "Invalid station id (format or code out of range 1–99)."
+      }
+    },
+    "Connettori": {
+      "Stato": "Enabled",
+      "TipoAuth": "Authentication type",
+      "Url": "URL",
+      "NonConfigurato": "Not configured",
+      "Form": {
+        "Subtitle": "pagoPA connector configuration.",
+        "Auth": "Authentication",
+        "Credenziali": "Credentials",
+        "CredenzialiHint": "Credentials are never shown: fill only the fields you want to update.",
+        "AbilitaGDE": "Enable Event Journal (GDE)",
+        "Salvato": "Connector updated."
+      },
+      "Tipi": {
+        "Pagopa": "pagoPA connector (PDD)",
+        "PagopaAca": "pagoPA ACA connector",
+        "PagopaGpd": "pagoPA GPD connector",
+        "PagopaFr": "pagoPA FR connector",
+        "PagopaBackofficeEc": "pagoPA Backoffice EC connector",
+        "PagopaRecuperoRt": "pagoPA Recovery RT connector"
+      }
     }
   },
   "Ruoli": {
@@ -689,7 +755,7 @@
     "Domini": "Domains",
     "TipiPendenza": "Item types",
     "Applicazioni": "Applications",
-    "RegistroIntermediari": "Intermediaries registry",
+    "Intermediari": "Intermediaries",
     "Sicurezza": "Security",
     "Operatori": "Operators",
     "Ruoli": "Roles",

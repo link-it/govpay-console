@@ -18,13 +18,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@linkit/shared-ui';
-import { SystemFacade } from '@linkit/shared-ui';
-import { SnackbarService } from '@linkit/shared-ui';
+import { ConfigService, ListStateService, SnackbarService, SystemFacade, TweaksRegistry } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -34,27 +32,44 @@ import {
   ListStickyToolbarDirective,
   ItemListComponent,
   PageHeaderComponent,
+  SearchPillComponent,
   VIEW_OPTIONS,
   columnsFromConfig,
+  formatOrdinamento,
+  initialSearchState,
   truncate,
   type ColumnDef,
+  type SearchField,
+  type SearchState,
+  type SortEvent,
 } from '@linkit/shared-ui';
-import { TweaksRegistry } from '@linkit/shared-ui';
-import { IntermediariApi } from './intermediari.api';
-import type { Intermediario, IntermediariListFilters } from './intermediario.model';
+import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { IntermediariConsoleApi } from './intermediari.console-api';
+import type { IntermediariListFilters, IntermediarioSummary } from './intermediario.model';
 
 const PAGE_SIZE = 25;
+
+const F = {
+  codIntermediario: 'codIntermediario',
+  denominazione: 'denominazione',
+  abilitato: 'abilitato',
+} as const;
+
+/** Valori del filtro `abilitato` (segmented). `Tutti` = nessun filtro. */
+const ABIL = { tutti: 'Tutti', si: 'Abilitati', no: 'Disabilitati' } as const;
 
 @Component({
   selector: 'lnk-intermediari-list',
   standalone: true,
   imports: [
+    RouterLink,
     TranslatePipe,
     PageHeaderComponent,
     DataTableComponent,
     ItemListComponent,
     EmptyStateComponent,
     InfiniteScrollDirective,
+    SearchPillComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -62,18 +77,30 @@ const PAGE_SIZE = 25;
   templateUrl: './intermediari-list.component.html',
 })
 export class IntermediariListComponent implements OnInit {
-  private readonly api = inject(IntermediariApi);
-  private readonly cfgSvc = inject(ConfigService);
+  private readonly api = inject(IntermediariConsoleApi);
+  private readonly config = inject(ConfigService);
+  private readonly system = inject(SystemFacade);
+  private readonly listState = inject(ListStateService);
+  private static readonly STATE_KEY = 'intermediari';
+  private readonly snackbar = inject(SnackbarService);
+  private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
-    const layout = this.cfgSvc.appConfig()?.Layout;
+    const layout = this.config.appConfig()?.Layout;
     return layout?.listViewByFeature?.['intermediari'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
   readonly viewMode = computed<'table' | 'rows'>(
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
+
+  readonly searchFields = computed<SearchField[]>(() => [
+    { id: F.codIntermediario, label: 'Codice intermediario', kind: 'text', placeholder: 'Cerca per codice…', span: 2 },
+    { id: F.denominazione, label: 'Denominazione', kind: 'text', placeholder: 'Cerca per denominazione…', span: 2 },
+    { id: F.abilitato, label: 'Stato', kind: 'select', options: [ABIL.tutti, ABIL.si, ABIL.no], default: ABIL.tutti },
+  ]);
 
   constructor() {
     const tweaks = inject(TweaksRegistry);
@@ -82,9 +109,14 @@ export class IntermediariListComponent implements OnInit {
         id: 'intermediari',
         titleKey: 'Tweaks.Layout',
         rows: [
-          { type: 'segmented', labelKey: 'Tweaks.View', hintKey: 'Tweaks.ViewHint',
-            options: VIEW_OPTIONS, value: this.viewMode,
-            onChange: (v) => this.onViewModeChange(v) },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.View',
+            hintKey: 'Tweaks.ViewHint',
+            options: VIEW_OPTIONS,
+            value: this.viewMode,
+            onChange: (v) => this.onViewModeChange(v),
+          },
         ],
         onReset: () => this.viewModeOverride.set(null),
       })
@@ -95,59 +127,90 @@ export class IntermediariListComponent implements OnInit {
     this.displayConfigLoader.load('assets/config/intermediari-config.json').pipe(catchError(() => of(null))),
     { initialValue: null },
   );
-  private readonly system = inject(SystemFacade);
-  private readonly snackbar = inject(SnackbarService);
-  private readonly translate = inject(TranslateService);
-  private readonly router = inject(Router);
 
   private readonly page = signal(1);
-  readonly rows = signal<Intermediario[]>([]);
-  readonly total = signal(0);
+  readonly sort = signal<SortEvent | null>({ key: 'codIntermediario', direction: 'asc' });
+  readonly rows = signal<IntermediarioSummary[]>([]);
+  readonly hasMore = signal(false);
+  readonly total = signal<number | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  readonly searchState = signal<SearchState>(initialSearchState([]));
+
+  readonly hasActiveFilters = computed(() => {
+    const f = this.searchState().filters;
+    return !!(f[F.codIntermediario] || f[F.denominazione] || (f[F.abilitato] && f[F.abilitato] !== ABIL.tutti));
+  });
+
+  readonly hasError = computed(() => this.error() !== null);
   readonly hasRows = computed(() => this.rows().length > 0);
-  readonly hasMore = computed(() => this.rows().length < this.total());
-  readonly showEmptyState = computed(() => !this.loading() && !this.error() && !this.hasRows());
+  readonly showEmptyState = computed(() => !this.loading() && !this.hasError() && !this.hasRows());
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly columns = computed<ColumnDef<Intermediario>[]>(() => {
+  readonly columns = computed<ColumnDef<IntermediarioSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<Intermediario>(tableCfg.columns);
+    if (tableCfg?.columns?.length) return columnsFromConfig<IntermediarioSummary>(tableCfg.columns);
     return [
-      { key: 'idIntermediario', header: 'Intermediari.Columns.IdIntermediario', cellClass: 'font-mono text-xs', width: '12rem' },
+      { key: 'idIntermediario', header: 'Intermediari.Columns.IdIntermediario', cellClass: 'font-mono text-xs', width: '14rem' },
       { key: 'denominazione', header: 'Intermediari.Columns.Denominazione', format: (i) => truncate(i.denominazione) },
       {
         key: 'abilitato',
         header: 'Intermediari.Columns.Abilitato',
         cellType: 'badge',
         cellTone: (i) => (i.abilitato ? 'success' : 'muted'),
-        format: (i) => (i.abilitato ? this.translate.instant('Common.Yes') : this.translate.instant('Common.No')),
+        format: (i) =>
+          this.translate.instant(i.abilitato ? 'Intermediari.Stato.Abilitato' : 'Intermediari.Stato.Disabilitato'),
         width: '8rem',
       },
     ];
   });
 
   ngOnInit(): void {
-    this.system.setBreadcrumbs([{ label: 'Nav.RegistroIntermediari' }]);
+    this.system.setBreadcrumbs([{ label: 'Nav.Intermediari' }]);
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(IntermediariListComponent.STATE_KEY);
+    if (saved) {
+      if (saved.search) this.searchState.set(saved.search);
+      if (saved.sort) this.sort.set(saved.sort);
+    }
     this.reset();
   }
 
-  refresh(): void { this.reset(); }
-  onRowClick(i: Intermediario): void {
-    if (i.idIntermediario) this.router.navigate(['/registro-intermediari', i.idIntermediario]);
+  onSortChange(s: SortEvent): void {
+    this.sort.set(s);
+    this.reset();
   }
+
+  refresh(): void {
+    this.reset();
+  }
+
   loadMore(): void {
     if (!this.canLoadMore()) return;
     this.page.update((p) => p + 1);
     this.fetch(true);
   }
 
+  onSearch(state: SearchState): void {
+    this.searchState.set(state);
+    this.reset();
+  }
+
+  resetFilters(): void {
+    this.searchState.set(initialSearchState(this.searchFields()));
+    this.reset();
+  }
+
   onViewModeChange(value: string): void {
     this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
   }
 
+  onRowClick(i: IntermediarioSummary): void {
+    if (i.idIntermediario) this.router.navigate(['/intermediari', i.idIntermediario]);
+  }
+
   private reset(): void {
+    this.listState.set(IntermediariListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() });
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);
@@ -156,25 +219,36 @@ export class IntermediariListComponent implements OnInit {
   private fetch(append: boolean): void {
     this.loading.set(true);
     this.error.set(null);
+
+    const f = this.searchState().filters;
+    const abil = f[F.abilitato];
     const filters: IntermediariListFilters = {
-      pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
+      total: append ? undefined : true,
+      codIntermediario: f[F.codIntermediario] || undefined,
+      denominazione: f[F.denominazione] || undefined,
+      abilitato: abil === ABIL.si ? true : abil === ABIL.no ? false : undefined,
     };
+
     this.api
       .list(filters)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of<Slice<IntermediarioSummary>>({ results: [] });
         })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
+      .subscribe((slice) => {
+        const results = slice.results ?? [];
         if (append) this.rows.update((prev) => [...prev, ...results]);
         else this.rows.set(results);
-        this.total.set(page.numRisultati ?? 0);
+        const totalResults = slice.pagination?.totalResults;
+        if (totalResults != null) this.total.set(totalResults);
+        this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
   }
