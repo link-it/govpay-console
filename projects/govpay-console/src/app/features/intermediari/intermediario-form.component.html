@@ -19,7 +19,7 @@
       <form [formGroup]="form" (ngSubmit)="save()" class="max-w-2xl space-y-5">
         <!-- ID intermediario (solo in creazione; in modifica è disabilitato) -->
         <label class="flex flex-col gap-1">
-          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Detail.IdIntermediario' | translate }}</span>
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idIntermediario">{{ 'Intermediari.Detail.IdIntermediario' | translate }}</span>
           <input
             type="text"
             formControlName="idIntermediario"
@@ -36,7 +36,7 @@
 
         <!-- Denominazione -->
         <label class="flex flex-col gap-1">
-          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Detail.Denominazione' | translate }}</span>
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.denominazione">{{ 'Intermediari.Detail.Denominazione' | translate }}</span>
           <input
             type="text"
             formControlName="denominazione"
@@ -49,7 +49,7 @@
 
         <!-- Principal PagoPA -->
         <label class="flex flex-col gap-1">
-          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Detail.PrincipalPagoPa' | translate }}</span>
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.principalPagoPa">{{ 'Intermediari.Detail.PrincipalPagoPa' | translate }}</span>
           <input
             type="text"
             formControlName="principalPagoPa"
@@ -67,7 +67,7 @@
         </label>
 
         <div class="flex items-center gap-2 pt-2">
-          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
             {{ 'Common.Save' | translate }}
           </button>
           <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>

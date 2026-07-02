@@ -47,7 +47,7 @@ import { TranslatePipe } from '@ngx-translate/core';
             <button type="button" class="btn btn-ghost btn-sm" (click)="onCancel()" [disabled]="saving()">
               {{ cancelKey() | translate }}
             </button>
-            <button type="button" class="btn btn-primary btn-sm" (click)="save.emit()" [disabled]="saving()">
+            <button type="button" class="btn btn-primary btn-sm" (click)="save.emit()" [disabled]="saving() || saveDisabled()">
               {{ saveKey() | translate }}
             </button>
           } @else if (canEdit()) {
@@ -78,6 +78,8 @@ export class InlineEditCardComponent {
   readonly title = input<string>('');
   /** `true` mentre è in corso il salvataggio (disabilita i pulsanti). */
   readonly saving = input<boolean>(false);
+  /** Disabilita il pulsante "Salva" (es. form di modifica non valido). */
+  readonly saveDisabled = input<boolean>(false);
   /** Mostra il pulsante "Modifica" (default `true`). */
   readonly canEdit = input<boolean>(true);
   /** Chiavi i18n dei pulsanti (override opzionali). */

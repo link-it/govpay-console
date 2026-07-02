@@ -31,6 +31,7 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { RequiredLabelDirective } from '@core/ui/required-label.directive';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { IntermediarioCreate, IntermediarioReplace } from './intermediario.model';
 
@@ -49,6 +50,7 @@ const ID_PATTERN = /^[a-zA-Z0-9\-_]{1,35}$/;
     DetailSectionComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    RequiredLabelDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './intermediario-form.component.html',

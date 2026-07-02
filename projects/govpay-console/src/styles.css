@@ -331,6 +331,13 @@ a {
   }
 }
 
+/* Marca il label di un campo obbligatorio con un asterisco danger. */
+.lnk-required::after {
+  content: " *";
+  color: var(--danger);
+  font-weight: 600;
+}
+
 /* Evidenzia una card inline (lnk-inline-edit-card) mentre è in modifica. */
 .lnk-inline-card--editing {
   border-color: var(--primary);

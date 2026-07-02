@@ -18,6 +18,7 @@ import { SnackbarService } from '@linkit/shared-ui';
 import type { DominioSummary } from '@core/models';
 import { problemDetail } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { RequiredLabelDirective } from '@core/ui/required-label.directive';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { StazioneCreate, StazioneReplace, StazioneSummary, VersioneStazione } from './intermediario.model';
 
@@ -32,7 +33,7 @@ const ID_PATTERN = /^[a-zA-Z0-9\-_]{1,35}$/;
 @Component({
   selector: 'lnk-stazione-inline',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, InlineEditCardComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, InlineEditCardComponent, RequiredLabelDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './stazione-inline.component.html',

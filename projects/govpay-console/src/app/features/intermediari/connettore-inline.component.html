@@ -2,6 +2,7 @@
   [title]="title()"
   [(editing)]="editing"
   [saving]="saving()"
+  [saveDisabled]="form.invalid"
   [canEdit]="!loading()"
   (save)="save()"
   (cancel)="onCancel()"

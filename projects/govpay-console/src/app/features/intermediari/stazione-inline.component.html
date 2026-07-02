@@ -3,7 +3,7 @@
   <form [formGroup]="form" class="lnk-inline-card--editing rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 space-y-4">
     <div class="text-sm font-semibold">{{ 'Intermediari.Stazioni.Form.Nuova' | translate }}</div>
     <label class="flex flex-col gap-1">
-      <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Stazioni.IdStazione' | translate }}</span>
+      <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idStazione">{{ 'Intermediari.Stazioni.IdStazione' | translate }}</span>
       <input type="text" formControlName="idStazione" placeholder="{{ 'Intermediari.Stazioni.Form.IdPlaceholder' | translate }}"
         class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
       <span class="text-xs text-[var(--muted-foreground)]">{{ 'Intermediari.Stazioni.Form.IdHint' | translate }}</span>
@@ -15,7 +15,7 @@
       }
     </label>
     <label class="flex flex-col gap-1 max-w-xs">
-      <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Stazioni.Versione' | translate }}</span>
+      <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.versione">{{ 'Intermediari.Stazioni.Versione' | translate }}</span>
       <select formControlName="versione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
         @for (v of versioni; track v) { <option [value]="v">{{ v }}</option> }
       </select>
@@ -25,12 +25,12 @@
       <span class="text-sm">{{ 'Intermediari.Stazioni.Abilitato' | translate }}</span>
     </label>
     <div class="flex items-center gap-2">
-      <button type="button" class="btn btn-primary btn-sm" (click)="save()" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+      <button type="button" class="btn btn-primary btn-sm" (click)="save()" [disabled]="saving() || form.invalid">{{ 'Common.Save' | translate }}</button>
       <button type="button" class="btn btn-ghost btn-sm" (click)="cancelCreation()" [disabled]="saving()">{{ 'Common.Cancel' | translate }}</button>
     </div>
   </form>
 } @else {
-  <lnk-inline-edit-card [title]="stazione()!.idStazione" [(editing)]="editing" [saving]="saving()" (save)="save()" (cancel)="onCancel()">
+  <lnk-inline-edit-card [title]="stazione()!.idStazione" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" (save)="save()" (cancel)="onCancel()">
     <!-- Vista -->
     <div view class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
       <span><span class="text-[var(--muted-foreground)]">{{ 'Intermediari.Stazioni.Versione' | translate }}:</span> {{ stazione()!.versione }}</span>
@@ -43,7 +43,7 @@
     <!-- Modifica -->
     <form edit [formGroup]="form" class="space-y-4">
       <label class="flex flex-col gap-1 max-w-xs">
-        <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Stazioni.Versione' | translate }}</span>
+        <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.versione">{{ 'Intermediari.Stazioni.Versione' | translate }}</span>
         <select formControlName="versione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
           @for (v of versioni; track v) { <option [value]="v">{{ v }}</option> }
         </select>
