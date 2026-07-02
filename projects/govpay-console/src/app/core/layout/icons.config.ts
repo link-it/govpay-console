@@ -59,6 +59,7 @@ import {
   bootstrapFileEarmarkPdf,
   bootstrapEye,
   bootstrapPencil,
+  bootstrapCalendarEvent,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -115,4 +116,5 @@ export const APP_ICONS = {
   bootstrapFileEarmarkPdf,
   bootstrapEye,
   bootstrapPencil,
+  bootstrapCalendarEvent,
 };

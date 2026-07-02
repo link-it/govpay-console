@@ -63,6 +63,9 @@ const F = {
   numeroAvviso: 'numeroAvviso',
   idDominio: 'idDominio',
   identificativoDebitore: 'identificativoDebitore',
+  // Range date: mostrati in anteprima, NON ancora inviati all'API V2.
+  dataInizio: 'dataInizio',
+  dataFine: 'dataFine',
 } as const;
 
 @Component({
@@ -124,22 +127,28 @@ export class PendenzeListComponent implements OnInit {
    * `idDominio` è un select popolato dai domini del profilo (label = ragioneSociale).
    * La ricerca libera della pill (query) è decorativa e non inviata all'API.
    */
-  readonly searchFields = computed<SearchField[]>(() => [
-    { id: F.idPendenza, label: 'ID pendenza', kind: 'text', placeholder: 'Cerca per ID pendenza…', span: 2 },
-    { id: F.numeroAvviso, label: 'Numero avviso', kind: 'text', placeholder: '18 cifre' },
-    {
-      id: F.idDominio,
-      label: 'Ente creditore',
-      kind: 'select',
-      icon: 'bootstrapBuilding',
-      options: ['', ...this.dominiLabels()],
-      placeholder: 'Tutti',
-      // Sempre dropdown (mai segmented) e ricercabile appena c'è almeno un ente.
-      segmentedMax: 0,
-      searchableFrom: 1,
-    },
-    { id: F.identificativoDebitore, label: 'Identificativo debitore', kind: 'text', icon: 'bootstrapPerson', placeholder: 'CF / P.IVA', span: 2 },
-  ]);
+  readonly searchFields = computed<SearchField[]>(() => {
+    const f = this.searchState().filters;
+    return [
+      { id: F.idPendenza, label: 'ID pendenza', kind: 'text', placeholder: 'Cerca per ID pendenza…', span: 2 },
+      { id: F.numeroAvviso, label: 'Numero avviso', kind: 'text', placeholder: '18 cifre' },
+      {
+        id: F.idDominio,
+        label: 'Ente creditore',
+        kind: 'select',
+        icon: 'bootstrapBuilding',
+        options: ['', ...this.dominiLabels()],
+        placeholder: 'Tutti',
+        // Sempre dropdown (mai segmented) e ricercabile appena c'è almeno un ente.
+        segmentedMax: 0,
+        searchableFrom: 1,
+      },
+      { id: F.identificativoDebitore, label: 'Identificativo debitore', kind: 'text', icon: 'bootstrapPerson', placeholder: 'CF / P.IVA', span: 2 },
+      // Range date (anteprima): il "fino a" non può precedere il "da" e viceversa.
+      { id: F.dataInizio, label: 'Data da', kind: 'date', icon: 'bootstrapCalendarEvent', max: f[F.dataFine] || undefined },
+      { id: F.dataFine, label: 'Data a', kind: 'date', icon: 'bootstrapCalendarEvent', min: f[F.dataInizio] || undefined },
+    ];
+  });
 
   constructor() {
     const tweaks = inject(TweaksRegistry);
@@ -319,6 +328,8 @@ export class PendenzeListComponent implements OnInit {
       numeroAvviso: f[F.numeroAvviso] || undefined,
       idDominio: idDominio || undefined,
       identificativoDebitore: f[F.identificativoDebitore] || undefined,
+      // NB: F.dataInizio / F.dataFine sono in anteprima nella UI ma non ancora
+      // inviati: la API V2 non supporta (per ora) il filtro per range di date.
     };
 
     this.api

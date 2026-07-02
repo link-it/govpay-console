@@ -26,8 +26,11 @@
 /** Nome icona `@ng-icons` (es. `bootstrapBuilding`). Registrata dall'app host. */
 export type IconName = string;
 
-/** Tipi di campo. `select` con poche opzioni si auto-renderizza come segmented. */
-export type SearchFieldKind = 'text' | 'select';
+/**
+ * Tipi di campo. `select` con poche opzioni si auto-renderizza come segmented;
+ * `date` rende un `<input type="date">` (valore ISO `YYYY-MM-DD`).
+ */
+export type SearchFieldKind = 'text' | 'select' | 'date';
 
 /** Un controllo filtro del popover. */
 export interface SearchField {
@@ -56,6 +59,10 @@ export interface SearchField {
   segmentedMax?: number;
   /** Abilita il filtro opzioni nel dropdown oltre questa soglia. Default 6. */
   searchableFrom?: number;
+  /** Solo `kind: 'date'`: limite inferiore (`YYYY-MM-DD`) del date picker. */
+  min?: string;
+  /** Solo `kind: 'date'`: limite superiore (`YYYY-MM-DD`) del date picker. */
+  max?: string;
 }
 
 /** Un'opzione di ordinamento del toggle/menu sort. */

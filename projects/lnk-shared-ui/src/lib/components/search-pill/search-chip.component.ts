@@ -19,8 +19,11 @@ import { NgIcon } from '@ng-icons/core';
 
 /**
  * Chip di filtro attivo rimovibile, es.  Stato: Attivo  (×)
+ * Il click sul contenuto (label/valore) emette `edit` — usato per riaprire il
+ * pannello dei filtri sul campo corrispondente. La (×) emette `remove`.
  *
- *   <lnk-search-chip [label]="c.label" [value]="c.value" (remove)="drop(c.id)" />
+ *   <lnk-search-chip [label]="c.label" [value]="c.value"
+ *     (edit)="openFilters()" (remove)="drop(c.id)" />
  */
 @Component({
   selector: 'lnk-search-chip',
@@ -29,8 +32,15 @@ import { NgIcon } from '@ng-icons/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <span class="chip">
-      <span class="chip__label">{{ label() }}:</span>
-      <span class="chip__value">{{ value() }}</span>
+      <button
+        type="button"
+        class="chip__main"
+        [attr.aria-label]="'Modifica filtro ' + label()"
+        (click)="edit.emit()"
+      >
+        <span class="chip__label">{{ label() }}:</span>
+        <span class="chip__value">{{ value() }}</span>
+      </button>
       <button
         type="button"
         class="chip__remove"
@@ -60,6 +70,19 @@ import { NgIcon } from '@ng-icons/core';
       white-space: nowrap;
       animation: chipIn .18s ease-out;
     }
+    .chip__main {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .chip__main:hover .chip__value { text-decoration: underline; }
     .chip__label { opacity: .8; }
     .chip__value { font-weight: 600; }
     .chip__remove {
@@ -83,5 +106,7 @@ import { NgIcon } from '@ng-icons/core';
 export class SearchChipComponent {
   readonly label = input.required<string>();
   readonly value = input.required<string>();
+  /** Click sul contenuto del chip: apre il pannello dei filtri. */
+  readonly edit = output<void>();
   readonly remove = output<void>();
 }

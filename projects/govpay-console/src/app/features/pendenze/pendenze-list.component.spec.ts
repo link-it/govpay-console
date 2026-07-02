@@ -86,15 +86,18 @@ function setup(list?: ReturnType<typeof vi.fn>) {
 }
 
 describe('PendenzeListComponent', () => {
-  it('searchFields: 4 filtri V2 con select dominio popolato (escluso "*")', () => {
+  it('searchFields: 4 filtri V2 + range date (anteprima) con select dominio popolato (escluso "*")', () => {
     const { comp } = setup();
     const fields = comp.searchFields();
     expect(fields.map((f) => f.id)).toEqual([
-      'idPendenza', 'numeroAvviso', 'idDominio', 'identificativoDebitore',
+      'idPendenza', 'numeroAvviso', 'idDominio', 'identificativoDebitore', 'dataInizio', 'dataFine',
     ]);
     const dominio = fields.find((f) => f.id === 'idDominio')!;
     expect(dominio.kind).toBe('select');
     expect(dominio.options).toEqual(['', 'Comune X']);
+    // I campi data sono di tipo 'date' e non entrano nei parametri inviati all'API.
+    expect(fields.find((f) => f.id === 'dataInizio')!.kind).toBe('date');
+    expect(fields.find((f) => f.id === 'dataFine')!.kind).toBe('date');
   });
 
   it('ngOnInit carica con i parametri V2 di default (page/limit/sort/total)', () => {

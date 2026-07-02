@@ -120,6 +120,18 @@ describe('SearchPillComponent', () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 
+  it('cliccando il contenuto di un chip si apre il pannello dei filtri', () => {
+    const value: SearchState = { query: '', filters: { idDominio: 'Comune X' }, sort: '', dir: 'desc' };
+    const fixture = render({ value });
+    // Pannello inizialmente chiuso.
+    expect(fixture.nativeElement.querySelector('.form')).toBeFalsy();
+    el(fixture, 'lnk-search-chip .chip__main').click();
+    fixture.detectChanges();
+    // Ora aperto, con la bozza inizializzata dal committato.
+    expect(fixture.nativeElement.querySelector('.form')).toBeTruthy();
+    expect(el(fixture, '.fld__trigger-text').textContent?.trim()).toBe('Comune X');
+  });
+
   it('reset + Annulla non altera i valori committati: riaprendo la bozza è ripristinata', () => {
     const value: SearchState = { query: '', filters: { idDominio: 'Comune X' }, sort: '', dir: 'desc' };
     const fixture = render({ value });

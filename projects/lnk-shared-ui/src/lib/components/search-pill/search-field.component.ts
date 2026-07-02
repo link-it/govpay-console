@@ -72,6 +72,30 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
         </div>
       }
 
+      <!-- DATE -->
+      @else if (field().kind === 'date') {
+        <div class="fld__control" (click)="dt.focus()">
+          <input
+            #dt
+            type="date"
+            class="fld__input fld__input--date"
+            [value]="value()"
+            [attr.data-empty]="value() ? '0' : '1'"
+            [attr.min]="field().min ?? null"
+            [attr.max]="field().max ?? null"
+            (input)="value.set($any($event.target).value)"
+            (focus)="focused.set(true)"
+            (blur)="focused.set(false)"
+          />
+          @if (value()) {
+            <button type="button" class="fld__clear" aria-label="Cancella"
+              (mousedown)="$event.preventDefault()" (click)="value.set('')">
+              <ng-icon name="bootstrapX" size="0.7rem" />
+            </button>
+          }
+        </div>
+      }
+
       <!-- SEGMENTED -->
       @else if (isSegmented()) {
         <div class="fld__control fld__control--auto">
@@ -186,6 +210,12 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
       color: var(--sb-text);
     }
     .fld__input::placeholder { color: var(--sb-text-subtle); font-weight: 400; }
+
+    /* DATE: allinea l'aspetto al resto dei campi; grigio quando vuoto. */
+    .fld__input--date { cursor: pointer; color-scheme: light dark; }
+    .fld__input--date[data-empty='1'] { color: var(--sb-text-subtle); font-weight: 400; }
+    .fld__input--date::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .6; }
+    .fld__input--date:hover::-webkit-calendar-picker-indicator { opacity: 1; }
 
     .fld__trigger {
       flex: 1;

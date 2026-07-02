@@ -85,33 +85,33 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
       <div class="pill" [attr.data-focus]="focused() ? '1' : '0'">
         <ng-icon name="bootstrapSearch" size="1.125rem" class="pill__lead" />
 
-        <!-- Chip dei filtri attivi inline -->
-        @if (chips().length) {
-          <div class="pill__chips">
+        <!-- Area scrollabile: i chip attivi e la query/placeholder scorrono insieme -->
+        <div class="pill__scroll">
+          @if (chips().length) {
             @for (c of chips(); track c.id) {
-              <lnk-search-chip [label]="c.label" [value]="c.value" (remove)="removeChip(c.id)" />
+              <lnk-search-chip [label]="c.label" [value]="c.value" (edit)="openFilters()" (remove)="removeChip(c.id)" />
             }
-          </div>
-        }
+          }
 
-        <!-- Query di testo libero (solo se è configurato un campo 'query') -->
-        @if (hasQueryField()) {
-          <input
-            type="text"
-            class="pill__input"
-            [value]="value().query"
-            [placeholder]="placeholder()"
-            (input)="onQueryInput($any($event.target).value)"
-            (focus)="onQueryFocus()"
-            (blur)="onQueryBlur()"
-            (keydown.enter)="onEnter()"
-          />
-        } @else {
-          <!-- Senza query libera: l'area centrale apre il popover filtri. -->
-          <button type="button" class="pill__input pill__input--btn" (click)="toggleFilters()">
-            {{ placeholder() }}
-          </button>
-        }
+          <!-- Query di testo libero (solo se è configurato un campo 'query') -->
+          @if (hasQueryField()) {
+            <input
+              type="text"
+              class="pill__input"
+              [value]="value().query"
+              [placeholder]="placeholder()"
+              (input)="onQueryInput($any($event.target).value)"
+              (focus)="onQueryFocus()"
+              (blur)="onQueryBlur()"
+              (keydown.enter)="onEnter()"
+            />
+          } @else {
+            <!-- Senza query libera: il placeholder compatto apre il popover filtri. -->
+            <button type="button" class="pill__input pill__input--btn" (click)="toggleFilters()">
+              {{ placeholder() }}
+            </button>
+          }
+        </div>
 
         <!-- Toggle ordinamento inline -->
         @if (showSort() && sortOptions().length) {
@@ -190,16 +190,34 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
     }
     .pill__lead { color: var(--sb-text-muted); flex-shrink: 0; }
 
-    .pill__chips {
+    /* Area scrollabile con chip + query: occupa lo spazio residuo, si restringe
+       e scrolla orizzontalmente insieme. I chip e il placeholder non editabile
+       mantengono la loro dimensione (scorrono, non si schiacciano). */
+    .pill__scroll {
       display: flex;
       align-items: center;
       gap: 6px;
-      flex-shrink: 0;
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--sb-border-strong) transparent;
+      -webkit-overflow-scrolling: touch;
+      scroll-padding: 0 4px;
     }
+    .pill__scroll::-webkit-scrollbar { height: 6px; }
+    .pill__scroll::-webkit-scrollbar-thumb {
+      background: var(--sb-border-strong);
+      border-radius: 999px;
+    }
+    .pill__scroll::-webkit-scrollbar-track { background: transparent; }
+    .pill__scroll > lnk-search-chip { flex: 0 0 auto; }
 
     .pill__input {
-      flex: 1;
-      min-width: 100px;
+      /* Editabile: cresce per riempire lo spazio, ma non si comprime (scrolla). */
+      flex: 1 0 auto;
+      min-width: 120px;
       border: none;
       outline: none;
       background: transparent;
@@ -209,7 +227,11 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
     }
     .pill__input::placeholder { color: var(--sb-text-subtle); }
     button.pill__input--btn {
+      /* Non editabile: solo un'etichetta compatta che apre i filtri e scorre coi chip. */
+      flex: 0 0 auto;
+      min-width: 0;
       text-align: left;
+      white-space: nowrap;
       cursor: pointer;
       color: var(--sb-text-subtle);
     }
