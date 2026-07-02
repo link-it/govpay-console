@@ -13,6 +13,18 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.10.2] — 2026-07-02
+
+### Risolto
+
+- **`lnk-search-pill` — layout del popover filtri su mobile** — la griglia dei
+  campi (`.form__grid`) era a 2 colonne fisse e su schermi stretti risultava
+  compressa. Aggiunta media query `max-width: 640px`: griglia a colonna singola,
+  footer (conteggio + azioni Chiudi/Cerca) impilato a piena larghezza, padding
+  della form ridotto.
+
+---
+
 ## [0.10.1] — 2026-07-02
 
 ### Risolto

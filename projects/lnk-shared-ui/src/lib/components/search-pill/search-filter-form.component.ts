@@ -180,6 +180,15 @@ import {
       color: #fff;
     }
     .sbtn--primary:hover { background: var(--sb-primary-hover); }
+
+    /* Mobile: griglia a colonna singola, padding ridotto, footer che va a capo. */
+    @media (max-width: 640px) {
+      .form { padding: 14px 14px 12px; gap: 12px; }
+      .form__grid { grid-template-columns: 1fr; }
+      .form__foot { flex-direction: column; align-items: stretch; gap: 10px; }
+      .form__actions { justify-content: flex-end; }
+      .sbtn { justify-content: center; }
+    }
   `],
 })
 export class SearchFilterFormComponent {
