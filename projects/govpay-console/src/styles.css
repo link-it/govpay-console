@@ -331,6 +331,12 @@ a {
   }
 }
 
+/* Evidenzia una card inline (lnk-inline-edit-card) mentre è in modifica. */
+.lnk-inline-card--editing {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
 /* Scrollbar sottile riusabile */
 .scrollbar-thin {
   scrollbar-width: thin;

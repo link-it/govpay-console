@@ -52,7 +52,8 @@
         "giornale-eventi": "table",
         "applicazioni": "rows",
         "tracciati": "rows",
-        "rendicontazioni": "rows"
+        "rendicontazioni": "rows",
+        "intermediari": "rows"
       },
       "gotoTopButton": true,
       "helpButton": true,

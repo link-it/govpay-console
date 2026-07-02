@@ -36,7 +36,10 @@ import { TranslatePipe } from '@ngx-translate/core';
   imports: [NgIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="rounded-lg border border-[var(--border)] overflow-hidden bg-[var(--card-bg)]">
+    <div
+      class="rounded-lg border border-[var(--border)] overflow-hidden bg-[var(--card-bg)] transition-shadow"
+      [class.lnk-inline-card--editing]="editing()"
+    >
       <div class="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-[var(--border)]">
         <span class="text-sm font-semibold text-[var(--foreground)]">{{ title() }}</span>
         <div class="flex items-center gap-2">
@@ -48,9 +51,14 @@ import { TranslatePipe } from '@ngx-translate/core';
               {{ saveKey() | translate }}
             </button>
           } @else if (canEdit()) {
-            <button type="button" class="btn btn-secondary btn-sm" (click)="editing.set(true)">
+            <button
+              type="button"
+              class="btn btn-ghost btn-icon btn-sm"
+              [title]="editKey() | translate"
+              [attr.aria-label]="editKey() | translate"
+              (click)="editing.set(true)"
+            >
               <ng-icon name="bootstrapPencil" size="0.9rem" />
-              <span>{{ editKey() | translate }}</span>
             </button>
           }
         </div>
