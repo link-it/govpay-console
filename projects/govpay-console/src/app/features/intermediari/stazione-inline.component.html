@@ -30,7 +30,7 @@
     </div>
   </form>
 } @else {
-  <lnk-inline-edit-card [title]="stazione()!.idStazione" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" (save)="save()" (cancel)="onCancel()">
+  <lnk-inline-edit-card [title]="stazione()!.idStazione" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
     <!-- Vista -->
     <div view class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
       <span><span class="text-[var(--muted-foreground)]">{{ 'Intermediari.Stazioni.Versione' | translate }}:</span> {{ stazione()!.versione }}</span>

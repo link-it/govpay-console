@@ -4,6 +4,8 @@
   [saving]="saving()"
   [saveDisabled]="form.invalid"
   [canEdit]="!loading()"
+  [statusTone]="statusTone()"
+  [statusLabel]="statusLabel()"
   (save)="save()"
   (cancel)="onCancel()"
 >

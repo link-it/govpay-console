@@ -54,6 +54,11 @@ export class StazioneInlineComponent {
   private loadedForEdit = false;
 
   readonly isCreate = computed(() => this.stazione() === null);
+  /** Pallino di stato nell'header della card (stazione esistente). */
+  readonly statusTone = computed<'success' | 'muted'>(() => (this.stazione()?.abilitato ? 'success' : 'muted'));
+  readonly statusLabel = computed(() =>
+    this.translate.instant(this.stazione()?.abilitato ? 'Intermediari.Stato.Abilitato' : 'Intermediari.Stato.Disabilitato')
+  );
   readonly editing = signal(false);
   readonly saving = signal(false);
   readonly domini = signal<DominioSummary[]>([]);

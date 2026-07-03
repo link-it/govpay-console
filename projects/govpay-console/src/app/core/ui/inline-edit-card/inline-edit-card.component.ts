@@ -9,9 +9,10 @@
  * the Free Software Foundation.
  */
 
-import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { LnkTooltipDirective } from '@linkit/shared-ui';
 
 /**
  * Card con **visualizzazione e modifica inline**: header con titolo + pulsante
@@ -33,7 +34,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'lnk-inline-edit-card',
   standalone: true,
-  imports: [NgIcon, TranslatePipe],
+  imports: [NgIcon, TranslatePipe, LnkTooltipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -41,7 +42,18 @@ import { TranslatePipe } from '@ngx-translate/core';
       [class.lnk-inline-card--editing]="editing()"
     >
       <div class="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-[var(--border)]">
-        <span class="text-sm font-semibold text-[var(--foreground)]">{{ title() }}</span>
+        <span class="flex items-center gap-2 min-w-0">
+          @if (statusTone()) {
+            <span
+              class="inline-block w-2 h-2 rounded-full shrink-0"
+              [style.background]="statusColor()"
+              [style.box-shadow]="statusGlow()"
+              [lnkTooltip]="statusLabel()"
+              [attr.aria-label]="statusLabel()"
+            ></span>
+          }
+          <span class="text-sm font-semibold text-[var(--foreground)] truncate">{{ title() }}</span>
+        </span>
         <div class="flex items-center gap-2">
           @if (editing()) {
             <button type="button" class="btn btn-ghost btn-sm" (click)="onCancel()" [disabled]="saving()">
@@ -82,6 +94,13 @@ export class InlineEditCardComponent {
   readonly saveDisabled = input<boolean>(false);
   /** Mostra il pulsante "Modifica" (default `true`). */
   readonly canEdit = input<boolean>(true);
+  /**
+   * Tono del pallino di stato accanto al titolo (null = nessun pallino).
+   * Usa la palette `--status-<tone>-text`.
+   */
+  readonly statusTone = input<'success' | 'muted' | 'danger' | 'warning' | null>(null);
+  /** Testo accessibile/tooltip del pallino di stato. */
+  readonly statusLabel = input<string>('');
   /** Chiavi i18n dei pulsanti (override opzionali). */
   readonly editKey = input<string>('Common.Edit');
   readonly saveKey = input<string>('Common.Save');
@@ -89,6 +108,22 @@ export class InlineEditCardComponent {
 
   /** Stato di modifica, a due vie. */
   readonly editing = model<boolean>(false);
+
+  /** Colore del pallino di stato derivato dal tono. */
+  protected readonly statusColor = computed(() => {
+    const tone = this.statusTone();
+    return tone ? `var(--status-${tone}-text)` : null;
+  });
+
+  /**
+   * Alone del pallino: doppio ring (interno morbido + esterno più diffuso) per
+   * dare risalto. Applicato solo allo stato attivo (`success`).
+   */
+  protected readonly statusGlow = computed(() => {
+    if (this.statusTone() !== 'success') return null;
+    const c = 'var(--status-success-text)';
+    return `0 0 0 3px color-mix(in srgb, ${c} 28%, transparent), 0 0 6px 1px color-mix(in srgb, ${c} 45%, transparent)`;
+  });
 
   readonly save = output<void>();
   readonly cancel = output<void>();

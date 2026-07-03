@@ -76,6 +76,14 @@ export class ConnettoreInlineComponent implements OnInit {
   readonly isPagopa = computed(() => this.tipo() === 'pagopa');
   readonly title = computed(() => this.translate.instant(CONNETTORE_LABEL[this.tipo()] ?? this.tipo()));
 
+  /** Pallino di stato nell'header della card. */
+  readonly statusTone = computed<'success' | 'muted'>(() => (this.connettore()?.abilitato ? 'success' : 'muted'));
+  readonly statusLabel = computed(() => {
+    const c = this.connettore();
+    if (!c) return this.translate.instant('Intermediari.Connettori.NonConfigurato');
+    return this.translate.instant(c.abilitato ? 'Intermediari.Stato.Abilitato' : 'Intermediari.Stato.Disabilitato');
+  });
+
   readonly viewItems = computed<InfoGridItem[]>(() => {
     const c = this.connettore();
     if (!c) return [{ labelKey: 'Intermediari.Connettori.Stato', value: this.translate.instant('Intermediari.Connettori.NonConfigurato') }];
