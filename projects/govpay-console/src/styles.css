@@ -449,6 +449,16 @@ a {
 }
 
 /* ==========================================================================
+   FOCUS RING — anello di focus tematico (segue `--ring`) per elementi
+   interattivi senza stile `.btn` (voci sidebar, item del menu profilo, ...).
+   Inset per non essere clippato dai container con overflow.
+   ========================================================================== */
+.lnk-focus-ring:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+/* ==========================================================================
    ROW HOVER — sfondo dell'hover row riusato da `<lnk-data-table>` e
    `<lnk-item-row>`. Definito qui per evitare il quoting-hell di
    `[class.hover:bg-\[var\(--card-hover\)\]]` nei template Angular.
