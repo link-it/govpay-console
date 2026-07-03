@@ -37,6 +37,8 @@ export class ThemeLoaderService {
     const root = this.document.documentElement;
     root.style.setProperty('--primary', branding.primaryColor);
     root.style.setProperty('--secondary', branding.secondaryColor);
+    // Il focus ring segue l'accento del tema (altrimenti resta al default CSS).
+    root.style.setProperty('--ring', branding.primaryColor);
     if (branding.theme) this.applyTheme(branding.theme, mode);
     if (mode === 'dark') {
       root.classList.add('dark');
