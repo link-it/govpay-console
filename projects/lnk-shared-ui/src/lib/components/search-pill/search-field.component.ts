@@ -212,7 +212,10 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
     .fld__input::placeholder { color: var(--sb-text-subtle); font-weight: 400; }
 
     /* DATE: allinea l'aspetto al resto dei campi; grigio quando vuoto. */
-    .fld__input--date { cursor: pointer; color-scheme: light dark; }
+    /* Il color-scheme segue il tema dell'app (classe .dark su un antenato),
+       così l'icona nativa del calendario resta visibile anche in dark. */
+    .fld__input--date { cursor: pointer; color-scheme: light; }
+    :host-context(.dark) .fld__input--date { color-scheme: dark; }
     .fld__input--date[data-empty='1'] { color: var(--sb-text-subtle); font-weight: 400; }
     .fld__input--date::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .6; }
     .fld__input--date:hover::-webkit-calendar-picker-indicator { opacity: 1; }
