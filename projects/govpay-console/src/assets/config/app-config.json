@@ -34,6 +34,24 @@
       "darkModeTogglePosition": "none",
       "languageSelectorPosition": "none",
       "settingsMenuPosition": "profile",
+      "themeUrl": "assets/config/themes/govpay.json",
+      "themes": [
+        { "id": "govpay", "label": "GovPay", "url": "assets/config/themes/govpay.json", "color": "#ff4050" },
+        { "id": "gold", "label": "Gold", "url": "assets/config/themes/gold.json", "color": "#f5c518" },
+        { "id": "caramel", "label": "Caramel", "url": "assets/config/themes/caramel.json", "color": "#a86b3c" },
+        { "id": "start", "label": "Start (teal)", "url": "assets/config/themes/start.json", "color": "#12b8a6" },
+        { "id": "router", "label": "Router (verde)", "url": "assets/config/themes/router.json", "color": "#37a93c" },
+        { "id": "query", "label": "Query (corallo)", "url": "assets/config/themes/query.json", "color": "#ef4b3b" },
+        { "id": "db", "label": "DB (arancio)", "url": "assets/config/themes/db.json", "color": "#f6821f" },
+        { "id": "ai", "label": "AI (magenta)", "url": "assets/config/themes/ai.json", "color": "#e5399a" },
+        { "id": "table", "label": "Table (blu)", "url": "assets/config/themes/table.json", "color": "#3b82f6" },
+        { "id": "hotkeys", "label": "Hotkeys (rosa)", "url": "assets/config/themes/hotkeys.json", "color": "#f43f5e" },
+        { "id": "virtual", "label": "Virtual (viola)", "url": "assets/config/themes/virtual.json", "color": "#8b5cf6" },
+        { "id": "pacer", "label": "Pacer (lime)", "url": "assets/config/themes/pacer.json", "color": "#84cc16" },
+        { "id": "config", "label": "Config (slate)", "url": "assets/config/themes/config.json", "color": "#475569" },
+        { "id": "cli", "label": "CLI (indaco)", "url": "assets/config/themes/cli.json", "color": "#6366f1" },
+        { "id": "intent", "label": "Intent (azzurro)", "url": "assets/config/themes/intent.json", "color": "#0ea5e9" }
+      ],
       "languages": [
         {
           "code": "it",

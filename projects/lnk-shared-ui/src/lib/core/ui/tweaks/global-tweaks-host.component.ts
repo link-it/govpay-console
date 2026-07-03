@@ -122,12 +122,13 @@ export class GlobalTweaksHostComponent {
    * almeno un override globale OR almeno una sezione registrata.
    */
   protected readonly hasReset = computed(
-    () => this.overrides.hasAnyOverride() || this.registry.count() > 0
+    () => this.overrides.hasAnyOverride() || this.config.themeOverridden() || this.registry.count() > 0
   );
 
-  /** Reset combinato: globali + onReset di ogni sezione registrata. */
+  /** Reset combinato: globali + tema + onReset di ogni sezione registrata. */
   protected onReset(): void {
     this.overrides.reset();
+    void this.config.resetTheme();
     this.registry.resetAll();
   }
 }

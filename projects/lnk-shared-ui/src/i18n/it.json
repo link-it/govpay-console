@@ -77,6 +77,8 @@
     "Range.Year": "1 anno",
     "Global": "Globale",
     "GlobalHint": "Override session-level dei flag Layout. Si applicano a tutte le pagine fino al refresh.",
+    "Theme": "Tema",
+    "ThemeHint": "Scegli la palette dell'applicazione (fino al refresh).",
     "ListMaxWidth": "Larghezza max liste",
     "DetailMaxWidth": "Larghezza max dettagli",
     "MaxWidthHint": "Limita il container per le pagine di lista/dettaglio.",

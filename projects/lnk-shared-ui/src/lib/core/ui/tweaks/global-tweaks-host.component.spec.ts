@@ -34,6 +34,15 @@ class FakeTranslateLoader {
 class FakeConfigService {
   readonly appConfig = signal<Record<string, unknown> | null>({ Layout: {} });
   readonly effectiveLayout = signal<Record<string, unknown> | null>({});
+  readonly themes = signal<unknown[]>([]);
+  readonly activeThemeId = signal('');
+  readonly themeOverridden = signal(false);
+  selectTheme(): Promise<void> {
+    return Promise.resolve();
+  }
+  resetTheme(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 function setup() {

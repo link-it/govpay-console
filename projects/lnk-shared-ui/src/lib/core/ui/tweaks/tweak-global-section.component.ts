@@ -25,6 +25,7 @@ import {
   TweakSegmentedComponent,
   type TweakSegmentedOption,
 } from './tweak-segmented.component';
+import { TweakSelectComponent, type TweakSelectOption } from './tweak-select.component';
 import { TweakToggleComponent } from './tweak-toggle.component';
 
 const MAX_WIDTH_OPTIONS: TweakSegmentedOption[] = [
@@ -71,11 +72,21 @@ const POSITION_OPTIONS: TweakSegmentedOption[] = [
     TweakSectionComponent,
     TweakRowComponent,
     TweakSegmentedComponent,
+    TweakSelectComponent,
     TweakToggleComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <lnk-tweak-section titleKey="Tweaks.Global" descriptionKey="Tweaks.GlobalHint">
+      @if (themeOptions().length > 1) {
+        <lnk-tweak-row labelKey="Tweaks.Theme" hintKey="Tweaks.ThemeHint">
+          <lnk-tweak-select
+            [options]="themeOptions()"
+            [value]="activeTheme()"
+            (valueChange)="onThemeChange($event)"
+          />
+        </lnk-tweak-row>
+      }
       <lnk-tweak-row labelKey="Tweaks.ListMaxWidth" hintKey="Tweaks.MaxWidthHint">
         <lnk-tweak-segmented
           [options]="maxWidthOptions"
@@ -120,7 +131,7 @@ const POSITION_OPTIONS: TweakSegmentedOption[] = [
           (valueChange)="onDarkModePositionChange($event)"
         />
       </lnk-tweak-row>
-      @if (overrides.hasAnyOverride()) {
+      @if (overrides.hasAnyOverride() || config.themeOverridden()) {
         <button
           type="button"
           class="btn btn-ghost btn-sm"
@@ -134,10 +145,16 @@ const POSITION_OPTIONS: TweakSegmentedOption[] = [
 })
 export class TweakGlobalSectionComponent {
   protected readonly overrides = inject(LayoutOverridesService);
-  private readonly config = inject(ConfigService);
+  protected readonly config = inject(ConfigService);
 
   protected readonly maxWidthOptions = MAX_WIDTH_OPTIONS;
   protected readonly positionOptions = POSITION_OPTIONS;
+
+  /** Opzioni del selettore tema (da `Layout.themes`), col colore di riferimento. */
+  protected readonly themeOptions = computed<TweakSelectOption[]>(() =>
+    this.config.themes().map((t) => ({ value: t.id, labelKey: t.label, color: t.color }))
+  );
+  protected readonly activeTheme = computed<string>(() => this.config.activeThemeId());
 
   protected readonly listMaxWidth = computed(
     () => this.config.effectiveLayout()?.listMaxWidth ?? 'none'
@@ -176,7 +193,12 @@ export class TweakGlobalSectionComponent {
   onDarkModePositionChange(value: string): void {
     this.overrides.darkModeTogglePosition.set(value as ControlPosition);
   }
+  onThemeChange(id: string): void {
+    const theme = this.config.themes().find((t) => t.id === id);
+    if (theme) void this.config.selectTheme(theme.url);
+  }
   resetGlobals(): void {
     this.overrides.reset();
+    void this.config.resetTheme();
   }
 }

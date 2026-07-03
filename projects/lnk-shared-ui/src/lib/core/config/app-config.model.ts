@@ -73,6 +73,18 @@ export interface AuthConfig {
  */
 export type ControlPosition = 'header' | 'sidebar' | 'none';
 
+/** Un tema selezionabile a runtime (vedi `LayoutConfig.themes`). */
+export interface ThemeOption {
+  /** Identificatore stabile del tema (usato come valore del selettore). */
+  id: string;
+  /** Etichetta mostrata nel selettore (testo o chiave i18n). */
+  label: string;
+  /** URL del file di tema (BrandingConfig JSON) da caricare. */
+  url: string;
+  /** Colore di riferimento (accento) mostrato come pallino nel selettore. */
+  color?: string;
+}
+
 /** Una lingua disponibile nell'applicazione. */
 export interface Language {
   /** Codice ISO 639-1 (it, en, ...). Usato come key i18n e `lang` di `<html>`. */
@@ -141,6 +153,17 @@ export interface LayoutConfig {
   languages?: Language[];
   /** Lingua di default all'avvio (deve essere presente in `languages`). Default: `'it'`. */
   defaultLanguage?: string;
+  /**
+   * URL del file di tema (branding + palette) caricato al boot. Default
+   * `assets/config/theme.json`. Permette di avere più temi affiancati e
+   * sceglierne uno da configurazione senza rimuovere gli altri.
+   */
+  themeUrl?: string;
+  /**
+   * Temi selezionabili a runtime dal pannello tweaks (sezione Globale).
+   * Se presenti, l'utente può cambiare tema al volo (session-level).
+   */
+  themes?: ThemeOption[];
   /** Mostra la voce About nel profile menu (default `true`). */
   showAbout?: boolean;
   /** Mostra la versione in fondo alla sidebar (default `true`). */

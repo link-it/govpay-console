@@ -77,6 +77,8 @@
     "Range.Year": "1 year",
     "Global": "Global",
     "GlobalHint": "Session-level overrides of Layout flags. Applied to every page until refresh.",
+    "Theme": "Theme",
+    "ThemeHint": "Choose the application palette (until refresh).",
     "ListMaxWidth": "List max width",
     "DetailMaxWidth": "Detail max width",
     "MaxWidthHint": "Constrain the page container for lists/details.",

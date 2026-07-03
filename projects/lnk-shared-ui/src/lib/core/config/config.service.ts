@@ -22,6 +22,7 @@ import type {
   BrandingConfig,
   LayoutConfig,
   RuntimeConfig,
+  ThemeOption,
 } from './app-config.model';
 import { SystemFacade } from '../system/system.facade';
 import { LayoutOverridesService } from '../system/layout-overrides.service';
@@ -63,10 +64,26 @@ export class ConfigService {
 
   private readonly _config = signal<RuntimeConfig | null>(null);
   private readonly _branding = signal<BrandingConfig | null>(null);
+  /** URL del tema caricato al boot (default di configurazione). */
+  private readonly _defaultThemeUrl = signal<string>(THEME_URL);
+  /** URL del tema scelto a runtime dai tweaks (null = usa il default). */
+  private readonly _selectedThemeUrl = signal<string | null>(null);
 
   readonly config = this._config.asReadonly();
   readonly branding = this._branding.asReadonly();
   readonly appConfig = computed<AppConfig | null>(() => this._config()?.AppConfig ?? null);
+
+  /** Temi selezionabili a runtime (da `Layout.themes`). */
+  readonly themes = computed<ThemeOption[]>(() => this.appConfig()?.Layout.themes ?? []);
+  /** URL del tema attualmente attivo (scelta runtime o default di boot). */
+  readonly activeThemeUrl = computed<string>(() => this._selectedThemeUrl() ?? this._defaultThemeUrl());
+  /** Id del tema attivo se corrisponde a una voce di `themes` (altrimenti ''). */
+  readonly activeThemeId = computed<string>(() => {
+    const url = this.activeThemeUrl();
+    return this.themes().find((t) => t.url === url)?.id ?? '';
+  });
+  /** `true` se l'utente ha scelto un tema diverso dal default di boot. */
+  readonly themeOverridden = computed<boolean>(() => this._selectedThemeUrl() !== null);
   /**
    * Layout effettivo: merge tra `appConfig().Layout` (config statica da
    * `app-config.json`) e gli override session-level di
@@ -123,16 +140,16 @@ export class ConfigService {
     // come query param + headers no-cache.
     const bust = `_=${Date.now()}`;
     const configUrl = url.includes('?') ? `${url}&${bust}` : `${url}?${bust}`;
-    const themeUrl = `${THEME_URL}?${bust}`;
 
-    const [config, branding] = await Promise.all([
-      firstValueFrom(this.http.get<RuntimeConfig>(configUrl, { headers: NO_CACHE_HEADERS })),
-      firstValueFrom(
-        this.http
-          .get<BrandingConfig>(themeUrl, { headers: NO_CACHE_HEADERS })
-          .pipe(catchError(() => of(null)))
-      ),
-    ]);
+    // Il config va letto prima del tema: la scelta del file di tema può arrivare
+    // da `Layout.themeUrl` (più temi affiancati selezionabili da configurazione).
+    const config = await firstValueFrom(
+      this.http.get<RuntimeConfig>(configUrl, { headers: NO_CACHE_HEADERS })
+    );
+
+    const themePath = config.AppConfig.Layout?.themeUrl || THEME_URL;
+    this._defaultThemeUrl.set(themePath);
+    const branding = await this.fetchBranding(themePath);
 
     this._config.set(config);
     if (branding) {
@@ -155,6 +172,37 @@ export class ConfigService {
   reapplyTheme(): void {
     const b = this._branding();
     if (b) this.themeLoader.applyBranding(b, this.system.resolvedScheme());
+  }
+
+  /** Scarica un file di tema (BrandingConfig) con cache-busting. */
+  private async fetchBranding(path: string): Promise<BrandingConfig | null> {
+    const bust = `_=${Date.now()}`;
+    const themeUrl = path.includes('?') ? `${path}&${bust}` : `${path}?${bust}`;
+    return firstValueFrom(
+      this.http
+        .get<BrandingConfig>(themeUrl, { headers: NO_CACHE_HEADERS })
+        .pipe(catchError(() => of(null)))
+    );
+  }
+
+  /**
+   * Applica a runtime un tema per URL (scelta session-level dai tweaks). Il
+   * default di boot resta invariato: `resetTheme()` lo ripristina.
+   */
+  async selectTheme(url: string): Promise<void> {
+    if (url === this.activeThemeUrl()) return;
+    const branding = await this.fetchBranding(url);
+    if (!branding) return;
+    this._selectedThemeUrl.set(url);
+    this._branding.set(branding);
+  }
+
+  /** Ripristina il tema di default caricato al boot. */
+  async resetTheme(): Promise<void> {
+    if (!this.themeOverridden()) return;
+    const branding = await this.fetchBranding(this._defaultThemeUrl());
+    this._selectedThemeUrl.set(null);
+    if (branding) this._branding.set(branding);
   }
 
   /**
