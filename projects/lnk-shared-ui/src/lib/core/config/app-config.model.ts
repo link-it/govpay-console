@@ -167,6 +167,12 @@ export interface LayoutConfig {
   /** Override della `listView` per feature (chiave = nome feature, es. `pendenze`). */
   listViewByFeature?: Record<string, 'table' | 'rows'>;
   /**
+   * Variante grafica della barra di ricerca `<lnk-search-pill>`:
+   *   - `'pill'` (default) → barra e pulsanti completamente arrotondati
+   *   - `'square'`         → angoli arrotondati moderati, allineati ai `.btn`
+   */
+  searchPillVariant?: 'pill' | 'square';
+  /**
    * Mostra il pulsante flottante "torna su" (bottom-right) quando la
    * pagina è scrollata oltre la soglia. Default: `true`.
    */

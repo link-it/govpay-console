@@ -98,6 +98,11 @@ export class IntermediariListComponent implements OnInit {
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
 
+  /** Variante grafica della search-pill da app-config (default `pill`). */
+  readonly searchPillVariant = computed<'pill' | 'square'>(
+    () => this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
+  );
+
   readonly searchFields = computed<SearchField[]>(() => {
     this.lang.current(); // dipendenza: ritraduce al cambio lingua
     const t = (k: string) => this.translate.instant(k);

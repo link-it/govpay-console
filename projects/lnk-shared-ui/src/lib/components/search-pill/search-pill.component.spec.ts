@@ -120,6 +120,16 @@ describe('SearchPillComponent', () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 
+  it('cliccando la lente si rilancia la ricerca sullo stato committato', () => {
+    const value: SearchState = { query: '', filters: { idDominio: 'Comune X' }, sort: '', dir: 'desc' };
+    const fixture = render({ value });
+    const spy = vi.fn();
+    fixture.componentInstance.search.subscribe(spy);
+    el(fixture, '.pill__lead').click();
+    expect(spy).toHaveBeenCalledOnce();
+    expect(spy).toHaveBeenCalledWith(value);
+  });
+
   it('cliccando il contenuto di un chip si apre il pannello dei filtri', () => {
     const value: SearchState = { query: '', filters: { idDominio: 'Comune X' }, sort: '', dir: 'desc' };
     const fixture = render({ value });

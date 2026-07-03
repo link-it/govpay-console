@@ -16,6 +16,7 @@
     [(value)]="searchState"
     [resultCount]="total()"
     [showSort]="false"
+    [variant]="searchPillVariant()"
     [labels]="pillLabels()"
     [placeholder]="searchPlaceholder()"
     (search)="onSearch($event)"

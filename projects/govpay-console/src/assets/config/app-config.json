@@ -70,6 +70,7 @@
         "rendicontazioni": "rows",
         "intermediari": "rows"
       },
+      "searchPillVariant": "square",
       "gotoTopButton": true,
       "helpButton": true,
       "tweaksPanel": true,

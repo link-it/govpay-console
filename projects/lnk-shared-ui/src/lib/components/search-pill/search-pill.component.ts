@@ -80,10 +80,13 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
     class: 'sb-host',
   },
   template: `
-    <div class="pill-wrap">
+    <div class="pill-wrap" [class.pill-wrap--square]="variant() === 'square'">
       <!-- Pill bar -->
       <div class="pill" [attr.data-focus]="focused() ? '1' : '0'">
-        <ng-icon name="bootstrapSearch" size="1.125rem" class="pill__lead" />
+        <button type="button" class="pill__lead" [title]="labels().search"
+          [attr.aria-label]="labels().search" (click)="triggerSearch()">
+          <ng-icon name="bootstrapSearch" size="1.125rem" />
+        </button>
 
         <!-- Area scrollabile: i chip attivi e la query/placeholder scorrono insieme -->
         <div class="pill__scroll">
@@ -188,7 +191,19 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
       border-color: var(--sb-primary);
       box-shadow: 0 0 0 4px var(--sb-primary-soft), 0 6px 20px rgba(16, 24, 40, .06);
     }
-    .pill__lead { color: var(--sb-text-muted); flex-shrink: 0; }
+    .pill__lead {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--sb-text-muted);
+      cursor: pointer;
+      transition: color .12s;
+    }
+    .pill__lead:hover { color: var(--sb-primary); }
 
     /* Area scrollabile con chip + query: occupa lo spazio residuo, si restringe
        e scrolla orizzontalmente insieme. I chip e il placeholder non editabile
@@ -307,6 +322,12 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
       box-shadow: var(--sb-shadow-lg);
       overflow: hidden;
     }
+
+    /* ── Variante "square": angoli moderati (rounded-md) allineati ai .btn ── */
+    .pill-wrap--square .pill { border-radius: 0.5rem; }
+    .pill-wrap--square .pill__filters,
+    .pill-wrap--square .pill__sort { border-radius: 0.375rem; }
+    .pill-wrap--square .pill__pop--filters { border-radius: 0.5rem; }
   `],
 })
 export class SearchPillComponent {
@@ -328,6 +349,13 @@ export class SearchPillComponent {
   readonly density = input<Density>('regular');
   /** Mostra il toggle sort inline. */
   readonly showSort = input(true);
+  /**
+   * Variante grafica:
+   * - `pill` (default): barra e pulsanti completamente arrotondati.
+   * - `square`: angoli arrotondati moderati (rounded-md) allineati ai
+   *   pulsanti `.btn` del layout.
+   */
+  readonly variant = input<'pill' | 'square'>('pill');
 
   // ── i18n ─────────────────────────────────────────────────────────
   readonly labels = input<SearchPillLabels>(DEFAULT_LABELS);
@@ -419,6 +447,12 @@ export class SearchPillComponent {
   }
 
   protected onEnter(): void {
+    this.showSuggest.set(false);
+    this.search.emit(this.value());
+  }
+
+  /** Click sulla lente: rilancia la ricerca sullo stato committato. */
+  protected triggerSearch(): void {
     this.showSuggest.set(false);
     this.search.emit(this.value());
   }

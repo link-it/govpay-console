@@ -33,6 +33,7 @@ import {
   ItemListComponent,
   PageHeaderComponent,
   SearchPillComponent,
+  SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
   formatDate,
@@ -107,6 +108,13 @@ export class PendenzeListComponent implements OnInit {
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
   readonly viewMode = computed<'table' | 'rows'>(
     () => this.viewModeOverride() ?? this.viewModeDefault()
+  );
+
+  /** Override di sessione (tweaks) della variante search-pill. */
+  private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
+  /** Variante grafica della search-pill: override tweaks → app-config → `pill`. */
+  readonly searchPillVariant = computed<'pill' | 'square'>(
+    () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
 
   /** Domini in scope dell'utente (escluso il placeholder `*`). */
@@ -196,8 +204,19 @@ export class PendenzeListComponent implements OnInit {
             value: this.viewMode,
             onChange: (v) => this.onViewModeChange(v),
           },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.SearchPill',
+            hintKey: 'Tweaks.SearchPillHint',
+            options: SEARCH_PILL_VARIANT_OPTIONS,
+            value: this.searchPillVariant,
+            onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
+          },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => {
+          this.viewModeOverride.set(null);
+          this.searchPillVariantOverride.set(null);
+        },
       })
     );
   }

@@ -32,6 +32,12 @@ export const VIEW_OPTIONS: TweakSegmentedOption[] = [
   { value: 'rows', labelKey: 'Tweaks.View.Rows' },
 ];
 
+/** Variante grafica della barra di ricerca `<lnk-search-pill>`. */
+export const SEARCH_PILL_VARIANT_OPTIONS: TweakSegmentedOption[] = [
+  { value: 'pill', labelKey: 'Tweaks.SearchPill.Pill' },
+  { value: 'square', labelKey: 'Tweaks.SearchPill.Square' },
+];
+
 /**
  * Range di date pre-impostati (espressi come giorni-fa). Cliccando su
  * un preset si imposta `filters.dataDa = daysAgoIso(N)`.
