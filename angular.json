@@ -43,7 +43,7 @@
               "projects/govpay-console/src/assets"
             ],
             "styles": [
-              "projects/govpay-console/src/styles/fonts/prompt.css",
+              "projects/govpay-console/src/styles/fonts/fonts.css",
               "projects/govpay-console/src/styles.css"
             ],
             "outputPath": "dist/govpay-console"
@@ -53,7 +53,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "750kB",
+                  "maximumWarning": "800kB",
                   "maximumError": "1.5MB"
                 },
                 {

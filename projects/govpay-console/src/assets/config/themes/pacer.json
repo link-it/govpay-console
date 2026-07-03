@@ -71,7 +71,7 @@
     },
     "fonts": {
       "primary": {
-        "family": "Prompt"
+        "family": "Roboto"
       }
     },
     "success": "#16a34a",

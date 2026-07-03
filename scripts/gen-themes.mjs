@@ -29,7 +29,7 @@ const WHITE = '#ffffff';
 const INK = '#1e1b18';
 const MUTED_FG = '#6f6a63';
 
-function buildTheme(accent) {
+function buildTheme(accent, font = 'Prompt') {
   const onPrimary = lum(accent) > 0.6 ? '#1f1d1a' : '#ffffff';
   const primaryHover = darken(accent, 0.88);
   const canvas = mix(accent, WHITE, 0.07);
@@ -84,7 +84,7 @@ function buildTheme(accent) {
           badgeTextActive: onPrimary,
         },
       },
-      fonts: { primary: { family: 'Prompt' } },
+      fonts: { primary: { family: font } },
       success: '#16a34a', warning: '#f59e0b', danger: '#dc2626', info: '#0071a9',
       dark: {
         topBar: { background: dBg, text: dText, border: dBorder },
@@ -116,25 +116,25 @@ function buildTheme(accent) {
   };
 }
 
-// id → accent (dai prodotti TanStack)
+// id → { accent, font } (font opzionale, default 'Prompt')
 const THEMES = {
-  start: '#12b8a6',
-  router: '#37a93c',
-  query: '#ef4b3b',
-  db: '#f6821f',
-  ai: '#e5399a',
-  table: '#3b82f6',
-  hotkeys: '#f43f5e',
-  virtual: '#8b5cf6',
-  pacer: '#84cc16',
-  config: '#475569',
-  cli: '#6366f1',
-  intent: '#0ea5e9',
+  start: { accent: '#12b8a6' },
+  router: { accent: '#37a93c', font: 'Roboto' },
+  query: { accent: '#ef4b3b' },
+  db: { accent: '#f6821f', font: 'Roboto' },
+  ai: { accent: '#e5399a' },
+  table: { accent: '#3b82f6', font: 'Inter' },
+  hotkeys: { accent: '#f43f5e' },
+  virtual: { accent: '#8b5cf6' },
+  pacer: { accent: '#84cc16', font: 'Roboto' },
+  config: { accent: '#475569', font: 'Inter' },
+  cli: { accent: '#6366f1', font: 'Inter' },
+  intent: { accent: '#0ea5e9' },
 };
 
-for (const [id, accent] of Object.entries(THEMES)) {
+for (const [id, { accent, font }] of Object.entries(THEMES)) {
   const file = resolve(OUT, `${id}.json`);
-  writeFileSync(file, JSON.stringify(buildTheme(accent), null, 2) + '\n');
-  console.log(`✓ ${id}.json (${accent})`);
+  writeFileSync(file, JSON.stringify(buildTheme(accent, font), null, 2) + '\n');
+  console.log(`✓ ${id}.json (${accent}${font ? ', ' + font : ''})`);
 }
 console.log(`\n${Object.keys(THEMES).length} temi generati in ${OUT}`);
