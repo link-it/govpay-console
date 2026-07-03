@@ -33,6 +33,7 @@ import {
   ItemListComponent,
   PageHeaderComponent,
   SearchPillComponent,
+  SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
   formatOrdinamento,
@@ -98,9 +99,11 @@ export class IntermediariListComponent implements OnInit {
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
 
-  /** Variante grafica della search-pill da app-config (default `pill`). */
+  /** Override di sessione (tweaks) della variante search-pill. */
+  private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
+  /** Variante grafica della search-pill: override tweaks → app-config → `pill`. */
   readonly searchPillVariant = computed<'pill' | 'square'>(
-    () => this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
+    () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
 
   readonly searchFields = computed<SearchField[]>(() => {
@@ -167,8 +170,19 @@ export class IntermediariListComponent implements OnInit {
             value: this.viewMode,
             onChange: (v) => this.onViewModeChange(v),
           },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.SearchPill',
+            hintKey: 'Tweaks.SearchPillHint',
+            options: SEARCH_PILL_VARIANT_OPTIONS,
+            value: this.searchPillVariant,
+            onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
+          },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => {
+          this.viewModeOverride.set(null);
+          this.searchPillVariantOverride.set(null);
+        },
       })
     );
   }
