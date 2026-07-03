@@ -7,14 +7,16 @@
     <ng-icon name="bootstrapPerson" size="1.125rem" />
     <span class="truncate">{{ 'Profile.Title' | translate }}</span>
   </a>
-  <a
-    routerLink="/impostazioni"
-    (click)="close()"
-    class="flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
-  >
-    <ng-icon name="bootstrapGear" size="1.125rem" />
-    <span class="truncate">{{ 'Profile.Settings' | translate }}</span>
-  </a>
+  @if (showSettings()) {
+    <a
+      routerLink="/impostazioni"
+      (click)="close()"
+      class="flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
+    >
+      <ng-icon name="bootstrapGear" size="1.125rem" />
+      <span class="truncate">{{ 'Profile.Settings' | translate }}</span>
+    </a>
+  }
   @if (showAbout()) {
     <a
       routerLink="/about"

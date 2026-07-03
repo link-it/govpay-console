@@ -33,6 +33,7 @@
       "profileMenuPosition": "sidebar",
       "darkModeTogglePosition": "none",
       "languageSelectorPosition": "none",
+      "settingsMenuPosition": "profile",
       "languages": [
         {
           "code": "it",

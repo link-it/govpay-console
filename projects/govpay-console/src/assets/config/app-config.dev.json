@@ -28,6 +28,7 @@
       "profileMenuPosition": "sidebar",
       "darkModeTogglePosition": "sidebar",
       "languageSelectorPosition": "sidebar",
+      "settingsMenuPosition": "profile",
       "languages": [
         { "code": "it", "label": "Italiano", "short": "IT", "flag": "🇮🇹" },
         { "code": "en", "label": "English", "short": "EN", "flag": "🇬🇧" }

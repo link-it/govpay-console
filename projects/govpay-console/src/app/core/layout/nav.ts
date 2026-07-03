@@ -125,6 +125,9 @@ function isNavItemHidden(
   acl: AuthAcl | null | undefined
 ): boolean {
   if (item.feature && appConfig?.Features?.[item.feature] === false) return true;
+  // La voce Impostazioni vive nel menu profilo per default: appare in sidebar
+  // solo con `Layout.settingsMenuPosition === 'sidebar'`.
+  if (item.route === '/impostazioni' && appConfig?.Layout?.settingsMenuPosition !== 'sidebar') return true;
   if (item.acl && acl) return !item.acl.some((flag) => acl[flag] === true);
   return false;
 }

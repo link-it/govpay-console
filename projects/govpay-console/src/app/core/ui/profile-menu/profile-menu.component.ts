@@ -66,6 +66,20 @@ export class ProfileMenuComponent {
     () => this.config.appConfig()?.Layout.profileMenuExtraItems ?? []
   );
 
+  /**
+   * Mostra la voce "Impostazioni" nel menu profilo: gated da
+   * `Features.MENU_IMPOSTAZIONI` e collocazione `Layout.settingsMenuPosition`
+   * ('profile' o assente = qui; 'sidebar' = nella navigazione). Rispetta l'ACL
+   * `hasSetting` quando disponibile.
+   */
+  readonly showSettings = computed(() => {
+    const cfg = this.config.appConfig();
+    if (cfg?.Layout?.settingsMenuPosition === 'sidebar') return false;
+    if (cfg?.Features?.['MENU_IMPOSTAZIONI'] === false) return false;
+    const acl = this.user()?.acl;
+    return !acl || acl.hasSetting === true;
+  });
+
   /** True se il link è esterno (http/https/mailto/tel). */
   isExternalLink(href: string): boolean {
     return /^(https?:|mailto:|tel:)/i.test(href);

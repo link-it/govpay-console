@@ -131,6 +131,12 @@ export interface LayoutConfig {
   darkModeTogglePosition?: ControlPosition;
   /** Posizione del selettore lingua. Default: `'header'`. */
   languageSelectorPosition?: ControlPosition;
+  /**
+   * Dove mostrare la voce "Impostazioni" (gated da `Features.MENU_IMPOSTAZIONI`):
+   *   - `'profile'` (default) → item nel menu profilo
+   *   - `'sidebar'`           → voce di navigazione nella sidebar
+   */
+  settingsMenuPosition?: 'sidebar' | 'profile';
   /** Lingue disponibili. Se assente, default `[{code:'it',label:'Italiano'},{code:'en',label:'English'}]`. */
   languages?: Language[];
   /** Lingua di default all'avvio (deve essere presente in `languages`). Default: `'it'`. */
