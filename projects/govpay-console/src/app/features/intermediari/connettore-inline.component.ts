@@ -82,6 +82,11 @@ export class ConnettoreInlineComponent implements OnInit {
     return [
       { labelKey: 'Intermediari.Connettori.Stato', value: c.abilitato ? this.translate.instant('Common.Yes') : this.translate.instant('Common.No') },
       { labelKey: 'Intermediari.Connettori.TipoAuth', value: c.auth?.tipoAutenticazione },
+      {
+        labelKey: 'Intermediari.Connettori.Form.AbilitaGDE',
+        value: c.abilitaGDE ? this.translate.instant('Common.Yes') : this.translate.instant('Common.No'),
+        hide: this.isPagopa() || c.abilitaGDE == null,
+      },
       { labelKey: 'Intermediari.Connettori.Url', value: c.urlRPT || c.url, mono: true, wide: true, hide: !(c.urlRPT || c.url) },
     ];
   });
