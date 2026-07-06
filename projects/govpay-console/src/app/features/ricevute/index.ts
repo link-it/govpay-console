@@ -10,7 +10,7 @@
  */
 
 export * from './ricevuta.model';
-export * from './ricevute.api';
+export * from './ricevute.console-api';
 export * from './ricevute.routes';
 export * from './ricevute-list.component';
 export * from './ricevuta-detail.component';

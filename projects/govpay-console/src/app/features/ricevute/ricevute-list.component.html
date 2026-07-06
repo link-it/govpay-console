@@ -1,37 +1,21 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
-  <lnk-page-header titleKey="Nav.Ricevute" subtitleKey="Ricevute.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
-      {{ 'Common.Refresh' | translate }}
-    </button>
-  </lnk-page-header>
-
-  <div class="flex flex-wrap items-end gap-3">
-    <div class="flex-1 min-w-[12rem]">
-      <lnk-search-input
-        [value]="filters().search"
-        placeholderKey="Ricevute.Filters.SearchPlaceholder"
-        (valueChange)="onSearchChange($event)"
-      />
-    </div>
-    <lnk-date-input
-      labelKey="Common.DateFrom"
-      [value]="filters().dataDa"
-      [max]="filters().dataA || undefined"
-      (valueChange)="onDataDaChange($event)"
-    />
-    <lnk-date-input
-      labelKey="Common.DateTo"
-      [value]="filters().dataA"
-      [min]="filters().dataDa || undefined"
-      (valueChange)="onDataAChange($event)"
-    />
-    @if (hasActiveFilters()) {
-      <button type="button" class="btn btn-ghost btn-sm self-end" (click)="resetFilters()">
-        {{ 'Common.ResetFilters' | translate }}
+    <lnk-page-header titleKey="Nav.Ricevute" subtitleKey="Ricevute.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+        {{ 'Common.Refresh' | translate }}
       </button>
-    }
-  </div>
+    </lnk-page-header>
+
+    <lnk-search-pill
+      [fields]="searchFields()"
+      [(value)]="searchState"
+      [resultCount]="total()"
+      [showSort]="false"
+      [variant]="searchPillVariant()"
+      [labels]="pillLabels()"
+      [placeholder]="searchPlaceholder()"
+      (search)="onSearch($event)"
+    />
   </div>
 
   <div class="px-6 space-y-4">
@@ -62,11 +46,9 @@
         [columns]="columns()"
         [rows]="rows()"
         [loading]="loading() && rows().length === 0"
-        [sort]="sort()"
         [clickable]="true"
         [displayConfig]="rowConfig()"
         emptyKey="Ricevute.Empty.Title"
-        (sortChange)="onSortChange($event)"
         (rowClick)="onRowClick($event)"
       />
     }

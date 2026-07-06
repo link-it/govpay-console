@@ -5,8 +5,15 @@
   "Ricevute": {
     "Subtitle": "Electronic receipts for payments.",
     "Filters": {
-      "SearchPlaceholder": "Search by IUV…",
-      "Esito": "Outcome"
+      "Placeholder": "Search receipt…",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "Exact IUV…",
+      "IdRicevuta": "Receipt ID",
+      "IdRicevutaPlaceholder": "Exact receipt ID…",
+      "Dominio": "Creditor",
+      "DominioPlaceholder": "Fiscal code (11 digits)…",
+      "DataDa": "Paid from",
+      "DataA": "Paid to"
     },
     "Empty": {
       "Title": "No receipts",
@@ -14,10 +21,10 @@
     },
     "Columns": {
       "Iuv": "IUV",
+      "IdRicevuta": "Receipt ID",
       "Dominio": "Creditor",
-      "Pagatore": "Payer",
-      "Causale": "Reason",
-      "DataRicevuta": "Payment date",
+      "Psp": "PSP",
+      "DataPagamento": "Payment date",
       "Importo": "Amount",
       "Stato": "Status"
     },
@@ -42,25 +49,25 @@
     "Detail": {
       "Subtitle": "Electronic receipt details.",
       "Generali": "General",
-      "EnteCreditore": "Creditor",
-      "SoggettoPagatore": "Payer",
       "Iuv": "IUV",
-      "NumeroAvviso": "Notice number",
-      "Ccp": "Payment context code",
-      "DataRicevuta": "Payment date",
+      "IdRicevuta": "Receipt ID",
+      "Dominio": "Creditor",
+      "DataPagamento": "Payment date",
       "Importo": "Amount",
-      "Causale": "Reason",
-      "IdDominio": "Domain ID",
-      "RagioneSociale": "Name",
-      "Anagrafica": "Full name",
-      "Identificativo": "Identifier",
-      "Email": "Email",
-      "Download": "Download RT",
-      "Dominio": "Domain",
-      "Pagatore": "Payer",
-      "TabDati": "Receipt data",
-      "TabEventi": "Events",
-      "EventiEmpty": "No events linked to this receipt."
+      "Psp": "PSP",
+      "Versione": "Version",
+      "DescrizioneStato": "Status detail",
+      "PendenzaCollegata": "Linked debt position",
+      "IdA2A": "Application (idA2A)",
+      "IdPendenza": "Debt position ID",
+      "CausaleBreve": "Reason",
+      "VaiPendenza": "Go to debt position",
+      "Download": "Download",
+      "Rt": "RT",
+      "Rpt": "RPT",
+      "RptNonDisponibile": "RPT not available for this receipt.",
+      "Segnalazioni": "Notices",
+      "DownloadErrore": "Download failed."
     }
   },
   "Pagamenti": {

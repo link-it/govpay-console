@@ -5,8 +5,15 @@
   "Ricevute": {
     "Subtitle": "Ricevute telematiche dei pagamenti.",
     "Filters": {
-      "SearchPlaceholder": "Cerca per IUV…",
-      "Esito": "Esito"
+      "Placeholder": "Cerca ricevuta…",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "IUV esatto…",
+      "IdRicevuta": "ID ricevuta",
+      "IdRicevutaPlaceholder": "ID ricevuta esatto…",
+      "Dominio": "Ente creditore",
+      "DominioPlaceholder": "Codice fiscale (11 cifre)…",
+      "DataDa": "Pagata dal",
+      "DataA": "Pagata al"
     },
     "Empty": {
       "Title": "Nessuna ricevuta",
@@ -14,10 +21,10 @@
     },
     "Columns": {
       "Iuv": "IUV",
+      "IdRicevuta": "ID ricevuta",
       "Dominio": "Ente creditore",
-      "Pagatore": "Pagatore",
-      "Causale": "Causale",
-      "DataRicevuta": "Data pagamento",
+      "Psp": "PSP",
+      "DataPagamento": "Data pagamento",
       "Importo": "Importo",
       "Stato": "Stato"
     },
@@ -42,25 +49,25 @@
     "Detail": {
       "Subtitle": "Dettaglio della ricevuta telematica.",
       "Generali": "Informazioni generali",
-      "EnteCreditore": "Ente creditore",
-      "SoggettoPagatore": "Soggetto pagatore",
       "Iuv": "IUV",
-      "NumeroAvviso": "Numero avviso",
-      "Ccp": "Codice contesto pagamento",
-      "DataRicevuta": "Data pagamento",
+      "IdRicevuta": "ID ricevuta",
+      "Dominio": "Ente creditore",
+      "DataPagamento": "Data pagamento",
       "Importo": "Importo",
-      "Causale": "Causale",
-      "IdDominio": "ID Dominio",
-      "RagioneSociale": "Ragione sociale",
-      "Anagrafica": "Anagrafica",
-      "Identificativo": "Identificativo",
-      "Email": "Email",
-      "Download": "Scarica RT",
-      "Dominio": "Dominio",
-      "Pagatore": "Pagatore",
-      "TabDati": "Dati ricevuta",
-      "TabEventi": "Eventi",
-      "EventiEmpty": "Nessun evento associato a questa ricevuta."
+      "Psp": "PSP",
+      "Versione": "Versione",
+      "DescrizioneStato": "Dettaglio stato",
+      "PendenzaCollegata": "Pendenza collegata",
+      "IdA2A": "Applicazione (idA2A)",
+      "IdPendenza": "ID pendenza",
+      "CausaleBreve": "Causale",
+      "VaiPendenza": "Vai alla pendenza",
+      "Download": "Download",
+      "Rt": "RT",
+      "Rpt": "RPT",
+      "RptNonDisponibile": "RPT non disponibile per questa ricevuta.",
+      "Segnalazioni": "Segnalazioni",
+      "DownloadErrore": "Download non riuscito."
     }
   },
   "Pagamenti": {

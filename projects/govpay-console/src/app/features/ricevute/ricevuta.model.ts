@@ -10,34 +10,27 @@
  */
 
 /**
- * Modelli Ricevuta = Richiesta di Pagamento Pendenza (RPP) — la lista vive
- * sull'endpoint `/rpp` del backend GovPay BO. La risposta non è "appiattita":
- * i campi visibili (IUV, importo, pagatore, dominio, …) si trovano nella
- * `pendenza` annidata, mentre stato/dettaglio sono al livello top.
+ * Modelli **Ricevute V2** (Ricevute Telematiche, RT) allineati alla GovPay
+ * Console API (`/govpay-console-api/ricevute…`, tag Ricevute). Consultazione
+ * read-only: la lista espone solo metadati tecnico-finanziari
+ * (`RicevutaSummary`, no dati personali); il dettaglio (`Ricevuta`) include la
+ * conversione JSON di `rpt`/`rt` e gli hyperlink ai sub-resource.
  */
 
-import type { DominioSummary, SoggettoPagatore } from '@core/models';
+import type { PaginationParams } from '@core/models';
 
-/**
- * Esito sintetico della RPT — usato come parametro di filtro `esito`
- * (OpenAPI `esitoRpt`, parametro query `esitoRpp`).
- *
- * NOTA: il valore `DECORENNZA_PARZIALE` con doppia "N" è quello accettato
- * dal backend (refuso storico nelle API). Mantenuto fedelmente.
- */
-export type EsitoRicevuta =
-  | 'IN_CORSO'
-  | 'RIFIUTATO'
-  | 'ESEGUITO'
-  | 'NON_ESEGUITO'
-  | 'ESEGUITO_PARZIALE'
-  | 'DECORRENZA'
-  | 'DECORENNZA_PARZIALE';
+/** Hyperlink stile HAL (schema `Link`). */
+export interface Link {
+  href: string;
+  type?: string;
+}
 
 /**
- * Stato della RPP così come restituito dal backend (`item.stato`).
+ * Stato nativo della RT così come restituito dal backend (stringa V1, es.
+ * `RT_ACCETTATA_PA`). Modellato come union dei valori noti; il tipo effettivo
+ * resta `string` per tollerare stati non previsti.
  */
-export type StatoRpp =
+export type StatoRt =
   | 'RT_ACCETTATA_PA'
   | 'RT_RIFIUTATA_PA'
   | 'RT_ESITO_SCONOSCIUTO_PA'
@@ -50,85 +43,70 @@ export type StatoRpp =
   | 'RPT_ANNULLATA'
   | 'RPT_SCADUTA';
 
-/**
- * Pendenza embedded nella ricevuta. Schema realistico osservato sulla
- * response di `/rpp` (DEMO).
- */
-export interface PendenzaInRicevuta {
-  causale: string;
-  soggettoPagatore: SoggettoPagatore;
-  importo: number;
-  numeroAvviso?: string;
-  /** ISO 8601 — data di caricamento della pendenza nel sistema. */
-  dataCaricamento?: string;
-  dataValidita?: string;
-  dataScadenza?: string;
-  /** ISO 8601 — data del pagamento (se la RPP è stata pagata). */
-  dataPagamento?: string;
-  importoPagato?: number;
-  importoIncassato?: number;
-  iuvAvviso: string;
-  iuvPagamento?: string;
+/** Proiezione leggera (schema `RicevutaSummary`), metadata-only. */
+export interface RicevutaSummary {
+  idDominio: string;
+  iuv: string;
+  idRicevuta: string;
+  dataPagamento: string;
+  codPsp?: string;
+  versione?: string;
+  stato: string;
+  descrizioneStato?: string;
+  importo?: number;
+}
+
+/** Evento/nota del Nodo associati alla RT (schema `Segnalazione`). */
+export interface Segnalazione {
+  data?: string;
+  codice?: string;
+  descrizione?: string;
+}
+
+/** Riferimento minimale alla pendenza associata (schema `PendenzaRef`). */
+export interface PendenzaRef {
   idA2A: string;
   idPendenza: string;
-  tipoPendenza?: { idTipoPendenza: string; descrizione?: string };
-  /** Dominio embedded — la response contiene molti più campi del nostro
-   * `DominioSummary`, ma per il display servono solo `idDominio` e
-   * `ragioneSociale`. Il resto è preservato come `Record` opzionale. */
-  dominio: DominioSummary & Record<string, unknown>;
-  stato?: string;
-  anomalo?: boolean;
-  verificato?: boolean;
-  UUID?: string;
-  /** Riferimenti URL alla RPP e ai pagamenti correlati. */
-  rpp?: string;
-  pagamenti?: string;
+  causaleBreve?: string;
 }
 
-/**
- * RPT — porzione utile per il dettaglio (estratto dell'XML della richiesta).
- */
-export interface RptDati {
-  creditorReferenceId?: string;
-  paymentAmount?: string;
-  dueDate?: string;
-  description?: string;
-  companyName?: string;
+/** Hyperlink della ricevuta (schema `RicevutaLinks`). */
+export interface RicevutaLinks {
+  rpt: Link;
+  rt: Link;
+  pendenza?: Link;
+  [rel: string]: Link | undefined;
 }
 
-/**
- * RT — porzione utile per il dettaglio (estratto dell'XML della ricevuta).
- */
-export interface RtDati {
-  receiptId?: string;
-  noticeNumber?: string;
-  fiscalCode?: string;
-  outcome?: string;
-  paymentAmount?: string;
-  /** ISO 8601 — data e ora del pagamento dal nodo. */
-  paymentDateTime?: string;
-  applicationDate?: string;
-  transferDate?: string;
-  idPSP?: string;
-  PSPCompanyName?: string;
-  paymentMethod?: string;
-  fee?: string;
+/** Dettaglio canonico (schema `Ricevuta`). */
+export interface Ricevuta extends RicevutaSummary {
+  /** Conversione JSON della RPT; `null` se non disponibile (RT in standin). */
+  rpt?: Record<string, unknown> | null;
+  /** Conversione JSON della RT; sempre presente nel dettaglio. */
+  rt: Record<string, unknown>;
+  segnalazioni?: Segnalazione[];
+  pendenza?: PendenzaRef;
+  _links: RicevutaLinks;
 }
 
-/**
- * Singola ricevuta — risposta `rppIndex` di `GET /rpp`.
- */
-export interface Ricevuta {
-  stato: StatoRpp;
-  dettaglioStato?: string;
-  bloccante?: boolean;
-  rpt?: RptDati;
-  rt?: RtDati;
-  pendenza: PendenzaInRicevuta;
-  modello?: string;
+/** Formato di download di un sub-resource RPT/RT. */
+export type RicevutaFormato = 'json' | 'xml' | 'pdf';
+
+/** Filtri lista ricevute + paginazione V2 (offset o cursor). */
+export interface RicevuteListFilters extends PaginationParams {
+  /** Match esatto sullo IUV. */
+  iuv?: string;
+  /** Match esatto sul codice dominio (11 cifre). */
+  idDominio?: string;
+  /** Match esatto sull'identificativo ricevuta (era `ccp` in V1). */
+  idRicevuta?: string;
+  /** Intervallo (incluso) sulla data di pagamento — `YYYY-MM-DDTHH:MM`. */
+  dataDa?: string;
+  dataA?: string;
 }
 
-export const STATO_RPP_LABEL: Record<StatoRpp, string> = {
+/** Label i18n per gli stati RT noti. */
+export const STATO_RT_LABEL: Record<StatoRt, string> = {
   RT_ACCETTATA_PA: 'Ricevute.Stati.Eseguito',
   RT_RIFIUTATA_PA: 'Ricevute.Stati.RtRifiutata',
   RT_ESITO_SCONOSCIUTO_PA: 'Ricevute.Stati.Sconosciuto',
@@ -142,7 +120,8 @@ export const STATO_RPP_LABEL: Record<StatoRpp, string> = {
   RPT_SCADUTA: 'Ricevute.Stati.Scaduto',
 };
 
-export const STATO_RPP_COLOR: Record<StatoRpp, 'success' | 'info' | 'warning' | 'danger' | 'muted'> = {
+/** Tono cromatico dello status-badge per gli stati RT noti. */
+export const STATO_RT_COLOR: Record<StatoRt, 'success' | 'info' | 'warning' | 'danger' | 'muted'> = {
   RT_ACCETTATA_PA: 'success',
   RT_RIFIUTATA_PA: 'danger',
   RT_ESITO_SCONOSCIUTO_PA: 'warning',
@@ -156,35 +135,12 @@ export const STATO_RPP_COLOR: Record<StatoRpp, 'success' | 'info' | 'warning' | 
   RPT_SCADUTA: 'warning',
 };
 
-export const ESITO_RICEVUTA_LABEL: Record<EsitoRicevuta, string> = {
-  IN_CORSO: 'Ricevute.Esiti.InCorso',
-  RIFIUTATO: 'Ricevute.Esiti.Rifiutato',
-  ESEGUITO: 'Ricevute.Esiti.Eseguito',
-  NON_ESEGUITO: 'Ricevute.Esiti.NonEseguito',
-  ESEGUITO_PARZIALE: 'Ricevute.Esiti.EseguitoParziale',
-  DECORRENZA: 'Ricevute.Esiti.Decorrenza',
-  DECORENNZA_PARZIALE: 'Ricevute.Esiti.DecorrenzaParziale',
-};
+/** Label i18n dello stato con fallback allo stato grezzo. */
+export function statoRtLabel(stato: string): string {
+  return STATO_RT_LABEL[stato as StatoRt] ?? stato;
+}
 
-/**
- * Filtri supportati da `GET /rpp` (ricevute):
- *   - `idDominio`, `iuv`, `ccp`, `idA2A`, `idPendenza`, `idDebitore`
- *   - `esito` (param OpenAPI `esitoRpp` → schema `esitoRpt`)
- *   - `dataRptDa`/`dataRptA` (data della richiesta) e `dataRtDa`/`dataRtA` (data della ricevuta)
- *   - sort allowed: `dataRichiesta`, `stato`
- */
-export interface RicevuteListFilters {
-  pagina?: number;
-  risPerPagina?: number;
-  ordinamento?: string;
-  esito?: EsitoRicevuta;
-  idDominio?: string;
-  iuv?: string;
-  ccp?: string;
-  idA2A?: string;
-  idPendenza?: string;
-  dataRptDa?: string;
-  dataRptA?: string;
-  dataRtDa?: string;
-  dataRtA?: string;
+/** Tono dello stato con fallback neutro. */
+export function statoRtColor(stato: string): 'success' | 'info' | 'warning' | 'danger' | 'muted' {
+  return STATO_RT_COLOR[stato as StatoRt] ?? 'muted';
 }
