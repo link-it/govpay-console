@@ -34,6 +34,7 @@
         { "id": "govpay", "label": "GovPay", "url": "assets/config/themes/govpay.json", "color": "#ff4050" },
         { "id": "gold", "label": "Gold", "url": "assets/config/themes/gold.json", "color": "#f5c518" },
         { "id": "caramel", "label": "Caramel", "url": "assets/config/themes/caramel.json", "color": "#a86b3c" },
+        { "id": "dark-sidebar", "label": "Sidebar scura", "url": "assets/config/themes/dark-sidebar.json", "color": "#0f172a" },
         { "id": "start", "label": "Start (teal)", "url": "assets/config/themes/start.json", "color": "#12b8a6" },
         { "id": "router", "label": "Router (verde)", "url": "assets/config/themes/router.json", "color": "#37a93c" },
         { "id": "query", "label": "Query (corallo)", "url": "assets/config/themes/query.json", "color": "#ef4b3b" },
