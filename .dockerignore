@@ -1,0 +1,33 @@
+# Dipendenze e artefatti di build: ricostruiti dentro l'immagine
+node_modules
+dist
+.angular
+coverage
+out-tsc
+tmp
+
+# Contesto di build dello script docker legacy
+docker/buildcontext
+
+# Git / CI
+.git
+.github
+.gitignore
+
+# IDE / editor
+.vscode
+.idea
+.history
+
+# File di sistema
+.DS_Store
+Thumbs.db
+npm-debug.log
+yarn-error.log
+
+# Documentazione / vari (non necessari per la build)
+*.md
+docs
+reports
+third-party-licenses
+.npm
