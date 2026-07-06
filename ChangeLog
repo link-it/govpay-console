@@ -1,3 +1,45 @@
+2026-07-06  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat: estensione della GovPay Console API V2 a tutte le
+    anagrafiche e alle ricevute (openapi 2026-07-06). Update via PUT
+    (replace con If-Match/ETag), migrazione in-place delle feature V1
+    (rimozione dei client `*.api.ts` sostituiti). Infrastruttura comune
+    (Fase 0): `ConsoleApiService` esteso con `putBlob`/`putVoid`/`delete`;
+    nuovi modelli condivisi `@core/models` (`connettore`, `acl`, `ref`) e
+    componenti riusabili `@core/ui` (`acl-editor`, `ref-multiselect`,
+    `inline-edit-card`).
+
+  * [Frontend] feat(entrate): nuova sezione Entrate (tipi entrata globali)
+    su API V2 con CRUD (lista search-pill, dettaglio, form nuovo/modifica).
+
+  * [Frontend] feat(ruoli, operatori, applicazioni): migrazione in-place a
+    V2. Ruoli e Operatori con editor ACL condiviso (R/W per servizio) e
+    multi-select riferimenti (domini/tipiPendenza/ruoli con toggle "Tutti").
+    Applicazioni con connettore-integrazione singleton (GET/PUT + credenziali)
+    e codifica avvisi.
+
+  * [Frontend] feat(tipi-pendenza): migrazione a V2. Form sui campi core con
+    PUT che preserva invariate le sotto-strutture ricche non modellate.
+
+  * [Frontend] feat(domini): nuova sezione Domini (enti creditori) su V2 con
+    CRUD, logo binario (GET/PUT/DELETE, ≤256KB) e dettaglio a tab per le
+    sotto-risorse: Unità operative, Conti di accredito, Entrate del dominio,
+    Tipi pendenza del dominio e Connettori di notifica (mypivot, secim,
+    govpay, hypersic-apk, maggioli-jppa) con credenziali write-only. Gestione
+    inline (view/edit + creazione) con ETag/If-Match e preservazione dei
+    campi non modellati nei replace.
+
+  * [Frontend] feat(ricevute): migrazione a V2 in sola consultazione
+    (read-only). Lista con search-pill (iuv/idRicevuta/idDominio + range
+    date) e dettaglio per tupla `(idDominio, iuv, idRicevuta)` con download
+    RT (PDF/XML/JSON) e RPT (XML/JSON) via content-negotiation, pendenza
+    collegata e segnalazioni. Rimosso il client V1 `ricevute.api.ts`.
+
+  * [Frontend] chore: pulizia (Fase 8). Rimozione del codice V1 sostituito,
+    rimozione di dead code nelle rotte, allineamento voci nav e flag
+    `MENU_*`, pulizia chiavi i18n orfane. Piano di lavoro in
+    `NOTE-CLAUDE/REFACTORING-NUOVE-API/`.
+
 2026-07-01  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat: refactoring della sezione Pendenze sulla nuova

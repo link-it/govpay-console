@@ -13,9 +13,6 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from '@core/layout';
 import { aclGuard, authGuard, maintenanceGuard } from '@core/auth';
 
-const placeholder = () =>
-  import('@linkit/shared-ui').then((m) => m.PlaceholderComponent);
-
 export const routes: Routes = [
   {
     path: 'maintenance',
@@ -88,7 +85,6 @@ export const routes: Routes = [
         canActivate: [aclGuard('hasConfig')],
         loadChildren: () => import('@feature/entrate').then((m) => m.ENTRATE_ROUTES),
       },
-      // Sezioni placeholder (label è chiave i18n, vedi `placeholder.component.ts`)
       {
         path: 'applicazioni',
         canActivate: [aclGuard('hasApplicazioni')],

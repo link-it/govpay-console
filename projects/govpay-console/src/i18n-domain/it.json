@@ -28,15 +28,6 @@
       "Importo": "Importo",
       "Stato": "Stato"
     },
-    "Esiti": {
-      "InCorso": "In corso",
-      "Rifiutato": "Rifiutato",
-      "Eseguito": "Eseguito",
-      "NonEseguito": "Non eseguito",
-      "EseguitoParziale": "Eseguito parziale",
-      "Decorrenza": "Decorrenza termini",
-      "DecorrenzaParziale": "Decorrenza parziale"
-    },
     "Stati": {
       "InCorso": "In corso",
       "Eseguito": "Pagata",

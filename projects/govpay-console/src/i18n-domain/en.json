@@ -28,15 +28,6 @@
       "Importo": "Amount",
       "Stato": "Status"
     },
-    "Esiti": {
-      "InCorso": "In progress",
-      "Rifiutato": "Rejected",
-      "Eseguito": "Executed",
-      "NonEseguito": "Not executed",
-      "EseguitoParziale": "Partial",
-      "Decorrenza": "Timeout",
-      "DecorrenzaParziale": "Partial timeout"
-    },
     "Stati": {
       "InCorso": "In progress",
       "Eseguito": "Paid",
