@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://www.link.it/wp-content/uploads/2025/01/logo-govpay.svg" alt="GovPay Logo" width="200"/>
+</p>
+
 # GovPay Console v2
 
 Nuova versione della console di backoffice GovPay (riscrittura completa della
