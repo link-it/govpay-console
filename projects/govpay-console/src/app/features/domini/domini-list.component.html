@@ -1,39 +1,26 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
   <lnk-page-header titleKey="Nav.Domini" subtitleKey="Domini.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
-      {{ 'Common.Refresh' | translate }}
-    </button>
+    <div class="flex items-center gap-2">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+        {{ 'Common.Refresh' | translate }}
+      </button>
+      <a routerLink="/domini/nuovo" class="btn btn-primary btn-sm">
+        {{ 'Domini.Form.Nuovo' | translate }}
+      </a>
+    </div>
   </lnk-page-header>
 
-  <div class="flex flex-wrap items-end gap-3">
-    <div class="flex-1 min-w-[12rem]">
-      <lnk-search-input
-        [value]="filters().search"
-        placeholderKey="Domini.Filters.SearchPlaceholder"
-        (valueChange)="onSearchChange($event)"
-      />
-    </div>
-    <lnk-select-input
-      labelKey="Domini.Filters.Abilitato"
-      placeholderKey="Common.All"
-      [value]="filters().abilitato"
-      [options]="booleanOptions"
-      (valueChange)="onAbilitatoChange($event)"
-    />
-    <lnk-select-input
-      labelKey="Domini.Filters.Intermediato"
-      placeholderKey="Common.All"
-      [value]="filters().intermediato"
-      [options]="booleanOptions"
-      (valueChange)="onIntermediatoChange($event)"
-    />
-    @if (hasActiveFilters()) {
-      <button type="button" class="btn btn-ghost btn-sm self-end" (click)="resetFilters()">
-        {{ 'Common.ResetFilters' | translate }}
-      </button>
-    }
-  </div>
+  <lnk-search-pill
+    [fields]="searchFields()"
+    [(value)]="searchState"
+    [resultCount]="total()"
+    [showSort]="false"
+    [variant]="searchPillVariant()"
+    [labels]="pillLabels()"
+    [placeholder]="searchPlaceholder()"
+    (search)="onSearch($event)"
+  />
   </div>
 
   <div class="px-6 space-y-4">
@@ -43,7 +30,13 @@
       icon="bootstrapInboxes"
       titleKey="Domini.Empty.Title"
       [descriptionKey]="hasActiveFilters() ? 'Common.NoResultsForFilters' : 'Domini.Empty.Description'"
-    />
+    >
+      @if (hasActiveFilters()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="resetFilters()">
+          {{ 'Common.ResetFilters' | translate }}
+        </button>
+      }
+    </lnk-empty-state>
   } @else {
     @if (viewMode() === 'rows' && rowConfig(); as cfg) {
       <lnk-item-list
@@ -59,6 +52,7 @@
         [rows]="rows()"
         [loading]="loading() && rows().length === 0"
         [sort]="sort()"
+        [clickable]="true"
         [displayConfig]="rowConfig()"
         emptyKey="Domini.Empty.Title"
         (sortChange)="onSortChange($event)"
@@ -82,7 +76,7 @@
       </div>
     } @else if (rows().length > 0) {
       <p class="py-3 text-center text-xs text-[var(--muted-foreground)]">
-        {{ 'Pagination.AllLoaded' | translate: { total: total() } }}
+        {{ 'Pagination.AllLoaded' | translate: { total: total() ?? rows().length } }}
       </p>
     }
   }

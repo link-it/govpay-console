@@ -10,13 +10,23 @@
  */
 
 /**
- * Dominio (ente creditore) — modello aderente a `dominioIndex` (lista) e
- * `dominio` (detail) dell'OpenAPI GovPay BO. La forma del detail estende
- * l'index con eventuale `tipoTassonomia` aggiuntivo (qui non differenziamo).
+ * Modelli **Domini V2** (enti creditori) allineati alla GovPay Console API
+ * (`/govpay-console-api/domini…`, tag Domini). Le sotto-risorse (unità
+ * operative, conti accredito, entrate, tipi pendenza, connettori) e il logo
+ * sono su endpoint dedicati.
  */
-export interface Dominio {
+
+import type { IntermediarioRef, PaginationParams } from '@core/models';
+
+/** Proiezione leggera per le liste (schema `DominioSummary`). */
+export interface DominioSummary {
   idDominio: string;
   ragioneSociale: string;
+  abilitato?: boolean;
+}
+
+/** Anagrafica comune (base di dominio/UO). */
+interface AnagraficaBase {
   indirizzo?: string;
   civico?: string;
   cap?: string;
@@ -28,32 +38,54 @@ export interface Dominio {
   tel?: string;
   fax?: string;
   web?: string;
+  area?: string;
+}
+
+/** Dettaglio canonico (schema `Dominio`). */
+export interface Dominio extends AnagraficaBase {
+  idDominio: string;
+  ragioneSociale: string;
   gln?: string;
   cbill?: string;
   iuvPrefix?: string;
-  stazione?: string;
-  auxDigit?: string;
-  segregationCode?: string;
-  logo?: string;
-  abilitato?: boolean;
   autStampaPosteItaliane?: string;
-  area?: string;
+  auxDigit?: number;
+  segregationCode?: number;
+  tassonomiaPagoPA?: string;
   intermediato?: boolean;
   scaricaFr?: boolean;
-  /** URL alle sub-resources (sub-collezioni). */
-  unitaOperative?: string;
-  contiAccredito?: string;
-  entrate?: string;
-  tipiPendenza?: string;
+  abilitato?: boolean;
+  idStazione?: string;
+  /** Sola lettura: derivato dalla stazione. */
+  riferimentoIntermediario?: IntermediarioRef;
 }
 
-export interface DominiListFilters {
-  pagina?: number;
-  risPerPagina?: number;
-  ordinamento?: string;
-  idDominio?: string;
-  ragioneSociale?: string;
-  abilitato?: boolean;
+/** Body per la creazione (schema `DominioCreate`). */
+export interface DominioCreate extends AnagraficaBase {
+  idDominio: string;
+  ragioneSociale: string;
+  abilitato: boolean;
+  scaricaFr: boolean;
+  gln?: string;
+  cbill?: string;
+  iuvPrefix?: string;
+  autStampaPosteItaliane?: string;
+  auxDigit?: number;
+  segregationCode?: number;
+  tassonomiaPagoPA?: string;
   intermediato?: boolean;
   idStazione?: string;
+}
+
+/** Body per il replace completo (schema `DominioReplace`, `idDominio` dal path). */
+export type DominioReplace = Omit<DominioCreate, 'idDominio'>;
+
+/** Filtri lista domini + paginazione V2. */
+export interface DominiListFilters extends PaginationParams {
+  /** Match parziale sul codice dominio. */
+  idDominio?: string;
+  /** Match parziale sulla ragione sociale. */
+  ragioneSociale?: string;
+  /** Match esatto sullo stato di abilitazione. */
+  abilitato?: boolean;
 }

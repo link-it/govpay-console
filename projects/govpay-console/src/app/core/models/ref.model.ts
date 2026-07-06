@@ -32,5 +32,11 @@ export interface RuoloRef {
   id: string;
 }
 
+/** Riferimento minimale a un intermediario pagoPA (schema `IntermediarioRef`). */
+export interface IntermediarioRef {
+  idIntermediario: string;
+  denominazione?: string;
+}
+
 /** Valore speciale "tutti" per `domini`/`tipiPendenza`. */
 export const REF_ALL = '*';

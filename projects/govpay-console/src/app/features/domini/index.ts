@@ -10,7 +10,8 @@
  */
 
 export * from './dominio.model';
-export * from './domini.api';
+export * from './domini.console-api';
 export * from './domini.routes';
 export * from './domini-list.component';
 export * from './dominio-detail.component';
+export * from './dominio-form.component';

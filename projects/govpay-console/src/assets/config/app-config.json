@@ -110,7 +110,7 @@
       "MENU_GIORNALE_EVENTI": true,
       "MENU_TRACCIATI": false,
       "GESTIONE_ANAGRAFICHE": true,
-      "MENU_DOMINI": false,
+      "MENU_DOMINI": true,
       "MENU_TIPI_PENDENZA": true,
       "MENU_ENTRATE": true,
       "MENU_APPLICAZIONI": true,

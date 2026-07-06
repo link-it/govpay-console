@@ -1,79 +1,63 @@
 <section class="space-y-4 pb-6 lnk-detail-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
   <lnk-page-header [titleKey]="dominio()?.ragioneSociale || dominio()?.idDominio || '—'" subtitleKey="Domini.Detail.Subtitle">
-    <a routerLink="/domini" class="btn btn-secondary btn-sm">
-      <ng-icon name="bootstrapChevronLeft" size="1rem" />
-      <span>{{ 'Common.Back' | translate }}</span>
-    </a>
-  </lnk-page-header>
-  @if (dominio(); as d) {
     <div class="flex items-center gap-2">
-      <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
-      @if (d.intermediato) {
-        <lnk-status-badge tone="info" labelKey="Domini.Detail.Intermediato" />
+      @if (dominio(); as d) {
+        <a [routerLink]="['/domini', d.idDominio, 'modifica']" class="btn btn-primary btn-sm">
+          <ng-icon name="bootstrapPencil" size="1rem" />
+          <span>{{ 'Domini.Form.Modifica' | translate }}</span>
+        </a>
       }
-      @if (d.scaricaFr) {
-        <lnk-status-badge tone="success" labelKey="Domini.Detail.ScaricaFr" />
-      }
+      <a routerLink="/domini" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
     </div>
-  }
+  </lnk-page-header>
+    @if (dominio()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
+      </div>
+    }
   </div>
 
   <div class="px-6 space-y-4">
 
   @if (error()) {
-    <lnk-empty-state
-      icon="bootstrapExclamationTriangle"
-      titleKey="Common.LoadError"
-      [descriptionKey]="error()!"
-    >
+    <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
       <a routerLink="/domini" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
     </lnk-empty-state>
   } @else if (loading() && !dominio()) {
     <lnk-loading />
   } @else if (dominio(); as d) {
-    <lnk-detail-section titleKey="Domini.Detail.Anagrafica">
-      <lnk-info-grid [items]="anagraficaItems()" />
+
+    <lnk-detail-section titleKey="Domini.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
     </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Domini.Detail.Contatti">
-      <lnk-info-grid [items]="contattiItems()" />
+    <lnk-detail-section titleKey="Domini.Detail.Logo">
+      <div class="flex items-center gap-4">
+        @if (logoUrl(); as url) {
+          <img [src]="url" alt="logo" class="h-16 w-16 rounded object-contain border border-[var(--border)] bg-[var(--card-bg)]" />
+        } @else {
+          <div class="h-16 w-16 rounded border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]">
+            <ng-icon name="bootstrapBuilding" size="1.5rem" />
+          </div>
+        }
+        <div class="flex items-center gap-2">
+          <label class="btn btn-secondary btn-sm" [class.opacity-60]="logoBusy()">
+            <span>{{ 'Domini.Logo.Carica' | translate }}</span>
+            <input type="file" accept="image/png,image/jpeg" class="hidden" [disabled]="logoBusy()" (change)="onLogoSelected($event)" />
+          </label>
+          @if (logoUrl()) {
+            <button type="button" class="btn btn-ghost btn-sm" [disabled]="logoBusy()" (click)="removeLogo()">
+              {{ 'Domini.Logo.Rimuovi' | translate }}
+            </button>
+          }
+        </div>
+      </div>
+      <p class="mt-2 text-xs text-[var(--muted-foreground)]">{{ 'Domini.Logo.Hint' | translate }}</p>
     </lnk-detail-section>
-
-    <lnk-detail-section titleKey="Domini.Detail.PagoPA">
-      <lnk-info-grid [items]="pagopaItems()" />
-    </lnk-detail-section>
-
-    @if (d.unitaOperative || d.contiAccredito || d.entrate || d.tipiPendenza) {
-      <lnk-detail-section titleKey="Domini.Detail.SubResources">
-        <ul class="flex flex-col gap-2 text-sm">
-          @if (d.unitaOperative) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.UnitaOperative' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.unitaOperative }}</span>
-            </li>
-          }
-          @if (d.contiAccredito) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.ContiAccredito' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.contiAccredito }}</span>
-            </li>
-          }
-          @if (d.entrate) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.Entrate' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.entrate }}</span>
-            </li>
-          }
-          @if (d.tipiPendenza) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.TipiPendenza' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.tipiPendenza }}</span>
-            </li>
-          }
-        </ul>
-      </lnk-detail-section>
-    }
   }
   </div>
 </section>
