@@ -1,25 +1,26 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
   <lnk-page-header titleKey="Nav.Applicazioni" subtitleKey="Applicazioni.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
-      {{ 'Common.Refresh' | translate }}
-    </button>
+    <div class="flex items-center gap-2">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+        {{ 'Common.Refresh' | translate }}
+      </button>
+      <a routerLink="/applicazioni/nuovo" class="btn btn-primary btn-sm">
+        {{ 'Applicazioni.Form.Nuova' | translate }}
+      </a>
+    </div>
   </lnk-page-header>
 
-  <div class="flex flex-wrap items-end gap-3">
-    <lnk-select-input
-      labelKey="Applicazioni.Filters.Abilitato"
-      placeholderKey="Common.All"
-      [value]="filters().abilitato"
-      [options]="booleanOptions"
-      (valueChange)="onAbilitatoChange($event)"
-    />
-    @if (hasActiveFilters()) {
-      <button type="button" class="btn btn-ghost btn-sm self-end" (click)="resetFilters()">
-        {{ 'Common.ResetFilters' | translate }}
-      </button>
-    }
-  </div>
+  <lnk-search-pill
+    [fields]="searchFields()"
+    [(value)]="searchState"
+    [resultCount]="total()"
+    [showSort]="false"
+    [variant]="searchPillVariant()"
+    [labels]="pillLabels()"
+    [placeholder]="searchPlaceholder()"
+    (search)="onSearch($event)"
+  />
   </div>
 
   <div class="px-6 space-y-4">
@@ -29,7 +30,13 @@
       icon="bootstrapInboxes"
       titleKey="Applicazioni.Empty.Title"
       [descriptionKey]="hasActiveFilters() ? 'Common.NoResultsForFilters' : 'Applicazioni.Empty.Description'"
-    />
+    >
+      @if (hasActiveFilters()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="resetFilters()">
+          {{ 'Common.ResetFilters' | translate }}
+        </button>
+      }
+    </lnk-empty-state>
   } @else {
     @if (viewMode() === 'rows' && rowConfig(); as cfg) {
       <lnk-item-list
@@ -44,8 +51,11 @@
         [columns]="columns()"
         [rows]="rows()"
         [loading]="loading() && rows().length === 0"
+        [sort]="sort()"
+        [clickable]="true"
         [displayConfig]="rowConfig()"
         emptyKey="Applicazioni.Empty.Title"
+        (sortChange)="onSortChange($event)"
         (rowClick)="onRowClick($event)"
       />
     }
@@ -66,7 +76,7 @@
       </div>
     } @else if (rows().length > 0) {
       <p class="py-3 text-center text-xs text-[var(--muted-foreground)]">
-        {{ 'Pagination.AllLoaded' | translate: { total: total() } }}
+        {{ 'Pagination.AllLoaded' | translate: { total: total() ?? rows().length } }}
       </p>
     }
   }

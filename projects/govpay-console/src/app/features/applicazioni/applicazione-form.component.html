@@ -1,0 +1,91 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'Applicazioni.Form.ModificaTitolo' : 'Applicazioni.Form.NuovaTitolo'"
+      subtitleKey="Applicazioni.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4 max-w-3xl">
+        <lnk-detail-section titleKey="Applicazioni.Detail.Generali">
+          <div class="space-y-5">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idA2A">{{ 'Applicazioni.Detail.IdA2A' | translate }}</span>
+              <input type="text" formControlName="idA2A" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60" />
+              @if (form.controls.idA2A.touched && form.controls.idA2A.invalid) {
+                <span class="text-xs text-[var(--danger)]">{{ 'Applicazioni.Form.IdNonValido' | translate }}</span>
+              }
+            </label>
+
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.principal">{{ 'Applicazioni.Detail.Principal' | translate }}</span>
+              <input type="text" formControlName="principal" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              @if (form.controls.principal.touched && form.controls.principal.invalid) {
+                <span class="text-xs text-[var(--danger)]">{{ 'Applicazioni.Form.Obbligatorio' | translate }}</span>
+              }
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Applicazioni.Detail.Abilitato' | translate }}</span>
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Applicazioni.Detail.CodificaAvvisi">
+          <div class="space-y-5">
+            <div class="grid grid-cols-2 gap-3 max-w-md">
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Detail.CodificaIuv' | translate }}</span>
+                <input type="text" formControlName="codificaIuv" placeholder="{{ 'Applicazioni.Form.CodificaIuvPlaceholder' | translate }}" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                @if (form.controls.codificaIuv.touched && form.controls.codificaIuv.invalid) {
+                  <span class="text-xs text-[var(--danger)]">{{ 'Applicazioni.Form.CodificaIuvNonValida' | translate }}</span>
+                }
+              </label>
+            </div>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Detail.RegExpIuv' | translate }}</span>
+              <input type="text" formControlName="regExpIuv" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="generazioneIuvInterna" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Applicazioni.Detail.GenerazioneIuvInterna' | translate }}</span>
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Applicazioni.Detail.Domini">
+          <lnk-ref-multiselect [(value)]="domini" [allowAll]="true" placeholderKey="Applicazioni.Form.DominioPlaceholder" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Applicazioni.Detail.TipiPendenza">
+          <lnk-ref-multiselect [(value)]="tipiPendenza" [allowAll]="true" [suggestions]="tipiSuggestions()" placeholderKey="Applicazioni.Form.TipoPendenzaPlaceholder" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Applicazioni.Detail.Ruoli">
+          <lnk-ref-multiselect [(value)]="ruoli" [suggestions]="ruoliSuggestions()" placeholderKey="Applicazioni.Form.RuoloPlaceholder" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Applicazioni.Detail.Acl">
+          <lnk-acl-editor [(acl)]="aclValue" />
+        </lnk-detail-section>
+
+        <div class="flex items-center gap-2">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </div>
+      </form>
+    }
+  </div>
+</section>

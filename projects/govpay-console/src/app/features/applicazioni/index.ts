@@ -10,7 +10,9 @@
  */
 
 export * from './applicazione.model';
-export * from './applicazioni.api';
+export * from './applicazioni.console-api';
 export * from './applicazioni.routes';
 export * from './applicazioni-list.component';
 export * from './applicazione-detail.component';
+export * from './applicazione-form.component';
+export * from './connettore-integrazione-inline.component';

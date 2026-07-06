@@ -1,0 +1,76 @@
+<lnk-inline-edit-card
+  [title]="'Applicazioni.Detail.ConnettoreIntegrazione' | translate"
+  [(editing)]="editing"
+  [saving]="saving()"
+  [canEdit]="!loading()"
+  [statusTone]="statusTone()"
+  [statusLabel]="statusLabel()"
+  (save)="save()"
+  (cancel)="onCancel()"
+>
+  <div view>
+    @if (loading()) {
+      <lnk-loading [inline]="true" size="sm" labelKey="Common.Loading" />
+    } @else {
+      <lnk-info-grid [items]="viewItems()" />
+    }
+  </div>
+
+  <form edit [formGroup]="form" class="space-y-4">
+    <label class="flex items-center gap-2">
+      <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+      <span class="text-sm">{{ 'Applicazioni.Connettore.Stato' | translate }}</span>
+    </label>
+
+    <label class="flex flex-col gap-1">
+      <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.Url' | translate }}</span>
+      <input type="text" formControlName="url" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+    </label>
+
+    <div class="grid grid-cols-2 gap-3">
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.Versione' | translate }}</span>
+        <select formControlName="versione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
+          @for (v of versioni; track v) { <option [value]="v">{{ v }}</option> }
+        </select></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.TipoAuth' | translate }}</span>
+        <select formControlName="tipoAutenticazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
+          @for (t of tipiAuth; track t) { <option [value]="t">{{ t }}</option> }
+        </select></label>
+    </div>
+
+    @if (authType() === 'BASIC') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Username</span>
+        <input type="text" formControlName="username" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Password</span>
+        <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    }
+
+    @if (authType() === 'SSL') {
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore location</span>
+          <input type="text" formControlName="ksLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore type</span>
+          <input type="text" formControlName="ksType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore location</span>
+          <input type="text" formControlName="tsLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore type</span>
+          <input type="text" formControlName="tsType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">SSL type</span>
+          <input type="text" formControlName="sslType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore password</span>
+          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.ksPassword" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore password</span>
+          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.tsPassword" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Key password</span>
+          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.ksPKeyPasswd" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      </div>
+    }
+
+    <div class="grid grid-cols-2 gap-3 max-w-md">
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.ConnectTimeout' | translate }}</span>
+        <input type="number" formControlName="connectTimeoutMs" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.ReadTimeout' | translate }}</span>
+        <input type="number" formControlName="readTimeoutMs" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    </div>
+  </form>
+</lnk-inline-edit-card>

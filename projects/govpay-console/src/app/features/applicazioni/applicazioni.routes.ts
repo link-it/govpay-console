@@ -17,7 +17,16 @@ export const APPLICAZIONI_ROUTES: Routes = [
     loadComponent: () => import('./applicazioni-list.component').then((m) => m.ApplicazioniListComponent),
   },
   {
+    // `nuovo` prima di `:idA2A` per non essere catturato dal wildcard param.
+    path: 'nuovo',
+    loadComponent: () => import('./applicazione-form.component').then((m) => m.ApplicazioneFormComponent),
+  },
+  {
     path: ':idA2A',
     loadComponent: () => import('./applicazione-detail.component').then((m) => m.ApplicazioneDetailComponent),
+  },
+  {
+    path: ':idA2A/modifica',
+    loadComponent: () => import('./applicazione-form.component').then((m) => m.ApplicazioneFormComponent),
   },
 ];

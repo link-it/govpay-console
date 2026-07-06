@@ -796,7 +796,16 @@
   "Applicazioni": {
     "Subtitle": "Applicazioni A2A registrate.",
     "Filters": {
-      "Abilitato": "Abilitato"
+      "Abilitato": "Abilitato",
+      "IdA2A": "ID applicazione",
+      "IdA2APlaceholder": "Cerca per ID…",
+      "Principal": "Principal",
+      "PrincipalPlaceholder": "Cerca per principal…",
+      "Placeholder": "Cerca applicazione…",
+      "Stato": "Stato",
+      "StatoTutti": "Tutti",
+      "StatoAbilitati": "Abilitati",
+      "StatoDisabilitati": "Disabilitati"
     },
     "Empty": {
       "Title": "Nessuna applicazione",
@@ -809,16 +818,51 @@
     },
     "Detail": {
       "Subtitle": "Dettaglio applicazione.",
+      "TabDati": "Dati",
+      "TabConnettore": "Connettore integrazione",
       "Generali": "Informazioni generali",
-      "ApiAbilitate": "API abilitate",
+      "CodificaAvvisi": "Codifica avvisi",
+      "CodificaIuv": "Codifica IUV",
+      "RegExpIuv": "RegExp IUV",
+      "GenerazioneIuvInterna": "Generazione IUV interna",
       "Domini": "Domini autorizzati",
       "TipiPendenza": "Tipi pendenza",
       "Ruoli": "Ruoli",
+      "Acl": "Servizi e autorizzazioni",
+      "ConnettoreIntegrazione": "Connettore integrazione",
       "IdA2A": "ID applicazione",
       "Principal": "Principal",
-      "ApiPagamenti": "API Pagamenti",
-      "ApiPendenze": "API Pendenze",
-      "ApiRagioneria": "API Ragioneria"
+      "Abilitato": "Abilitato"
+    },
+    "Connettore": {
+      "Stato": "Abilitato",
+      "Url": "URL",
+      "Versione": "Versione",
+      "TipoAuth": "Tipo autenticazione",
+      "ConnectTimeout": "Connect timeout (ms)",
+      "ReadTimeout": "Read timeout (ms)",
+      "NonConfigurato": "Non configurato",
+      "Salvato": "Connettore integrazione aggiornato.",
+      "SalvaErrore": "Salvataggio del connettore non riuscito."
+    },
+    "Form": {
+      "Nuova": "Nuova applicazione",
+      "Modifica": "Modifica",
+      "NuovaTitolo": "Nuova applicazione",
+      "ModificaTitolo": "Modifica applicazione",
+      "Subtitle": "Dati, associazioni e autorizzazioni dell'applicazione.",
+      "Obbligatorio": "Campo obbligatorio",
+      "IdNonValido": "Ammessi lettere, numeri, trattino e underscore (max 35).",
+      "CodificaIuvPlaceholder": "1-3 cifre",
+      "CodificaIuvNonValida": "Inserire da 1 a 3 cifre.",
+      "DominioPlaceholder": "idDominio o * o autodeterminazione",
+      "TipoPendenzaPlaceholder": "idTipoPendenza",
+      "RuoloPlaceholder": "idRuolo",
+      "Salvata": "Applicazione creata.",
+      "Aggiornata": "Applicazione aggiornata.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un'applicazione con questo ID.",
+      "ConflittoConcorrenza": "L'applicazione è stata modificata da un altro utente. Ricarica e riprova."
     }
   },
   "RefSelect": {

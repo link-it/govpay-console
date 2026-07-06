@@ -576,7 +576,16 @@
   "Applicazioni": {
     "Subtitle": "Registered A2A applications.",
     "Filters": {
-      "Abilitato": "Enabled"
+      "Abilitato": "Enabled",
+      "IdA2A": "Application ID",
+      "IdA2APlaceholder": "Search by ID…",
+      "Principal": "Principal",
+      "PrincipalPlaceholder": "Search by principal…",
+      "Placeholder": "Search application…",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled"
     },
     "Empty": {
       "Title": "No applications",
@@ -589,16 +598,51 @@
     },
     "Detail": {
       "Subtitle": "Application detail.",
+      "TabDati": "Data",
+      "TabConnettore": "Integration connector",
       "Generali": "General",
-      "ApiAbilitate": "Enabled APIs",
+      "CodificaAvvisi": "Notice coding",
+      "CodificaIuv": "IUV code",
+      "RegExpIuv": "IUV regexp",
+      "GenerazioneIuvInterna": "Internal IUV generation",
       "Domini": "Authorized creditors",
       "TipiPendenza": "Pending types",
       "Ruoli": "Roles",
+      "Acl": "Services and authorizations",
+      "ConnettoreIntegrazione": "Integration connector",
       "IdA2A": "Application ID",
       "Principal": "Principal",
-      "ApiPagamenti": "Payments API",
-      "ApiPendenze": "Pending API",
-      "ApiRagioneria": "Accounting API"
+      "Abilitato": "Enabled"
+    },
+    "Connettore": {
+      "Stato": "Enabled",
+      "Url": "URL",
+      "Versione": "Version",
+      "TipoAuth": "Authentication type",
+      "ConnectTimeout": "Connect timeout (ms)",
+      "ReadTimeout": "Read timeout (ms)",
+      "NonConfigurato": "Not configured",
+      "Salvato": "Integration connector updated.",
+      "SalvaErrore": "Connector save failed."
+    },
+    "Form": {
+      "Nuova": "New application",
+      "Modifica": "Edit",
+      "NuovaTitolo": "New application",
+      "ModificaTitolo": "Edit application",
+      "Subtitle": "Application data, associations and authorizations.",
+      "Obbligatorio": "Required field",
+      "IdNonValido": "Allowed: letters, digits, hyphen and underscore (max 35).",
+      "CodificaIuvPlaceholder": "1-3 digits",
+      "CodificaIuvNonValida": "Enter 1 to 3 digits.",
+      "DominioPlaceholder": "idDominio or * or autodeterminazione",
+      "TipoPendenzaPlaceholder": "idTipoPendenza",
+      "RuoloPlaceholder": "idRuolo",
+      "Salvata": "Application created.",
+      "Aggiornata": "Application updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An application with this ID already exists.",
+      "ConflittoConcorrenza": "The application was modified by another user. Reload and retry."
     }
   },
   "RefSelect": {

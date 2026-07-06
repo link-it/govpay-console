@@ -113,7 +113,7 @@
       "MENU_DOMINI": false,
       "MENU_TIPI_PENDENZA": true,
       "MENU_ENTRATE": true,
-      "MENU_APPLICAZIONI": false,
+      "MENU_APPLICAZIONI": true,
       "MENU_INTERMEDIARI": true,
       "GESTIONE_SICUREZZA": true,
       "MENU_OPERATORI": true,
