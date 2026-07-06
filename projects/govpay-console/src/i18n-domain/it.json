@@ -742,7 +742,16 @@
     "Subtitle": "Tipologie di pendenza censite.",
     "Filters": {
       "SearchPlaceholder": "Cerca per descrizione…",
-      "Abilitato": "Abilitato"
+      "IdTipoPendenza": "ID tipo pendenza",
+      "IdTipoPendenzaPlaceholder": "Cerca per ID…",
+      "Descrizione": "Descrizione",
+      "DescrizionePlaceholder": "Cerca per descrizione…",
+      "Placeholder": "Cerca tipo pendenza…",
+      "Abilitato": "Abilitato",
+      "Stato": "Stato",
+      "StatoTutti": "Tutti",
+      "StatoAbilitati": "Abilitati",
+      "StatoDisabilitati": "Disabilitati"
     },
     "Empty": {
       "Title": "Nessuna tipologia",
@@ -762,9 +771,26 @@
       "PortalePagamento": "Portale pagamenti",
       "Visualizzazione": "Visualizzazione",
       "PagaTerzi": "Paga terzi",
+      "Abilitato": "Abilitato",
       "IdTipoPendenza": "ID tipo pendenza",
       "Descrizione": "Descrizione",
       "CodificaIUV": "Codifica IUV"
+    },
+    "Form": {
+      "Nuovo": "Nuovo tipo pendenza",
+      "Modifica": "Modifica",
+      "NuovoTitolo": "Nuovo tipo pendenza",
+      "ModificaTitolo": "Modifica tipo pendenza",
+      "Subtitle": "Dati principali della tipologia di pendenza.",
+      "Obbligatorio": "Campo obbligatorio",
+      "CodificaIUVPlaceholder": "1-3 cifre",
+      "CodificaIUVNonValida": "Inserire da 1 a 3 cifre.",
+      "ConfigPreservata": "Le configurazioni avanzate (portali, avvisatura, tracciato, visualizzazione) sono preservate.",
+      "Salvato": "Tipo pendenza creato.",
+      "Aggiornato": "Tipo pendenza aggiornato.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un tipo pendenza con questo ID.",
+      "ConflittoConcorrenza": "Il tipo pendenza è stato modificato da un altro utente. Ricarica e riprova."
     }
   },
   "Applicazioni": {

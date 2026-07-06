@@ -1,10 +1,18 @@
 <section class="space-y-4 pb-6 lnk-detail-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4">
   <lnk-page-header [titleKey]="tipo()?.descrizione || tipo()?.idTipoPendenza || '—'" subtitleKey="TipiPendenza.Detail.Subtitle">
-    <a routerLink="/tipi-pendenza" class="btn btn-secondary btn-sm">
-      <ng-icon name="bootstrapChevronLeft" size="1rem" />
-      <span>{{ 'Common.Back' | translate }}</span>
-    </a>
+    <div class="flex items-center gap-2">
+      @if (tipo(); as t) {
+        <a [routerLink]="['/tipi-pendenza', t.idTipoPendenza, 'modifica']" class="btn btn-primary btn-sm">
+          <ng-icon name="bootstrapPencil" size="1rem" />
+          <span>{{ 'TipiPendenza.Form.Modifica' | translate }}</span>
+        </a>
+      }
+      <a routerLink="/tipi-pendenza" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </div>
   </lnk-page-header>
   </div>
 

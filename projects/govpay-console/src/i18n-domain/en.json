@@ -522,7 +522,16 @@
     "Subtitle": "Registered pending types.",
     "Filters": {
       "SearchPlaceholder": "Search by description…",
-      "Abilitato": "Enabled"
+      "IdTipoPendenza": "Type ID",
+      "IdTipoPendenzaPlaceholder": "Search by ID…",
+      "Descrizione": "Description",
+      "DescrizionePlaceholder": "Search by description…",
+      "Placeholder": "Search pending type…",
+      "Abilitato": "Enabled",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled"
     },
     "Empty": {
       "Title": "No types",
@@ -542,9 +551,26 @@
       "PortalePagamento": "Payment portal",
       "Visualizzazione": "Display",
       "PagaTerzi": "Third-party payable",
+      "Abilitato": "Enabled",
       "IdTipoPendenza": "Type ID",
       "Descrizione": "Description",
       "CodificaIUV": "IUV code"
+    },
+    "Form": {
+      "Nuovo": "New pending type",
+      "Modifica": "Edit",
+      "NuovoTitolo": "New pending type",
+      "ModificaTitolo": "Edit pending type",
+      "Subtitle": "Core data of the pending type.",
+      "Obbligatorio": "Required field",
+      "CodificaIUVPlaceholder": "1-3 digits",
+      "CodificaIUVNonValida": "Enter 1 to 3 digits.",
+      "ConfigPreservata": "Advanced configuration (portals, notifications, tracking, display) is preserved.",
+      "Salvato": "Pending type created.",
+      "Aggiornato": "Pending type updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A pending type with this ID already exists.",
+      "ConflittoConcorrenza": "The pending type was modified by another user. Reload and retry."
     }
   },
   "Applicazioni": {

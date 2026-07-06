@@ -1,0 +1,81 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'TipiPendenza.Form.ModificaTitolo' : 'TipiPendenza.Form.NuovoTitolo'"
+      subtitleKey="TipiPendenza.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <lnk-detail-section titleKey="TipiPendenza.Detail.Generali">
+      <form [formGroup]="form" (ngSubmit)="save()" class="max-w-2xl space-y-5">
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idTipoPendenza">{{ 'TipiPendenza.Detail.IdTipoPendenza' | translate }}</span>
+          <input
+            type="text"
+            formControlName="idTipoPendenza"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60"
+          />
+          @if (form.controls.idTipoPendenza.touched && form.controls.idTipoPendenza.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'TipiPendenza.Form.Obbligatorio' | translate }}</span>
+          }
+        </label>
+
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.descrizione">{{ 'TipiPendenza.Detail.Descrizione' | translate }}</span>
+          <input
+            type="text"
+            formControlName="descrizione"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          />
+          @if (form.controls.descrizione.touched && form.controls.descrizione.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'TipiPendenza.Form.Obbligatorio' | translate }}</span>
+          }
+        </label>
+
+        <label class="flex flex-col gap-1 max-w-xs">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Detail.CodificaIUV' | translate }}</span>
+          <input
+            type="text"
+            formControlName="codificaIUV"
+            placeholder="{{ 'TipiPendenza.Form.CodificaIUVPlaceholder' | translate }}"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          />
+          @if (form.controls.codificaIUV.touched && form.controls.codificaIUV.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'TipiPendenza.Form.CodificaIUVNonValida' | translate }}</span>
+          }
+        </label>
+
+        <label class="flex items-center gap-2">
+          <input type="checkbox" formControlName="pagaTerzi" class="h-4 w-4 accent-[var(--primary)]" />
+          <span class="text-sm">{{ 'TipiPendenza.Detail.PagaTerzi' | translate }}</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+          <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+          <span class="text-sm">{{ 'TipiPendenza.Detail.Abilitato' | translate }}</span>
+        </label>
+
+        @if (isEdit()) {
+          <p class="text-xs text-[var(--muted-foreground)]">{{ 'TipiPendenza.Form.ConfigPreservata' | translate }}</p>
+        }
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </div>
+      </form>
+      </lnk-detail-section>
+    }
+  </div>
+</section>

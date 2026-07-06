@@ -18,8 +18,19 @@ export const TIPI_PENDENZA_ROUTES: Routes = [
       import('./tipi-pendenza-list.component').then((m) => m.TipiPendenzaListComponent),
   },
   {
+    // `nuovo` prima di `:idTipoPendenza` per non essere catturato dal wildcard param.
+    path: 'nuovo',
+    loadComponent: () =>
+      import('./tipo-pendenza-form.component').then((m) => m.TipoPendenzaFormComponent),
+  },
+  {
     path: ':idTipoPendenza',
     loadComponent: () =>
       import('./tipo-pendenza-detail.component').then((m) => m.TipoPendenzaDetailComponent),
+  },
+  {
+    path: ':idTipoPendenza/modifica',
+    loadComponent: () =>
+      import('./tipo-pendenza-form.component').then((m) => m.TipoPendenzaFormComponent),
   },
 ];

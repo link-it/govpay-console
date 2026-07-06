@@ -111,7 +111,7 @@
       "MENU_TRACCIATI": false,
       "GESTIONE_ANAGRAFICHE": true,
       "MENU_DOMINI": false,
-      "MENU_TIPI_PENDENZA": false,
+      "MENU_TIPI_PENDENZA": true,
       "MENU_ENTRATE": true,
       "MENU_APPLICAZIONI": false,
       "MENU_INTERMEDIARI": true,

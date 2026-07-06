@@ -9,20 +9,12 @@
  * the Free Software Foundation.
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@linkit/shared-ui';
-import { SnackbarService } from '@linkit/shared-ui';
+import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
@@ -33,7 +25,8 @@ import {
   StatusBadgeComponent,
   type InfoGridItem,
 } from '@linkit/shared-ui';
-import { TipiPendenzaApi } from './tipi-pendenza.api';
+import { problemDetail } from '@core/models';
+import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
 import type { TipoPendenza } from './tipo-pendenza.model';
 
 @Component({
@@ -55,12 +48,14 @@ import type { TipoPendenza } from './tipo-pendenza.model';
   templateUrl: './tipo-pendenza-detail.component.html',
 })
 export class TipoPendenzaDetailComponent implements OnInit {
-  private readonly api = inject(TipiPendenzaApi);
+  private readonly api = inject(TipiPendenzaConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+
+  idTipoPendenza = '';
 
   readonly tipo = signal<TipoPendenza | null>(null);
   readonly loading = signal(false);
@@ -76,8 +71,14 @@ export class TipoPendenzaDetailComponent implements OnInit {
       { labelKey: 'TipiPendenza.Detail.IdTipoPendenza', value: t.idTipoPendenza, mono: true },
       { labelKey: 'TipiPendenza.Detail.Descrizione', value: t.descrizione, wide: true },
       { labelKey: 'TipiPendenza.Detail.CodificaIUV', value: t.codificaIUV, mono: true, hide: !t.codificaIUV },
+      { labelKey: 'TipiPendenza.Detail.PagaTerzi', value: this.translate.instant(t.pagaTerzi ? 'Common.Yes' : 'Common.No') },
     ];
   });
+
+  /** Rende leggibile un blocco config opaco (read-only). */
+  formatJson(payload: Record<string, unknown> | undefined): string {
+    return payload ? JSON.stringify(payload, null, 2) : '';
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('idTipoPendenza');
@@ -85,26 +86,19 @@ export class TipoPendenzaDetailComponent implements OnInit {
       this.router.navigate(['/tipi-pendenza']);
       return;
     }
-    this.system.setBreadcrumbs([
-      { label: 'Nav.TipiPendenza', url: '/tipi-pendenza' },
-      { label: id },
-    ]);
-    this.fetch(id);
+    this.idTipoPendenza = id;
+    this.system.setBreadcrumbs([{ label: 'Nav.TipiPendenza', url: '/tipi-pendenza' }, { label: id }]);
+    this.fetch();
   }
 
-  formatJson(payload: Record<string, unknown> | undefined): string {
-    if (!payload) return '';
-    return JSON.stringify(payload, null, 2);
-  }
-
-  private fetch(id: string): void {
+  private fetch(): void {
     this.loading.set(true);
     this.error.set(null);
     this.api
-      .get(id)
+      .get(this.idTipoPendenza)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
           return of(null);

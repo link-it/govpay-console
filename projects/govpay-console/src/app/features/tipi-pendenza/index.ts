@@ -10,7 +10,8 @@
  */
 
 export * from './tipo-pendenza.model';
-export * from './tipi-pendenza.api';
+export * from './tipi-pendenza.console-api';
 export * from './tipi-pendenza.routes';
 export * from './tipi-pendenza-list.component';
 export * from './tipo-pendenza-detail.component';
+export * from './tipo-pendenza-form.component';

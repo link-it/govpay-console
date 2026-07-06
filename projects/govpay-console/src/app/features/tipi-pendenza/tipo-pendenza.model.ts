@@ -10,30 +10,77 @@
  */
 
 /**
- * Tipologia di pendenza — schema `tipoPendenza` dell'OpenAPI GovPay BO.
- * I sotto-oggetti `portaleBackoffice` / `portalePagamento` / `avvisatura*`
- * / `visualizzazione` / `tracciatoCsv` sono opachi: li tipizziamo come
- * `Record<string, unknown>` per non duplicare schemi profondi.
+ * Modelli **TipiPendenza V2** (tipologie di pendenza globali) allineati alla
+ * GovPay Console API (`/govpay-console-api/tipiPendenza…`, tag TipiPendenza).
+ *
+ * I sotto-oggetti config (`portaleBackoffice`, `portalePagamento`,
+ * `avvisatura*`, `visualizzazione`, `tracciatoCsv`) sono opachi: tipizzati come
+ * `Record<string, unknown>`. Il form ne modifica solo i campi core e
+ * **preserva** i sotto-oggetti nel replace (PUT) per non azzerarli.
  */
+
+import type { PaginationParams } from '@core/models';
+
+/** Blocco di configurazione opaco (non editato dall'UI base). */
+export type TipoPendenzaConfig = Record<string, unknown>;
+
+/** Proiezione leggera per le liste (schema `TipoPendenzaSummary`). */
+export interface TipoPendenzaSummary {
+  idTipoPendenza: string;
+  descrizione: string;
+  abilitato?: boolean;
+}
+
+/** Dettaglio canonico (schema `TipoPendenza`). */
 export interface TipoPendenza {
   idTipoPendenza: string;
   descrizione: string;
   codificaIUV?: string;
   pagaTerzi?: boolean;
   abilitato?: boolean;
-  portaleBackoffice?: Record<string, unknown>;
-  portalePagamento?: Record<string, unknown>;
-  avvisaturaMail?: Record<string, unknown>;
-  avvisaturaAppIO?: Record<string, unknown>;
-  visualizzazione?: Record<string, unknown>;
-  tracciatoCsv?: Record<string, unknown>;
+  portaleBackoffice?: TipoPendenzaConfig;
+  portalePagamento?: TipoPendenzaConfig;
+  avvisaturaMail?: TipoPendenzaConfig;
+  avvisaturaAppIO?: TipoPendenzaConfig;
+  visualizzazione?: TipoPendenzaConfig;
+  tracciatoCsv?: TipoPendenzaConfig;
 }
 
-export interface TipiPendenzaListFilters {
-  pagina?: number;
-  risPerPagina?: number;
-  ordinamento?: string;
+/** Body per la creazione (schema `TipoPendenzaCreate`). */
+export interface TipoPendenzaCreate {
+  idTipoPendenza: string;
+  descrizione: string;
+  codificaIUV?: string;
+  pagaTerzi?: boolean;
+  abilitato?: boolean;
+  portaleBackoffice?: TipoPendenzaConfig;
+  portalePagamento?: TipoPendenzaConfig;
+  avvisaturaMail?: TipoPendenzaConfig;
+  avvisaturaAppIO?: TipoPendenzaConfig;
+  visualizzazione?: TipoPendenzaConfig;
+  tracciatoCsv?: TipoPendenzaConfig;
+}
+
+/** Body per il replace completo (schema `TipoPendenzaReplace`, id dal path). */
+export interface TipoPendenzaReplace {
+  descrizione: string;
+  codificaIUV?: string;
+  pagaTerzi?: boolean;
+  abilitato?: boolean;
+  portaleBackoffice?: TipoPendenzaConfig;
+  portalePagamento?: TipoPendenzaConfig;
+  avvisaturaMail?: TipoPendenzaConfig;
+  avvisaturaAppIO?: TipoPendenzaConfig;
+  visualizzazione?: TipoPendenzaConfig;
+  tracciatoCsv?: TipoPendenzaConfig;
+}
+
+/** Filtri lista tipi pendenza + paginazione V2. */
+export interface TipiPendenzaListFilters extends PaginationParams {
+  /** Match parziale sul codice tipo pendenza. */
   idTipoPendenza?: string;
+  /** Match parziale sulla descrizione. */
   descrizione?: string;
+  /** Match esatto sullo stato di abilitazione. */
   abilitato?: boolean;
 }
