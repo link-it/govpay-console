@@ -17,7 +17,16 @@ export const RUOLI_ROUTES: Routes = [
     loadComponent: () => import('./ruoli-list.component').then((m) => m.RuoliListComponent),
   },
   {
+    // `nuovo` prima di `:idRuolo` per non essere catturato dal wildcard param.
+    path: 'nuovo',
+    loadComponent: () => import('./ruolo-form.component').then((m) => m.RuoloFormComponent),
+  },
+  {
     path: ':idRuolo',
     loadComponent: () => import('./ruolo-detail.component').then((m) => m.RuoloDetailComponent),
+  },
+  {
+    path: ':idRuolo/modifica',
+    loadComponent: () => import('./ruolo-form.component').then((m) => m.RuoloFormComponent),
   },
 ];

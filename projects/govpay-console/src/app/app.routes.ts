@@ -83,6 +83,11 @@ export const routes: Routes = [
         canActivate: [aclGuard('hasConfig')],
         loadChildren: () => import('@feature/tipi-pendenza').then((m) => m.TIPI_PENDENZA_ROUTES),
       },
+      {
+        path: 'entrate',
+        canActivate: [aclGuard('hasConfig')],
+        loadChildren: () => import('@feature/entrate').then((m) => m.ENTRATE_ROUTES),
+      },
       // Sezioni placeholder (label è chiave i18n, vedi `placeholder.component.ts`)
       {
         path: 'applicazioni',

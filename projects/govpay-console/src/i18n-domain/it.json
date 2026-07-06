@@ -819,6 +819,54 @@
       "RagioneSociale": "Nome e cognome"
     }
   },
+  "Entrate": {
+    "Subtitle": "Tipologie di entrata censite a livello globale.",
+    "Filters": {
+      "IdEntrata": "Codice entrata",
+      "IdEntrataPlaceholder": "Cerca per codice…",
+      "Descrizione": "Descrizione",
+      "DescrizionePlaceholder": "Cerca per descrizione…",
+      "Placeholder": "Cerca entrata…"
+    },
+    "Columns": {
+      "IdEntrata": "Codice",
+      "Descrizione": "Descrizione"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio tipologia di entrata.",
+      "Generali": "Dati generali",
+      "IdEntrata": "Codice entrata",
+      "Descrizione": "Descrizione",
+      "TipoContabilita": "Tipo contabilità",
+      "CodiceContabilita": "Codice contabilità"
+    },
+    "TipoContabilita": {
+      "CAPITOLO": "Capitolo",
+      "SPECIALE": "Speciale",
+      "SIOPE": "SIOPE",
+      "SRTP_ESCLUSA_RAVV_OPEROSO": "SRTP esclusa (ravv. operoso)",
+      "SRTP_ESCLUSA_ALTRO_OPERATORE": "SRTP esclusa (altro operatore)",
+      "SRTP_ESCLUSA": "SRTP esclusa",
+      "ALTRO": "Altro"
+    },
+    "Form": {
+      "Nuova": "Nuova entrata",
+      "Modifica": "Modifica",
+      "NuovaTitolo": "Nuova entrata",
+      "ModificaTitolo": "Modifica entrata",
+      "Subtitle": "Compila i dati della tipologia di entrata.",
+      "Obbligatorio": "Campo obbligatorio",
+      "Salvata": "Entrata creata.",
+      "Aggiornata": "Entrata aggiornata.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un'entrata con questo codice.",
+      "ConflittoConcorrenza": "L'entrata è stata modificata da un altro utente. Ricarica e riprova."
+    },
+    "Empty": {
+      "Title": "Nessuna entrata",
+      "Description": "Non risultano tipologie di entrata."
+    }
+  },
   "Intermediari": {
     "Subtitle": "Intermediari PagoPA censiti.",
     "Filters": {
@@ -934,8 +982,18 @@
       }
     }
   },
+  "Acl": {
+    "Servizio": "Servizio",
+    "R": "R",
+    "W": "W"
+  },
   "Ruoli": {
     "Subtitle": "Ruoli e relative ACL.",
+    "Filters": {
+      "IdRuolo": "Identificativo ruolo",
+      "IdRuoloPlaceholder": "Cerca per identificativo…",
+      "Placeholder": "Cerca ruolo…"
+    },
     "Empty": {
       "Title": "Nessun ruolo",
       "Description": "Non ci sono ruoli censiti."
@@ -945,11 +1003,24 @@
     },
     "Detail": {
       "Subtitle": "Permessi associati al ruolo.",
+      "Generali": "Dati generali",
+      "Id": "Identificativo ruolo",
       "Acl": "Servizi e autorizzazioni",
-      "Servizio": "Servizio",
-      "Lettura": "Lettura",
-      "Scrittura": "Scrittura",
       "NoAcl": "Nessuna ACL associata."
+    },
+    "Form": {
+      "Nuovo": "Nuovo ruolo",
+      "Modifica": "Modifica",
+      "NuovoTitolo": "Nuovo ruolo",
+      "ModificaTitolo": "Modifica ruolo",
+      "Subtitle": "Definisci identificativo e autorizzazioni del ruolo.",
+      "Obbligatorio": "Campo obbligatorio",
+      "AclObbligatoria": "Seleziona almeno un'autorizzazione.",
+      "Salvato": "Ruolo creato.",
+      "Aggiornato": "Ruolo aggiornato.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un ruolo con questo identificativo.",
+      "ConflittoConcorrenza": "Il ruolo è stato modificato da un altro utente. Ricarica e riprova."
     }
   },
   "Impostazioni": {
@@ -1009,6 +1080,7 @@
     "Anagrafiche": "Anagrafiche",
     "Domini": "Domini",
     "TipiPendenza": "Tipi pendenza",
+    "Entrate": "Entrate",
     "Applicazioni": "Applicazioni",
     "Intermediari": "Intermediari",
     "Sicurezza": "Sicurezza",

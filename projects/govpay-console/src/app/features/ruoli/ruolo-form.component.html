@@ -1,0 +1,49 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'Ruoli.Form.ModificaTitolo' : 'Ruoli.Form.NuovoTitolo'"
+      subtitleKey="Ruoli.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4 max-w-3xl">
+        <lnk-detail-section titleKey="Ruoli.Detail.Generali">
+          <label class="flex flex-col gap-1 max-w-md">
+            <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idRuolo">{{ 'Ruoli.Detail.Id' | translate }}</span>
+            <input
+              type="text"
+              formControlName="idRuolo"
+              class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60"
+            />
+            @if (form.controls.idRuolo.touched && form.controls.idRuolo.invalid) {
+              <span class="text-xs text-[var(--danger)]">{{ 'Ruoli.Form.Obbligatorio' | translate }}</span>
+            }
+          </label>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Ruoli.Detail.Acl">
+          <lnk-acl-editor [(acl)]="aclValue" />
+          @if (!canSave()) {
+            <p class="mt-2 text-xs text-[var(--danger)]">{{ 'Ruoli.Form.AclObbligatoria' | translate }}</p>
+          }
+        </lnk-detail-section>
+
+        <div class="flex items-center gap-2">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid || !canSave()">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </div>
+      </form>
+    }
+  </div>
+</section>

@@ -10,25 +10,36 @@
  */
 
 /**
- * Singola ACL associata a un ruolo (forma `aclPost`).
- *   - `servizio`: nome del servizio GovPay (vedi `SERVIZIO_ACL`).
- *   - `autorizzazioni`: combinazione di `R` (lettura) e/o `W` (scrittura).
+ * Modelli **Ruoli V2** (catalogo ruoli + ACL) allineati alla GovPay Console API
+ * (`/govpay-console-api/ruoli…`, tag Ruoli).
  */
-export interface RuoloAcl {
-  servizio: string;
-  autorizzazioni: Array<'R' | 'W'>;
+
+import type { Acl, PaginationParams } from '@core/models';
+
+/** Proiezione leggera per le liste (schema `RuoloSummary`). */
+export interface RuoloSummary {
+  idRuolo: string;
 }
 
-/**
- * Ruolo di sistema. Il detail (`/ruoli/{idRuolo}`) include l'array `acl`
- * dei servizi concessi; la lista (`/ruoli`) restituisce solo l'id.
- */
+/** Dettaglio canonico (schema `Ruolo`). */
 export interface Ruolo {
-  id: string;
-  acl?: RuoloAcl[];
+  idRuolo: string;
+  acl: Acl[];
 }
 
-export interface RuoliListFilters {
-  pagina?: number;
-  risPerPagina?: number;
+/** Body per la creazione (schema `RuoloCreate`, `acl` con almeno una entry). */
+export interface RuoloCreate {
+  idRuolo: string;
+  acl: Acl[];
+}
+
+/** Body per il replace completo (schema `RuoloReplace`, `idRuolo` dal path). */
+export interface RuoloReplace {
+  acl: Acl[];
+}
+
+/** Filtri lista ruoli + paginazione V2. */
+export interface RuoliListFilters extends PaginationParams {
+  /** Match parziale sull'identificativo ruolo. */
+  idRuolo?: string;
 }

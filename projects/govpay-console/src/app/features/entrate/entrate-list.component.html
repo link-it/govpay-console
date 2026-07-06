@@ -1,12 +1,12 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
-  <lnk-page-header titleKey="Nav.Ruoli" subtitleKey="Ruoli.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
+  <lnk-page-header titleKey="Nav.Entrate" subtitleKey="Entrate.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
     <div class="flex items-center gap-2">
       <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
         {{ 'Common.Refresh' | translate }}
       </button>
-      <a routerLink="/ruoli/nuovo" class="btn btn-primary btn-sm">
-        {{ 'Ruoli.Form.Nuovo' | translate }}
+      <a routerLink="/entrate/nuovo" class="btn btn-primary btn-sm">
+        {{ 'Entrate.Form.Nuova' | translate }}
       </a>
     </div>
   </lnk-page-header>
@@ -28,8 +28,8 @@
   @if (showEmptyState()) {
     <lnk-empty-state
       icon="bootstrapInboxes"
-      titleKey="Ruoli.Empty.Title"
-      [descriptionKey]="hasActiveFilters() ? 'Common.NoResultsForFilters' : 'Ruoli.Empty.Description'"
+      titleKey="Entrate.Empty.Title"
+      [descriptionKey]="hasActiveFilters() ? 'Common.NoResultsForFilters' : 'Entrate.Empty.Description'"
     >
       @if (hasActiveFilters()) {
         <button type="button" class="btn btn-secondary btn-sm" (click)="resetFilters()">
@@ -43,7 +43,7 @@
         [rows]="rows()"
         [config]="cfg"
         [loading]="loading() && rows().length === 0"
-        emptyKey="Ruoli.Empty.Title"
+        emptyKey="Entrate.Empty.Title"
         (rowClick)="onRowClick($any($event))"
       />
     } @else {
@@ -54,7 +54,7 @@
         [sort]="sort()"
         [clickable]="true"
         [displayConfig]="rowConfig()"
-        emptyKey="Ruoli.Empty.Title"
+        emptyKey="Entrate.Empty.Title"
         (sortChange)="onSortChange($event)"
         (rowClick)="onRowClick($event)"
       />

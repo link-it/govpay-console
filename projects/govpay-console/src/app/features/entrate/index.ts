@@ -9,9 +9,9 @@
  * the Free Software Foundation.
  */
 
-export * from './pageable.model';
-export * from './problem.model';
-export * from './slice.model';
-export * from './govpay-common.model';
-export * from './connettore.model';
-export * from './acl.model';
+export * from './entrata.model';
+export * from './entrate.console-api';
+export * from './entrate.routes';
+export * from './entrate-list.component';
+export * from './entrata-detail.component';
+export * from './entrata-form.component';

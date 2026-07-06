@@ -23,7 +23,14 @@
  * sono definiti qui ma il client li userà solo nelle fasi di write (read-first).
  */
 
-import type { DominioSummary, PaginationParams } from '@core/models';
+import type {
+  ConnettoreAuth,
+  ConnettoreCredenziali,
+  DominioSummary,
+  PaginationParams,
+  SslTipo,
+  TipoAutenticazioneConnettore,
+} from '@core/models';
 
 /* =========================================================================
  * Intermediario
@@ -137,35 +144,6 @@ export const TIPI_CONNETTORE: TipoConnettore[] = [
   'pagopa-recupero-rt',
 ];
 
-/** Tipo di autenticazione del connettore (schema `TipoAutenticazioneConnettore`). */
-export type TipoAutenticazioneConnettore =
-  | 'NONE'
-  | 'HTTPBASIC'
-  | 'SSL'
-  | 'HEADER'
-  | 'APIKEY'
-  | 'OAUTH2';
-
-/** Modalità SSL quando `tipoAutenticazione = SSL` (schema `SslTipo`). */
-export type SslTipo = 'CLIENT' | 'SERVER';
-
-/** Parametri di autenticazione del connettore — **senza credenziali** (schema `ConnettoreAuth`). */
-export interface ConnettoreAuth {
-  tipoAutenticazione: TipoAutenticazioneConnettore;
-  username?: string;
-  sslTipo?: SslTipo;
-  ksLocation?: string;
-  ksType?: string;
-  tsLocation?: string;
-  tsType?: string;
-  sslType?: string;
-  headerName?: string;
-  apiId?: string;
-  clientId?: string;
-  scope?: string;
-  urlTokenEndpoint?: string;
-}
-
 /**
  * Connettore pagoPA (unione dei 6 schemi `ConnettoreIntermediario*`, credenziali
  * escluse). `urlRPT` è specifico del connettore PDD (`pagopa`); `url`+`abilitaGDE`
@@ -182,18 +160,7 @@ export interface Connettore {
   abilitaGDE?: boolean;
 }
 
-/**
- * Credenziali del connettore (**write-only**, schema `ConnettoreCredenziali`).
- * Mai restituite dalle GET; significative solo quelle coerenti col
- * `tipoAutenticazione`.
- */
-export interface ConnettoreCredenziali {
-  subscriptionKey?: string;
-  password?: string;
-  ksPassword?: string;
-  tsPassword?: string;
-  ksPKeyPasswd?: string;
-  headerValue?: string;
-  apiKey?: string;
-  clientSecret?: string;
-}
+// I primitivi condivisi `ConnettoreAuth`, `ConnettoreCredenziali`, `SslTipo`,
+// `TipoAutenticazioneConnettore` vivono in `@core/models` (riusati da connettori
+// dominio e connettore integrazione). Re-export per compatibilità degli import.
+export type { ConnettoreAuth, ConnettoreCredenziali, SslTipo, TipoAutenticazioneConnettore };

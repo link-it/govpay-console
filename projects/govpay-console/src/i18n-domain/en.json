@@ -599,6 +599,54 @@
       "RagioneSociale": "Full name"
     }
   },
+  "Entrate": {
+    "Subtitle": "Revenue types registered globally.",
+    "Filters": {
+      "IdEntrata": "Revenue code",
+      "IdEntrataPlaceholder": "Search by code…",
+      "Descrizione": "Description",
+      "DescrizionePlaceholder": "Search by description…",
+      "Placeholder": "Search revenue…"
+    },
+    "Columns": {
+      "IdEntrata": "Code",
+      "Descrizione": "Description"
+    },
+    "Detail": {
+      "Subtitle": "Revenue type detail.",
+      "Generali": "General data",
+      "IdEntrata": "Revenue code",
+      "Descrizione": "Description",
+      "TipoContabilita": "Accounting type",
+      "CodiceContabilita": "Accounting code"
+    },
+    "TipoContabilita": {
+      "CAPITOLO": "Chapter",
+      "SPECIALE": "Special",
+      "SIOPE": "SIOPE",
+      "SRTP_ESCLUSA_RAVV_OPEROSO": "SRTP excluded (voluntary correction)",
+      "SRTP_ESCLUSA_ALTRO_OPERATORE": "SRTP excluded (other operator)",
+      "SRTP_ESCLUSA": "SRTP excluded",
+      "ALTRO": "Other"
+    },
+    "Form": {
+      "Nuova": "New revenue",
+      "Modifica": "Edit",
+      "NuovaTitolo": "New revenue",
+      "ModificaTitolo": "Edit revenue",
+      "Subtitle": "Fill in the revenue type data.",
+      "Obbligatorio": "Required field",
+      "Salvata": "Revenue created.",
+      "Aggiornata": "Revenue updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A revenue with this code already exists.",
+      "ConflittoConcorrenza": "The revenue was modified by another user. Reload and retry."
+    },
+    "Empty": {
+      "Title": "No revenues",
+      "Description": "No revenue types found."
+    }
+  },
   "Intermediari": {
     "Subtitle": "Registered PagoPA brokers.",
     "Filters": {
@@ -714,8 +762,18 @@
       }
     }
   },
+  "Acl": {
+    "Servizio": "Service",
+    "R": "R",
+    "W": "W"
+  },
   "Ruoli": {
     "Subtitle": "Roles and ACLs.",
+    "Filters": {
+      "IdRuolo": "Role ID",
+      "IdRuoloPlaceholder": "Search by ID…",
+      "Placeholder": "Search role…"
+    },
     "Empty": {
       "Title": "No roles",
       "Description": "No roles registered."
@@ -725,11 +783,24 @@
     },
     "Detail": {
       "Subtitle": "Permissions for the role.",
+      "Generali": "General data",
+      "Id": "Role ID",
       "Acl": "Services and authorizations",
-      "Servizio": "Service",
-      "Lettura": "Read",
-      "Scrittura": "Write",
       "NoAcl": "No ACL assigned."
+    },
+    "Form": {
+      "Nuovo": "New role",
+      "Modifica": "Edit",
+      "NuovoTitolo": "New role",
+      "ModificaTitolo": "Edit role",
+      "Subtitle": "Define the role ID and its authorizations.",
+      "Obbligatorio": "Required field",
+      "AclObbligatoria": "Select at least one authorization.",
+      "Salvato": "Role created.",
+      "Aggiornato": "Role updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A role with this ID already exists.",
+      "ConflittoConcorrenza": "The role was modified by another user. Reload and retry."
     }
   },
   "Impostazioni": {
@@ -789,6 +860,7 @@
     "Anagrafiche": "Master data",
     "Domini": "Domains",
     "TipiPendenza": "Item types",
+    "Entrate": "Revenues",
     "Applicazioni": "Applications",
     "Intermediari": "Intermediaries",
     "Sicurezza": "Security",

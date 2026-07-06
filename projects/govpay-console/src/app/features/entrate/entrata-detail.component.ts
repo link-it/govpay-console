@@ -25,12 +25,11 @@ import {
   type InfoGridItem,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { AclEditorComponent } from '@core/ui/acl-editor/acl-editor.component';
-import { RuoliConsoleApi } from './ruoli.console-api';
-import type { Ruolo } from './ruolo.model';
+import { EntrateConsoleApi } from './entrate.console-api';
+import type { Entrata } from './entrata.model';
 
 @Component({
-  selector: 'lnk-ruolo-detail',
+  selector: 'lnk-entrata-detail',
   standalone: true,
   imports: [
     NgIcon,
@@ -42,39 +41,43 @@ import type { Ruolo } from './ruolo.model';
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
-    AclEditorComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './ruolo-detail.component.html',
+  templateUrl: './entrata-detail.component.html',
 })
-export class RuoloDetailComponent implements OnInit {
-  private readonly api = inject(RuoliConsoleApi);
+export class EntrataDetailComponent implements OnInit {
+  private readonly api = inject(EntrateConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
 
-  idRuolo = '';
+  idEntrata = '';
 
-  readonly ruolo = signal<Ruolo | null>(null);
+  readonly entrata = signal<Entrata | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
   readonly generaliItems = computed<InfoGridItem[]>(() => {
-    const r = this.ruolo();
-    if (!r) return [];
-    return [{ labelKey: 'Ruoli.Detail.Id', value: r.idRuolo, mono: true, wide: true }];
+    const e = this.entrata();
+    if (!e) return [];
+    return [
+      { labelKey: 'Entrate.Detail.IdEntrata', value: e.idEntrata, mono: true },
+      { labelKey: 'Entrate.Detail.Descrizione', value: e.descrizione, wide: true },
+      { labelKey: 'Entrate.Detail.TipoContabilita', value: this.translate.instant('Entrate.TipoContabilita.' + e.tipoContabilita) },
+      { labelKey: 'Entrate.Detail.CodiceContabilita', value: e.codiceContabilita, mono: true },
+    ];
   });
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('idRuolo');
+    const id = this.route.snapshot.paramMap.get('idEntrata');
     if (!id) {
-      this.router.navigate(['/ruoli']);
+      this.router.navigate(['/entrate']);
       return;
     }
-    this.idRuolo = id;
-    this.system.setBreadcrumbs([{ label: 'Nav.Ruoli', url: '/ruoli' }, { label: id }]);
+    this.idEntrata = id;
+    this.system.setBreadcrumbs([{ label: 'Nav.Entrate', url: '/entrate' }, { label: id }]);
     this.fetch();
   }
 
@@ -82,7 +85,7 @@ export class RuoloDetailComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.api
-      .get(this.idRuolo)
+      .get(this.idEntrata)
       .pipe(
         catchError((err) => {
           const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
@@ -91,8 +94,8 @@ export class RuoloDetailComponent implements OnInit {
           return of(null);
         })
       )
-      .subscribe((r) => {
-        this.ruolo.set(r);
+      .subscribe((e) => {
+        this.entrata.set(e);
         this.loading.set(false);
       });
   }

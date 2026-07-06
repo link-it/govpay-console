@@ -38,6 +38,7 @@ import {
   columnsFromConfig,
   formatOrdinamento,
   initialSearchState,
+  truncate,
   type ColumnDef,
   type SearchField,
   type SearchPillLabels,
@@ -45,15 +46,18 @@ import {
   type SortEvent,
 } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
-import { RuoliConsoleApi } from './ruoli.console-api';
-import type { RuoliListFilters, RuoloSummary } from './ruolo.model';
+import { EntrateConsoleApi } from './entrate.console-api';
+import type { EntrateListFilters, EntrataSummary } from './entrata.model';
 
 const PAGE_SIZE = 25;
 
-const F = { idRuolo: 'idRuolo' } as const;
+const F = {
+  idEntrata: 'idEntrata',
+  descrizione: 'descrizione',
+} as const;
 
 @Component({
-  selector: 'lnk-ruoli-list',
+  selector: 'lnk-entrate-list',
   standalone: true,
   imports: [
     RouterLink,
@@ -68,14 +72,14 @@ const F = { idRuolo: 'idRuolo' } as const;
     ListStickyToolbarDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './ruoli-list.component.html',
+  templateUrl: './entrate-list.component.html',
 })
-export class RuoliListComponent implements OnInit {
-  private readonly api = inject(RuoliConsoleApi);
+export class EntrateListComponent implements OnInit {
+  private readonly api = inject(EntrateConsoleApi);
   private readonly config = inject(ConfigService);
   private readonly system = inject(SystemFacade);
   private readonly listState = inject(ListStateService);
-  private static readonly STATE_KEY = 'ruoli';
+  private static readonly STATE_KEY = 'entrate';
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
   private readonly lang = inject(LanguageService);
@@ -84,7 +88,7 @@ export class RuoliListComponent implements OnInit {
 
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
     const layout = this.config.appConfig()?.Layout;
-    return layout?.listViewByFeature?.['ruoli'] ?? layout?.listView ?? 'table';
+    return layout?.listViewByFeature?.['entrate'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
   readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
@@ -98,13 +102,14 @@ export class RuoliListComponent implements OnInit {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
     return [
-      { id: F.idRuolo, label: t('Ruoli.Filters.IdRuolo'), kind: 'text', placeholder: t('Ruoli.Filters.IdRuoloPlaceholder'), span: 2 },
+      { id: F.idEntrata, label: t('Entrate.Filters.IdEntrata'), kind: 'text', placeholder: t('Entrate.Filters.IdEntrataPlaceholder'), span: 2 },
+      { id: F.descrizione, label: t('Entrate.Filters.Descrizione'), kind: 'text', placeholder: t('Entrate.Filters.DescrizionePlaceholder'), span: 2 },
     ];
   });
 
   readonly searchPlaceholder = computed(() => {
     this.lang.current();
-    return this.translate.instant('Ruoli.Filters.Placeholder');
+    return this.translate.instant('Entrate.Filters.Placeholder');
   });
 
   readonly pillLabels = computed<SearchPillLabels>(() => {
@@ -132,7 +137,7 @@ export class RuoliListComponent implements OnInit {
     const tweaks = inject(TweaksRegistry);
     inject(DestroyRef).onDestroy(
       tweaks.register({
-        id: 'ruoli',
+        id: 'entrate',
         titleKey: 'Tweaks.Layout',
         rows: [
           {
@@ -161,13 +166,13 @@ export class RuoliListComponent implements OnInit {
   }
 
   readonly rowConfig = toSignal(
-    this.displayConfigLoader.load('assets/config/ruoli-config.json').pipe(catchError(() => of(null))),
+    this.displayConfigLoader.load('assets/config/entrate-config.json').pipe(catchError(() => of(null))),
     { initialValue: null },
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'idRuolo', direction: 'asc' });
-  readonly rows = signal<RuoloSummary[]>([]);
+  readonly sort = signal<SortEvent | null>({ key: 'idEntrata', direction: 'asc' });
+  readonly rows = signal<EntrataSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);
   readonly loading = signal(false);
@@ -175,21 +180,28 @@ export class RuoliListComponent implements OnInit {
 
   readonly searchState = signal<SearchState>(initialSearchState([]));
 
-  readonly hasActiveFilters = computed(() => !!this.searchState().filters[F.idRuolo]);
+  readonly hasActiveFilters = computed(() => {
+    const f = this.searchState().filters;
+    return !!(f[F.idEntrata] || f[F.descrizione]);
+  });
+
   readonly hasError = computed(() => this.error() !== null);
   readonly hasRows = computed(() => this.rows().length > 0);
   readonly showEmptyState = computed(() => !this.loading() && !this.hasError() && !this.hasRows());
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly columns = computed<ColumnDef<RuoloSummary>[]>(() => {
+  readonly columns = computed<ColumnDef<EntrataSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<RuoloSummary>(tableCfg.columns);
-    return [{ key: 'idRuolo', header: 'Ruoli.Columns.Id', cellClass: 'font-mono text-xs' }];
+    if (tableCfg?.columns?.length) return columnsFromConfig<EntrataSummary>(tableCfg.columns);
+    return [
+      { key: 'idEntrata', header: 'Entrate.Columns.IdEntrata', cellClass: 'font-mono text-xs', width: '16rem' },
+      { key: 'descrizione', header: 'Entrate.Columns.Descrizione', format: (e) => truncate(e.descrizione ?? '') },
+    ];
   });
 
   ngOnInit(): void {
-    this.system.setBreadcrumbs([{ label: 'Nav.Ruoli' }]);
-    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(RuoliListComponent.STATE_KEY);
+    this.system.setBreadcrumbs([{ label: 'Nav.Entrate' }]);
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(EntrateListComponent.STATE_KEY);
     if (saved) {
       if (saved.search) this.searchState.set(saved.search);
       if (saved.sort) this.sort.set(saved.sort);
@@ -226,12 +238,12 @@ export class RuoliListComponent implements OnInit {
     this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
   }
 
-  onRowClick(r: RuoloSummary): void {
-    if (r.idRuolo) this.router.navigate(['/ruoli', r.idRuolo]);
+  onRowClick(e: EntrataSummary): void {
+    if (e.idEntrata) this.router.navigate(['/entrate', e.idEntrata]);
   }
 
   private reset(): void {
-    this.listState.set(RuoliListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() });
+    this.listState.set(EntrateListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() });
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);
@@ -242,12 +254,13 @@ export class RuoliListComponent implements OnInit {
     this.error.set(null);
 
     const f = this.searchState().filters;
-    const filters: RuoliListFilters = {
+    const filters: EntrateListFilters = {
       page: this.page(),
       limit: PAGE_SIZE,
       sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
-      idRuolo: f[F.idRuolo] || undefined,
+      idEntrata: f[F.idEntrata] || undefined,
+      descrizione: f[F.descrizione] || undefined,
     };
 
     this.api
@@ -257,7 +270,7 @@ export class RuoliListComponent implements OnInit {
           const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of<Slice<RuoloSummary>>({ results: [] });
+          return of<Slice<EntrataSummary>>({ results: [] });
         })
       )
       .subscribe((slice) => {

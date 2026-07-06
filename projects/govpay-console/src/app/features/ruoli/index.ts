@@ -10,7 +10,8 @@
  */
 
 export * from './ruolo.model';
-export * from './ruoli.api';
+export * from './ruoli.console-api';
 export * from './ruoli.routes';
 export * from './ruoli-list.component';
 export * from './ruolo-detail.component';
+export * from './ruolo-form.component';

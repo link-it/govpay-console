@@ -156,6 +156,25 @@ export class ConsoleApiService {
     return this.http.put<void>(this.urlFor(path), body).pipe(map(() => undefined));
   }
 
+  /**
+   * `PUT` di una risorsa binaria (es. logo dominio, png/jpeg). `contentType`
+   * popola l'header `Content-Type`; `ifMatch` è opzionale (il logo non lo usa).
+   */
+  putBlob(path: string, blob: Blob, contentType: string, ifMatch?: string | null): Observable<void> {
+    let headers = new HttpHeaders({ 'Content-Type': contentType });
+    if (ifMatch) headers = headers.set('If-Match', ifMatch);
+    return this.http.put<void>(this.urlFor(path), blob, { headers }).pipe(map(() => undefined));
+  }
+
+  /** `DELETE` di una risorsa (es. logo dominio). `ifMatch` opzionale. */
+  delete(path: string, ifMatch?: string | null): Observable<void> {
+    return this.http
+      .delete<void>(this.urlFor(path), {
+        headers: ifMatch ? new HttpHeaders({ 'If-Match': ifMatch }) : undefined,
+      })
+      .pipe(map(() => undefined));
+  }
+
   /** Serializza un oggetto in `HttpParams`, omettendo `undefined`/`null`/`''`. */
   private toParams(input: Record<string, ParamValue>): HttpParams {
     let params = new HttpParams();
