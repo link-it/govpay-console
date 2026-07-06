@@ -23,6 +23,14 @@ import type {
   DominioReplace,
   DominioSummary,
   DominiListFilters,
+  EntrataDominio,
+  EntrataDominioCreate,
+  EntrataDominioReplace,
+  EntrataDominioSummary,
+  TipoPendenzaDominio,
+  TipoPendenzaDominioCreate,
+  TipoPendenzaDominioReplace,
+  TipoPendenzaDominioSummary,
   UnitaOperativa,
   UnitaOperativaCreate,
   UnitaOperativaReplace,
@@ -120,5 +128,41 @@ export class DominiConsoleApi {
 
   replaceContoAccredito(idDominio: string, iban: string, body: ContoAccreditoReplace, ifMatch: string | null): Observable<WithETag<ContoAccredito>> {
     return this.api.put<ContoAccredito>(this.base(idDominio, 'contiAccredito', encodeURIComponent(iban)), body, ifMatch);
+  }
+
+  /* ── Entrate del dominio (sub-resource) ──────────────────────────── */
+
+  listEntrate(idDominio: string, filters: Record<string, ParamValue> = {}): Observable<Slice<EntrataDominioSummary>> {
+    return this.api.list<EntrataDominioSummary>(this.base(idDominio, 'entrate'), filters);
+  }
+
+  getEntrataWithETag(idDominio: string, idEntrata: string): Observable<WithETag<EntrataDominio>> {
+    return this.api.getWithETag<EntrataDominio>(this.base(idDominio, 'entrate', encodeURIComponent(idEntrata)));
+  }
+
+  createEntrata(idDominio: string, body: EntrataDominioCreate): Observable<EntrataDominio> {
+    return this.api.post<EntrataDominio>(this.base(idDominio, 'entrate'), body).pipe(map((r) => r.body as EntrataDominio));
+  }
+
+  replaceEntrata(idDominio: string, idEntrata: string, body: EntrataDominioReplace, ifMatch: string | null): Observable<WithETag<EntrataDominio>> {
+    return this.api.put<EntrataDominio>(this.base(idDominio, 'entrate', encodeURIComponent(idEntrata)), body, ifMatch);
+  }
+
+  /* ── Tipi pendenza del dominio (sub-resource) ────────────────────── */
+
+  listTipiPendenza(idDominio: string, filters: Record<string, ParamValue> = {}): Observable<Slice<TipoPendenzaDominioSummary>> {
+    return this.api.list<TipoPendenzaDominioSummary>(this.base(idDominio, 'tipiPendenza'), filters);
+  }
+
+  getTipoPendenzaWithETag(idDominio: string, idTipoPendenza: string): Observable<WithETag<TipoPendenzaDominio>> {
+    return this.api.getWithETag<TipoPendenzaDominio>(this.base(idDominio, 'tipiPendenza', encodeURIComponent(idTipoPendenza)));
+  }
+
+  createTipoPendenza(idDominio: string, body: TipoPendenzaDominioCreate): Observable<TipoPendenzaDominio> {
+    return this.api.post<TipoPendenzaDominio>(this.base(idDominio, 'tipiPendenza'), body).pipe(map((r) => r.body as TipoPendenzaDominio));
+  }
+
+  replaceTipoPendenza(idDominio: string, idTipoPendenza: string, body: TipoPendenzaDominioReplace, ifMatch: string | null): Observable<WithETag<TipoPendenzaDominio>> {
+    return this.api.put<TipoPendenzaDominio>(this.base(idDominio, 'tipiPendenza', encodeURIComponent(idTipoPendenza)), body, ifMatch);
   }
 }

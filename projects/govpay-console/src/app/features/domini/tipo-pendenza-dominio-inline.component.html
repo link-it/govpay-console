@@ -1,0 +1,36 @@
+@if (isCreate()) {
+  <form [formGroup]="form" class="lnk-inline-card--editing rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 space-y-4">
+    <div class="text-sm font-semibold">{{ 'Domini.TipiPendenzaDominio.Nuovo' | translate }}</div>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idTipoPendenza">{{ 'Domini.TipiPendenzaDominio.IdTipoPendenza' | translate }}</span>
+        <input type="text" formControlName="idTipoPendenza" list="lnk-tipi-sugg" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+        <datalist id="lnk-tipi-sugg">
+          @for (o of tipiSuggestions(); track o.id) { <option [value]="o.id">{{ o.label }}</option> }
+        </datalist></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.TipiPendenzaDominio.CodificaIUV' | translate }}</span>
+        <input type="text" formControlName="codificaIUV" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    </div>
+    <div class="flex items-center gap-6">
+      <label class="flex items-center gap-2"><input type="checkbox" formControlName="pagaTerzi" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.TipiPendenzaDominio.PagaTerzi' | translate }}</span></label>
+      <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.TipiPendenzaDominio.Abilitato' | translate }}</span></label>
+    </div>
+    <p class="text-xs text-[var(--muted-foreground)]">{{ 'Domini.TipiPendenzaDominio.ConfigHint' | translate }}</p>
+    <div class="flex items-center gap-2">
+      <button type="button" class="btn btn-primary btn-sm" (click)="save()" [disabled]="saving() || form.invalid">{{ 'Common.Save' | translate }}</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="cancelCreation()" [disabled]="saving()">{{ 'Common.Cancel' | translate }}</button>
+    </div>
+  </form>
+} @else {
+  <lnk-inline-edit-card [title]="tipo()!.idTipoPendenza" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+    <div view><lnk-info-grid [items]="viewItems()" /></div>
+    <form edit [formGroup]="form" class="space-y-4">
+      <label class="flex flex-col gap-1 max-w-xs"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.TipiPendenzaDominio.CodificaIUV' | translate }}</span>
+        <input type="text" formControlName="codificaIUV" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <div class="flex items-center gap-6">
+        <label class="flex items-center gap-2"><input type="checkbox" formControlName="pagaTerzi" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.TipiPendenzaDominio.PagaTerzi' | translate }}</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.TipiPendenzaDominio.Abilitato' | translate }}</span></label>
+      </div>
+      <p class="text-xs text-[var(--muted-foreground)]">{{ 'Domini.TipiPendenzaDominio.ConfigHint' | translate }}</p>
+    </form>
+  </lnk-inline-edit-card>
+}

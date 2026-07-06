@@ -144,6 +144,101 @@ export interface ContoAccreditoCreate {
 /** Replace (schema `ContoAccreditoReplace`, iban dal path). */
 export type ContoAccreditoReplace = Omit<ContoAccreditoCreate, 'ibanAccredito'>;
 
+/* =========================================================================
+ * Entrate del dominio (sub-resource)
+ * ========================================================================= */
+
+/** Tipo di contabilità della voce (schema `TipoContabilita`). */
+export type TipoContabilita =
+  | 'CAPITOLO'
+  | 'SPECIALE'
+  | 'SIOPE'
+  | 'SRTP_ESCLUSA_RAVV_OPEROSO'
+  | 'SRTP_ESCLUSA_ALTRO_OPERATORE'
+  | 'SRTP_ESCLUSA'
+  | 'ALTRO';
+
+export const TIPI_CONTABILITA: TipoContabilita[] = [
+  'CAPITOLO',
+  'SPECIALE',
+  'SIOPE',
+  'SRTP_ESCLUSA_RAVV_OPEROSO',
+  'SRTP_ESCLUSA_ALTRO_OPERATORE',
+  'SRTP_ESCLUSA',
+  'ALTRO',
+];
+
+/** Proiezione leggera (schema `EntrataDominioSummary`). */
+export interface EntrataDominioSummary {
+  idEntrata: string;
+  descrizione?: string;
+  abilitato: boolean;
+}
+
+/** Configurazione contabile comune a dettaglio/create/replace. */
+interface EntrataDominioConfig {
+  ibanAccredito?: string;
+  ibanAppoggio?: string;
+  tipoContabilita?: TipoContabilita;
+  codiceContabilita?: string;
+}
+
+/** Dettaglio entrata del dominio (schema `EntrataDominio`). */
+export interface EntrataDominio extends EntrataDominioConfig {
+  idEntrata: string;
+  abilitato: boolean;
+  /** Sola lettura: riferimento all'entrata globale associata. */
+  tipoEntrata?: { idEntrata?: string; descrizione?: string; [k: string]: unknown };
+}
+
+/** Create (schema `EntrataDominioCreate`). */
+export interface EntrataDominioCreate extends EntrataDominioConfig {
+  idEntrata: string;
+  abilitato: boolean;
+}
+
+/** Replace (schema `EntrataDominioReplace`, `idEntrata`/`tipoEntrata` dal path/read-only). */
+export type EntrataDominioReplace = Omit<EntrataDominioCreate, 'idEntrata'>;
+
+/* =========================================================================
+ * Tipi pendenza del dominio (sub-resource)
+ * ========================================================================= */
+
+/** Proiezione leggera (schema `TipoPendenzaDominioSummary`). */
+export interface TipoPendenzaDominioSummary {
+  idTipoPendenza: string;
+  descrizione?: string;
+  abilitato?: boolean;
+}
+
+/**
+ * Dettaglio tipo pendenza del dominio (schema `TipoPendenzaDominio`). Solo i
+ * campi core sono modellati; le sotto-strutture ricche (portali, avvisature,
+ * visualizzazione, tracciato) sono preservate as-is nel replace.
+ */
+export interface TipoPendenzaDominio {
+  idTipoPendenza: string;
+  codificaIUV?: string;
+  pagaTerzi?: boolean;
+  abilitato?: boolean;
+  /** Sola lettura: riferimento al tipo pendenza globale associato. */
+  tipoPendenza?: { idTipoPendenza?: string; descrizione?: string; [k: string]: unknown };
+  /** Sotto-strutture non modellate, da preservare nel replace. */
+  [k: string]: unknown;
+}
+
+/** Create (schema `TipoPendenzaDominioCreate`). */
+export interface TipoPendenzaDominioCreate {
+  idTipoPendenza: string;
+  codificaIUV?: string;
+  pagaTerzi?: boolean;
+  abilitato?: boolean;
+  [k: string]: unknown;
+}
+
+/** Replace (schema `TipoPendenzaDominioReplace`, `idTipoPendenza` dal path). */
+export type TipoPendenzaDominioReplace = Omit<TipoPendenzaDominioCreate, 'idTipoPendenza'>;
+
 /** Filtri lista domini + paginazione V2. */
 export interface DominiListFilters extends PaginationParams {
   /** Match parziale sul codice dominio. */

@@ -116,4 +116,30 @@ describe('DominiConsoleApi', () => {
     expect(calls[3]).toMatchObject({ method: 'put', path: 'domini/12345678901/contiAccredito/IT60X0542811101000000123456' });
     expect((calls[3].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
   });
+
+  it('entrate dominio: list/get/create/replace sui path corretti', () => {
+    const { svc, calls } = makeApi();
+    svc.listEntrate('12345678901', { limit: 200 });
+    svc.getEntrataWithETag('12345678901', 'TARI');
+    svc.createEntrata('12345678901', { idEntrata: 'TARI', abilitato: true });
+    svc.replaceEntrata('12345678901', 'TARI', { abilitato: false }, 'W/"1"');
+    expect(calls[0]).toMatchObject({ method: 'list', path: 'domini/12345678901/entrate' });
+    expect(calls[1]).toMatchObject({ method: 'getWithETag', path: 'domini/12345678901/entrate/TARI' });
+    expect(calls[2]).toMatchObject({ method: 'post', path: 'domini/12345678901/entrate' });
+    expect(calls[3]).toMatchObject({ method: 'put', path: 'domini/12345678901/entrate/TARI' });
+    expect((calls[3].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
+  });
+
+  it('tipi pendenza dominio: list/get/create/replace sui path corretti', () => {
+    const { svc, calls } = makeApi();
+    svc.listTipiPendenza('12345678901', { limit: 200 });
+    svc.getTipoPendenzaWithETag('12345678901', 'LIBERO');
+    svc.createTipoPendenza('12345678901', { idTipoPendenza: 'LIBERO' });
+    svc.replaceTipoPendenza('12345678901', 'LIBERO', { abilitato: true }, 'W/"1"');
+    expect(calls[0]).toMatchObject({ method: 'list', path: 'domini/12345678901/tipiPendenza' });
+    expect(calls[1]).toMatchObject({ method: 'getWithETag', path: 'domini/12345678901/tipiPendenza/LIBERO' });
+    expect(calls[2]).toMatchObject({ method: 'post', path: 'domini/12345678901/tipiPendenza' });
+    expect(calls[3]).toMatchObject({ method: 'put', path: 'domini/12345678901/tipiPendenza/LIBERO' });
+    expect((calls[3].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
+  });
 });

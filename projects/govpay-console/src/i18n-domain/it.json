@@ -748,6 +748,8 @@
       "TabDati": "Dati",
       "TabUnitaOperative": "Unità operative",
       "TabContiAccredito": "Conti di accredito",
+      "TabEntrate": "Entrate",
+      "TabTipiPendenza": "Tipi pendenza",
       "Generali": "Informazioni generali",
       "Logo": "Logo",
       "Abilitato": "Abilitato",
@@ -811,6 +813,48 @@
       "Aggiornato": "Conto di accredito aggiornato.",
       "SalvaErrore": "Salvataggio non riuscito.",
       "ConflittoId": "Esiste già un conto con questo IBAN."
+    },
+    "TipoContabilita": {
+      "CAPITOLO": "Capitolo",
+      "SPECIALE": "Speciale",
+      "SIOPE": "SIOPE",
+      "SRTP_ESCLUSA_RAVV_OPEROSO": "SRTP esclusa (ravv. operoso)",
+      "SRTP_ESCLUSA_ALTRO_OPERATORE": "SRTP esclusa (altro operatore)",
+      "SRTP_ESCLUSA": "SRTP esclusa",
+      "ALTRO": "Altro"
+    },
+    "EntrateDominio": {
+      "IdEntrata": "Codice entrata",
+      "Descrizione": "Descrizione",
+      "Abilitato": "Abilitato",
+      "IbanAccredito": "IBAN accredito",
+      "IbanAppoggio": "IBAN appoggio",
+      "TipoContabilita": "Tipo contabilità",
+      "CodiceContabilita": "Codice contabilità",
+      "Nuova": "Nuova entrata",
+      "EmptyTitle": "Nessuna entrata",
+      "EmptyDescription": "Non ci sono entrate configurate per questo dominio.",
+      "Creata": "Entrata creata.",
+      "Aggiornata": "Entrata aggiornata.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un'entrata con questo codice.",
+      "Invalido": "Dati non validi: verifica il codice entrata e gli IBAN (devono appartenere al dominio)."
+    },
+    "TipiPendenzaDominio": {
+      "IdTipoPendenza": "Codice tipo pendenza",
+      "Descrizione": "Descrizione",
+      "Abilitato": "Abilitato",
+      "CodificaIUV": "Codifica IUV",
+      "PagaTerzi": "Paga terzi",
+      "Nuovo": "Nuovo tipo pendenza",
+      "ConfigHint": "La configurazione avanzata (portali, avvisature, visualizzazione, tracciato) è preservata invariata al salvataggio.",
+      "EmptyTitle": "Nessun tipo pendenza",
+      "EmptyDescription": "Non ci sono tipi pendenza configurati per questo dominio.",
+      "Creato": "Tipo pendenza creato.",
+      "Aggiornato": "Tipo pendenza aggiornato.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un tipo pendenza con questo codice.",
+      "Invalido": "Dati non validi: verifica il codice tipo pendenza."
     }
   },
   "TipiPendenza": {

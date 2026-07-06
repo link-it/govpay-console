@@ -29,9 +29,13 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { DominiConsoleApi } from './domini.console-api';
+import { EntrateConsoleApi } from '@feature/entrate/entrate.console-api';
+import { TipiPendenzaConsoleApi } from '@feature/tipi-pendenza/tipi-pendenza.console-api';
 import { UnitaOperativaInlineComponent } from './unita-operativa-inline.component';
 import { ContoAccreditoInlineComponent } from './conto-accredito-inline.component';
-import type { ContoAccreditoSummary, Dominio, UnitaOperativaSummary } from './dominio.model';
+import { EntrataDominioInlineComponent } from './entrata-dominio-inline.component';
+import { TipoPendenzaDominioInlineComponent } from './tipo-pendenza-dominio-inline.component';
+import type { ContoAccreditoSummary, Dominio, EntrataDominioSummary, TipoPendenzaDominioSummary, UnitaOperativaSummary } from './dominio.model';
 
 @Component({
   selector: 'lnk-dominio-detail',
@@ -50,12 +54,16 @@ import type { ContoAccreditoSummary, Dominio, UnitaOperativaSummary } from './do
     TabsComponent,
     UnitaOperativaInlineComponent,
     ContoAccreditoInlineComponent,
+    EntrataDominioInlineComponent,
+    TipoPendenzaDominioInlineComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dominio-detail.component.html',
 })
 export class DominioDetailComponent implements OnInit, OnDestroy {
   private readonly api = inject(DominiConsoleApi);
+  private readonly entrateApi = inject(EntrateConsoleApi);
+  private readonly tipiApi = inject(TipiPendenzaConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
@@ -72,7 +80,7 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
   readonly logoUrl = signal<string | null>(null);
   readonly logoBusy = signal(false);
 
-  readonly activeTab = signal<'dati' | 'unitaOperative' | 'contiAccredito'>('dati');
+  readonly activeTab = signal<'dati' | 'unitaOperative' | 'contiAccredito' | 'entrate' | 'tipiPendenza'>('dati');
   readonly tabs = computed<TabDef[]>(() => [
     { id: 'dati', labelKey: 'Domini.Detail.TabDati' },
     {
@@ -87,6 +95,18 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
       badge: this.contiAccredito() !== null ? this.contiAccredito()!.length : null,
       badgeLoading: this.contiLoading() && this.contiAccredito() === null,
     },
+    {
+      id: 'entrate',
+      labelKey: 'Domini.Detail.TabEntrate',
+      badge: this.entrate() !== null ? this.entrate()!.length : null,
+      badgeLoading: this.entrateLoading() && this.entrate() === null,
+    },
+    {
+      id: 'tipiPendenza',
+      labelKey: 'Domini.Detail.TabTipiPendenza',
+      badge: this.tipiPendenza() !== null ? this.tipiPendenza()!.length : null,
+      badgeLoading: this.tipiLoading() && this.tipiPendenza() === null,
+    },
   ]);
 
   /* ---- Unità operative (lazy) + creazione inline ---- */
@@ -99,6 +119,19 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
   readonly contiLoading = signal(false);
   readonly showCreateConto = signal(false);
 
+  /* ---- Entrate del dominio (lazy) + creazione inline ---- */
+  readonly entrate = signal<EntrataDominioSummary[] | null>(null);
+  readonly entrateLoading = signal(false);
+  readonly showCreateEntrata = signal(false);
+  readonly entrateSuggestions = signal<{ id: string; label?: string }[]>([]);
+  readonly ibanSuggestions = signal<string[]>([]);
+
+  /* ---- Tipi pendenza del dominio (lazy) + creazione inline ---- */
+  readonly tipiPendenza = signal<TipoPendenzaDominioSummary[] | null>(null);
+  readonly tipiLoading = signal(false);
+  readonly showCreateTipo = signal(false);
+  readonly tipiSuggestions = signal<{ id: string; label?: string }[]>([]);
+
   /** Carica lazily le sotto-risorse all'apertura del relativo tab. */
   private readonly _tabLoader = effect(() => {
     if (!this.dominio()) return;
@@ -107,6 +140,14 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
     }
     if (this.activeTab() === 'contiAccredito' && this.contiAccredito() === null && !this.contiLoading()) {
       this.fetchContiAccredito();
+    }
+    if (this.activeTab() === 'entrate' && this.entrate() === null && !this.entrateLoading()) {
+      this.fetchEntrate();
+      this.loadEntrateSuggestions();
+    }
+    if (this.activeTab() === 'tipiPendenza' && this.tipiPendenza() === null && !this.tipiLoading()) {
+      this.fetchTipiPendenza();
+      this.loadTipiSuggestions();
     }
   });
 
@@ -255,5 +296,71 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
   onContoAccreditoSaved(): void {
     this.showCreateConto.set(false);
     this.fetchContiAccredito();
+  }
+
+  /* ---- Entrate del dominio ---- */
+
+  private fetchEntrate(): void {
+    this.entrateLoading.set(true);
+    this.api
+      .listEntrate(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as EntrataDominioSummary[] })))
+      .subscribe((slice) => {
+        this.entrate.set(slice.results ?? []);
+        this.entrateLoading.set(false);
+      });
+  }
+
+  /** Suggerimenti per la creazione: entrate globali + IBAN dei conti del dominio. */
+  private loadEntrateSuggestions(): void {
+    if (this.entrateSuggestions().length === 0) {
+      this.entrateApi
+        .list({ limit: 200 })
+        .pipe(catchError(() => of({ results: [] })))
+        .subscribe((slice) => {
+          this.entrateSuggestions.set((slice.results ?? []).map((e) => ({ id: e.idEntrata, label: e.descrizione })));
+        });
+    }
+    if (this.ibanSuggestions().length === 0) {
+      this.api
+        .listContiAccredito(this.idDominio, { limit: 200 })
+        .pipe(catchError(() => of({ results: [] as ContoAccreditoSummary[] })))
+        .subscribe((slice) => {
+          this.ibanSuggestions.set((slice.results ?? []).map((c) => c.ibanAccredito));
+        });
+    }
+  }
+
+  onEntrataSaved(): void {
+    this.showCreateEntrata.set(false);
+    this.fetchEntrate();
+  }
+
+  /* ---- Tipi pendenza del dominio ---- */
+
+  private fetchTipiPendenza(): void {
+    this.tipiLoading.set(true);
+    this.api
+      .listTipiPendenza(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as TipoPendenzaDominioSummary[] })))
+      .subscribe((slice) => {
+        this.tipiPendenza.set(slice.results ?? []);
+        this.tipiLoading.set(false);
+      });
+  }
+
+  private loadTipiSuggestions(): void {
+    if (this.tipiSuggestions().length > 0) return;
+    this.tipiApi
+      .list({ limit: 200 })
+      .pipe(catchError(() => of({ results: [] })))
+      .subscribe((slice) => {
+        this.tipiSuggestions.set((slice.results ?? []).map((t) => ({ id: t.idTipoPendenza, label: t.descrizione })));
+      });
+  }
+
+  onTipoPendenzaSaved(): void {
+    this.showCreateTipo.set(false);
+    this.fetchTipiPendenza();
   }
 }

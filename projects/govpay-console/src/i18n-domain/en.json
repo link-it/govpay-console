@@ -528,6 +528,8 @@
       "TabDati": "Data",
       "TabUnitaOperative": "Operating units",
       "TabContiAccredito": "Credit accounts",
+      "TabEntrate": "Revenues",
+      "TabTipiPendenza": "Pending types",
       "Generali": "General information",
       "Logo": "Logo",
       "Abilitato": "Enabled",
@@ -591,6 +593,48 @@
       "Aggiornato": "Credit account updated.",
       "SalvaErrore": "Save failed.",
       "ConflittoId": "An account with this IBAN already exists."
+    },
+    "TipoContabilita": {
+      "CAPITOLO": "Chapter",
+      "SPECIALE": "Special",
+      "SIOPE": "SIOPE",
+      "SRTP_ESCLUSA_RAVV_OPEROSO": "SRTP excluded (voluntary settlement)",
+      "SRTP_ESCLUSA_ALTRO_OPERATORE": "SRTP excluded (other operator)",
+      "SRTP_ESCLUSA": "SRTP excluded",
+      "ALTRO": "Other"
+    },
+    "EntrateDominio": {
+      "IdEntrata": "Revenue code",
+      "Descrizione": "Description",
+      "Abilitato": "Enabled",
+      "IbanAccredito": "Credit IBAN",
+      "IbanAppoggio": "Support IBAN",
+      "TipoContabilita": "Accounting type",
+      "CodiceContabilita": "Accounting code",
+      "Nuova": "New revenue",
+      "EmptyTitle": "No revenues",
+      "EmptyDescription": "There are no revenues configured for this domain.",
+      "Creata": "Revenue created.",
+      "Aggiornata": "Revenue updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A revenue with this code already exists.",
+      "Invalido": "Invalid data: check the revenue code and the IBANs (must belong to the domain)."
+    },
+    "TipiPendenzaDominio": {
+      "IdTipoPendenza": "Pending type code",
+      "Descrizione": "Description",
+      "Abilitato": "Enabled",
+      "CodificaIUV": "IUV encoding",
+      "PagaTerzi": "Third-party payment",
+      "Nuovo": "New pending type",
+      "ConfigHint": "The advanced configuration (portals, notifications, display, CSV template) is preserved unchanged on save.",
+      "EmptyTitle": "No pending types",
+      "EmptyDescription": "There are no pending types configured for this domain.",
+      "Creato": "Pending type created.",
+      "Aggiornato": "Pending type updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A pending type with this code already exists.",
+      "Invalido": "Invalid data: check the pending type code."
     }
   },
   "TipiPendenza": {

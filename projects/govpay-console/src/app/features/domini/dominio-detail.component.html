@@ -113,6 +113,58 @@
         </div>
       }
     }
+
+    @if (activeTab() === 'entrate') {
+      <div class="flex justify-end">
+        @if (!showCreateEntrata()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateEntrata.set(true)">
+            {{ 'Domini.EntrateDominio.Nuova' | translate }}
+          </button>
+        }
+      </div>
+
+      @if (showCreateEntrata()) {
+        <lnk-entrata-dominio-inline [idDominio]="d.idDominio" [entrata]="null" [entrateSuggestions]="entrateSuggestions()" [ibanSuggestions]="ibanSuggestions()" (saved)="onEntrataSaved()" (cancelCreate)="showCreateEntrata.set(false)" />
+      }
+
+      @if (entrateLoading() && !entrate()) {
+        <lnk-loading />
+      } @else if (entrate()?.length === 0 && !showCreateEntrata()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.EntrateDominio.EmptyTitle" descriptionKey="Domini.EntrateDominio.EmptyDescription" />
+      } @else if (entrate(); as ents) {
+        <div class="flex flex-col gap-4">
+          @for (e of ents; track e.idEntrata) {
+            <lnk-entrata-dominio-inline [idDominio]="d.idDominio" [entrata]="e" [ibanSuggestions]="ibanSuggestions()" (saved)="onEntrataSaved()" />
+          }
+        </div>
+      }
+    }
+
+    @if (activeTab() === 'tipiPendenza') {
+      <div class="flex justify-end">
+        @if (!showCreateTipo()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateTipo.set(true)">
+            {{ 'Domini.TipiPendenzaDominio.Nuovo' | translate }}
+          </button>
+        }
+      </div>
+
+      @if (showCreateTipo()) {
+        <lnk-tipo-pendenza-dominio-inline [idDominio]="d.idDominio" [tipo]="null" [tipiSuggestions]="tipiSuggestions()" (saved)="onTipoPendenzaSaved()" (cancelCreate)="showCreateTipo.set(false)" />
+      }
+
+      @if (tipiLoading() && !tipiPendenza()) {
+        <lnk-loading />
+      } @else if (tipiPendenza()?.length === 0 && !showCreateTipo()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.TipiPendenzaDominio.EmptyTitle" descriptionKey="Domini.TipiPendenzaDominio.EmptyDescription" />
+      } @else if (tipiPendenza(); as tps) {
+        <div class="flex flex-col gap-4">
+          @for (t of tps; track t.idTipoPendenza) {
+            <lnk-tipo-pendenza-dominio-inline [idDominio]="d.idDominio" [tipo]="t" (saved)="onTipoPendenzaSaved()" />
+          }
+        </div>
+      }
+    }
   }
   </div>
 </section>
