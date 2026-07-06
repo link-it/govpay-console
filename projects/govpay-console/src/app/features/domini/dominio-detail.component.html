@@ -165,6 +165,14 @@
         </div>
       }
     }
+
+    @if (activeTab() === 'connettori') {
+      <div class="flex flex-col gap-4">
+        @for (c of connettori; track c.tipo) {
+          <lnk-connettore-dominio-inline [idDominio]="d.idDominio" [descriptor]="c" />
+        }
+      </div>
+    }
   }
   </div>
 </section>

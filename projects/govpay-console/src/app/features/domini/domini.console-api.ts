@@ -12,7 +12,8 @@
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
 import { ConsoleApiService, type ParamValue, type WithETag } from '@core/services';
-import type { Slice } from '@core/models';
+import type { Slice, ConnettoreCredenziali } from '@core/models';
+import type { ConnettoreDominio, ConnettoreDominioTipo } from './connettore-dominio.model';
 import type {
   ContoAccredito,
   ContoAccreditoCreate,
@@ -164,5 +165,20 @@ export class DominiConsoleApi {
 
   replaceTipoPendenza(idDominio: string, idTipoPendenza: string, body: TipoPendenzaDominioReplace, ifMatch: string | null): Observable<WithETag<TipoPendenzaDominio>> {
     return this.api.put<TipoPendenzaDominio>(this.base(idDominio, 'tipiPendenza', encodeURIComponent(idTipoPendenza)), body, ifMatch);
+  }
+
+  /* ── Connettori del dominio (singleton per tipo) ─────────────────── */
+
+  getConnettoreWithETag(idDominio: string, tipo: ConnettoreDominioTipo): Observable<WithETag<ConnettoreDominio>> {
+    return this.api.getWithETag<ConnettoreDominio>(this.base(idDominio, 'connettori', tipo));
+  }
+
+  replaceConnettore(idDominio: string, tipo: ConnettoreDominioTipo, body: ConnettoreDominio, ifMatch: string | null): Observable<WithETag<ConnettoreDominio>> {
+    return this.api.put<ConnettoreDominio>(this.base(idDominio, 'connettori', tipo), body, ifMatch);
+  }
+
+  /** `PUT …/connettori/{tipo}/credenziali` — credenziali write-only (204). */
+  putCredenzialiConnettore(idDominio: string, tipo: ConnettoreDominioTipo, body: ConnettoreCredenziali): Observable<void> {
+    return this.api.putVoid(this.base(idDominio, 'connettori', tipo, 'credenziali'), body);
   }
 }

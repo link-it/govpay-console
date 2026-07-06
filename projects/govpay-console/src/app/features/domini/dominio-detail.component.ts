@@ -35,6 +35,8 @@ import { UnitaOperativaInlineComponent } from './unita-operativa-inline.componen
 import { ContoAccreditoInlineComponent } from './conto-accredito-inline.component';
 import { EntrataDominioInlineComponent } from './entrata-dominio-inline.component';
 import { TipoPendenzaDominioInlineComponent } from './tipo-pendenza-dominio-inline.component';
+import { ConnettoreDominioInlineComponent } from './connettore-dominio-inline.component';
+import { CONNETTORI_DOMINIO } from './connettore-dominio.model';
 import type { ContoAccreditoSummary, Dominio, EntrataDominioSummary, TipoPendenzaDominioSummary, UnitaOperativaSummary } from './dominio.model';
 
 @Component({
@@ -56,6 +58,7 @@ import type { ContoAccreditoSummary, Dominio, EntrataDominioSummary, TipoPendenz
     ContoAccreditoInlineComponent,
     EntrataDominioInlineComponent,
     TipoPendenzaDominioInlineComponent,
+    ConnettoreDominioInlineComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dominio-detail.component.html',
@@ -80,7 +83,9 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
   readonly logoUrl = signal<string | null>(null);
   readonly logoBusy = signal(false);
 
-  readonly activeTab = signal<'dati' | 'unitaOperative' | 'contiAccredito' | 'entrate' | 'tipiPendenza'>('dati');
+  readonly connettori = CONNETTORI_DOMINIO;
+
+  readonly activeTab = signal<'dati' | 'unitaOperative' | 'contiAccredito' | 'entrate' | 'tipiPendenza' | 'connettori'>('dati');
   readonly tabs = computed<TabDef[]>(() => [
     { id: 'dati', labelKey: 'Domini.Detail.TabDati' },
     {
@@ -107,6 +112,7 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
       badge: this.tipiPendenza() !== null ? this.tipiPendenza()!.length : null,
       badgeLoading: this.tipiLoading() && this.tipiPendenza() === null,
     },
+    { id: 'connettori', labelKey: 'Domini.Detail.TabConnettori' },
   ]);
 
   /* ---- Unità operative (lazy) + creazione inline ---- */

@@ -44,6 +44,10 @@ function makeApi(): { svc: DominiConsoleApi; calls: RecordedCall[] } {
       calls.push({ method: 'put', path, params: { body, ifMatch } });
       return of({ body: {}, etag: 'W/"2"' });
     },
+    putVoid: (path: string, body: unknown) => {
+      calls.push({ method: 'putVoid', path, params: body });
+      return of(undefined);
+    },
     getBlob: (path: string) => {
       calls.push({ method: 'getBlob', path });
       return of(new Blob());
@@ -141,5 +145,16 @@ describe('DominiConsoleApi', () => {
     expect(calls[2]).toMatchObject({ method: 'post', path: 'domini/12345678901/tipiPendenza' });
     expect(calls[3]).toMatchObject({ method: 'put', path: 'domini/12345678901/tipiPendenza/LIBERO' });
     expect((calls[3].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
+  });
+
+  it('connettori dominio: get/replace/credenziali sui path corretti', () => {
+    const { svc, calls } = makeApi();
+    svc.getConnettoreWithETag('12345678901', 'mypivot');
+    svc.replaceConnettore('12345678901', 'hypersic-apk', { abilitato: true }, 'W/"1"');
+    svc.putCredenzialiConnettore('12345678901', 'govpay', { password: 'x' });
+    expect(calls[0]).toMatchObject({ method: 'getWithETag', path: 'domini/12345678901/connettori/mypivot' });
+    expect(calls[1]).toMatchObject({ method: 'put', path: 'domini/12345678901/connettori/hypersic-apk' });
+    expect((calls[1].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
+    expect(calls[2]).toMatchObject({ method: 'putVoid', path: 'domini/12345678901/connettori/govpay/credenziali' });
   });
 });
