@@ -18,6 +18,7 @@
       <div class="flex items-center gap-2">
         <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
       </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
     }
   </div>
 
@@ -31,33 +32,87 @@
     <lnk-loading />
   } @else if (dominio(); as d) {
 
-    <lnk-detail-section titleKey="Domini.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
-    </lnk-detail-section>
+    @if (activeTab() === 'dati') {
+      <lnk-detail-section titleKey="Domini.Detail.Generali">
+        <lnk-info-grid [items]="generaliItems()" />
+      </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Domini.Detail.Logo">
-      <div class="flex items-center gap-4">
-        @if (logoUrl(); as url) {
-          <img [src]="url" alt="logo" class="h-16 w-16 rounded object-contain border border-[var(--border)] bg-[var(--card-bg)]" />
-        } @else {
-          <div class="h-16 w-16 rounded border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]">
-            <ng-icon name="bootstrapBuilding" size="1.5rem" />
+      <lnk-detail-section titleKey="Domini.Detail.Logo">
+        <div class="flex items-center gap-4">
+          @if (logoUrl(); as url) {
+            <img [src]="url" alt="logo" class="h-16 w-16 rounded object-contain border border-[var(--border)] bg-[var(--card-bg)]" />
+          } @else {
+            <div class="h-16 w-16 rounded border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]">
+              <ng-icon name="bootstrapBuilding" size="1.5rem" />
+            </div>
+          }
+          <div class="flex items-center gap-2">
+            <label class="btn btn-secondary btn-sm" [class.opacity-60]="logoBusy()">
+              <span>{{ 'Domini.Logo.Carica' | translate }}</span>
+              <input type="file" accept="image/png,image/jpeg" class="hidden" [disabled]="logoBusy()" (change)="onLogoSelected($event)" />
+            </label>
+            @if (logoUrl()) {
+              <button type="button" class="btn btn-ghost btn-sm" [disabled]="logoBusy()" (click)="removeLogo()">
+                {{ 'Domini.Logo.Rimuovi' | translate }}
+              </button>
+            }
           </div>
+        </div>
+        <p class="mt-2 text-xs text-[var(--muted-foreground)]">{{ 'Domini.Logo.Hint' | translate }}</p>
+      </lnk-detail-section>
+    }
+
+    @if (activeTab() === 'unitaOperative') {
+      <div class="flex justify-end">
+        @if (!showCreateUo()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateUo.set(true)">
+            {{ 'Domini.UnitaOperative.Nuova' | translate }}
+          </button>
         }
-        <div class="flex items-center gap-2">
-          <label class="btn btn-secondary btn-sm" [class.opacity-60]="logoBusy()">
-            <span>{{ 'Domini.Logo.Carica' | translate }}</span>
-            <input type="file" accept="image/png,image/jpeg" class="hidden" [disabled]="logoBusy()" (change)="onLogoSelected($event)" />
-          </label>
-          @if (logoUrl()) {
-            <button type="button" class="btn btn-ghost btn-sm" [disabled]="logoBusy()" (click)="removeLogo()">
-              {{ 'Domini.Logo.Rimuovi' | translate }}
-            </button>
+      </div>
+
+      @if (showCreateUo()) {
+        <lnk-unita-operativa-inline [idDominio]="d.idDominio" [uo]="null" (saved)="onUnitaOperativaSaved()" (cancelCreate)="showCreateUo.set(false)" />
+      }
+
+      @if (uoLoading() && !unitaOperative()) {
+        <lnk-loading />
+      } @else if (unitaOperative()?.length === 0 && !showCreateUo()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.UnitaOperative.EmptyTitle" descriptionKey="Domini.UnitaOperative.EmptyDescription" />
+      } @else if (unitaOperative(); as uos) {
+        <div class="flex flex-col gap-4">
+          @for (u of uos; track u.idUnitaOperativa) {
+            <lnk-unita-operativa-inline [idDominio]="d.idDominio" [uo]="u" (saved)="onUnitaOperativaSaved()" />
           }
         </div>
+      }
+    }
+
+    @if (activeTab() === 'contiAccredito') {
+      <div class="flex justify-end">
+        @if (!showCreateConto()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateConto.set(true)">
+            {{ 'Domini.ContiAccredito.Nuovo' | translate }}
+          </button>
+        }
       </div>
-      <p class="mt-2 text-xs text-[var(--muted-foreground)]">{{ 'Domini.Logo.Hint' | translate }}</p>
-    </lnk-detail-section>
+
+      @if (showCreateConto()) {
+        <lnk-conto-accredito-inline [idDominio]="d.idDominio" [conto]="null" (saved)="onContoAccreditoSaved()" (cancelCreate)="showCreateConto.set(false)" />
+      }
+
+      @if (contiLoading() && !contiAccredito()) {
+        <lnk-loading />
+      } @else if (contiAccredito()?.length === 0 && !showCreateConto()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.ContiAccredito.EmptyTitle" descriptionKey="Domini.ContiAccredito.EmptyDescription" />
+      } @else if (contiAccredito(); as conti) {
+        <div class="flex flex-col gap-4">
+          @for (c of conti; track c.ibanAccredito) {
+            <lnk-conto-accredito-inline [idDominio]="d.idDominio" [conto]="c" (saved)="onContoAccreditoSaved()" />
+          }
+        </div>
+      }
+    }
   }
   </div>
 </section>

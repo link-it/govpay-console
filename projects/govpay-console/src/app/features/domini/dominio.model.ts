@@ -80,6 +80,70 @@ export interface DominioCreate extends AnagraficaBase {
 /** Body per il replace completo (schema `DominioReplace`, `idDominio` dal path). */
 export type DominioReplace = Omit<DominioCreate, 'idDominio'>;
 
+/* =========================================================================
+ * Unità operative (sub-resource)
+ * ========================================================================= */
+
+/** Proiezione leggera (schema `UnitaOperativaSummary`). */
+export interface UnitaOperativaSummary {
+  idUnitaOperativa: string;
+  ragioneSociale: string;
+  abilitato?: boolean;
+}
+
+/** Dettaglio unità operativa (schema `UnitaOperativa`). */
+export interface UnitaOperativa extends AnagraficaBase {
+  idUnitaOperativa: string;
+  ragioneSociale: string;
+  abilitato: boolean;
+}
+
+/** Create (schema `UnitaOperativaCreate`). */
+export interface UnitaOperativaCreate extends AnagraficaBase {
+  idUnitaOperativa: string;
+  ragioneSociale: string;
+  abilitato: boolean;
+}
+
+/** Replace (schema `UnitaOperativaReplace`, id dal path). */
+export type UnitaOperativaReplace = Omit<UnitaOperativaCreate, 'idUnitaOperativa'>;
+
+/* =========================================================================
+ * Conti di accredito (sub-resource)
+ * ========================================================================= */
+
+/** Proiezione leggera (schema `ContoAccreditoSummary`). */
+export interface ContoAccreditoSummary {
+  ibanAccredito: string;
+  descrizione?: string;
+  abilitato?: boolean;
+}
+
+/** Dettaglio conto accredito (schema `ContoAccredito`). */
+export interface ContoAccredito {
+  ibanAccredito: string;
+  postale: boolean;
+  abilitato: boolean;
+  bic?: string;
+  descrizione?: string;
+  intestatario?: string;
+  autStampaPosteItaliane?: string;
+}
+
+/** Create (schema `ContoAccreditoCreate`). */
+export interface ContoAccreditoCreate {
+  ibanAccredito: string;
+  postale: boolean;
+  abilitato: boolean;
+  bic?: string;
+  descrizione?: string;
+  intestatario?: string;
+  autStampaPosteItaliane?: string;
+}
+
+/** Replace (schema `ContoAccreditoReplace`, iban dal path). */
+export type ContoAccreditoReplace = Omit<ContoAccreditoCreate, 'ibanAccredito'>;
+
 /** Filtri lista domini + paginazione V2. */
 export interface DominiListFilters extends PaginationParams {
   /** Match parziale sul codice dominio. */

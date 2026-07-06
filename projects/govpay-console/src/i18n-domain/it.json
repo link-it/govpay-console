@@ -745,6 +745,9 @@
     },
     "Detail": {
       "Subtitle": "Dettaglio dell'ente creditore.",
+      "TabDati": "Dati",
+      "TabUnitaOperative": "Unità operative",
+      "TabContiAccredito": "Conti di accredito",
       "Generali": "Informazioni generali",
       "Logo": "Logo",
       "Abilitato": "Abilitato",
@@ -781,6 +784,33 @@
       "ContiAccredito": "Conti di accredito",
       "Entrate": "Entrate",
       "TipiPendenza": "Tipi pendenza"
+    },
+    "UnitaOperative": {
+      "Id": "Codice",
+      "RagioneSociale": "Ragione sociale",
+      "Abilitato": "Abilitato",
+      "Nuova": "Nuova unità operativa",
+      "EmptyTitle": "Nessuna unità operativa",
+      "EmptyDescription": "Non ci sono unità operative per questo dominio.",
+      "Creata": "Unità operativa creata.",
+      "Aggiornata": "Unità operativa aggiornata.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un'unità operativa con questo codice."
+    },
+    "ContiAccredito": {
+      "Iban": "IBAN accredito",
+      "Descrizione": "Descrizione",
+      "Intestatario": "Intestatario",
+      "Bic": "BIC",
+      "Postale": "Conto postale",
+      "Abilitato": "Abilitato",
+      "Nuovo": "Nuovo conto di accredito",
+      "EmptyTitle": "Nessun conto di accredito",
+      "EmptyDescription": "Non ci sono conti di accredito per questo dominio.",
+      "Creato": "Conto di accredito creato.",
+      "Aggiornato": "Conto di accredito aggiornato.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un conto con questo IBAN."
     }
   },
   "TipiPendenza": {

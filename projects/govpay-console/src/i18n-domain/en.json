@@ -525,6 +525,9 @@
     },
     "Detail": {
       "Subtitle": "Creditor entity detail.",
+      "TabDati": "Data",
+      "TabUnitaOperative": "Operating units",
+      "TabContiAccredito": "Credit accounts",
       "Generali": "General information",
       "Logo": "Logo",
       "Abilitato": "Enabled",
@@ -561,6 +564,33 @@
       "ContiAccredito": "Credit accounts",
       "Entrate": "Revenues",
       "TipiPendenza": "Pending types"
+    },
+    "UnitaOperative": {
+      "Id": "Code",
+      "RagioneSociale": "Name",
+      "Abilitato": "Enabled",
+      "Nuova": "New operating unit",
+      "EmptyTitle": "No operating units",
+      "EmptyDescription": "There are no operating units for this domain.",
+      "Creata": "Operating unit created.",
+      "Aggiornata": "Operating unit updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An operating unit with this code already exists."
+    },
+    "ContiAccredito": {
+      "Iban": "Credit IBAN",
+      "Descrizione": "Description",
+      "Intestatario": "Account holder",
+      "Bic": "BIC",
+      "Postale": "Postal account",
+      "Abilitato": "Enabled",
+      "Nuovo": "New credit account",
+      "EmptyTitle": "No credit accounts",
+      "EmptyDescription": "There are no credit accounts for this domain.",
+      "Creato": "Credit account created.",
+      "Aggiornato": "Credit account updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An account with this IBAN already exists."
     }
   },
   "TipiPendenza": {

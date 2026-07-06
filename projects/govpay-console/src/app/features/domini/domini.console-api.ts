@@ -13,7 +13,21 @@ import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
 import { ConsoleApiService, type ParamValue, type WithETag } from '@core/services';
 import type { Slice } from '@core/models';
-import type { Dominio, DominioCreate, DominioReplace, DominioSummary, DominiListFilters } from './dominio.model';
+import type {
+  ContoAccredito,
+  ContoAccreditoCreate,
+  ContoAccreditoReplace,
+  ContoAccreditoSummary,
+  Dominio,
+  DominioCreate,
+  DominioReplace,
+  DominioSummary,
+  DominiListFilters,
+  UnitaOperativa,
+  UnitaOperativaCreate,
+  UnitaOperativaReplace,
+  UnitaOperativaSummary,
+} from './dominio.model';
 
 /**
  * Client API **Domini V2** (enti creditori) su {@link ConsoleApiService} (base
@@ -70,5 +84,41 @@ export class DominiConsoleApi {
   /** `DELETE /domini/{idDominio}/logo` — rimozione logo (204 idempotente). */
   deleteLogo(idDominio: string): Observable<void> {
     return this.api.delete(this.base(idDominio, 'logo'));
+  }
+
+  /* ── Unità operative (sub-resource) ──────────────────────────────── */
+
+  listUnitaOperative(idDominio: string, filters: Record<string, ParamValue> = {}): Observable<Slice<UnitaOperativaSummary>> {
+    return this.api.list<UnitaOperativaSummary>(this.base(idDominio, 'unitaOperative'), filters);
+  }
+
+  getUnitaOperativaWithETag(idDominio: string, idUo: string): Observable<WithETag<UnitaOperativa>> {
+    return this.api.getWithETag<UnitaOperativa>(this.base(idDominio, 'unitaOperative', encodeURIComponent(idUo)));
+  }
+
+  createUnitaOperativa(idDominio: string, body: UnitaOperativaCreate): Observable<UnitaOperativa> {
+    return this.api.post<UnitaOperativa>(this.base(idDominio, 'unitaOperative'), body).pipe(map((r) => r.body as UnitaOperativa));
+  }
+
+  replaceUnitaOperativa(idDominio: string, idUo: string, body: UnitaOperativaReplace, ifMatch: string | null): Observable<WithETag<UnitaOperativa>> {
+    return this.api.put<UnitaOperativa>(this.base(idDominio, 'unitaOperative', encodeURIComponent(idUo)), body, ifMatch);
+  }
+
+  /* ── Conti di accredito (sub-resource) ───────────────────────────── */
+
+  listContiAccredito(idDominio: string, filters: Record<string, ParamValue> = {}): Observable<Slice<ContoAccreditoSummary>> {
+    return this.api.list<ContoAccreditoSummary>(this.base(idDominio, 'contiAccredito'), filters);
+  }
+
+  getContoAccreditoWithETag(idDominio: string, iban: string): Observable<WithETag<ContoAccredito>> {
+    return this.api.getWithETag<ContoAccredito>(this.base(idDominio, 'contiAccredito', encodeURIComponent(iban)));
+  }
+
+  createContoAccredito(idDominio: string, body: ContoAccreditoCreate): Observable<ContoAccredito> {
+    return this.api.post<ContoAccredito>(this.base(idDominio, 'contiAccredito'), body).pipe(map((r) => r.body as ContoAccredito));
+  }
+
+  replaceContoAccredito(idDominio: string, iban: string, body: ContoAccreditoReplace, ifMatch: string | null): Observable<WithETag<ContoAccredito>> {
+    return this.api.put<ContoAccredito>(this.base(idDominio, 'contiAccredito', encodeURIComponent(iban)), body, ifMatch);
   }
 }

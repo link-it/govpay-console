@@ -90,4 +90,30 @@ describe('DominiConsoleApi', () => {
     expect(calls.map((c) => c.method)).toEqual(['getBlob', 'putBlob', 'delete']);
     expect(calls.every((c) => c.path === 'domini/12345678901/logo')).toBe(true);
   });
+
+  it('unità operative: list/get/create/replace sui path corretti', () => {
+    const { svc, calls } = makeApi();
+    svc.listUnitaOperative('12345678901', { limit: 200 });
+    svc.getUnitaOperativaWithETag('12345678901', 'UO/1');
+    svc.createUnitaOperativa('12345678901', { idUnitaOperativa: 'UO1', ragioneSociale: 'X', abilitato: true });
+    svc.replaceUnitaOperativa('12345678901', 'UO/1', { ragioneSociale: 'Y', abilitato: true }, 'W/"1"');
+    expect(calls[0]).toMatchObject({ method: 'list', path: 'domini/12345678901/unitaOperative' });
+    expect(calls[1]).toMatchObject({ method: 'getWithETag', path: 'domini/12345678901/unitaOperative/UO%2F1' });
+    expect(calls[2]).toMatchObject({ method: 'post', path: 'domini/12345678901/unitaOperative' });
+    expect(calls[3]).toMatchObject({ method: 'put', path: 'domini/12345678901/unitaOperative/UO%2F1' });
+    expect((calls[3].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
+  });
+
+  it('conti accredito: list/get/create/replace sui path corretti', () => {
+    const { svc, calls } = makeApi();
+    svc.listContiAccredito('12345678901', { limit: 200 });
+    svc.getContoAccreditoWithETag('12345678901', 'IT60X0542811101000000123456');
+    svc.createContoAccredito('12345678901', { ibanAccredito: 'IT60X0542811101000000123456', postale: false, abilitato: true });
+    svc.replaceContoAccredito('12345678901', 'IT60X0542811101000000123456', { postale: false, abilitato: true }, 'W/"1"');
+    expect(calls[0]).toMatchObject({ method: 'list', path: 'domini/12345678901/contiAccredito' });
+    expect(calls[1]).toMatchObject({ method: 'getWithETag', path: 'domini/12345678901/contiAccredito/IT60X0542811101000000123456' });
+    expect(calls[2]).toMatchObject({ method: 'post', path: 'domini/12345678901/contiAccredito' });
+    expect(calls[3]).toMatchObject({ method: 'put', path: 'domini/12345678901/contiAccredito/IT60X0542811101000000123456' });
+    expect((calls[3].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
+  });
 });

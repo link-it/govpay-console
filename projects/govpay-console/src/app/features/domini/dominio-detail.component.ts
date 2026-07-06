@@ -9,7 +9,7 @@
  * the Free Software Foundation.
  */
 
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
@@ -23,11 +23,15 @@ import {
   ListStickyToolbarDirective,
   PageHeaderComponent,
   StatusBadgeComponent,
+  TabsComponent,
   type InfoGridItem,
+  type TabDef,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { DominiConsoleApi } from './domini.console-api';
-import type { Dominio } from './dominio.model';
+import { UnitaOperativaInlineComponent } from './unita-operativa-inline.component';
+import { ContoAccreditoInlineComponent } from './conto-accredito-inline.component';
+import type { ContoAccreditoSummary, Dominio, UnitaOperativaSummary } from './dominio.model';
 
 @Component({
   selector: 'lnk-dominio-detail',
@@ -43,6 +47,9 @@ import type { Dominio } from './dominio.model';
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    TabsComponent,
+    UnitaOperativaInlineComponent,
+    ContoAccreditoInlineComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dominio-detail.component.html',
@@ -64,6 +71,44 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
   /** Object URL del logo (null se assente). */
   readonly logoUrl = signal<string | null>(null);
   readonly logoBusy = signal(false);
+
+  readonly activeTab = signal<'dati' | 'unitaOperative' | 'contiAccredito'>('dati');
+  readonly tabs = computed<TabDef[]>(() => [
+    { id: 'dati', labelKey: 'Domini.Detail.TabDati' },
+    {
+      id: 'unitaOperative',
+      labelKey: 'Domini.Detail.TabUnitaOperative',
+      badge: this.unitaOperative() !== null ? this.unitaOperative()!.length : null,
+      badgeLoading: this.uoLoading() && this.unitaOperative() === null,
+    },
+    {
+      id: 'contiAccredito',
+      labelKey: 'Domini.Detail.TabContiAccredito',
+      badge: this.contiAccredito() !== null ? this.contiAccredito()!.length : null,
+      badgeLoading: this.contiLoading() && this.contiAccredito() === null,
+    },
+  ]);
+
+  /* ---- Unità operative (lazy) + creazione inline ---- */
+  readonly unitaOperative = signal<UnitaOperativaSummary[] | null>(null);
+  readonly uoLoading = signal(false);
+  readonly showCreateUo = signal(false);
+
+  /* ---- Conti di accredito (lazy) + creazione inline ---- */
+  readonly contiAccredito = signal<ContoAccreditoSummary[] | null>(null);
+  readonly contiLoading = signal(false);
+  readonly showCreateConto = signal(false);
+
+  /** Carica lazily le sotto-risorse all'apertura del relativo tab. */
+  private readonly _tabLoader = effect(() => {
+    if (!this.dominio()) return;
+    if (this.activeTab() === 'unitaOperative' && this.unitaOperative() === null && !this.uoLoading()) {
+      this.fetchUnitaOperative();
+    }
+    if (this.activeTab() === 'contiAccredito' && this.contiAccredito() === null && !this.contiLoading()) {
+      this.fetchContiAccredito();
+    }
+  });
 
   readonly abilitatoTone = computed(() => (this.dominio()?.abilitato ? 'success' : 'muted'));
   readonly abilitatoLabelKey = computed(() => (this.dominio()?.abilitato ? 'Common.Yes' : 'Common.No'));
@@ -174,5 +219,41 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
         this.snackbar.success(this.translate.instant('Domini.Logo.Rimosso'));
         this.loadLogo();
       });
+  }
+
+  /* ---- Unità operative ---- */
+
+  private fetchUnitaOperative(): void {
+    this.uoLoading.set(true);
+    this.api
+      .listUnitaOperative(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as UnitaOperativaSummary[] })))
+      .subscribe((slice) => {
+        this.unitaOperative.set(slice.results ?? []);
+        this.uoLoading.set(false);
+      });
+  }
+
+  onUnitaOperativaSaved(): void {
+    this.showCreateUo.set(false);
+    this.fetchUnitaOperative();
+  }
+
+  /* ---- Conti di accredito ---- */
+
+  private fetchContiAccredito(): void {
+    this.contiLoading.set(true);
+    this.api
+      .listContiAccredito(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as ContoAccreditoSummary[] })))
+      .subscribe((slice) => {
+        this.contiAccredito.set(slice.results ?? []);
+        this.contiLoading.set(false);
+      });
+  }
+
+  onContoAccreditoSaved(): void {
+    this.showCreateConto.set(false);
+    this.fetchContiAccredito();
   }
 }

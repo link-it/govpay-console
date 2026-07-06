@@ -1,0 +1,44 @@
+@if (isCreate()) {
+  <form [formGroup]="form" class="lnk-inline-card--editing rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 space-y-4">
+    <div class="text-sm font-semibold">{{ 'Domini.UnitaOperative.Nuova' | translate }}</div>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idUnitaOperativa">{{ 'Domini.UnitaOperative.Id' | translate }}</span>
+        <input type="text" formControlName="idUnitaOperativa" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.ragioneSociale">{{ 'Domini.UnitaOperative.RagioneSociale' | translate }}</span>
+        <input type="text" formControlName="ragioneSociale" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    </div>
+    <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.UnitaOperative.Abilitato' | translate }}</span></label>
+    <ng-container [ngTemplateOutlet]="anagrafica" />
+    <div class="flex items-center gap-2">
+      <button type="button" class="btn btn-primary btn-sm" (click)="save()" [disabled]="saving() || form.invalid">{{ 'Common.Save' | translate }}</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="cancelCreation()" [disabled]="saving()">{{ 'Common.Cancel' | translate }}</button>
+    </div>
+  </form>
+} @else {
+  <lnk-inline-edit-card [title]="uo()!.idUnitaOperativa" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+    <div view><lnk-info-grid [items]="viewItems()" /></div>
+    <form edit [formGroup]="form" class="space-y-4">
+      <label class="flex flex-col gap-1 max-w-md"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.ragioneSociale">{{ 'Domini.UnitaOperative.RagioneSociale' | translate }}</span>
+        <input type="text" formControlName="ragioneSociale" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.UnitaOperative.Abilitato' | translate }}</span></label>
+      <ng-container [ngTemplateOutlet]="anagrafica" />
+    </form>
+  </lnk-inline-edit-card>
+}
+
+<ng-template #anagrafica>
+  <div class="grid grid-cols-2 gap-3" [formGroup]="form">
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Indirizzo' | translate }}</span>
+      <input type="text" formControlName="indirizzo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Localita' | translate }}</span>
+      <input type="text" formControlName="localita" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Cap' | translate }}</span>
+      <input type="text" formControlName="cap" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Provincia' | translate }}</span>
+      <input type="text" formControlName="provincia" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Email' | translate }}</span>
+      <input type="email" formControlName="email" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Pec' | translate }}</span>
+      <input type="email" formControlName="pec" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+  </div>
+</ng-template>
