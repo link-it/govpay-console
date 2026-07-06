@@ -50,7 +50,7 @@ const TITLE_SIZE_PRESETS: Record<string, string> = {
   imports: [TranslatePipe, LoadingComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <header class="flex flex-wrap items-end justify-between gap-4 mb-4">
+    <header class="flex flex-wrap items-start justify-between gap-4 mb-4">
       <div class="min-w-0">
         <div class="flex items-baseline gap-2 min-w-0">
           <h1 class="font-semibold truncate" [class]="titleSizeClass()">{{ titleKey() | translate }}</h1>

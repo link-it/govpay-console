@@ -13,6 +13,15 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.22.2] — 2026-07-06
+
+### Modificato
+
+- **`lnk-page-header` — allineamento in alto delle azioni** — l'header passa
+  da `items-end` a `items-start`: i pulsanti nello slot azioni sono ora
+  allineati al top del titolo (anziché al bordo inferiore), coerenti quando il
+  sottotitolo va a capo o su più righe.
+
 ## [0.10.2] — 2026-07-02
 
 ### Risolto
