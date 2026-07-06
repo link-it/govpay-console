@@ -33,7 +33,7 @@
         "header": "Operatori.Columns.RagioneSociale",
         "cell": {
           "type": "text",
-          "field": "ragioneSociale"
+          "field": "nome"
         }
       },
       {
@@ -52,7 +52,7 @@
     "primaryText": [
       {
         "type": "text",
-        "field": "ragioneSociale"
+        "field": "nome"
       }
     ],
     "metadata": {

@@ -9,20 +9,12 @@
  * the Free Software Foundation.
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@linkit/shared-ui';
-import { SnackbarService } from '@linkit/shared-ui';
+import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
@@ -33,7 +25,9 @@ import {
   StatusBadgeComponent,
   type InfoGridItem,
 } from '@linkit/shared-ui';
-import { OperatoriApi } from './operatori.api';
+import { problemDetail, REF_ALL } from '@core/models';
+import { AclEditorComponent } from '@core/ui/acl-editor/acl-editor.component';
+import { OperatoriConsoleApi } from './operatori.console-api';
 import type { Operatore } from './operatore.model';
 
 @Component({
@@ -50,17 +44,20 @@ import type { Operatore } from './operatore.model';
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    AclEditorComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './operatore-detail.component.html',
 })
 export class OperatoreDetailComponent implements OnInit {
-  private readonly api = inject(OperatoriApi);
+  private readonly api = inject(OperatoriConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+
+  principal = '';
 
   readonly operatore = signal<Operatore | null>(null);
   readonly loading = signal(false);
@@ -74,14 +71,22 @@ export class OperatoreDetailComponent implements OnInit {
     if (!o) return [];
     return [
       { labelKey: 'Operatori.Detail.Principal', value: o.principal, mono: true },
-      { labelKey: 'Operatori.Detail.RagioneSociale', value: o.ragioneSociale, wide: true },
+      { labelKey: 'Operatori.Detail.RagioneSociale', value: o.nome, wide: true },
     ];
   });
 
-  readonly dominiList = computed<string[]>(() => {
-    const ds = this.operatore()?.domini ?? [];
-    return ds.map((d) => (typeof d === 'string' ? d : d.idDominio));
-  });
+  /** Etichette leggibili dei domini (`*` → "Tutti"). */
+  readonly dominiList = computed<string[]>(() =>
+    (this.operatore()?.domini ?? []).map((d) =>
+      d.idDominio === REF_ALL ? this.translate.instant('RefSelect.All') : d.ragioneSociale ? `${d.idDominio} — ${d.ragioneSociale}` : d.idDominio
+    )
+  );
+  readonly tipiPendenzaList = computed<string[]>(() =>
+    (this.operatore()?.tipiPendenza ?? []).map((t) =>
+      t.idTipoPendenza === REF_ALL ? this.translate.instant('RefSelect.All') : t.descrizione ? `${t.idTipoPendenza} — ${t.descrizione}` : t.idTipoPendenza
+    )
+  );
+  readonly ruoliList = computed<string[]>(() => (this.operatore()?.ruoli ?? []).map((r) => r.id));
 
   ngOnInit(): void {
     const principal = this.route.snapshot.paramMap.get('principal');
@@ -89,21 +94,19 @@ export class OperatoreDetailComponent implements OnInit {
       this.router.navigate(['/operatori']);
       return;
     }
-    this.system.setBreadcrumbs([
-      { label: 'Nav.Operatori', url: '/operatori' },
-      { label: principal },
-    ]);
-    this.fetch(principal);
+    this.principal = principal;
+    this.system.setBreadcrumbs([{ label: 'Nav.Operatori', url: '/operatori' }, { label: principal }]);
+    this.fetch();
   }
 
-  private fetch(principal: string): void {
+  private fetch(): void {
     this.loading.set(true);
     this.error.set(null);
     this.api
-      .get(principal)
+      .get(this.principal)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
           return of(null);

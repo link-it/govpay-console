@@ -17,7 +17,16 @@ export const OPERATORI_ROUTES: Routes = [
     loadComponent: () => import('./operatori-list.component').then((m) => m.OperatoriListComponent),
   },
   {
+    // `nuovo` prima di `:principal` per non essere catturato dal wildcard param.
+    path: 'nuovo',
+    loadComponent: () => import('./operatore-form.component').then((m) => m.OperatoreFormComponent),
+  },
+  {
     path: ':principal',
     loadComponent: () => import('./operatore-detail.component').then((m) => m.OperatoreDetailComponent),
+  },
+  {
+    path: ':principal/modifica',
+    loadComponent: () => import('./operatore-form.component').then((m) => m.OperatoreFormComponent),
   },
 ];

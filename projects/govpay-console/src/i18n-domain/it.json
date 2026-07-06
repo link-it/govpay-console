@@ -821,10 +821,25 @@
       "ApiRagioneria": "API Ragioneria"
     }
   },
+  "RefSelect": {
+    "All": "Tutti",
+    "Add": "Aggiungi",
+    "Remove": "Rimuovi",
+    "Placeholder": "Aggiungi…"
+  },
   "Operatori": {
     "Subtitle": "Operatori del cruscotto.",
     "Filters": {
-      "Abilitato": "Abilitato"
+      "Abilitato": "Abilitato",
+      "Principal": "Principal",
+      "PrincipalPlaceholder": "Cerca per principal…",
+      "Nome": "Nome",
+      "NomePlaceholder": "Cerca per nome…",
+      "Placeholder": "Cerca operatore…",
+      "Stato": "Stato",
+      "StatoTutti": "Tutti",
+      "StatoAbilitati": "Abilitati",
+      "StatoDisabilitati": "Disabilitati"
     },
     "Empty": {
       "Title": "Nessun operatore",
@@ -841,8 +856,26 @@
       "Domini": "Domini autorizzati",
       "TipiPendenza": "Tipi pendenza",
       "Ruoli": "Ruoli",
+      "Acl": "Servizi e autorizzazioni",
       "Principal": "Principal",
-      "RagioneSociale": "Nome e cognome"
+      "RagioneSociale": "Nome e cognome",
+      "Abilitato": "Abilitato"
+    },
+    "Form": {
+      "Nuovo": "Nuovo operatore",
+      "Modifica": "Modifica",
+      "NuovoTitolo": "Nuovo operatore",
+      "ModificaTitolo": "Modifica operatore",
+      "Subtitle": "Dati, associazioni e autorizzazioni dell'operatore.",
+      "Obbligatorio": "Campo obbligatorio",
+      "DominioPlaceholder": "idDominio (es. 12345678901)",
+      "TipoPendenzaPlaceholder": "idTipoPendenza",
+      "RuoloPlaceholder": "idRuolo",
+      "Salvato": "Operatore creato.",
+      "Aggiornato": "Operatore aggiornato.",
+      "SalvaErrore": "Salvataggio non riuscito.",
+      "ConflittoId": "Esiste già un operatore con questo principal.",
+      "ConflittoConcorrenza": "L'operatore è stato modificato da un altro utente. Ricarica e riprova."
     }
   },
   "Entrate": {

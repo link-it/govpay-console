@@ -10,7 +10,8 @@
  */
 
 export * from './operatore.model';
-export * from './operatori.api';
+export * from './operatori.console-api';
 export * from './operatori.routes';
 export * from './operatori-list.component';
 export * from './operatore-detail.component';
+export * from './operatore-form.component';

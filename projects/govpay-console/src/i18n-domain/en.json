@@ -601,10 +601,25 @@
       "ApiRagioneria": "Accounting API"
     }
   },
+  "RefSelect": {
+    "All": "All",
+    "Add": "Add",
+    "Remove": "Remove",
+    "Placeholder": "Add…"
+  },
   "Operatori": {
     "Subtitle": "Console operators.",
     "Filters": {
-      "Abilitato": "Enabled"
+      "Abilitato": "Enabled",
+      "Principal": "Principal",
+      "PrincipalPlaceholder": "Search by principal…",
+      "Nome": "Name",
+      "NomePlaceholder": "Search by name…",
+      "Placeholder": "Search operator…",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled"
     },
     "Empty": {
       "Title": "No operators",
@@ -621,8 +636,26 @@
       "Domini": "Authorized creditors",
       "TipiPendenza": "Pending types",
       "Ruoli": "Roles",
+      "Acl": "Services and authorizations",
       "Principal": "Principal",
-      "RagioneSociale": "Full name"
+      "RagioneSociale": "Full name",
+      "Abilitato": "Enabled"
+    },
+    "Form": {
+      "Nuovo": "New operator",
+      "Modifica": "Edit",
+      "NuovoTitolo": "New operator",
+      "ModificaTitolo": "Edit operator",
+      "Subtitle": "Operator data, associations and authorizations.",
+      "Obbligatorio": "Required field",
+      "DominioPlaceholder": "idDominio (e.g. 12345678901)",
+      "TipoPendenzaPlaceholder": "idTipoPendenza",
+      "RuoloPlaceholder": "idRuolo",
+      "Salvato": "Operator created.",
+      "Aggiornato": "Operator updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An operator with this principal already exists.",
+      "ConflittoConcorrenza": "The operator was modified by another user. Reload and retry."
     }
   },
   "Entrate": {
