@@ -19,7 +19,7 @@ import { SnackbarService, InfoGridComponent, RequiredLabelDirective, type InfoGr
 import { problemDetail } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
 import { DominiConsoleApi } from './domini.console-api';
-import type { ContoAccreditoCreate, ContoAccreditoReplace, ContoAccreditoSummary } from './dominio.model';
+import type { ContoAccredito, ContoAccreditoCreate, ContoAccreditoReplace, ContoAccreditoSummary } from './dominio.model';
 
 const IBAN_PATTERN = /^.{1,35}$/;
 
@@ -45,7 +45,10 @@ export class ContoAccreditoInlineComponent {
   readonly cancelCreate = output<void>();
 
   private etag: string | null = null;
-  private loadedForEdit = false;
+  private loaded = false;
+
+  /** Dettaglio completo (bic/intestatario/autStampa/postale): caricato per vista + edit. */
+  readonly detail = signal<ContoAccredito | null>(null);
 
   readonly isCreate = computed(() => this.conto() === null);
   readonly editing = signal(false);
@@ -67,10 +70,17 @@ export class ContoAccreditoInlineComponent {
   readonly viewItems = computed<InfoGridItem[]>(() => {
     const c = this.conto();
     if (!c) return [];
+    const d = this.detail();
+    const yesno = (v: boolean | undefined) => this.translate.instant(v ? 'Common.Yes' : 'Common.No');
+    const descrizione = d?.descrizione ?? c.descrizione;
     return [
       { labelKey: 'Domini.ContiAccredito.Iban', value: c.ibanAccredito, mono: true, wide: true },
-      { labelKey: 'Domini.ContiAccredito.Descrizione', value: c.descrizione, hide: !c.descrizione },
-      { labelKey: 'Domini.ContiAccredito.Abilitato', value: this.translate.instant(c.abilitato ? 'Common.Yes' : 'Common.No') },
+      { labelKey: 'Domini.ContiAccredito.Descrizione', value: descrizione, hide: !descrizione },
+      { labelKey: 'Domini.ContiAccredito.Intestatario', value: d?.intestatario, hide: !d?.intestatario },
+      { labelKey: 'Domini.ContiAccredito.Bic', value: d?.bic, mono: true, hide: !d?.bic },
+      { labelKey: 'Domini.ContiAccredito.AutStampaPosteItaliane', value: d?.autStampaPosteItaliane, hide: !d?.autStampaPosteItaliane },
+      { labelKey: 'Domini.ContiAccredito.Postale', value: yesno(d?.postale), hide: !d },
+      { labelKey: 'Domini.ContiAccredito.Abilitato', value: yesno(c.abilitato) },
     ];
   });
 
@@ -82,15 +92,16 @@ export class ContoAccreditoInlineComponent {
         this.form.patchValue({ ibanAccredito: c.ibanAccredito, descrizione: c.descrizione ?? '', abilitato: c.abilitato ?? true }, { emitEvent: false });
       }
     });
+    // Carica una volta il dettaglio completo: serve sia alla vista sia alla modifica.
     effect(() => {
-      if (!this.isCreate() && this.editing() && !this.loadedForEdit) {
-        this.loadedForEdit = true;
-        this.fetchForEdit();
+      if (!this.isCreate() && !this.loaded) {
+        this.loaded = true;
+        this.fetchDetail();
       }
     });
   }
 
-  private fetchForEdit(): void {
+  private fetchDetail(): void {
     const c = this.conto();
     if (!c) return;
     this.api
@@ -99,24 +110,28 @@ export class ContoAccreditoInlineComponent {
       .subscribe((res) => {
         if (!res?.body) return;
         this.etag = res.etag;
-        const b = res.body;
-        this.form.patchValue(
-          {
-            descrizione: b.descrizione ?? '',
-            intestatario: b.intestatario ?? '',
-            bic: b.bic ?? '',
-            postale: b.postale ?? false,
-            abilitato: b.abilitato,
-            autStampaPosteItaliane: b.autStampaPosteItaliane ?? '',
-          },
-          { emitEvent: false },
-        );
+        this.detail.set(res.body);
+        this.patchFormFromDetail(res.body);
       });
   }
 
+  private patchFormFromDetail(b: ContoAccredito): void {
+    this.form.patchValue(
+      {
+        descrizione: b.descrizione ?? '',
+        intestatario: b.intestatario ?? '',
+        bic: b.bic ?? '',
+        postale: b.postale ?? false,
+        abilitato: b.abilitato,
+        autStampaPosteItaliane: b.autStampaPosteItaliane ?? '',
+      },
+      { emitEvent: false },
+    );
+  }
+
   onCancel(): void {
-    const c = this.conto();
-    if (c) this.form.patchValue({ descrizione: c.descrizione ?? '', abilitato: c.abilitato ?? true }, { emitEvent: false });
+    const d = this.detail();
+    if (d) this.patchFormFromDetail(d);
   }
 
   cancelCreation(): void {
@@ -162,7 +177,7 @@ export class ContoAccreditoInlineComponent {
           this.saving.set(false);
           if (!res) return;
           this.etag = res.etag;
-          this.loadedForEdit = false;
+          this.detail.set(res.body);
           this.snackbar.success(this.translate.instant('Domini.ContiAccredito.Aggiornato'));
           this.editing.set(false);
           this.saved.emit();

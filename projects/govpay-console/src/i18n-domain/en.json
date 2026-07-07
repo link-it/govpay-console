@@ -595,6 +595,7 @@
       "Descrizione": "Description",
       "Intestatario": "Account holder",
       "Bic": "BIC",
+      "AutStampaPosteItaliane": "Poste Italiane print authorization",
       "Postale": "Postal account",
       "Abilitato": "Enabled",
       "Nuovo": "New credit account",
