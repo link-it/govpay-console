@@ -24,6 +24,12 @@
   <lnk-inline-edit-card [title]="tipo()!.idTipoPendenza" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
     <div view><lnk-info-grid [items]="viewItems()" /></div>
     <form edit [formGroup]="form" class="space-y-4">
+      @if (detail()?.tipoPendenza?.descrizione ?? tipo()?.descrizione; as descr) {
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.TipiPendenzaDominio.Descrizione' | translate }}</span>
+          <span class="text-sm">{{ descr }}</span>
+        </div>
+      }
       <label class="flex flex-col gap-1 max-w-xs"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.TipiPendenzaDominio.CodificaIUV' | translate }}</span>
         <input type="text" formControlName="codificaIUV" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
       <div class="flex items-center gap-6">

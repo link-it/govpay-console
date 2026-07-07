@@ -19,7 +19,7 @@ import { SnackbarService, InfoGridComponent, RequiredLabelDirective, type InfoGr
 import { problemDetail } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
 import { DominiConsoleApi } from './domini.console-api';
-import { TIPI_CONTABILITA, type EntrataDominioCreate, type EntrataDominioReplace, type EntrataDominioSummary, type TipoContabilita } from './dominio.model';
+import { TIPI_CONTABILITA, type EntrataDominio, type EntrataDominioCreate, type EntrataDominioReplace, type EntrataDominioSummary, type TipoContabilita } from './dominio.model';
 
 const IBAN_PATTERN = /^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{1,30}$/;
 
@@ -51,7 +51,10 @@ export class EntrataDominioInlineComponent {
   readonly tipiContabilita: TipoContabilita[] = TIPI_CONTABILITA;
 
   private etag: string | null = null;
-  private loadedForEdit = false;
+  private loaded = false;
+
+  /** Dettaglio completo (iban/contabilità): caricato per vista + edit. */
+  readonly detail = signal<EntrataDominio | null>(null);
 
   readonly isCreate = computed(() => this.entrata() === null);
   readonly editing = signal(false);
@@ -72,9 +75,14 @@ export class EntrataDominioInlineComponent {
   readonly viewItems = computed<InfoGridItem[]>(() => {
     const e = this.entrata();
     if (!e) return [];
+    const d = this.detail();
     return [
       { labelKey: 'Domini.EntrateDominio.IdEntrata', value: e.idEntrata, mono: true },
-      { labelKey: 'Domini.EntrateDominio.Descrizione', value: e.descrizione, wide: true, hide: !e.descrizione },
+      { labelKey: 'Domini.EntrateDominio.Descrizione', value: d?.tipoEntrata?.descrizione ?? e.descrizione, wide: true, hide: !(d?.tipoEntrata?.descrizione ?? e.descrizione) },
+      { labelKey: 'Domini.EntrateDominio.IbanAccredito', value: d?.ibanAccredito, mono: true, hide: !d?.ibanAccredito },
+      { labelKey: 'Domini.EntrateDominio.IbanAppoggio', value: d?.ibanAppoggio, mono: true, hide: !d?.ibanAppoggio },
+      { labelKey: 'Domini.EntrateDominio.TipoContabilita', value: d?.tipoContabilita ? this.translate.instant('Domini.TipoContabilita.' + d.tipoContabilita) : undefined, hide: !d?.tipoContabilita },
+      { labelKey: 'Domini.EntrateDominio.CodiceContabilita', value: d?.codiceContabilita, hide: !d?.codiceContabilita },
       { labelKey: 'Domini.EntrateDominio.Abilitato', value: this.translate.instant(e.abilitato ? 'Common.Yes' : 'Common.No') },
     ];
   });
@@ -87,15 +95,16 @@ export class EntrataDominioInlineComponent {
         this.form.patchValue({ idEntrata: e.idEntrata, abilitato: e.abilitato }, { emitEvent: false });
       }
     });
+    // Carica una volta il dettaglio completo: serve sia alla vista sia alla modifica.
     effect(() => {
-      if (!this.isCreate() && this.editing() && !this.loadedForEdit) {
-        this.loadedForEdit = true;
-        this.fetchForEdit();
+      if (!this.isCreate() && !this.loaded) {
+        this.loaded = true;
+        this.fetchDetail();
       }
     });
   }
 
-  private fetchForEdit(): void {
+  private fetchDetail(): void {
     const e = this.entrata();
     if (!e) return;
     this.api
@@ -104,23 +113,27 @@ export class EntrataDominioInlineComponent {
       .subscribe((res) => {
         if (!res?.body) return;
         this.etag = res.etag;
-        const b = res.body;
-        this.form.patchValue(
-          {
-            abilitato: b.abilitato,
-            ibanAccredito: b.ibanAccredito ?? '',
-            ibanAppoggio: b.ibanAppoggio ?? '',
-            tipoContabilita: b.tipoContabilita ?? '',
-            codiceContabilita: b.codiceContabilita ?? '',
-          },
-          { emitEvent: false },
-        );
+        this.detail.set(res.body);
+        this.patchFormFromDetail(res.body);
       });
   }
 
+  private patchFormFromDetail(b: EntrataDominio): void {
+    this.form.patchValue(
+      {
+        abilitato: b.abilitato,
+        ibanAccredito: b.ibanAccredito ?? '',
+        ibanAppoggio: b.ibanAppoggio ?? '',
+        tipoContabilita: b.tipoContabilita ?? '',
+        codiceContabilita: b.codiceContabilita ?? '',
+      },
+      { emitEvent: false },
+    );
+  }
+
   onCancel(): void {
-    const e = this.entrata();
-    if (e) this.form.patchValue({ abilitato: e.abilitato }, { emitEvent: false });
+    const d = this.detail();
+    if (d) this.patchFormFromDetail(d);
   }
 
   cancelCreation(): void {
@@ -165,7 +178,7 @@ export class EntrataDominioInlineComponent {
           this.saving.set(false);
           if (!res) return;
           this.etag = res.etag;
-          this.loadedForEdit = false;
+          this.detail.set(res.body);
           this.snackbar.success(this.translate.instant('Domini.EntrateDominio.Aggiornata'));
           this.editing.set(false);
           this.saved.emit();

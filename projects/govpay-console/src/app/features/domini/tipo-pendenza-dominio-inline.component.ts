@@ -50,9 +50,9 @@ export class TipoPendenzaDominioInlineComponent {
   readonly cancelCreate = output<void>();
 
   private etag: string | null = null;
-  private loadedForEdit = false;
-  /** Ultimo dettaglio caricato, per preservare i campi non modellati nel replace. */
-  private loaded: TipoPendenzaDominio | null = null;
+  private loaded = false;
+  /** Dettaglio completo caricato: usato per vista, edit e per preservare i campi non modellati nel replace. */
+  readonly detail = signal<TipoPendenzaDominio | null>(null);
 
   readonly isCreate = computed(() => this.tipo() === null);
   readonly editing = signal(false);
@@ -71,10 +71,14 @@ export class TipoPendenzaDominioInlineComponent {
   readonly viewItems = computed<InfoGridItem[]>(() => {
     const t = this.tipo();
     if (!t) return [];
+    const d = this.detail();
+    const yesno = (v: boolean | undefined) => this.translate.instant(v ? 'Common.Yes' : 'Common.No');
     return [
       { labelKey: 'Domini.TipiPendenzaDominio.IdTipoPendenza', value: t.idTipoPendenza, mono: true },
-      { labelKey: 'Domini.TipiPendenzaDominio.Descrizione', value: t.descrizione, wide: true, hide: !t.descrizione },
-      { labelKey: 'Domini.TipiPendenzaDominio.Abilitato', value: this.translate.instant(t.abilitato ? 'Common.Yes' : 'Common.No') },
+      { labelKey: 'Domini.TipiPendenzaDominio.Descrizione', value: d?.tipoPendenza?.descrizione ?? t.descrizione, wide: true, hide: !(d?.tipoPendenza?.descrizione ?? t.descrizione) },
+      { labelKey: 'Domini.TipiPendenzaDominio.CodificaIUV', value: d?.codificaIUV, mono: true, hide: !d?.codificaIUV },
+      { labelKey: 'Domini.TipiPendenzaDominio.PagaTerzi', value: yesno(d?.pagaTerzi), hide: !d },
+      { labelKey: 'Domini.TipiPendenzaDominio.Abilitato', value: yesno(t.abilitato) },
     ];
   });
 
@@ -86,15 +90,16 @@ export class TipoPendenzaDominioInlineComponent {
         this.form.patchValue({ idTipoPendenza: t.idTipoPendenza, abilitato: t.abilitato ?? true }, { emitEvent: false });
       }
     });
+    // Carica una volta il dettaglio completo: serve a vista, edit e preservazione nel replace.
     effect(() => {
-      if (!this.isCreate() && this.editing() && !this.loadedForEdit) {
-        this.loadedForEdit = true;
-        this.fetchForEdit();
+      if (!this.isCreate() && !this.loaded) {
+        this.loaded = true;
+        this.fetchDetail();
       }
     });
   }
 
-  private fetchForEdit(): void {
+  private fetchDetail(): void {
     const t = this.tipo();
     if (!t) return;
     this.api
@@ -103,22 +108,25 @@ export class TipoPendenzaDominioInlineComponent {
       .subscribe((res) => {
         if (!res?.body) return;
         this.etag = res.etag;
-        this.loaded = res.body;
-        const b = res.body;
-        this.form.patchValue(
-          {
-            codificaIUV: b.codificaIUV ?? '',
-            pagaTerzi: b.pagaTerzi ?? false,
-            abilitato: b.abilitato ?? true,
-          },
-          { emitEvent: false },
-        );
+        this.detail.set(res.body);
+        this.patchFormFromDetail(res.body);
       });
   }
 
+  private patchFormFromDetail(b: TipoPendenzaDominio): void {
+    this.form.patchValue(
+      {
+        codificaIUV: b.codificaIUV ?? '',
+        pagaTerzi: b.pagaTerzi ?? false,
+        abilitato: b.abilitato ?? true,
+      },
+      { emitEvent: false },
+    );
+  }
+
   onCancel(): void {
-    const t = this.tipo();
-    if (t) this.form.patchValue({ abilitato: t.abilitato ?? true }, { emitEvent: false });
+    const d = this.detail();
+    if (d) this.patchFormFromDetail(d);
   }
 
   cancelCreation(): void {
@@ -129,8 +137,9 @@ export class TipoPendenzaDominioInlineComponent {
   private replaceBody(): TipoPendenzaDominioReplace {
     const r = this.form.getRawValue();
     const preserved: Record<string, unknown> = {};
-    if (this.loaded) {
-      for (const [k, v] of Object.entries(this.loaded)) {
+    const loaded = this.detail();
+    if (loaded) {
+      for (const [k, v] of Object.entries(loaded)) {
         if (k === 'idTipoPendenza' || k === 'tipoPendenza' || k === 'codificaIUV' || k === 'pagaTerzi' || k === 'abilitato') continue;
         preserved[k] = v;
       }
@@ -175,8 +184,7 @@ export class TipoPendenzaDominioInlineComponent {
           this.saving.set(false);
           if (!res) return;
           this.etag = res.etag;
-          this.loaded = res.body;
-          this.loadedForEdit = false;
+          this.detail.set(res.body);
           this.snackbar.success(this.translate.instant('Domini.TipiPendenzaDominio.Aggiornato'));
           this.editing.set(false);
           this.saved.emit();

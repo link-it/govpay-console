@@ -20,7 +20,7 @@ import { problemDetail } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
 import { RequiredLabelDirective } from '@linkit/shared-ui';
 import { DominiConsoleApi } from './domini.console-api';
-import type { UnitaOperativaCreate, UnitaOperativaReplace, UnitaOperativaSummary } from './dominio.model';
+import type { UnitaOperativa, UnitaOperativaCreate, UnitaOperativaReplace, UnitaOperativaSummary } from './dominio.model';
 
 const ID_PATTERN = /^.{1,35}$/;
 
@@ -46,7 +46,10 @@ export class UnitaOperativaInlineComponent {
   readonly cancelCreate = output<void>();
 
   private etag: string | null = null;
-  private loadedForEdit = false;
+  private loaded = false;
+
+  /** Dettaglio completo (anagrafica/contatti): caricato per vista + edit. */
+  readonly detail = signal<UnitaOperativa | null>(null);
 
   readonly isCreate = computed(() => this.uo() === null);
   readonly editing = signal(false);
@@ -75,9 +78,21 @@ export class UnitaOperativaInlineComponent {
   readonly viewItems = computed<InfoGridItem[]>(() => {
     const u = this.uo();
     if (!u) return [];
+    const d = this.detail();
     return [
       { labelKey: 'Domini.UnitaOperative.Id', value: u.idUnitaOperativa, mono: true },
-      { labelKey: 'Domini.UnitaOperative.RagioneSociale', value: u.ragioneSociale, wide: true },
+      { labelKey: 'Domini.UnitaOperative.RagioneSociale', value: d?.ragioneSociale ?? u.ragioneSociale, wide: true },
+      { labelKey: 'Domini.Detail.Indirizzo', value: d?.indirizzo, hide: !d?.indirizzo },
+      { labelKey: 'Domini.Detail.Civico', value: d?.civico, hide: !d?.civico },
+      { labelKey: 'Domini.Detail.Cap', value: d?.cap, hide: !d?.cap },
+      { labelKey: 'Domini.Detail.Localita', value: d?.localita, hide: !d?.localita },
+      { labelKey: 'Domini.Detail.Provincia', value: d?.provincia, hide: !d?.provincia },
+      { labelKey: 'Domini.Detail.Nazione', value: d?.nazione, hide: !d?.nazione },
+      { labelKey: 'Domini.Detail.Area', value: d?.area, hide: !d?.area },
+      { labelKey: 'Domini.Detail.Email', value: d?.email, hide: !d?.email },
+      { labelKey: 'Domini.Detail.Pec', value: d?.pec, hide: !d?.pec },
+      { labelKey: 'Domini.Detail.Tel', value: d?.tel, hide: !d?.tel },
+      { labelKey: 'Domini.Detail.Web', value: d?.web, hide: !d?.web },
       { labelKey: 'Domini.UnitaOperative.Abilitato', value: this.translate.instant(u.abilitato ? 'Common.Yes' : 'Common.No') },
     ];
   });
@@ -90,15 +105,16 @@ export class UnitaOperativaInlineComponent {
         this.form.patchValue({ idUnitaOperativa: u.idUnitaOperativa, ragioneSociale: u.ragioneSociale, abilitato: u.abilitato ?? true }, { emitEvent: false });
       }
     });
+    // Carica una volta il dettaglio completo: serve sia alla vista sia alla modifica.
     effect(() => {
-      if (!this.isCreate() && this.editing() && !this.loadedForEdit) {
-        this.loadedForEdit = true;
-        this.fetchForEdit();
+      if (!this.isCreate() && !this.loaded) {
+        this.loaded = true;
+        this.fetchDetail();
       }
     });
   }
 
-  private fetchForEdit(): void {
+  private fetchDetail(): void {
     const u = this.uo();
     if (!u) return;
     this.api
@@ -107,31 +123,35 @@ export class UnitaOperativaInlineComponent {
       .subscribe((res) => {
         if (!res?.body) return;
         this.etag = res.etag;
-        const b = res.body;
-        this.form.patchValue(
-          {
-            ragioneSociale: b.ragioneSociale,
-            abilitato: b.abilitato,
-            indirizzo: b.indirizzo ?? '',
-            civico: b.civico ?? '',
-            cap: b.cap ?? '',
-            localita: b.localita ?? '',
-            provincia: b.provincia ?? '',
-            nazione: b.nazione ?? '',
-            email: b.email ?? '',
-            pec: b.pec ?? '',
-            tel: b.tel ?? '',
-            web: b.web ?? '',
-            area: b.area ?? '',
-          },
-          { emitEvent: false },
-        );
+        this.detail.set(res.body);
+        this.patchFormFromDetail(res.body);
       });
   }
 
+  private patchFormFromDetail(b: UnitaOperativa): void {
+    this.form.patchValue(
+      {
+        ragioneSociale: b.ragioneSociale,
+        abilitato: b.abilitato,
+        indirizzo: b.indirizzo ?? '',
+        civico: b.civico ?? '',
+        cap: b.cap ?? '',
+        localita: b.localita ?? '',
+        provincia: b.provincia ?? '',
+        nazione: b.nazione ?? '',
+        email: b.email ?? '',
+        pec: b.pec ?? '',
+        tel: b.tel ?? '',
+        web: b.web ?? '',
+        area: b.area ?? '',
+      },
+      { emitEvent: false },
+    );
+  }
+
   onCancel(): void {
-    const u = this.uo();
-    if (u) this.form.patchValue({ ragioneSociale: u.ragioneSociale, abilitato: u.abilitato ?? true }, { emitEvent: false });
+    const d = this.detail();
+    if (d) this.patchFormFromDetail(d);
   }
 
   cancelCreation(): void {
@@ -184,7 +204,7 @@ export class UnitaOperativaInlineComponent {
           this.saving.set(false);
           if (!res) return;
           this.etag = res.etag;
-          this.loadedForEdit = false;
+          this.detail.set(res.body);
           this.snackbar.success(this.translate.instant('Domini.UnitaOperative.Aggiornata'));
           this.editing.set(false);
           this.saved.emit();

@@ -17,6 +17,12 @@
   <lnk-inline-edit-card [title]="entrata()!.idEntrata" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
     <div view><lnk-info-grid [items]="viewItems()" /></div>
     <form edit [formGroup]="form" class="space-y-4">
+      @if (detail()?.tipoEntrata?.descrizione ?? entrata()?.descrizione; as descr) {
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.EntrateDominio.Descrizione' | translate }}</span>
+          <span class="text-sm">{{ descr }}</span>
+        </div>
+      }
       <ng-container [ngTemplateOutlet]="config" />
       <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.EntrateDominio.Abilitato' | translate }}</span></label>
     </form>
