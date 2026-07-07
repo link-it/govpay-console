@@ -15,7 +15,7 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4 max-w-3xl">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
         <lnk-detail-section titleKey="Applicazioni.Detail.Generali">
           <div class="space-y-5">
             <label class="flex flex-col gap-1">
