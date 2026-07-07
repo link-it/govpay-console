@@ -1,3 +1,39 @@
+2026-07-07  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(applicazioni, operatori): impostazione password
+    (aggiornamento spec 2026-07-07). Nuovi endpoint write-only
+    `PUT /applicazioni/{idA2A}/password` e `PUT /operatori/{principal}/password`;
+    componente condiviso `@core/ui/set-password-card` (validazione policy +
+    conferma, gestione 403). Sezione "Password" nei rispettivi dettagli.
+
+  * [Frontend] feat(liste): ordinamento dalla search-pill. Nuovo dropdown di
+    ordinamento configurabile (`showSort` + `sortOptions`) con selezione del
+    campo e scorciatoia di direzione (icona cliccabile), reso come pulsante
+    segmentato coerente col pulsante filtri. Abilitato su tutte le liste con
+    `sort` documentato: tipi pendenza, entrate, domini, operatori, applicazioni,
+    ruoli, intermediari, pendenze, ricevute.
+
+  * [Frontend] feat(liste): densità della search-pill selezionabile dal pannello
+    tweaks (compact/regular/comfortable), default `compact`.
+
+  * [Frontend] feat(ricevute): navigazione annidata alla pendenza collegata
+    (rotta `:idDominio/:iuv/:idRicevuta/pendenza/:idA2A/:idPendenza`) con
+    breadcrumb multilivello (Ricevute › IUV › Pendenza) e ritorno alla ricevuta.
+
+  * [Frontend] fix(domini): dettaglio più completo. Il tab Dati mostra le
+    sezioni Anagrafica e Contatti; le sotto-risorse (unità operative, conti di
+    accredito, entrate, tipi pendenza) mostrano tutti i campi sia in vista sia
+    in modifica (dettaglio caricato una volta e condiviso), incluso
+    `autStampaPosteItaliane` nei conti di accredito.
+
+  * [Frontend] style(anagrafiche): riordino delle voci nav (Intermediari in
+    cima, Entrate in fondo) e form a larghezza piena.
+
+  * [Frontend] feat(shared-ui): `lnk-search-pill` estesa (densità, dropdown di
+    ordinamento, hover chip garantito visibile anche col tema GovPay) e
+    `lnk-page-header` con azioni allineate in alto. Modifiche portate in
+    upstream e sincronizzate via `sync:lib` (@linkit/shared-ui 0.24.3).
+
 2026-07-06  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat: estensione della GovPay Console API V2 a tutte le

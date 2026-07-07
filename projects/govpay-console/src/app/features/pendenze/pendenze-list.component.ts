@@ -47,6 +47,7 @@ import {
   type SearchPillLabels,
   type SearchState,
   type SortEvent,
+  type SortOption,
 } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { AuthService } from '@core/auth/services/auth.service';
@@ -174,6 +175,15 @@ export class PendenzeListComponent implements OnInit {
     return this.translate.instant('Pendenze.Filters.Placeholder');
   });
 
+  /** Campi di ordinamento supportati dall’API. */
+  readonly sortOptions = computed<SortOption[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: 'dataUltimoAggiornamento', label: t('Pendenze.Columns.DataAggiornamento') },
+    ];
+  });
+
   readonly pillLabels = computed<SearchPillLabels>(() => {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
@@ -192,6 +202,9 @@ export class PendenzeListComponent implements OnInit {
       textPlaceholder: t('SearchPill.TextPlaceholder'),
       selectPlaceholder: t('SearchPill.SelectPlaceholder'),
       allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
     };
   });
 
@@ -327,11 +340,19 @@ export class PendenzeListComponent implements OnInit {
       if (saved.search) this.searchState.set(saved.search);
       if (saved.sort) this.sort.set(saved.sort);
     }
+    this.syncPillSort();
     this.reset();
+  }
+
+  /** Allinea sort/dir della search-pill al `sort` signal (dropdown ↔ tabella). */
+  private syncPillSort(): void {
+    const s = this.sort();
+    this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
   }
 
   onSortChange(s: SortEvent): void {
     this.sort.set(s);
+    this.syncPillSort();
     this.reset();
   }
 
@@ -348,6 +369,7 @@ export class PendenzeListComponent implements OnInit {
   /** Emesso dalla search-pill (Invio o "Cerca"): riparte dalla pagina 1. */
   onSearch(state: SearchState): void {
     this.searchState.set(state);
+    if (state.sort) this.sort.set({ key: state.sort, direction: state.dir });
     this.reset();
   }
 

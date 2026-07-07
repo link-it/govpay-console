@@ -39,11 +39,14 @@ import {
   columnsFromConfig,
   formatDateTime,
   formatEuro,
+  formatOrdinamento,
   initialSearchState,
   type ColumnDef,
   type SearchField,
   type SearchPillLabels,
   type SearchState,
+  type SortEvent,
+  type SortOption,
 } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { RicevuteConsoleApi } from './ricevute.console-api';
@@ -131,6 +134,13 @@ export class RicevuteListComponent implements OnInit {
     return this.translate.instant('Ricevute.Filters.Placeholder');
   });
 
+  /** Campi di ordinamento (offset). La modalità cursor userebbe l'ordine fisso. */
+  readonly sortOptions = computed<SortOption[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [{ id: 'dataPagamento', label: t('Ricevute.Columns.DataPagamento') }];
+  });
+
   readonly pillLabels = computed<SearchPillLabels>(() => {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
@@ -149,6 +159,9 @@ export class RicevuteListComponent implements OnInit {
       textPlaceholder: t('SearchPill.TextPlaceholder'),
       selectPlaceholder: t('SearchPill.SelectPlaceholder'),
       allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
     };
   });
 
@@ -205,6 +218,7 @@ export class RicevuteListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
+  readonly sort = signal<SortEvent | null>({ key: 'dataPagamento', direction: 'desc' });
   readonly rows = signal<RicevutaSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);
@@ -245,9 +259,17 @@ export class RicevuteListComponent implements OnInit {
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([{ label: 'Nav.Ricevute' }]);
-    const saved = this.listState.get<{ search: SearchState }>(RicevuteListComponent.STATE_KEY);
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(RicevuteListComponent.STATE_KEY);
     if (saved?.search) this.searchState.set(saved.search);
+    if (saved?.sort) this.sort.set(saved.sort);
+    this.syncPillSort();
     this.reset();
+  }
+
+  /** Allinea sort/dir della search-pill al `sort` signal. */
+  private syncPillSort(): void {
+    const s = this.sort();
+    this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
   }
 
   refresh(): void {
@@ -262,6 +284,7 @@ export class RicevuteListComponent implements OnInit {
 
   onSearch(state: SearchState): void {
     this.searchState.set(state);
+    if (state.sort) this.sort.set({ key: state.sort, direction: state.dir });
     this.reset();
   }
 
@@ -280,7 +303,7 @@ export class RicevuteListComponent implements OnInit {
   }
 
   private reset(): void {
-    this.listState.set(RicevuteListComponent.STATE_KEY, { search: this.searchState() });
+    this.listState.set(RicevuteListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() });
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);
@@ -294,6 +317,7 @@ export class RicevuteListComponent implements OnInit {
     const filters: RicevuteListFilters = {
       page: this.page(),
       limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
       iuv: f[F.iuv] || undefined,
       idRicevuta: f[F.idRicevuta] || undefined,
