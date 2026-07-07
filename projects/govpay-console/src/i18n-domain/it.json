@@ -2,6 +2,17 @@
   "Common": {
     "Edit": "Modifica"
   },
+  "Password": {
+    "Imposta": "Imposta password",
+    "Nuova": "Nuova password",
+    "Conferma": "Conferma password",
+    "PolicyHint": "Almeno 8 caratteri con una minuscola, una maiuscola e una cifra, senza spazi.",
+    "PolicyErrore": "La password non rispetta i requisiti.",
+    "NonCoincidono": "Le password non coincidono.",
+    "Aggiornata": "Password aggiornata.",
+    "Errore": "Aggiornamento della password non riuscito.",
+    "SenzaDiritti": "Non hai i diritti per impostare la password."
+  },
   "Ricevute": {
     "Subtitle": "Ricevute telematiche dei pagamenti.",
     "Filters": {
@@ -987,6 +998,7 @@
       "TipiPendenza": "Tipi pendenza",
       "Ruoli": "Ruoli",
       "Acl": "Servizi e autorizzazioni",
+      "Password": "Password",
       "ConnettoreIntegrazione": "Connettore integrazione",
       "IdA2A": "ID applicazione",
       "Principal": "Principal",
@@ -1059,6 +1071,7 @@
       "TipiPendenza": "Tipi pendenza",
       "Ruoli": "Ruoli",
       "Acl": "Servizi e autorizzazioni",
+      "Password": "Password",
       "Principal": "Principal",
       "RagioneSociale": "Nome e cognome",
       "Abilitato": "Abilitato"

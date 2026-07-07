@@ -29,6 +29,7 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail, REF_ALL } from '@core/models';
 import { AclEditorComponent } from '@core/ui/acl-editor/acl-editor.component';
+import { SetPasswordCardComponent } from '@core/ui/set-password-card/set-password-card.component';
 import { ApplicazioniConsoleApi } from './applicazioni.console-api';
 import { ConnettoreIntegrazioneInlineComponent } from './connettore-integrazione-inline.component';
 import type { Applicazione } from './applicazione.model';
@@ -50,6 +51,7 @@ import type { Applicazione } from './applicazione.model';
     TabsComponent,
     AclEditorComponent,
     ConnettoreIntegrazioneInlineComponent,
+    SetPasswordCardComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './applicazione-detail.component.html',
@@ -101,6 +103,9 @@ export class ApplicazioneDetailComponent implements OnInit {
     )
   );
   readonly ruoliList = computed<string[]>(() => (this.applicazione()?.ruoli ?? []).map((r) => r.id));
+
+  /** Riferimento stabile per `<lnk-set-password-card [submit]>`. */
+  readonly setPassword = (nuovaPassword: string) => this.api.putPassword(this.idA2A, nuovaPassword);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('idA2A');

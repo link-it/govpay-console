@@ -58,4 +58,9 @@ export class OperatoriConsoleApi {
   replace(principal: string, body: OperatoreReplace, ifMatch: string | null): Observable<WithETag<Operatore>> {
     return this.api.put<Operatore>(this.base(principal), body, ifMatch);
   }
+
+  /** `PUT /operatori/{principal}/password` — imposta la password di login, write-only (204). */
+  putPassword(principal: string, nuovaPassword: string): Observable<void> {
+    return this.api.putVoid(`${this.base(principal)}/password`, { nuovaPassword });
+  }
 }

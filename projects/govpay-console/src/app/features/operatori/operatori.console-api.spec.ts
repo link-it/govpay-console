@@ -44,6 +44,10 @@ function makeApi(): { svc: OperatoriConsoleApi; calls: RecordedCall[] } {
       calls.push({ method: 'put', path, params: { body, ifMatch } });
       return of({ body: {}, etag: 'W/"2"' });
     },
+    putVoid: (path: string, body: unknown) => {
+      calls.push({ method: 'putVoid', path, params: body });
+      return of(undefined);
+    },
   } as unknown as ConsoleApiService;
 
   const injector = Injector.create({
@@ -85,5 +89,11 @@ describe('OperatoriConsoleApi', () => {
     expect(calls[0].method).toBe('put');
     expect(calls[0].path).toBe('operatori/mario');
     expect((calls[0].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
+  });
+
+  it('putPassword() fa PUT void su …/password con nuovaPassword', () => {
+    const { svc, calls } = makeApi();
+    svc.putPassword('mario@ente.it', 'Segreta01');
+    expect(calls[0]).toEqual({ method: 'putVoid', path: 'operatori/mario%40ente.it/password', params: { nuovaPassword: 'Segreta01' } });
   });
 });

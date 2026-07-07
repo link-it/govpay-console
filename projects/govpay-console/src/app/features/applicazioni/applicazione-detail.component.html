@@ -74,6 +74,10 @@
           <lnk-acl-editor [acl]="a.acl" [disabled]="true" />
         </lnk-detail-section>
       }
+
+      <lnk-detail-section titleKey="Applicazioni.Detail.Password">
+        <lnk-set-password-card [submit]="setPassword" />
+      </lnk-detail-section>
     }
 
     @if (activeTab() === 'connettore') {

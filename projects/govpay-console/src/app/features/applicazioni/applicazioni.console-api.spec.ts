@@ -92,4 +92,10 @@ describe('ApplicazioniConsoleApi', () => {
       path: 'applicazioni/APP/connettore-integrazione/credenziali',
     });
   });
+
+  it('putPassword() fa PUT void su …/password con nuovaPassword', () => {
+    const { svc, calls } = makeApi();
+    svc.putPassword('APP', 'Segreta01');
+    expect(calls[0]).toEqual({ method: 'putVoid', path: 'applicazioni/APP/password', params: { nuovaPassword: 'Segreta01' } });
+  });
 });

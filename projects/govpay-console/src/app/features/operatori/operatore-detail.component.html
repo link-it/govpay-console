@@ -70,6 +70,10 @@
         <lnk-acl-editor [acl]="o.acl" [disabled]="true" />
       </lnk-detail-section>
     }
+
+    <lnk-detail-section titleKey="Operatori.Detail.Password">
+      <lnk-set-password-card [submit]="setPassword" />
+    </lnk-detail-section>
   }
   </div>
 </section>

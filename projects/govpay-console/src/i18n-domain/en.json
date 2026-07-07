@@ -2,6 +2,17 @@
   "Common": {
     "Edit": "Edit"
   },
+  "Password": {
+    "Imposta": "Set password",
+    "Nuova": "New password",
+    "Conferma": "Confirm password",
+    "PolicyHint": "At least 8 characters with a lowercase, an uppercase and a digit, no spaces.",
+    "PolicyErrore": "The password does not meet the requirements.",
+    "NonCoincidono": "The passwords do not match.",
+    "Aggiornata": "Password updated.",
+    "Errore": "Password update failed.",
+    "SenzaDiritti": "You do not have the rights to set the password."
+  },
   "Ricevute": {
     "Subtitle": "Electronic receipts for payments.",
     "Filters": {
@@ -767,6 +778,7 @@
       "TipiPendenza": "Pending types",
       "Ruoli": "Roles",
       "Acl": "Services and authorizations",
+      "Password": "Password",
       "ConnettoreIntegrazione": "Integration connector",
       "IdA2A": "Application ID",
       "Principal": "Principal",
@@ -839,6 +851,7 @@
       "TipiPendenza": "Pending types",
       "Ruoli": "Roles",
       "Acl": "Services and authorizations",
+      "Password": "Password",
       "Principal": "Principal",
       "RagioneSociale": "Full name",
       "Abilitato": "Enabled"

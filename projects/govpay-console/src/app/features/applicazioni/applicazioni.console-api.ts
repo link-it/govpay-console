@@ -60,6 +60,11 @@ export class ApplicazioniConsoleApi {
     return this.api.put<Applicazione>(this.base(idA2A), body, ifMatch);
   }
 
+  /** `PUT /applicazioni/{idA2A}/password` — imposta la password (HTTP Basic), write-only (204). */
+  putPassword(idA2A: string, nuovaPassword: string): Observable<void> {
+    return this.api.putVoid(this.base(idA2A, 'password'), { nuovaPassword });
+  }
+
   /* ── Connettore integrazione (singleton) ─────────────────────────── */
 
   /** `GET …/connettore-integrazione` (senza credenziali). */

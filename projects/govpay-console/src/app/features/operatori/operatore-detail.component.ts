@@ -27,6 +27,7 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail, REF_ALL } from '@core/models';
 import { AclEditorComponent } from '@core/ui/acl-editor/acl-editor.component';
+import { SetPasswordCardComponent } from '@core/ui/set-password-card/set-password-card.component';
 import { OperatoriConsoleApi } from './operatori.console-api';
 import type { Operatore } from './operatore.model';
 
@@ -45,6 +46,7 @@ import type { Operatore } from './operatore.model';
     LoadingComponent,
     ListStickyToolbarDirective,
     AclEditorComponent,
+    SetPasswordCardComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './operatore-detail.component.html',
@@ -87,6 +89,9 @@ export class OperatoreDetailComponent implements OnInit {
     )
   );
   readonly ruoliList = computed<string[]>(() => (this.operatore()?.ruoli ?? []).map((r) => r.id));
+
+  /** Riferimento stabile per `<lnk-set-password-card [submit]>`. */
+  readonly setPassword = (nuovaPassword: string) => this.api.putPassword(this.principal, nuovaPassword);
 
   ngOnInit(): void {
     const principal = this.route.snapshot.paramMap.get('principal');
