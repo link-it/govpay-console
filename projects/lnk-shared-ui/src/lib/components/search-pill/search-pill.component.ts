@@ -36,6 +36,7 @@ import {
   SearchField,
   SearchPillLabels,
   SearchState,
+  SortDir,
   SortOption,
   Suggestion,
   SuggestionGroupLabels,
@@ -116,12 +117,29 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
           }
         </div>
 
-        <!-- Toggle ordinamento inline -->
+        <!-- Ordinamento: dropdown campo + direzione -->
         @if (showSort() && sortOptions().length) {
-          <button type="button" class="pill__sort" (click)="toggleDir()">
-            <ng-icon [name]="value().dir === 'asc' ? 'bootstrapChevronUp' : 'bootstrapChevronDown'" size="0.8rem" />
-            {{ activeSort().label }}
-          </button>
+          <div class="pill__sortwrap">
+            <button type="button" class="pill__sort" [class.pill__sort--on]="sortMenuOpen()" (click)="toggleSortMenu()">
+              <ng-icon [name]="value().dir === 'asc' ? 'bootstrapSortUp' : 'bootstrapSortDown'" size="0.95rem" />
+              {{ activeSort()?.label }}
+            </button>
+            @if (sortMenuOpen()) {
+              <div class="pill__sortmenu" role="listbox">
+                <div class="pill__sortmenu-h">{{ labels().sortBy ?? defaults.sortBy }}</div>
+                @for (o of sortOptions(); track o.id) {
+                  <button type="button" class="pill__sortitem" [class.is-active]="o.id === value().sort" (click)="selectSort(o.id)">{{ o.label }}</button>
+                }
+                <div class="pill__sortmenu-sep"></div>
+                <button type="button" class="pill__sortitem" [class.is-active]="value().dir === 'asc'" (click)="setDir('asc')">
+                  <ng-icon name="bootstrapSortUp" size="0.95rem" /> {{ labels().sortAsc ?? defaults.sortAsc }}
+                </button>
+                <button type="button" class="pill__sortitem" [class.is-active]="value().dir === 'desc'" (click)="setDir('desc')">
+                  <ng-icon name="bootstrapSortDown" size="0.95rem" /> {{ labels().sortDesc ?? defaults.sortDesc }}
+                </button>
+              </div>
+            }
+          </div>
           <span class="pill__divider"></span>
         }
 
@@ -267,6 +285,49 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
       transition: background .12s, color .12s;
     }
     .pill__sort:hover { background: var(--sb-chip); color: var(--sb-text); }
+    .pill__sort--on { background: var(--sb-chip); color: var(--sb-text); }
+
+    .pill__sortwrap { position: relative; display: inline-flex; align-items: center; }
+    .pill__sortmenu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 30;
+      min-width: 190px;
+      padding: 4px;
+      background: var(--sb-surface);
+      border: 1px solid var(--sb-border);
+      border-radius: 12px;
+      box-shadow: var(--sb-shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      animation: popIn .14s ease-out;
+    }
+    .pill__sortmenu-h {
+      padding: 6px 10px 2px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--sb-text-muted);
+    }
+    .pill__sortmenu-sep { height: 1px; background: var(--sb-border); margin: 4px 2px; }
+    .pill__sortitem {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border: none;
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      color: var(--sb-text);
+      text-align: left;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .pill__sortitem:hover { background: var(--sb-chip); }
+    .pill__sortitem.is-active { color: var(--sb-primary); font-weight: 600; }
 
     .pill__divider {
       width: 1px;
@@ -360,6 +421,8 @@ export class SearchPillComponent {
   // ── i18n ─────────────────────────────────────────────────────────
   readonly labels = input<SearchPillLabels>(DEFAULT_LABELS);
   readonly suggestionGroupLabels = input<SuggestionGroupLabels>(DEFAULT_SUGGESTION_GROUP_LABELS);
+  /** Fallback per le label sort quando il consumer non le fornisce. */
+  protected readonly defaults = DEFAULT_LABELS;
 
   // ── Two-way state ────────────────────────────────────────────────
   /** Stato completo di ricerca — bind con `[(value)]`. */
@@ -375,6 +438,7 @@ export class SearchPillComponent {
   protected readonly focused = signal(false);
   protected readonly showSuggest = signal(false);
   protected readonly showFilters = signal(false);
+  protected readonly sortMenuOpen = signal(false);
   /**
    * Bozza dei filtri modificata nel popover mentre è aperto. Viene inizializzata
    * dallo stato committato all'apertura, aggiornata dai campi/reset, e committata
@@ -458,8 +522,26 @@ export class SearchPillComponent {
   }
 
   // ── Sort ─────────────────────────────────────────────────────────
-  protected toggleDir(): void {
-    this.patch({ dir: this.value().dir === 'asc' ? 'desc' : 'asc' });
+  protected toggleSortMenu(): void {
+    this.sortMenuOpen.update((v) => !v);
+    if (this.sortMenuOpen()) {
+      this.showFilters.set(false);
+      this.showSuggest.set(false);
+    }
+  }
+
+  /** Seleziona il campo di ordinamento (mantiene la direzione) e applica. */
+  protected selectSort(id: string): void {
+    this.patch({ sort: id });
+    this.sortMenuOpen.set(false);
+    this.search.emit(this.value());
+  }
+
+  /** Imposta la direzione di ordinamento e applica. */
+  protected setDir(dir: SortDir): void {
+    this.patch({ dir });
+    this.sortMenuOpen.set(false);
+    this.search.emit(this.value());
   }
 
   // ── Filters popover ──────────────────────────────────────────────
@@ -523,8 +605,8 @@ export class SearchPillComponent {
 
   @HostListener('document:mousedown', ['$event'])
   onDocDown(e: MouseEvent): void {
-    if (this.showFilters() && !this.host.nativeElement.contains(e.target)) {
-      this.showFilters.set(false);
-    }
+    if (this.host.nativeElement.contains(e.target)) return;
+    if (this.showFilters()) this.showFilters.set(false);
+    if (this.sortMenuOpen()) this.sortMenuOpen.set(false);
   }
 }

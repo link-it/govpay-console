@@ -13,6 +13,24 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.24.1] — 2026-07-07
+
+### Modificato
+
+- **`lnk-search-pill` — icone di sort per la direzione** — il dropdown di
+  ordinamento usa `bootstrapSortUp`/`bootstrapSortDown` (anziché i chevron) per
+  indicare crescente/decrescente, sia nel trigger sia nelle righe del menu.
+
+## [0.24.0] — 2026-07-07
+
+### Aggiunto
+
+- **`lnk-search-pill` — dropdown di ordinamento** — con `showSort` + `sortOptions`
+  la barra mostra un dropdown per scegliere il campo di ordinamento e la
+  direzione (crescente/decrescente). La selezione aggiorna `SearchState.sort`/
+  `dir` ed emette `search`. Nuove label opzionali `SearchPillLabels.sortBy/
+  sortAsc/sortDesc` (i18n `SearchPill.SortBy/SortAsc/SortDesc`).
+
 ## [0.23.0] — 2026-07-07
 
 ### Aggiunto

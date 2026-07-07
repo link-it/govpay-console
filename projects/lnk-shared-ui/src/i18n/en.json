@@ -17,7 +17,10 @@
     "NoOptions": "No options",
     "TextPlaceholder": "Type to search…",
     "SelectPlaceholder": "Select…",
-    "AllFieldsHint": "Filters apply to all fields"
+    "AllFieldsHint": "Filters apply to all fields",
+    "SortBy": "Sort by",
+    "SortAsc": "Ascending",
+    "SortDesc": "Descending"
   },
   "Common": {
     "Loading": "Loading…",

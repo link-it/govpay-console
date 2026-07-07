@@ -137,6 +137,12 @@ export interface SearchPillLabels {
   selectPlaceholder: string;
   /** Testo del footer quando non è disponibile un conteggio risultati. */
   allFieldsHint: string;
+  /** Intestazione del dropdown di ordinamento (es. "Ordina per"). */
+  sortBy?: string;
+  /** Etichetta direzione crescente. */
+  sortAsc?: string;
+  /** Etichetta direzione decrescente. */
+  sortDesc?: string;
 }
 
 export const DEFAULT_LABELS: SearchPillLabels = {
@@ -154,6 +160,9 @@ export const DEFAULT_LABELS: SearchPillLabels = {
   textPlaceholder: 'Digita per cercare…',
   selectPlaceholder: 'Seleziona…',
   allFieldsHint: 'I filtri si applicano a tutti i campi',
+  sortBy: 'Ordina per',
+  sortAsc: 'Crescente',
+  sortDesc: 'Decrescente',
 };
 
 export const DEFAULT_SUGGESTION_GROUP_LABELS: SuggestionGroupLabels = {

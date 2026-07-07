@@ -17,7 +17,10 @@
     "NoOptions": "Nessuna opzione",
     "TextPlaceholder": "Digita per cercare…",
     "SelectPlaceholder": "Seleziona…",
-    "AllFieldsHint": "I filtri si applicano a tutti i campi"
+    "AllFieldsHint": "I filtri si applicano a tutti i campi",
+    "SortBy": "Ordina per",
+    "SortAsc": "Crescente",
+    "SortDesc": "Decrescente"
   },
   "Common": {
     "Loading": "Caricamento…",

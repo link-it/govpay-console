@@ -45,6 +45,7 @@ import {
   type SearchPillLabels,
   type SearchState,
   type SortEvent,
+  type SortOption,
 } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { IntermediariConsoleApi } from './intermediari.console-api';
@@ -140,6 +141,16 @@ export class IntermediariListComponent implements OnInit {
     return this.translate.instant('Intermediari.Filters.Placeholder');
   });
 
+  /** Campi di ordinamento supportati dall’API. */
+  readonly sortOptions = computed<SortOption[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: 'codIntermediario', label: t('Intermediari.Columns.IdIntermediario') },
+      { id: 'denominazione', label: t('Intermediari.Columns.Denominazione') },
+    ];
+  });
+
   readonly pillLabels = computed<SearchPillLabels>(() => {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
@@ -158,6 +169,9 @@ export class IntermediariListComponent implements OnInit {
       textPlaceholder: t('SearchPill.TextPlaceholder'),
       selectPlaceholder: t('SearchPill.SelectPlaceholder'),
       allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
     };
   });
 
@@ -252,11 +266,19 @@ export class IntermediariListComponent implements OnInit {
       if (saved.search) this.searchState.set(saved.search);
       if (saved.sort) this.sort.set(saved.sort);
     }
+    this.syncPillSort();
     this.reset();
+  }
+
+  /** Allinea sort/dir della search-pill al `sort` signal (dropdown ↔ tabella). */
+  private syncPillSort(): void {
+    const s = this.sort();
+    this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
   }
 
   onSortChange(s: SortEvent): void {
     this.sort.set(s);
+    this.syncPillSort();
     this.reset();
   }
 
@@ -272,6 +294,8 @@ export class IntermediariListComponent implements OnInit {
 
   onSearch(state: SearchState): void {
     this.searchState.set(state);
+    // La search-pill può cambiare campo/direzione di ordinamento: rifletti nel sort della tabella.
+    if (state.sort) this.sort.set({ key: state.sort, direction: state.dir });
     this.reset();
   }
 
