@@ -173,10 +173,39 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
       { labelKey: 'Domini.Detail.ScaricaFr', value: this.translate.instant(d.scaricaFr ? 'Common.Yes' : 'Common.No') },
       { labelKey: 'Domini.Detail.AuxDigit', value: d.auxDigit != null ? String(d.auxDigit) : undefined, hide: d.auxDigit == null },
       { labelKey: 'Domini.Detail.SegregationCode', value: d.segregationCode != null ? String(d.segregationCode) : undefined, hide: d.segregationCode == null },
-      { labelKey: 'Domini.Detail.Localita', value: d.localita, hide: !d.localita },
     ];
     return items;
   });
+
+  readonly anagraficaItems = computed<InfoGridItem[]>(() => {
+    const d = this.dominio();
+    if (!d) return [];
+    return [
+      { labelKey: 'Domini.Detail.Indirizzo', value: d.indirizzo, hide: !d.indirizzo },
+      { labelKey: 'Domini.Detail.Civico', value: d.civico, hide: !d.civico },
+      { labelKey: 'Domini.Detail.Cap', value: d.cap, hide: !d.cap },
+      { labelKey: 'Domini.Detail.Localita', value: d.localita, hide: !d.localita },
+      { labelKey: 'Domini.Detail.Provincia', value: d.provincia, hide: !d.provincia },
+      { labelKey: 'Domini.Detail.Nazione', value: d.nazione, hide: !d.nazione },
+      { labelKey: 'Domini.Detail.Area', value: d.area, hide: !d.area },
+    ];
+  });
+
+  readonly contattiItems = computed<InfoGridItem[]>(() => {
+    const d = this.dominio();
+    if (!d) return [];
+    return [
+      { labelKey: 'Domini.Detail.Email', value: d.email, hide: !d.email },
+      { labelKey: 'Domini.Detail.Pec', value: d.pec, hide: !d.pec },
+      { labelKey: 'Domini.Detail.Tel', value: d.tel, hide: !d.tel },
+      { labelKey: 'Domini.Detail.Fax', value: d.fax, hide: !d.fax },
+      { labelKey: 'Domini.Detail.Web', value: d.web, hide: !d.web },
+    ];
+  });
+
+  /** Le sezioni Anagrafica/Contatti si mostrano solo se hanno almeno un campo. */
+  readonly hasAnagrafica = computed(() => this.anagraficaItems().some((i) => !i.hide));
+  readonly hasContatti = computed(() => this.contattiItems().some((i) => !i.hide));
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('idDominio');

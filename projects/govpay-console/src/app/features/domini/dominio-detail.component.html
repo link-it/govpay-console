@@ -37,6 +37,18 @@
         <lnk-info-grid [items]="generaliItems()" />
       </lnk-detail-section>
 
+      @if (hasAnagrafica()) {
+        <lnk-detail-section titleKey="Domini.Detail.Anagrafica">
+          <lnk-info-grid [items]="anagraficaItems()" />
+        </lnk-detail-section>
+      }
+
+      @if (hasContatti()) {
+        <lnk-detail-section titleKey="Domini.Detail.Contatti">
+          <lnk-info-grid [items]="contattiItems()" />
+        </lnk-detail-section>
+      }
+
       <lnk-detail-section titleKey="Domini.Detail.Logo">
         <div class="flex items-center gap-4">
           @if (logoUrl(); as url) {
