@@ -38,6 +38,13 @@ export const SEARCH_PILL_VARIANT_OPTIONS: TweakSegmentedOption[] = [
   { value: 'square', labelKey: 'Tweaks.SearchPill.Square' },
 ];
 
+/** Densità (spaziatura/altezza) della barra di ricerca `<lnk-search-pill>`. */
+export const SEARCH_PILL_DENSITY_OPTIONS: TweakSegmentedOption[] = [
+  { value: 'compact', labelKey: 'Tweaks.Density.Compact' },
+  { value: 'regular', labelKey: 'Tweaks.Density.Regular' },
+  { value: 'comfortable', labelKey: 'Tweaks.Density.Comfortable' },
+];
+
 /**
  * Range di date pre-impostati (espressi come giorni-fa). Cliccando su
  * un preset si imposta `filters.dataDa = daysAgoIso(N)`.

@@ -13,6 +13,16 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.23.0] — 2026-07-07
+
+### Aggiunto
+
+- **`lnk-search-pill` — densità selezionabile dai tweaks** — nuova costante
+  `SEARCH_PILL_DENSITY_OPTIONS` (compact/regular/comfortable) per il pannello
+  tweaks delle liste e nuovo campo `LayoutConfig.searchPillDensity`. L'input
+  `density` del componente esisteva già; ora le liste possono esporlo come
+  controllo runtime. Chiavi i18n `Tweaks.Density*`.
+
 ## [0.22.2] — 2026-07-06
 
 ### Modificato

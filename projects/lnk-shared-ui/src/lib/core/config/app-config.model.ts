@@ -202,6 +202,12 @@ export interface LayoutConfig {
    */
   searchPillVariant?: 'pill' | 'square';
   /**
+   * Densità (spaziatura/altezza) della barra di ricerca `<lnk-search-pill>`
+   * nelle liste: `'compact'` (default nelle liste) | `'regular'` |
+   * `'comfortable'`. Sovrascrivibile a runtime dal pannello tweaks.
+   */
+  searchPillDensity?: 'compact' | 'regular' | 'comfortable';
+  /**
    * Mostra il pulsante flottante "torna su" (bottom-right) quando la
    * pagina è scrollata oltre la soglia. Default: `true`.
    */

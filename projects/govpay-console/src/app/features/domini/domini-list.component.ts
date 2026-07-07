@@ -33,6 +33,7 @@ import {
   ItemListComponent,
   PageHeaderComponent,
   SearchPillComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
   SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
@@ -102,12 +103,17 @@ export class DominiListComponent implements OnInit {
     () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
 
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.config.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
   readonly searchFields = computed<SearchField[]>(() => {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
     return [
-      { id: F.idDominio, label: t('Domini.Filters.IdDominio'), kind: 'text', placeholder: t('Domini.Filters.IdDominioPlaceholder'), span: 2 },
-      { id: F.ragioneSociale, label: t('Domini.Filters.RagioneSociale'), kind: 'text', placeholder: t('Domini.Filters.RagioneSocialePlaceholder'), span: 2 },
+      { id: F.idDominio, label: t('Domini.Filters.IdDominio'), kind: 'text', placeholder: t('Domini.Filters.IdDominioPlaceholder') },
+      { id: F.ragioneSociale, label: t('Domini.Filters.RagioneSociale'), kind: 'text', placeholder: t('Domini.Filters.RagioneSocialePlaceholder') },
       {
         id: F.abilitato,
         label: t('Domini.Filters.Stato'),
@@ -172,10 +178,19 @@ export class DominiListComponent implements OnInit {
             value: this.searchPillVariant,
             onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
           },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.Density',
+            hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS,
+            value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable'),
+          },
         ],
         onReset: () => {
           this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
         },
       })
     );

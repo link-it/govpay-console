@@ -33,6 +33,7 @@ import {
   ItemListComponent,
   PageHeaderComponent,
   SearchPillComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
   SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
@@ -106,12 +107,17 @@ export class IntermediariListComponent implements OnInit {
     () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
 
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.config.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
   readonly searchFields = computed<SearchField[]>(() => {
     this.lang.current(); // dipendenza: ritraduce al cambio lingua
     const t = (k: string) => this.translate.instant(k);
     return [
-      { id: F.codIntermediario, label: t('Intermediari.Filters.CodIntermediario'), kind: 'text', placeholder: t('Intermediari.Filters.CodIntermediarioPlaceholder'), span: 2 },
-      { id: F.denominazione, label: t('Intermediari.Filters.Denominazione'), kind: 'text', placeholder: t('Intermediari.Filters.DenominazionePlaceholder'), span: 2 },
+      { id: F.codIntermediario, label: t('Intermediari.Filters.CodIntermediario'), kind: 'text', placeholder: t('Intermediari.Filters.CodIntermediarioPlaceholder') },
+      { id: F.denominazione, label: t('Intermediari.Filters.Denominazione'), kind: 'text', placeholder: t('Intermediari.Filters.DenominazionePlaceholder') },
       {
         id: F.abilitato,
         label: t('Intermediari.Filters.Stato'),
@@ -178,10 +184,19 @@ export class IntermediariListComponent implements OnInit {
             value: this.searchPillVariant,
             onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
           },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.Density',
+            hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS,
+            value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable'),
+          },
         ],
         onReset: () => {
           this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
         },
       })
     );

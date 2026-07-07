@@ -33,6 +33,7 @@ import {
   ItemListComponent,
   PageHeaderComponent,
   SearchPillComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
   SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
@@ -102,12 +103,17 @@ export class OperatoriListComponent implements OnInit {
     () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
 
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.config.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
   readonly searchFields = computed<SearchField[]>(() => {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
     return [
-      { id: F.principal, label: t('Operatori.Filters.Principal'), kind: 'text', placeholder: t('Operatori.Filters.PrincipalPlaceholder'), span: 2 },
-      { id: F.nome, label: t('Operatori.Filters.Nome'), kind: 'text', placeholder: t('Operatori.Filters.NomePlaceholder'), span: 2 },
+      { id: F.principal, label: t('Operatori.Filters.Principal'), kind: 'text', placeholder: t('Operatori.Filters.PrincipalPlaceholder') },
+      { id: F.nome, label: t('Operatori.Filters.Nome'), kind: 'text', placeholder: t('Operatori.Filters.NomePlaceholder') },
       {
         id: F.abilitato,
         label: t('Operatori.Filters.Stato'),
@@ -172,10 +178,19 @@ export class OperatoriListComponent implements OnInit {
             value: this.searchPillVariant,
             onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
           },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.Density',
+            hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS,
+            value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable'),
+          },
         ],
         onReset: () => {
           this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
         },
       })
     );
