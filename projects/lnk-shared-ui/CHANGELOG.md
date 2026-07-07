@@ -13,6 +13,26 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.24.3] — 2026-07-07
+
+### Modificato
+
+- **`lnk-search-pill` — sort come pulsante segmentato** — la scorciatoia di
+  direzione (icona) e il dropdown di selezione campo sono ora resi come un
+  unico pulsante "grouped" coerente col pulsante filtri: stesso sfondo `chip`,
+  nessun bordo esterno, solo il divisore verticale tra i due segmenti, angoli
+  arrotondati agli estremi e hover (`chip-hover`) su ciascun segmento. Coerente
+  nelle varianti pill e square.
+
+## [0.24.2] — 2026-07-07
+
+### Aggiunto
+
+- **`lnk-search-pill` — scorciatoia direzione sort** — l'icona di sort nel
+  trigger del dropdown è ora un pulsante cliccabile che inverte direttamente la
+  direzione (asc↔desc) senza aprire il menu; il click sull'etichetta apre il
+  menu di selezione campo. Le righe direzione restano disponibili nel menu.
+
 ## [0.24.1] — 2026-07-07
 
 ### Modificato

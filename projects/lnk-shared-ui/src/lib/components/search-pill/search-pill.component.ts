@@ -120,8 +120,11 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
         <!-- Ordinamento: dropdown campo + direzione -->
         @if (showSort() && sortOptions().length) {
           <div class="pill__sortwrap">
-            <button type="button" class="pill__sort" [class.pill__sort--on]="sortMenuOpen()" (click)="toggleSortMenu()">
+            <button type="button" class="pill__sortdir" (click)="toggleDir()"
+              [attr.aria-label]="value().dir === 'asc' ? (labels().sortAsc ?? defaults.sortAsc) : (labels().sortDesc ?? defaults.sortDesc)">
               <ng-icon [name]="value().dir === 'asc' ? 'bootstrapSortUp' : 'bootstrapSortDown'" size="0.95rem" />
+            </button>
+            <button type="button" class="pill__sort" [class.pill__sort--on]="sortMenuOpen()" (click)="toggleSortMenu()">
               {{ activeSort()?.label }}
             </button>
             @if (sortMenuOpen()) {
@@ -269,25 +272,47 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
       color: var(--sb-text-subtle);
     }
 
+    /* Gruppo sort: direzione (icona) + campo (dropdown) come pulsante segmentato,
+       coerente col pulsante filtri (stesso sfondo chip, solo divisore interno). */
+    .pill__sortwrap {
+      position: relative;
+      display: inline-flex;
+      align-items: stretch;
+      border-radius: 999px;
+      background: var(--sb-chip);
+    }
+    .pill__sortdir {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: calc(var(--sb-pill-h) - 12px);
+      padding: 0 8px;
+      border: none;
+      border-right: 1px solid var(--sb-border);
+      border-radius: 999px 0 0 999px;
+      background: transparent;
+      color: var(--sb-text);
+      cursor: pointer;
+      transition: background .12s, color .12s;
+    }
+    .pill__sortdir:hover { background: var(--sb-chip-hover); }
     .pill__sort {
       display: inline-flex;
       align-items: center;
       gap: 4px;
       height: calc(var(--sb-pill-h) - 12px);
-      padding: 0 10px;
+      padding: 0 12px;
       border: none;
-      border-radius: 999px;
+      border-radius: 0 999px 999px 0;
       background: transparent;
       font: inherit;
       font-size: 12.5px;
-      color: var(--sb-text-muted);
+      color: var(--sb-text);
       cursor: pointer;
       transition: background .12s, color .12s;
     }
-    .pill__sort:hover { background: var(--sb-chip); color: var(--sb-text); }
-    .pill__sort--on { background: var(--sb-chip); color: var(--sb-text); }
-
-    .pill__sortwrap { position: relative; display: inline-flex; align-items: center; }
+    .pill__sort:hover { background: var(--sb-chip-hover); }
+    .pill__sort--on { background: var(--sb-chip-hover); }
     .pill__sortmenu {
       position: absolute;
       top: calc(100% + 8px);
@@ -386,8 +411,10 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
 
     /* ── Variante "square": angoli moderati (rounded-md) allineati ai .btn ── */
     .pill-wrap--square .pill { border-radius: 0.5rem; }
-    .pill-wrap--square .pill__filters,
-    .pill-wrap--square .pill__sort { border-radius: 0.375rem; }
+    .pill-wrap--square .pill__filters { border-radius: 0.375rem; }
+    .pill-wrap--square .pill__sortwrap { border-radius: 0.375rem; }
+    .pill-wrap--square .pill__sortdir { border-radius: 0.375rem 0 0 0.375rem; }
+    .pill-wrap--square .pill__sort { border-radius: 0 0.375rem 0.375rem 0; }
     .pill-wrap--square .pill__pop--filters { border-radius: 0.5rem; }
   `],
 })
@@ -483,7 +510,8 @@ export class SearchPillComponent {
       '--sb-text-muted:var(--muted-foreground)',
       '--sb-text-subtle:var(--muted-foreground)',
       '--sb-chip:var(--muted)',
-      '--sb-chip-hover:var(--card-hover)',
+      // Hover chip garantito visibile in light/dark: sposta il chip verso il testo.
+      '--sb-chip-hover:color-mix(in srgb, var(--muted) 86%, var(--foreground))',
       '--sb-shadow-lg:0 4px 8px rgba(16,24,40,.04), 0 24px 48px -12px rgba(16,24,40,.18)',
       // Sizing per densità.
       `--sb-pill-h:${pillH}px`,
@@ -522,6 +550,12 @@ export class SearchPillComponent {
   }
 
   // ── Sort ─────────────────────────────────────────────────────────
+  /** Scorciatoia: inverte la direzione di ordinamento e applica. */
+  protected toggleDir(): void {
+    this.patch({ dir: this.value().dir === 'asc' ? 'desc' : 'asc' });
+    this.search.emit(this.value());
+  }
+
   protected toggleSortMenu(): void {
     this.sortMenuOpen.update((v) => !v);
     if (this.sortMenuOpen()) {
