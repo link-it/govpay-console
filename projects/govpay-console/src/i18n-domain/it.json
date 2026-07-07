@@ -145,6 +145,7 @@
     },
     "Detail": {
       "Subtitle": "Dettaglio della pendenza.",
+      "Breadcrumb": "Pendenza",
       "Generali": "Informazioni generali",
       "EnteCreditore": "Ente creditore",
       "Voci": "Voci",

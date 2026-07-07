@@ -88,6 +88,9 @@ export class PendenzaDetailComponent implements OnInit {
   private idA2A = '';
   private idPendenza = '';
 
+  /** URL del bottone "Indietro": `/pendenze` oppure la ricevuta padre (drilldown annidato). */
+  readonly backUrl = signal('/pendenze');
+
   /* ---- Soggetto pagatore: on-demand con consenso GDPR ---------------- */
   readonly debitore = signal<Soggetto | null>(null);
   readonly debitoreLoading = signal(false);
@@ -205,10 +208,29 @@ export class PendenzaDetailComponent implements OnInit {
     }
     this.idA2A = idA2A;
     this.idPendenza = idPendenza;
-    this.system.setBreadcrumbs([
-      { label: 'Nav.Pendenze', url: '/pendenze' },
-      { label: idPendenza },
-    ]);
+
+    // Drilldown annidato da una ricevuta: back + breadcrumb verso la ricevuta.
+    const url = this.router.url ?? '';
+    if (url.startsWith('/ricevute/') && params.has('idDominio') && params.has('iuv') && params.has('idRicevuta')) {
+      const dom = params.get('idDominio')!;
+      const iuv = params.get('iuv')!;
+      const ric = params.get('idRicevuta')!;
+      const parentUrl = `/ricevute/${encodeURIComponent(dom)}/${encodeURIComponent(iuv)}/${encodeURIComponent(ric)}`;
+      this.backUrl.set(parentUrl);
+      this.system.setBreadcrumbs([
+        { label: 'Nav.Ricevute', url: '/ricevute' },
+        { label: iuv, url: parentUrl },
+        // Voce non cliccabile (no url): chiarisce che l'ultimo segmento è una pendenza.
+        { label: 'Pendenze.Detail.Breadcrumb' },
+        { label: idPendenza },
+      ]);
+    } else {
+      this.backUrl.set('/pendenze');
+      this.system.setBreadcrumbs([
+        { label: 'Nav.Pendenze', url: '/pendenze' },
+        { label: idPendenza },
+      ]);
+    }
     this.fetch();
   }
 

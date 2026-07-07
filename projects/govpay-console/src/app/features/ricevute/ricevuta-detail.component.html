@@ -33,8 +33,8 @@
     @if (pendenza(); as p) {
       <lnk-detail-section titleKey="Ricevute.Detail.PendenzaCollegata">
         <lnk-info-grid [items]="pendenzaItems()" />
-        <a [routerLink]="['/pendenze', p.idA2A, p.idPendenza]" class="btn btn-secondary btn-sm mt-3">
-          <ng-icon name="bootstrapArrowUpRight" size="1rem" />
+        <a [routerLink]="['/ricevute', idDominio, iuv, idRicevuta, 'pendenza', p.idA2A, p.idPendenza]" class="btn btn-secondary btn-sm mt-3">
+          <ng-icon name="bootstrapArrowRight" size="1rem" />
           <span>{{ 'Ricevute.Detail.VaiPendenza' | translate }}</span>
         </a>
       </lnk-detail-section>
@@ -48,7 +48,7 @@
             <ng-icon name="bootstrapFileEarmarkPdf" size="1rem" /><span>PDF</span>
           </button>
           <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRt('xml')">
-            <ng-icon name="bootstrapFileEarmarkCode" size="1rem" /><span>XML</span>
+            <ng-icon name="bootstrapFiletypeXml" size="1rem" /><span>XML</span>
           </button>
           <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRt('json')">
             <ng-icon name="bootstrapFiletypeJson" size="1rem" /><span>JSON</span>
@@ -58,7 +58,7 @@
           <span class="text-sm font-medium min-w-[3rem]">{{ 'Ricevute.Detail.Rpt' | translate }}</span>
           @if (hasRpt()) {
             <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRpt('xml')">
-              <ng-icon name="bootstrapFileEarmarkCode" size="1rem" /><span>XML</span>
+              <ng-icon name="bootstrapFiletypeXml" size="1rem" /><span>XML</span>
             </button>
             <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRpt('json')">
               <ng-icon name="bootstrapFiletypeJson" size="1rem" /><span>JSON</span>

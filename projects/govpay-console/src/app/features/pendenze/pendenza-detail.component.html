@@ -8,7 +8,7 @@
             <span>{{ 'Pendenze.Detail.StampaAvviso' | translate }}</span>
           </button>
         }
-        <a routerLink="/pendenze" class="btn btn-secondary btn-sm">
+        <a [routerLink]="backUrl()" class="btn btn-secondary btn-sm">
           <ng-icon name="bootstrapChevronLeft" size="1rem" />
           <span>{{ 'Common.Back' | translate }}</span>
         </a>

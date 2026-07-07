@@ -145,6 +145,7 @@
     },
     "Detail": {
       "Subtitle": "Item details.",
+      "Breadcrumb": "Item",
       "Generali": "General",
       "EnteCreditore": "Creditor",
       "Voci": "Line items",
