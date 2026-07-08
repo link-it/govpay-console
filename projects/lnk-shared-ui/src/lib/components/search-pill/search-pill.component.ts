@@ -125,7 +125,7 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
               <ng-icon [name]="value().dir === 'asc' ? 'bootstrapSortUp' : 'bootstrapSortDown'" size="0.95rem" />
             </button>
             <button type="button" class="pill__sort" [class.pill__sort--on]="sortMenuOpen()" (click)="toggleSortMenu()">
-              {{ activeSort()?.label }}
+              {{ activeSort().label }}
             </button>
             @if (sortMenuOpen()) {
               <div class="pill__sortmenu" role="listbox">
