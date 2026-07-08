@@ -416,6 +416,15 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
     .pill-wrap--square .pill__sortdir { border-radius: 0.375rem 0 0 0.375rem; }
     .pill-wrap--square .pill__sort { border-radius: 0 0.375rem 0.375rem 0; }
     .pill-wrap--square .pill__pop--filters { border-radius: 0.5rem; }
+
+    /* ── Dark: le ombre chiare non si percepiscono su sfondo scuro. I pannelli
+       flottanti (popover filtri, menu ordinamento) usano un'ombra più profonda
+       e un bordo più marcato per staccarsi dal contenuto sottostante. ── */
+    :host-context(.dark) .pill__pop--filters,
+    :host-context(.dark) .pill__sortmenu {
+      border-color: var(--sb-border-strong);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .5), 0 24px 48px -8px rgba(0, 0, 0, .75);
+    }
   `],
 })
 export class SearchPillComponent {

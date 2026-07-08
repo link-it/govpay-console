@@ -13,6 +13,18 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.25.1] — 2026-07-07
+
+### Risolto
+
+- **`lnk-search-pill` — pannelli flottanti poco visibili in dark** — il popover
+  filtri e il menu di ordinamento usavano ombre chiare (`rgba(16,24,40,…)`)
+  impercettibili su sfondo scuro, confondendosi col contenuto sottostante.
+  Aggiunto override in tema dark (`.dark`): ombra più profonda e bordo più
+  marcato (`--sb-border-strong`) per staccare i pannelli.
+
+---
+
 ## [0.25.0] — 2026-07-07
 
 ### Aggiunto
