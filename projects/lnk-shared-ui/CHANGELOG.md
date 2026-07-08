@@ -13,6 +13,18 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.25.0] — 2026-07-07
+
+### Aggiunto
+
+- **`lnk-info-grid` — size regolabile dai tweaks** — la dimensione tipografica
+  delle info-grid è ora sovrascrivibile a runtime da un controllo globale nel
+  pannello tweaks (`Tweaks.InfoGridSize`: S/M/L), con default `sm`. Il
+  componente legge l'override da `LayoutOverridesService.infoGridSize` quando il
+  consumer non passa un `size` esplicito; nuove chiavi i18n `Tweaks.InfoGridSize*`.
+
+---
+
 ## [0.24.3] — 2026-07-07
 
 ### Modificato

@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { LayoutOverridesService } from '../../core/system/layout-overrides.service';
 
 /**
  * Voce di una `<lnk-info-grid>`.
@@ -92,7 +93,16 @@ export class InfoGridComponent {
    * usa la sintassi `'<value-class>|<label-class>'` (es.
    * `'text-2xl|text-base'`).
    */
-  readonly size = input<InfoGridSize>('sm');
+  readonly size = input<InfoGridSize>();
+
+  private readonly overrides = inject(LayoutOverridesService);
+  /**
+   * Size effettivo: `size` esplicito del consumer se presente, altrimenti
+   * l'override globale dal pannello tweaks, altrimenti `'sm'` (default).
+   */
+  private readonly effectiveSize = computed<InfoGridSize>(
+    () => this.size() ?? this.overrides.infoGridSize() ?? 'sm',
+  );
   /**
    * Quando `true` le label (`<dt>`) sono rese in MAIUSCOLO con
    * `tracking-wider` (pattern caps tipico delle "Info box" Link.it,
@@ -106,7 +116,7 @@ export class InfoGridComponent {
 
   /** Solo la classe Tailwind di size per il value (es. `text-sm`). */
   private readonly valueSize = computed(() => {
-    const s = this.size();
+    const s = this.effectiveSize();
     if (VALUE_SIZE_PRESETS[s]) return VALUE_SIZE_PRESETS[s];
     if (s.includes('|')) return s.split('|')[0];
     return s;
@@ -114,7 +124,7 @@ export class InfoGridComponent {
 
   /** Solo la classe Tailwind di size per la label (es. `text-xs`). */
   private readonly labelSize = computed(() => {
-    const s = this.size();
+    const s = this.effectiveSize();
     if (LABEL_SIZE_PRESETS[s]) return LABEL_SIZE_PRESETS[s];
     if (s.includes('|')) return s.split('|')[1] ?? 'text-xs';
     return s;

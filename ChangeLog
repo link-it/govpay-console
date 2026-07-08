@@ -42,6 +42,11 @@
     `lnk-page-header` con azioni allineate in alto. Modifiche portate in
     upstream e sincronizzate via `sync:lib` (@linkit/shared-ui 0.24.3).
 
+  * [Frontend] feat(shared-ui): `lnk-info-grid` con dimensione (S/M/L)
+    regolabile a runtime da un controllo globale del pannello tweaks
+    ("Dimensione dettagli", default `sm`) — si applica a tutte le griglie
+    informative dei dettagli. Via `sync:lib` (@linkit/shared-ui 0.25.0).
+
 2026-07-06  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat: estensione della GovPay Console API V2 a tutte le

@@ -41,6 +41,8 @@ export class LayoutOverridesService {
   readonly gotoTopButton = signal<boolean | null>(null);
   readonly languageSelectorPosition = signal<ControlPosition | null>(null);
   readonly darkModeTogglePosition = signal<ControlPosition | null>(null);
+  /** Dimensione tipografica delle `<lnk-info-grid>` nei dettagli. */
+  readonly infoGridSize = signal<'sm' | 'md' | 'lg' | null>(null);
 
   /** True se almeno un override è impostato (per badge/bottone reset). */
   readonly hasAnyOverride = computed(
@@ -50,7 +52,8 @@ export class LayoutOverridesService {
       this.helpButton() !== null ||
       this.gotoTopButton() !== null ||
       this.languageSelectorPosition() !== null ||
-      this.darkModeTogglePosition() !== null
+      this.darkModeTogglePosition() !== null ||
+      this.infoGridSize() !== null
   );
 
   /** Azzera tutti gli override (torna al config base). */
@@ -61,5 +64,6 @@ export class LayoutOverridesService {
     this.gotoTopButton.set(null);
     this.languageSelectorPosition.set(null);
     this.darkModeTogglePosition.set(null);
+    this.infoGridSize.set(null);
   }
 }

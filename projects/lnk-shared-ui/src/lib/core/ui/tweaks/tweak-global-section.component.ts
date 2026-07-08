@@ -41,6 +41,12 @@ const POSITION_OPTIONS: TweakSegmentedOption[] = [
   { value: 'none', labelKey: 'Tweaks.Position.None' },
 ];
 
+const INFO_GRID_SIZE_OPTIONS: TweakSegmentedOption[] = [
+  { value: 'sm', labelKey: 'Tweaks.InfoGridSize.Sm' },
+  { value: 'md', labelKey: 'Tweaks.InfoGridSize.Md' },
+  { value: 'lg', labelKey: 'Tweaks.InfoGridSize.Lg' },
+];
+
 /**
  * Sezione "Globale" del pannello tweaks: espone gli override session-level
  * delle chiavi `Layout` configurabili a runtime.
@@ -103,6 +109,14 @@ const POSITION_OPTIONS: TweakSegmentedOption[] = [
           (valueChange)="onDetailMaxWidthChange($event)"
         />
       </lnk-tweak-row>
+      <lnk-tweak-row labelKey="Tweaks.InfoGridSize" hintKey="Tweaks.InfoGridSizeHint">
+        <lnk-tweak-segmented
+          [options]="infoGridSizeOptions"
+          size="sm"
+          [value]="infoGridSize()"
+          (valueChange)="onInfoGridSizeChange($event)"
+        />
+      </lnk-tweak-row>
       <lnk-tweak-row labelKey="Tweaks.HelpButton" [inline]="true">
         <lnk-tweak-toggle
           [value]="helpButton()"
@@ -149,6 +163,7 @@ export class TweakGlobalSectionComponent {
 
   protected readonly maxWidthOptions = MAX_WIDTH_OPTIONS;
   protected readonly positionOptions = POSITION_OPTIONS;
+  protected readonly infoGridSizeOptions = INFO_GRID_SIZE_OPTIONS;
 
   /** Opzioni del selettore tema (da `Layout.themes`), col colore di riferimento. */
   protected readonly themeOptions = computed<TweakSelectOption[]>(() =>
@@ -162,6 +177,7 @@ export class TweakGlobalSectionComponent {
   protected readonly detailMaxWidth = computed(
     () => this.config.effectiveLayout()?.detailMaxWidth ?? 'none'
   );
+  protected readonly infoGridSize = computed(() => this.overrides.infoGridSize() ?? 'sm');
   protected readonly helpButton = computed(
     () => this.config.effectiveLayout()?.helpButton !== false
   );
@@ -180,6 +196,9 @@ export class TweakGlobalSectionComponent {
   }
   onDetailMaxWidthChange(value: string): void {
     this.overrides.detailMaxWidth.set(value);
+  }
+  onInfoGridSizeChange(value: string): void {
+    this.overrides.infoGridSize.set(value as 'sm' | 'md' | 'lg');
   }
   onHelpButtonChange(value: boolean): void {
     this.overrides.helpButton.set(value);
