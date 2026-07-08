@@ -110,7 +110,8 @@
         "cell": {
           "type": "datetime",
           "field": "dataPagamento"
-        }
+        },
+        "sortable": true
       },
       {
         "key": "importo",

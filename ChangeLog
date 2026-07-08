@@ -13,6 +13,14 @@
     `sort` documentato: tipi pendenza, entrate, domini, operatori, applicazioni,
     ruoli, intermediari, pendenze, ricevute.
 
+  * [Frontend] feat(liste): ordinamento anche dagli header di tabella su tutte
+    le colonne con campo `sort` supportato dall'API (non solo dalla search-pill).
+    Ordinamento di default per nome descrittivo anziché per codice/id
+    (intermediari `denominazione`, domini `ragioneSociale`, tipi pendenza ed
+    entrate `descrizione`). Allineati i campi sort dove la chiave colonna
+    differiva dal campo API (operatori `nome`, intermediari `codIntermediario`);
+    aggiunto il sort da header anche alla tabella ricevute.
+
   * [Frontend] feat(liste): densità della search-pill selezionabile dal pannello
     tweaks (compact/regular/comfortable), default `compact`.
 

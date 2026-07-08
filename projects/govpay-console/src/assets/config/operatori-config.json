@@ -26,15 +26,17 @@
           "type": "text",
           "field": "principal"
         },
-        "link": true
+        "link": true,
+        "sortable": true
       },
       {
-        "key": "ragioneSociale",
+        "key": "nome",
         "header": "Operatori.Columns.RagioneSociale",
         "cell": {
           "type": "text",
           "field": "nome"
-        }
+        },
+        "sortable": true
       },
       {
         "key": "abilitato",

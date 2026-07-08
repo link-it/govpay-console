@@ -272,6 +272,12 @@ export class RicevuteListComponent implements OnInit {
     this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
   }
 
+  onSortChange(s: SortEvent): void {
+    this.sort.set(s);
+    this.syncPillSort();
+    this.reset();
+  }
+
   refresh(): void {
     this.reset();
   }

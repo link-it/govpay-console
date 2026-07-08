@@ -25,7 +25,8 @@
         "cell": {
           "type": "text",
           "field": "idTipoPendenza"
-        }
+        },
+        "sortable": true
       },
       {
         "key": "descrizione",

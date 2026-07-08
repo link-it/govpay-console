@@ -9,7 +9,8 @@
           "type": "text",
           "field": "idRuolo"
         },
-        "link": true
+        "link": true,
+        "sortable": true
       }
     ]
   },

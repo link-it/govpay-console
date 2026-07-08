@@ -222,7 +222,7 @@ export class IntermediariListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'codIntermediario', direction: 'asc' });
+  readonly sort = signal<SortEvent | null>({ key: 'denominazione', direction: 'asc' });
   readonly rows = signal<IntermediarioSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);

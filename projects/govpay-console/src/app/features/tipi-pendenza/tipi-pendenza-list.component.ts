@@ -216,7 +216,7 @@ export class TipiPendenzaListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'idTipoPendenza', direction: 'asc' });
+  readonly sort = signal<SortEvent | null>({ key: 'descrizione', direction: 'asc' });
   readonly rows = signal<TipoPendenzaSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);

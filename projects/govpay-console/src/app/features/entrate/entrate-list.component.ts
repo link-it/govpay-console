@@ -200,7 +200,7 @@ export class EntrateListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'idEntrata', direction: 'asc' });
+  readonly sort = signal<SortEvent | null>({ key: 'descrizione', direction: 'asc' });
   readonly rows = signal<EntrataSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);

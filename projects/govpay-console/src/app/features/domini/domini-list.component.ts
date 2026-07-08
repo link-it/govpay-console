@@ -216,7 +216,7 @@ export class DominiListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'idDominio', direction: 'asc' });
+  readonly sort = signal<SortEvent | null>({ key: 'ragioneSociale', direction: 'asc' });
   readonly rows = signal<DominioSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);
