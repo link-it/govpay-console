@@ -82,6 +82,10 @@ import { LnkTooltipDirective } from '@linkit/shared-ui';
           <ng-content select="[view]" />
         }
       </div>
+      <!-- Slot footer opzionale: reso all'interno della card (in vista e in modifica).
+           Il contenuto proiettato definisce il proprio separatore/padding. Se non
+           proiettato non renderizza nulla. -->
+      <ng-content select="[footer]" />
     </div>
   `,
 })
