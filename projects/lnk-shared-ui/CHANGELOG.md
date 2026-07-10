@@ -13,6 +13,18 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.25.2] — 2026-07-10
+
+### Risolto
+
+- **`lnk-page-header` — titolo e azioni sempre sulla stessa riga** — con titoli
+  lunghi l'header andava a capo mandando i pulsanti sotto. Rimosso `flex-wrap`
+  dall'header; l'area titolo/sottotitolo è `flex-1 min-w-0` (il titolo va a capo
+  con `break-words`, mostrato per intero) e le azioni sono `shrink-0`, così
+  restano sempre in linea a destra.
+
+---
+
 ## [0.25.1] — 2026-07-07
 
 ### Risolto

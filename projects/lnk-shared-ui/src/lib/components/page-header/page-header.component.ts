@@ -50,10 +50,10 @@ const TITLE_SIZE_PRESETS: Record<string, string> = {
   imports: [TranslatePipe, LoadingComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <header class="flex flex-wrap items-start justify-between gap-4 mb-4">
-      <div class="min-w-0">
+    <header class="flex items-start justify-between gap-4 mb-4">
+      <div class="min-w-0 flex-1">
         <div class="flex items-baseline gap-2 min-w-0">
-          <h1 class="font-semibold truncate" [class]="titleSizeClass()">{{ titleKey() | translate }}</h1>
+          <h1 class="font-semibold break-words" [class]="titleSizeClass()">{{ titleKey() | translate }}</h1>
           @if (loading()) {
             <lnk-loading [inline]="true" size="sm" [labelKey]="null" />
           } @else if (totalLabel(); as t) {
@@ -64,7 +64,7 @@ const TITLE_SIZE_PRESETS: Record<string, string> = {
           <p class="text-sm text-[var(--muted-foreground)] mt-1">{{ key | translate }}</p>
         }
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2 shrink-0">
         <ng-content />
       </div>
     </header>
