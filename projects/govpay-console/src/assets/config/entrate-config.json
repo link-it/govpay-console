@@ -58,8 +58,7 @@
         "header": "Entrate.Columns.Descrizione",
         "cell": {
           "type": "text",
-          "field": "descrizione",
-          "truncate": 60
+          "field": "descrizione"
         },
         "link": true,
         "sortable": true

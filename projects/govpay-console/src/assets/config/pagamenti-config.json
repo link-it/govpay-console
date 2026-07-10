@@ -64,8 +64,7 @@
         "header": "Pagamenti.Columns.Versante",
         "cell": {
           "type": "text",
-          "field": "soggettoVersante.anagrafica",
-          "truncate": 30
+          "field": "soggettoVersante.anagrafica"
         }
       },
       {

@@ -70,8 +70,7 @@
           "type": "text",
           "field": "tipoEvento",
           "i18nPrefix": "GiornaleEventi.Tipi",
-          "i18nPrefixField": "componente",
-          "truncate": 60
+          "i18nPrefixField": "componente"
         }
       },
       {
@@ -80,8 +79,7 @@
         "cell": {
           "type": "text",
           "field": "componente",
-          "i18nPrefix": "GiornaleEventi.Componenti",
-          "truncate": 30
+          "i18nPrefix": "GiornaleEventi.Componenti"
         }
       },
       {

@@ -49,8 +49,7 @@
         "header": "Incassi.Columns.Dominio",
         "cell": {
           "type": "text",
-          "field": "dominio.ragioneSociale",
-          "truncate": 30
+          "field": "dominio.ragioneSociale"
         }
       },
       {
@@ -58,8 +57,7 @@
         "header": "Incassi.Columns.Causale",
         "cell": {
           "type": "text",
-          "field": "causale",
-          "truncate": 30
+          "field": "causale"
         }
       },
       {
@@ -123,7 +121,6 @@
           "type": "text",
           "field": "causale",
           "hideEmpty": true,
-          "truncate": 60,
           "tooltip": "Incassi.Detail.Causale"
         }
       ],

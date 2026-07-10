@@ -34,8 +34,7 @@
         "sortable": true,
         "cell": {
           "type": "text",
-          "field": "descrizione",
-          "truncate": 30
+          "field": "descrizione"
         },
         "link": true
       },

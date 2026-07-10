@@ -13,6 +13,17 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.26.0] — 2026-07-10
+
+### Aggiunto
+
+- **`lnk-item-type` — attributo `wrap` per il testo** — il campo `text` può
+  andare **a capo** (`break-words`, mostrato per intero — default) oppure essere
+  **troncato** su una riga con ellissi (`wrap: false`), con il valore completo
+  esposto nel `title` al passaggio del mouse. Nuovo campo `ItemTypeElement.wrap`.
+
+---
+
 ## [0.25.2] — 2026-07-10
 
 ### Risolto

@@ -38,8 +38,7 @@
         "header": "Rendicontazioni.Columns.Dominio",
         "cell": {
           "type": "text",
-          "field": "ragioneSocialeDominio",
-          "truncate": 30
+          "field": "ragioneSocialeDominio"
         }
       },
       {
@@ -47,8 +46,7 @@
         "header": "Rendicontazioni.Columns.Psp",
         "cell": {
           "type": "text",
-          "field": "ragioneSocialePsp",
-          "truncate": 30
+          "field": "ragioneSocialePsp"
         }
       },
       {

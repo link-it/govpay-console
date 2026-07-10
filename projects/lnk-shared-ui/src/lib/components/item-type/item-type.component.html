@@ -1,7 +1,8 @@
 @if (visible()) {
   @switch (elem().type) {
     @case ('text') {
-      <span [ngClass]="elem().class || ''"
+      <span [ngClass]="textClass()"
+            [attr.title]="textTitle()"
             [lnkTooltip]="tooltip()"
             [lnkTooltipPosition]="tooltipPlacement()"
             [lnkTooltipDisabled]="!tooltip()"

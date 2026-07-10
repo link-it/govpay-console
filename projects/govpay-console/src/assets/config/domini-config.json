@@ -33,8 +33,7 @@
         "header": "Domini.Columns.RagioneSociale",
         "cell": {
           "type": "text",
-          "field": "ragioneSociale",
-          "truncate": 40
+          "field": "ragioneSociale"
         },
         "link": true,
         "sortable": true

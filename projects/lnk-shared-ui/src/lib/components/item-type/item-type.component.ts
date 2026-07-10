@@ -141,6 +141,22 @@ export class ItemTypeComponent {
     return String(v);
   });
 
+  /**
+   * Classe del `text`: `break-words` (default, va a capo e mostra tutto) oppure
+   * `truncate` (una riga con ellissi) se `elem.wrap === false`. Concatena `elem.class`.
+   */
+  readonly textClass = computed<string>(() => {
+    const e = this.elem();
+    const mode = e.wrap === false ? 'block truncate' : 'break-words';
+    return e.class ? `${mode} ${e.class}` : mode;
+  });
+
+  /** Title nativo col valore completo quando il testo è troncato (e senza tooltip esplicito). */
+  readonly textTitle = computed<string | null>(() => {
+    const e = this.elem();
+    return e.type === 'text' && e.wrap === false && !this.tooltip() ? this.value() : null;
+  });
+
   /** Label sopra/lato (per status/label). */
   readonly labelText = computed<string>(() => {
     const e = this.elem();

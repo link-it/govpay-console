@@ -33,8 +33,7 @@
         "header": "Intermediari.Columns.Denominazione",
         "cell": {
           "type": "text",
-          "field": "denominazione",
-          "truncate": 30
+          "field": "denominazione"
         },
         "link": true,
         "sortable": true

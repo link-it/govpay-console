@@ -79,6 +79,12 @@ export interface ItemTypeElement {
   /** Per type=`text`: numero massimo caratteri (con `…`). */
   truncate?: number;
   /**
+   * Per type=`text`: modalità di visualizzazione del testo lungo.
+   * - `true` / assente (default): va **a capo** con `break-words` (mostrato per intero);
+   * - `false`: **troncato** su una riga con ellissi, valore completo nel `title` al passaggio.
+   */
+  wrap?: boolean;
+  /**
    * Per type=`text`: prefisso i18n per tradurre i valori enum-like.
    *
    * Quando set, il valore raw viene risolto come chiave i18n
