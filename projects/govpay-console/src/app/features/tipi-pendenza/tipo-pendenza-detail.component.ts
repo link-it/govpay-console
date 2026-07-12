@@ -76,7 +76,7 @@ export class TipoPendenzaDetailComponent implements OnInit {
   });
 
   /** Rende leggibile un blocco config opaco (read-only). */
-  formatJson(payload: Record<string, unknown> | undefined): string {
+  formatJson(payload: unknown): string {
     return payload ? JSON.stringify(payload, null, 2) : '';
   }
 

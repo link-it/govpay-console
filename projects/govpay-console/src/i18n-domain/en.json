@@ -740,7 +740,25 @@
       "Aggiornato": "Pending type updated.",
       "SalvaErrore": "Save failed.",
       "ConflittoId": "A pending type with this ID already exists.",
-      "ConflittoConcorrenza": "The pending type was modified by another user. Reload and retry."
+      "ConflittoConcorrenza": "The pending type was modified by another user. Reload and retry.",
+      "TabDati": "Data",
+      "TabPortaleBackoffice": "Backoffice portal",
+      "TabPortalePagamento": "Payment portal",
+      "VerificaCampi": "Check the fields: some contain invalid JSON.",
+      "Invalido": "Invalid data: check the configuration fields."
+    },
+    "Config": {
+      "Abilitato": "Enabled",
+      "FormInserimento": "Data entry form",
+      "TipoLayout": "Layout type",
+      "Nessuno": "None",
+      "Definizione": "Definition",
+      "Impaginazione": "Layout",
+      "Validazione": "Validation (JSON Schema)",
+      "Trasformazione": "Data transformation",
+      "TipoTemplate": "Template type",
+      "TemplateDefinizione": "Template",
+      "Inoltro": "Forward (application)"
     }
   },
   "Applicazioni": {
@@ -1143,5 +1161,10 @@
     "Ruoli": "Roles",
     "Impostazioni": "Settings",
     "Profilo": "Profile"
+  },
+  "JsonField": {
+    "Carica": "Load from file",
+    "Svuota": "Clear",
+    "NonValido": "Invalid JSON"
   }
 }

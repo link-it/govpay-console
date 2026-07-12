@@ -960,7 +960,25 @@
       "Aggiornato": "Tipo pendenza aggiornato.",
       "SalvaErrore": "Salvataggio non riuscito.",
       "ConflittoId": "Esiste già un tipo pendenza con questo ID.",
-      "ConflittoConcorrenza": "Il tipo pendenza è stato modificato da un altro utente. Ricarica e riprova."
+      "ConflittoConcorrenza": "Il tipo pendenza è stato modificato da un altro utente. Ricarica e riprova.",
+      "TabDati": "Dati",
+      "TabPortaleBackoffice": "Portale backoffice",
+      "TabPortalePagamento": "Portale pagamento",
+      "VerificaCampi": "Verifica i campi: alcuni contengono JSON non valido.",
+      "Invalido": "Dati non validi: verifica i campi di configurazione."
+    },
+    "Config": {
+      "Abilitato": "Abilitato",
+      "FormInserimento": "Form di inserimento dati",
+      "TipoLayout": "Tipo layout",
+      "Nessuno": "Nessuno",
+      "Definizione": "Definizione",
+      "Impaginazione": "Impaginazione",
+      "Validazione": "Validazione (JSON Schema)",
+      "Trasformazione": "Trasformazione dati",
+      "TipoTemplate": "Tipo template",
+      "TemplateDefinizione": "Template",
+      "Inoltro": "Inoltro (applicazione)"
     }
   },
   "Applicazioni": {
@@ -1363,5 +1381,10 @@
     "Ruoli": "Ruoli",
     "Impostazioni": "Impostazioni",
     "Profilo": "Profilo"
+  },
+  "JsonField": {
+    "Carica": "Carica da file",
+    "Svuota": "Svuota",
+    "NonValido": "JSON non valido"
   }
 }

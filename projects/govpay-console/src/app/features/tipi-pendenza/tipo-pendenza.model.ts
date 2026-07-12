@@ -21,8 +21,66 @@
 
 import type { PaginationParams } from '@core/models';
 
-/** Blocco di configurazione opaco (non editato dall'UI base). */
+/** Blocco di configurazione opaco (JSON libero, es. `visualizzazione`). */
 export type TipoPendenzaConfig = Record<string, unknown>;
+
+/** Definizione form di caricamento (portale backoffice/pagamento). */
+export interface TipoPendenzaFormDef {
+  /** Linguaggio della form (es. `angular2-json-schema-form`, `surveyjs`). */
+  tipo?: string;
+  /** Definizione della form (JSON). */
+  definizione?: unknown;
+  /** Solo portale pagamento: definizione dell'impaginazione (JSON). */
+  impaginazione?: unknown;
+}
+
+/** Template di trasformazione dell'input in una pendenza. */
+export interface TipoPendenzaTrasformazione {
+  /** Tipo template (es. `freemarker`). */
+  tipo?: string;
+  /** Definizione del template (JSON). */
+  definizione?: unknown;
+}
+
+/** Configurazione caricamento pendenze da un portale (backoffice o pagamento). */
+export interface TipoPendenzaPortale {
+  abilitato?: boolean;
+  form?: TipoPendenzaFormDef;
+  /** JSON Schema di validazione dell'input (JSON). */
+  validazione?: unknown;
+  trasformazione?: TipoPendenzaTrasformazione;
+  /** idA2A dell'applicazione verso cui inoltrare la pendenza. */
+  inoltro?: string;
+}
+
+/** Singolo promemoria (avviso / ricevuta / scadenza) di un canale di avvisatura. */
+export interface TipoPendenzaPromemoria {
+  abilitato?: boolean;
+  tipo?: string;
+  oggetto?: unknown;
+  messaggio?: unknown;
+  /** Solo avviso/ricevuta via mail. */
+  allegaPdf?: boolean;
+  /** Solo ricevuta. */
+  soloEseguiti?: boolean;
+  /** Solo scadenza: giorni di preavviso. */
+  preavviso?: number;
+}
+
+/** Configurazione di un canale di avvisatura (mail o App IO). */
+export interface TipoPendenzaAvvisatura {
+  promemoriaAvviso?: TipoPendenzaPromemoria;
+  promemoriaRicevuta?: TipoPendenzaPromemoria;
+  promemoriaScadenza?: TipoPendenzaPromemoria;
+}
+
+/** Configurazione del tracciato CSV per il caricamento massivo. */
+export interface TipoPendenzaTracciatoCsv {
+  tipo?: string;
+  intestazione?: string;
+  richiesta?: unknown;
+  risposta?: unknown;
+}
 
 /** Proiezione leggera per le liste (schema `TipoPendenzaSummary`). */
 export interface TipoPendenzaSummary {
@@ -38,12 +96,12 @@ export interface TipoPendenza {
   codificaIUV?: string;
   pagaTerzi?: boolean;
   abilitato?: boolean;
-  portaleBackoffice?: TipoPendenzaConfig;
-  portalePagamento?: TipoPendenzaConfig;
-  avvisaturaMail?: TipoPendenzaConfig;
-  avvisaturaAppIO?: TipoPendenzaConfig;
+  portaleBackoffice?: TipoPendenzaPortale;
+  portalePagamento?: TipoPendenzaPortale;
+  avvisaturaMail?: TipoPendenzaAvvisatura;
+  avvisaturaAppIO?: TipoPendenzaAvvisatura;
   visualizzazione?: TipoPendenzaConfig;
-  tracciatoCsv?: TipoPendenzaConfig;
+  tracciatoCsv?: TipoPendenzaTracciatoCsv;
 }
 
 /** Body per la creazione (schema `TipoPendenzaCreate`). */
@@ -53,12 +111,12 @@ export interface TipoPendenzaCreate {
   codificaIUV?: string;
   pagaTerzi?: boolean;
   abilitato?: boolean;
-  portaleBackoffice?: TipoPendenzaConfig;
-  portalePagamento?: TipoPendenzaConfig;
-  avvisaturaMail?: TipoPendenzaConfig;
-  avvisaturaAppIO?: TipoPendenzaConfig;
+  portaleBackoffice?: TipoPendenzaPortale;
+  portalePagamento?: TipoPendenzaPortale;
+  avvisaturaMail?: TipoPendenzaAvvisatura;
+  avvisaturaAppIO?: TipoPendenzaAvvisatura;
   visualizzazione?: TipoPendenzaConfig;
-  tracciatoCsv?: TipoPendenzaConfig;
+  tracciatoCsv?: TipoPendenzaTracciatoCsv;
 }
 
 /** Body per il replace completo (schema `TipoPendenzaReplace`, id dal path). */
@@ -67,12 +125,12 @@ export interface TipoPendenzaReplace {
   codificaIUV?: string;
   pagaTerzi?: boolean;
   abilitato?: boolean;
-  portaleBackoffice?: TipoPendenzaConfig;
-  portalePagamento?: TipoPendenzaConfig;
-  avvisaturaMail?: TipoPendenzaConfig;
-  avvisaturaAppIO?: TipoPendenzaConfig;
+  portaleBackoffice?: TipoPendenzaPortale;
+  portalePagamento?: TipoPendenzaPortale;
+  avvisaturaMail?: TipoPendenzaAvvisatura;
+  avvisaturaAppIO?: TipoPendenzaAvvisatura;
   visualizzazione?: TipoPendenzaConfig;
-  tracciatoCsv?: TipoPendenzaConfig;
+  tracciatoCsv?: TipoPendenzaTracciatoCsv;
 }
 
 /** Filtri lista tipi pendenza + paginazione V2. */
