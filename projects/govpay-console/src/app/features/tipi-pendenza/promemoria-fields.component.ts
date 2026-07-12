@@ -12,7 +12,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { ReactiveFormsModule, type FormGroup } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
-import { JsonFieldComponent } from '@core/ui/json-field/json-field.component';
+import { CodeFieldComponent } from '@core/ui/code-field/code-field.component';
 
 /**
  * Blocco campi di un singolo promemoria di avvisatura (avviso / scadenza /
@@ -23,7 +23,7 @@ import { JsonFieldComponent } from '@core/ui/json-field/json-field.component';
 @Component({
   selector: 'lnk-promemoria-fields',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, JsonFieldComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, CodeFieldComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
@@ -46,14 +46,14 @@ import { JsonFieldComponent } from '@core/ui/json-field/json-field.component';
           <option value="freemarker">Freemarker</option>
         </select>
       </label>
-      <label class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1">
         <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Oggetto' | translate }}</span>
-        <lnk-json-field formControlName="oggetto" [rows]="4" />
-      </label>
-      <label class="flex flex-col gap-1">
+        <lnk-code-field formControlName="oggetto" format="auto" [rows]="4" />
+      </div>
+      <div class="flex flex-col gap-1">
         <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Messaggio' | translate }}</span>
-        <lnk-json-field formControlName="messaggio" [rows]="6" />
-      </label>
+        <lnk-code-field formControlName="messaggio" format="auto" [rows]="6" />
+      </div>
       @if (hasAllegaPdf()) {
         <label class="flex items-center gap-2">
           <input type="checkbox" formControlName="allegaPdf" class="h-4 w-4 accent-[var(--primary)]" />

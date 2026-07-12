@@ -1180,9 +1180,15 @@
     "Impostazioni": "Settings",
     "Profilo": "Profile"
   },
-  "JsonField": {
+  "CodeField": {
     "Carica": "Load from file",
-    "Svuota": "Clear",
+    "Reset": "Reset",
+    "Mostra": "Show",
+    "Nascondi": "Hide",
+    "Vuoto": "No content — load a file or drop it here",
+    "Presente": "Content present",
+    "Caratteri": "characters",
+    "Drop": "Drop the file to load it",
     "NonValido": "Invalid JSON"
   }
 }

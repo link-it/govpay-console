@@ -25,7 +25,7 @@ import {
   RequiredLabelDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { JsonFieldComponent } from '@core/ui/json-field/json-field.component';
+import { CodeFieldComponent } from '@core/ui/code-field/code-field.component';
 import { PromemoriaFieldsComponent } from './promemoria-fields.component';
 import { ApplicazioniConsoleApi } from '@feature/applicazioni/applicazioni.console-api';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
@@ -61,7 +61,7 @@ const FORM_TIPO_OPTIONS = ['angular2-json-schema-form', 'surveyjs'];
     ListStickyToolbarDirective,
     RequiredLabelDirective,
     TabsComponent,
-    JsonFieldComponent,
+    CodeFieldComponent,
     PromemoriaFieldsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

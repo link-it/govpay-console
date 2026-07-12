@@ -63,8 +63,13 @@ import {
   bootstrapFiletypeJson,
   bootstrapFiletypeXml,
   bootstrapEye,
+  bootstrapEyeSlash,
   bootstrapPencil,
   bootstrapCalendarEvent,
+  bootstrapFileEarmark,
+  bootstrapFileEarmarkCode,
+  bootstrapUpload,
+  bootstrapArrowCounterclockwise,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -125,6 +130,11 @@ export const APP_ICONS = {
   bootstrapFiletypeJson,
   bootstrapFiletypeXml,
   bootstrapEye,
+  bootstrapEyeSlash,
   bootstrapPencil,
   bootstrapCalendarEvent,
+  bootstrapFileEarmark,
+  bootstrapFileEarmarkCode,
+  bootstrapUpload,
+  bootstrapArrowCounterclockwise,
 };

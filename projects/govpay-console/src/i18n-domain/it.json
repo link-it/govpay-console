@@ -1400,9 +1400,15 @@
     "Impostazioni": "Impostazioni",
     "Profilo": "Profilo"
   },
-  "JsonField": {
+  "CodeField": {
     "Carica": "Carica da file",
-    "Svuota": "Svuota",
+    "Reset": "Reset",
+    "Mostra": "Mostra",
+    "Nascondi": "Nascondi",
+    "Vuoto": "Nessun contenuto — carica un file o trascinalo qui",
+    "Presente": "Contenuto presente",
+    "Caratteri": "caratteri",
+    "Drop": "Rilascia il file per caricarlo",
     "NonValido": "JSON non valido"
   }
 }
