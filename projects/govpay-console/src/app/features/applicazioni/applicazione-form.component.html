@@ -79,12 +79,12 @@
           <lnk-acl-editor [(acl)]="aclValue" />
         </lnk-detail-section>
 
-        <div class="flex items-center gap-2">
+        <lnk-form-action-bar>
           <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
             {{ 'Common.Save' | translate }}
           </button>
           <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
-        </div>
+        </lnk-form-action-bar>
       </form>
     }
   </div>

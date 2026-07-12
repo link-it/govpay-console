@@ -25,6 +25,7 @@ import {
   RequiredLabelDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { DominiConsoleApi } from './domini.console-api';
 import type { DominioCreate, DominioReplace } from './dominio.model';
 
@@ -44,6 +45,7 @@ const ID_PATTERN = /^[0-9]{11}$/;
     LoadingComponent,
     ListStickyToolbarDirective,
     RequiredLabelDirective,
+    FormActionBarComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dominio-form.component.html',

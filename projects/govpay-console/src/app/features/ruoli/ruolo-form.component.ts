@@ -26,6 +26,7 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail, type Acl } from '@core/models';
 import { AclEditorComponent } from '@core/ui/acl-editor/acl-editor.component';
+import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { RuoliConsoleApi } from './ruoli.console-api';
 import type { RuoloCreate, RuoloReplace } from './ruolo.model';
 
@@ -46,6 +47,7 @@ const ID_PATTERN = /^.{1,255}$/;
     ListStickyToolbarDirective,
     RequiredLabelDirective,
     AclEditorComponent,
+    FormActionBarComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ruolo-form.component.html',

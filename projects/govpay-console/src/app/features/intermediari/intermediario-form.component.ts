@@ -31,6 +31,7 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { RequiredLabelDirective } from '@linkit/shared-ui';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { IntermediarioCreate, IntermediarioReplace } from './intermediario.model';
@@ -51,6 +52,7 @@ const ID_PATTERN = /^[a-zA-Z0-9\-_]{1,35}$/;
     LoadingComponent,
     ListStickyToolbarDirective,
     RequiredLabelDirective,
+    FormActionBarComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './intermediario-form.component.html',

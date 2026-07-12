@@ -67,14 +67,14 @@
               <span class="text-sm">{{ 'Intermediari.Detail.Abilitato' | translate }}</span>
             </label>
 
-            <div class="flex items-center gap-2 pt-2">
-              <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
-                {{ 'Common.Save' | translate }}
-              </button>
-              <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
-            </div>
           </div>
         </lnk-detail-section>
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
       </form>
     }
   </div>

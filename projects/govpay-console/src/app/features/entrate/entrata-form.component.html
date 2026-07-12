@@ -15,8 +15,8 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <lnk-detail-section titleKey="Entrate.Detail.Generali">
-      <form [formGroup]="form" (ngSubmit)="save()" class="max-w-2xl space-y-5">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-5">
+        <lnk-detail-section titleKey="Entrate.Detail.Generali">
         <!-- ID entrata (solo in creazione; in modifica è disabilitato) -->
         <label class="flex flex-col gap-1">
           <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idEntrata">{{ 'Entrate.Detail.IdEntrata' | translate }}</span>
@@ -65,14 +65,14 @@
           }
         </label>
 
-        <div class="flex items-center gap-2 pt-2">
+        </lnk-detail-section>
+        <lnk-form-action-bar>
           <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
             {{ 'Common.Save' | translate }}
           </button>
           <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
-        </div>
+        </lnk-form-action-bar>
       </form>
-      </lnk-detail-section>
     }
   </div>
 </section>

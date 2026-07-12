@@ -26,6 +26,7 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail, type Acl } from '@core/models';
 import { AclEditorComponent } from '@core/ui/acl-editor/acl-editor.component';
+import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { RefMultiselectComponent, type RefOption } from '@core/ui/ref-multiselect/ref-multiselect.component';
 import { TipiPendenzaConsoleApi } from '@feature/tipi-pendenza';
 import { RuoliConsoleApi } from '@feature/ruoli';
@@ -47,6 +48,7 @@ import type { OperatoreCreate, OperatoreReplace } from './operatore.model';
     RequiredLabelDirective,
     AclEditorComponent,
     RefMultiselectComponent,
+    FormActionBarComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './operatore-form.component.html',

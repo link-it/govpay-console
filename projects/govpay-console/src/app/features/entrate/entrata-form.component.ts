@@ -25,6 +25,7 @@ import {
   RequiredLabelDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { EntrateConsoleApi } from './entrate.console-api';
 import { TIPI_CONTABILITA, type EntrataCreate, type EntrataReplace, type TipoContabilita } from './entrata.model';
 
@@ -44,6 +45,7 @@ const ID_PATTERN = /^.{1,255}$/;
     LoadingComponent,
     ListStickyToolbarDirective,
     RequiredLabelDirective,
+    FormActionBarComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './entrata-form.component.html',
