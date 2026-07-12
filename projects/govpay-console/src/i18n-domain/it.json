@@ -965,7 +965,9 @@
       "TabPortaleBackoffice": "Portale backoffice",
       "TabPortalePagamento": "Portale pagamento",
       "VerificaCampi": "Verifica i campi: alcuni contengono JSON non valido.",
-      "Invalido": "Dati non validi: verifica i campi di configurazione."
+      "Invalido": "Dati non validi: verifica i campi di configurazione.",
+      "TabAvvisaturaMail": "Avvisatura email",
+      "TabAvvisaturaAppIO": "Avvisatura App IO"
     },
     "Config": {
       "Abilitato": "Abilitato",
@@ -978,7 +980,15 @@
       "Trasformazione": "Trasformazione dati",
       "TipoTemplate": "Tipo template",
       "TemplateDefinizione": "Template",
-      "Inoltro": "Inoltro (applicazione)"
+      "Inoltro": "Inoltro (applicazione)",
+      "Oggetto": "Template oggetto",
+      "Messaggio": "Template messaggio",
+      "Preavviso": "Giorni di preavviso",
+      "AllegaPdf": "Allega PDF",
+      "SoloEseguiti": "Solo pagamenti eseguiti",
+      "PromemoriaAvviso": "Notifica avviso di pagamento",
+      "PromemoriaScadenza": "Promemoria scadenza pagamento",
+      "PromemoriaRicevuta": "Notifica ricevuta di pagamento"
     }
   },
   "Applicazioni": {

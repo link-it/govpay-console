@@ -745,7 +745,9 @@
       "TabPortaleBackoffice": "Backoffice portal",
       "TabPortalePagamento": "Payment portal",
       "VerificaCampi": "Check the fields: some contain invalid JSON.",
-      "Invalido": "Invalid data: check the configuration fields."
+      "Invalido": "Invalid data: check the configuration fields.",
+      "TabAvvisaturaMail": "Email notifications",
+      "TabAvvisaturaAppIO": "App IO notifications"
     },
     "Config": {
       "Abilitato": "Enabled",
@@ -758,7 +760,15 @@
       "Trasformazione": "Data transformation",
       "TipoTemplate": "Template type",
       "TemplateDefinizione": "Template",
-      "Inoltro": "Forward (application)"
+      "Inoltro": "Forward (application)",
+      "Oggetto": "Subject template",
+      "Messaggio": "Message template",
+      "Preavviso": "Days in advance",
+      "AllegaPdf": "Attach PDF",
+      "SoloEseguiti": "Executed payments only",
+      "PromemoriaAvviso": "Payment notice",
+      "PromemoriaScadenza": "Payment due reminder",
+      "PromemoriaRicevuta": "Payment receipt"
     }
   },
   "Applicazioni": {

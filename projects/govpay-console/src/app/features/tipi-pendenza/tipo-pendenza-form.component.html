@@ -163,6 +163,28 @@
           </lnk-detail-section>
         </div>
 
+        <!-- ── Avvisatura email ─────────────────────────────────── -->
+        <div [hidden]="activeTab() !== 'avvMail'">
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabAvvisaturaMail">
+            <div class="space-y-6 max-w-2xl">
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaAvviso" titleKey="TipiPendenza.Config.PromemoriaAvviso" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaScadenza" titleKey="TipiPendenza.Config.PromemoriaScadenza" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaRicevuta" titleKey="TipiPendenza.Config.PromemoriaRicevuta" />
+            </div>
+          </lnk-detail-section>
+        </div>
+
+        <!-- ── Avvisatura App IO ────────────────────────────────── -->
+        <div [hidden]="activeTab() !== 'avvAppIO'">
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabAvvisaturaAppIO">
+            <div class="space-y-6 max-w-2xl">
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaAvviso" titleKey="TipiPendenza.Config.PromemoriaAvviso" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaScadenza" titleKey="TipiPendenza.Config.PromemoriaScadenza" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaRicevuta" titleKey="TipiPendenza.Config.PromemoriaRicevuta" />
+            </div>
+          </lnk-detail-section>
+        </div>
+
         @if (form.invalid && form.touched) {
           <p class="text-xs text-[var(--status-danger-text)]">{{ 'TipiPendenza.Form.VerificaCampi' | translate }}</p>
         }

@@ -26,12 +26,15 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { JsonFieldComponent } from '@core/ui/json-field/json-field.component';
+import { PromemoriaFieldsComponent } from './promemoria-fields.component';
 import { ApplicazioniConsoleApi } from '@feature/applicazioni/applicazioni.console-api';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
 import type {
   TipoPendenza,
+  TipoPendenzaAvvisatura,
   TipoPendenzaCreate,
   TipoPendenzaPortale,
+  TipoPendenzaPromemoria,
   TipoPendenzaReplace,
 } from './tipo-pendenza.model';
 
@@ -58,6 +61,7 @@ const FORM_TIPO_OPTIONS = ['angular2-json-schema-form', 'surveyjs'];
     RequiredLabelDirective,
     TabsComponent,
     JsonFieldComponent,
+    PromemoriaFieldsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tipo-pendenza-form.component.html',
@@ -86,11 +90,13 @@ export class TipoPendenzaFormComponent implements OnInit {
   /** Opzioni per il select `inoltro` (idA2A delle applicazioni). */
   readonly applicazioni = signal<string[]>([]);
 
-  readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento'>('dati');
+  readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO'>('dati');
   readonly tabs = computed<TabDef[]>(() => [
     { id: 'dati', labelKey: 'TipiPendenza.Form.TabDati' },
     { id: 'backoffice', labelKey: 'TipiPendenza.Form.TabPortaleBackoffice' },
     { id: 'pagamento', labelKey: 'TipiPendenza.Form.TabPortalePagamento' },
+    { id: 'avvMail', labelKey: 'TipiPendenza.Form.TabAvvisaturaMail' },
+    { id: 'avvAppIO', labelKey: 'TipiPendenza.Form.TabAvvisaturaAppIO' },
   ]);
 
   readonly form = this.fb.group({
@@ -101,7 +107,31 @@ export class TipoPendenzaFormComponent implements OnInit {
     abilitato: this.fb.control(true),
     portaleBackoffice: this.buildPortaleGroup(false),
     portalePagamento: this.buildPortaleGroup(true),
+    avvisaturaMail: this.buildAvvisaturaGroup(true),
+    avvisaturaAppIO: this.buildAvvisaturaGroup(false),
   });
+
+  /** Gruppo di un canale di avvisatura (mail o App IO). `mail` abilita `allegaPdf`. */
+  private buildAvvisaturaGroup(mail: boolean) {
+    return this.fb.group({
+      promemoriaAvviso: this.buildPromemoriaGroup({ allegaPdf: mail }),
+      promemoriaScadenza: this.buildPromemoriaGroup({ preavviso: true }),
+      promemoriaRicevuta: this.buildPromemoriaGroup({ allegaPdf: mail, soloEseguiti: true }),
+    });
+  }
+
+  /** Gruppo di un singolo promemoria. Campi opzionali per canale/tipo. */
+  private buildPromemoriaGroup(opts: { allegaPdf?: boolean; soloEseguiti?: boolean; preavviso?: boolean }) {
+    return this.fb.group({
+      abilitato: this.fb.control(false),
+      tipo: this.fb.control(''),
+      oggetto: this.fb.control<unknown>(null),
+      messaggio: this.fb.control<unknown>(null),
+      ...(opts.allegaPdf ? { allegaPdf: this.fb.control(false) } : {}),
+      ...(opts.soloEseguiti ? { soloEseguiti: this.fb.control(false) } : {}),
+      ...(opts.preavviso ? { preavviso: this.fb.control<number | null>(10) } : {}),
+    });
+  }
 
   /** Sottogruppo di un portale (backoffice/pagamento). `impaginazione` solo pagamento. */
   private buildPortaleGroup(withImpaginazione: boolean) {
@@ -167,6 +197,31 @@ export class TipoPendenzaFormComponent implements OnInit {
     });
     this.patchPortale(this.form.controls.portaleBackoffice, t.portaleBackoffice);
     this.patchPortale(this.form.controls.portalePagamento, t.portalePagamento);
+    this.patchAvvisatura(this.form.controls.avvisaturaMail, t.avvisaturaMail);
+    this.patchAvvisatura(this.form.controls.avvisaturaAppIO, t.avvisaturaAppIO);
+  }
+
+  private patchAvvisatura(group: ReturnType<TipoPendenzaFormComponent['buildAvvisaturaGroup']>, a?: TipoPendenzaAvvisatura): void {
+    if (!a) return;
+    this.patchPromemoria(group.controls.promemoriaAvviso, a.promemoriaAvviso);
+    this.patchPromemoria(group.controls.promemoriaScadenza, a.promemoriaScadenza);
+    this.patchPromemoria(group.controls.promemoriaRicevuta, a.promemoriaRicevuta);
+  }
+
+  private patchPromemoria(group: ReturnType<TipoPendenzaFormComponent['buildPromemoriaGroup']>, p?: TipoPendenzaPromemoria): void {
+    if (!p) return;
+    group.patchValue({
+      abilitato: p.abilitato ?? false,
+      tipo: p.tipo ?? '',
+      oggetto: p.oggetto ?? null,
+      messaggio: p.messaggio ?? null,
+    });
+    const allegaPdf = group.get('allegaPdf');
+    if (allegaPdf) allegaPdf.setValue(p.allegaPdf ?? false);
+    const soloEseguiti = group.get('soloEseguiti');
+    if (soloEseguiti) soloEseguiti.setValue(p.soloEseguiti ?? false);
+    const preavviso = group.get('preavviso');
+    if (preavviso) preavviso.setValue(p.preavviso ?? null);
   }
 
   private patchPortale(group: ReturnType<TipoPendenzaFormComponent['buildPortaleGroup']>, p?: TipoPendenzaPortale): void {
@@ -209,13 +264,44 @@ export class TipoPendenzaFormComponent implements OnInit {
     };
   }
 
-  /** Sotto-oggetti config non ancora editati (avvisatura/tracciato/visualizzazione), preservati. */
+  /** Ricostruisce un canale di avvisatura; `undefined` se tutti i promemoria sono vuoti. */
+  private buildAvvisatura(raw: Record<string, unknown>, loaded: TipoPendenzaAvvisatura | undefined): TipoPendenzaAvvisatura | undefined {
+    const out: TipoPendenzaAvvisatura = {
+      ...(loaded ?? {}),
+      promemoriaAvviso: this.buildPromemoria(raw['promemoriaAvviso'] as Record<string, unknown>, loaded?.promemoriaAvviso),
+      promemoriaScadenza: this.buildPromemoria(raw['promemoriaScadenza'] as Record<string, unknown>, loaded?.promemoriaScadenza),
+      promemoriaRicevuta: this.buildPromemoria(raw['promemoriaRicevuta'] as Record<string, unknown>, loaded?.promemoriaRicevuta),
+    };
+    const hasAny = out.promemoriaAvviso || out.promemoriaScadenza || out.promemoriaRicevuta;
+    return hasAny ? out : undefined;
+  }
+
+  /** Costruisce un promemoria; `undefined` se disabilitato e senza contenuto. */
+  private buildPromemoria(raw: Record<string, unknown> | undefined, loaded: TipoPendenzaPromemoria | undefined): TipoPendenzaPromemoria | undefined {
+    if (!raw) return loaded;
+    const s = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+    const p: TipoPendenzaPromemoria = {
+      ...(loaded ?? {}),
+      abilitato: !!raw['abilitato'],
+      tipo: s(raw['tipo']),
+      oggetto: raw['oggetto'] ?? undefined,
+      messaggio: raw['messaggio'] ?? undefined,
+    };
+    if ('allegaPdf' in raw) p.allegaPdf = !!raw['allegaPdf'];
+    if ('soloEseguiti' in raw) p.soloEseguiti = !!raw['soloEseguiti'];
+    if ('preavviso' in raw) {
+      const n = raw['preavviso'];
+      p.preavviso = n == null || n === '' ? undefined : Number(n);
+    }
+    const empty = !p.abilitato && p.tipo == null && p.oggetto == null && p.messaggio == null;
+    return empty ? undefined : p;
+  }
+
+  /** Sotto-oggetti config non ancora editati (tracciato/visualizzazione), preservati. */
   private preservedConfig(): Partial<TipoPendenzaReplace> {
     const l = this.loaded;
     if (!l) return {};
     return {
-      avvisaturaMail: l.avvisaturaMail,
-      avvisaturaAppIO: l.avvisaturaAppIO,
       visualizzazione: l.visualizzazione,
       tracciatoCsv: l.tracciatoCsv,
     };
@@ -230,6 +316,8 @@ export class TipoPendenzaFormComponent implements OnInit {
     const raw = this.form.getRawValue() as Record<string, unknown>;
     const portaleBackoffice = this.buildPortale(raw['portaleBackoffice'] as Record<string, unknown>, this.loaded?.portaleBackoffice);
     const portalePagamento = this.buildPortale(raw['portalePagamento'] as Record<string, unknown>, this.loaded?.portalePagamento);
+    const avvisaturaMail = this.buildAvvisatura(raw['avvisaturaMail'] as Record<string, unknown>, this.loaded?.avvisaturaMail);
+    const avvisaturaAppIO = this.buildAvvisatura(raw['avvisaturaAppIO'] as Record<string, unknown>, this.loaded?.avvisaturaAppIO);
 
     if (this.editId) {
       const body: TipoPendenzaReplace = {
@@ -240,6 +328,8 @@ export class TipoPendenzaFormComponent implements OnInit {
         abilitato: raw['abilitato'] as boolean,
         portaleBackoffice,
         portalePagamento,
+        avvisaturaMail,
+        avvisaturaAppIO,
       };
       this.api
         .replace(this.editId, body, this.etag)
@@ -259,6 +349,8 @@ export class TipoPendenzaFormComponent implements OnInit {
         abilitato: raw['abilitato'] as boolean,
         portaleBackoffice,
         portalePagamento,
+        avvisaturaMail,
+        avvisaturaAppIO,
       };
       this.api
         .create(body)
