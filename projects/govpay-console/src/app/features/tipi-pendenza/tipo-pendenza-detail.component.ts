@@ -28,6 +28,7 @@ import {
   type TabDef,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { decodeBase64 } from '@core/utils/base64';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
 import type { TipoPendenza, TipoPendenzaAvvisatura, TipoPendenzaPortale, TipoPendenzaPromemoria } from './tipo-pendenza.model';
 
@@ -154,9 +155,20 @@ export class TipoPendenzaDetailComponent implements OnInit {
   readonly hasAvvAppIO = computed(() => this.appIoPromemoria().length > 0);
   readonly hasAltre = computed(() => !!this.tipo()?.tracciatoCsv || !!this.tipo()?.visualizzazione);
 
-  /** Rende leggibile un blocco JSON opaco (read-only). */
+  /**
+   * Rende leggibile un blocco config (read-only). Il valore è memorizzato come
+   * stringa base64: viene decodificato e, se è JSON, indentato; i template
+   * freemarker restano grezzi.
+   */
   formatJson(payload: unknown): string {
-    return payload ? JSON.stringify(payload, null, 2) : '';
+    if (payload == null || payload === '') return '';
+    let text = typeof payload === 'string' ? decodeBase64(payload) : JSON.stringify(payload, null, 2);
+    try {
+      text = JSON.stringify(JSON.parse(text), null, 2);
+    } catch {
+      /* contenuto non-JSON (es. freemarker): mostrato grezzo */
+    }
+    return text;
   }
 
   ngOnInit(): void {

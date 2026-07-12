@@ -13,6 +13,7 @@ import { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal
 import { NG_VALIDATORS, NG_VALUE_ACCESSOR, type ControlValueAccessor, type ValidationErrors, type Validator } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { decodeBase64, encodeBase64 } from '@core/utils/base64';
 
 /** Formato del contenuto gestito dal campo. */
 export type CodeFieldFormat = 'json' | 'text' | 'auto';
@@ -26,13 +27,13 @@ export type CodeFieldFormat = 'json' | 'text' | 'auto';
  * sempre il pulsante di caricamento e, quando un dato è presente, il pulsante
  * di reset.
  *
- * Il valore del form control:
- * - `format="json"`: oggetto già parsato (o `null`); JSON non valido →
- *   errore `{ json: true }`.
- * - `format="text"`: sempre la stringa grezza (nessuna validazione).
- * - `format="auto"` (default): oggetto se il testo è JSON valido, altrimenti la
- *   stringa grezza. Round-trip sicuro sia per oggetti sia per template
- *   freemarker (che non sono JSON valido).
+ * Il valore del form control è la **stringa base64** del contenuto (o `null` se
+ * vuoto): decodificata in lettura (`writeValue`) e ricodificata in scrittura.
+ * `format` governa solo validazione e pretty-print del contenuto decodificato:
+ * - `format="json"`: valida il JSON; se non valido → errore `{ json: true }`.
+ * - `format="text"`: nessuna validazione, contenuto grezzo.
+ * - `format="auto"` (default): pretty-print se JSON valido, altrimenti grezzo
+ *   (es. template freemarker), senza errori.
  *
  * ```html
  * <lnk-code-field formControlName="validazione" format="json" [rows]="8" />
@@ -139,9 +140,21 @@ export class CodeFieldComponent implements ControlValueAccessor, Validator {
   private onTouched: () => void = () => {};
 
   writeValue(v: unknown): void {
-    if (v == null || v === '') this.text.set('');
-    else if (typeof v === 'string') this.text.set(v);
-    else this.text.set(JSON.stringify(v, null, 2));
+    if (v == null || v === '') {
+      this.text.set('');
+    } else {
+      // Il valore memorizzato è una stringa base64; oggetti legacy come fallback.
+      let content = typeof v === 'string' ? decodeBase64(v) : JSON.stringify(v, null, 2);
+      // Pretty-print se il contenuto decodificato è JSON valido (salvo `text`).
+      if (this.format() !== 'text') {
+        try {
+          content = JSON.stringify(JSON.parse(content), null, 2);
+        } catch {
+          /* contenuto non-JSON (es. template freemarker): mostrato grezzo */
+        }
+      }
+      this.text.set(content);
+    }
     this.invalid.set(false);
   }
   registerOnChange(fn: (v: unknown) => void): void {
@@ -238,22 +251,33 @@ export class CodeFieldComponent implements ControlValueAccessor, Validator {
     reader.readAsText(file);
   }
 
+  /**
+   * Emette il valore del control: stringa **base64** del contenuto (o `null` se
+   * vuoto). In `format="json"` un JSON non valido produce errore e valore
+   * `null`; in `text`/`auto` il contenuto è codificato così com'è.
+   */
   private emit(): void {
-    const { value, error } = this.parse(this.text());
-    this.invalid.set(error);
-    this.onChange(error ? null : value);
+    const text = this.text();
+    if (!text.trim()) {
+      this.invalid.set(false);
+      this.onChange(null);
+      return;
+    }
+    if (this.format() === 'json' && !this.isValidJson(text)) {
+      this.invalid.set(true);
+      this.onChange(null);
+      return;
+    }
+    this.invalid.set(false);
+    this.onChange(encodeBase64(text));
   }
 
-  /** Interpreta il testo secondo `format`, restituendo valore + flag errore. */
-  private parse(text: string): { value: unknown; error: boolean } {
-    if (!text.trim()) return { value: null, error: false };
-    const fmt = this.format();
-    if (fmt === 'text') return { value: text, error: false };
+  private isValidJson(text: string): boolean {
     try {
-      return { value: JSON.parse(text), error: false };
+      JSON.parse(text);
+      return true;
     } catch {
-      // json: errore; auto: stringa grezza (es. template freemarker).
-      return fmt === 'json' ? { value: null, error: true } : { value: text, error: false };
+      return false;
     }
   }
 }
