@@ -755,6 +755,7 @@
       "FormInserimento": "Data entry form",
       "TipoLayout": "Layout type",
       "Nessuno": "None",
+      "NonConfigurato": "Not configured",
       "Definizione": "Definition",
       "Impaginazione": "Layout",
       "Validazione": "Validation (JSON Schema)",

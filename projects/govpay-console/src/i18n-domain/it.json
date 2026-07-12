@@ -975,6 +975,7 @@
       "FormInserimento": "Form di inserimento dati",
       "TipoLayout": "Tipo layout",
       "Nessuno": "Nessuno",
+      "NonConfigurato": "Non configurato",
       "Definizione": "Definizione",
       "Impaginazione": "Impaginazione",
       "Validazione": "Validazione (JSON Schema)",

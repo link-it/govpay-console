@@ -1,19 +1,22 @@
 <section class="space-y-4 pb-6 lnk-detail-page">
-  <div lnkListStickyToolbar class="px-6 pt-6 pb-4">
-  <lnk-page-header [titleKey]="tipo()?.descrizione || tipo()?.idTipoPendenza || '—'" subtitleKey="TipiPendenza.Detail.Subtitle">
-    <div class="flex items-center gap-2">
-      @if (tipo(); as t) {
-        <a [routerLink]="['/tipi-pendenza', t.idTipoPendenza, 'modifica']" class="btn btn-primary btn-sm">
-          <ng-icon name="bootstrapPencil" size="1rem" />
-          <span>{{ 'TipiPendenza.Form.Modifica' | translate }}</span>
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header [titleKey]="tipo()?.descrizione || tipo()?.idTipoPendenza || '—'" subtitleKey="TipiPendenza.Detail.Subtitle">
+      <div class="flex items-center gap-2">
+        @if (tipo(); as t) {
+          <a [routerLink]="['/tipi-pendenza', t.idTipoPendenza, 'modifica']" class="btn btn-primary btn-sm">
+            <ng-icon name="bootstrapPencil" size="1rem" />
+            <span>{{ 'TipiPendenza.Form.Modifica' | translate }}</span>
+          </a>
+        }
+        <a routerLink="/tipi-pendenza" class="btn btn-secondary btn-sm">
+          <ng-icon name="bootstrapChevronLeft" size="1rem" />
+          <span>{{ 'Common.Back' | translate }}</span>
         </a>
-      }
-      <a routerLink="/tipi-pendenza" class="btn btn-secondary btn-sm">
-        <ng-icon name="bootstrapChevronLeft" size="1rem" />
-        <span>{{ 'Common.Back' | translate }}</span>
-      </a>
-    </div>
-  </lnk-page-header>
+      </div>
+    </lnk-page-header>
+    @if (tipo()) {
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
+    }
   </div>
 
   <div class="px-6 space-y-4">
@@ -29,33 +32,162 @@
   } @else if (loading() && !tipo()) {
     <lnk-loading />
   } @else if (tipo(); as t) {
-    <div class="flex items-center gap-2">
-      <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
-      @if (t.pagaTerzi) {
-        <lnk-status-badge tone="info" labelKey="TipiPendenza.Detail.PagaTerzi" />
+
+    <!-- DATI -->
+    @if (activeTab() === 'dati') {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
+        @if (t.pagaTerzi) {
+          <lnk-status-badge tone="info" labelKey="TipiPendenza.Detail.PagaTerzi" />
+        }
+      </div>
+      <lnk-detail-section titleKey="TipiPendenza.Detail.Generali">
+        <lnk-info-grid [items]="generaliItems()" />
+      </lnk-detail-section>
+    }
+
+    <!-- PORTALE BACKOFFICE -->
+    @if (activeTab() === 'backoffice') {
+      @if (hasBackoffice()) {
+        <lnk-detail-section titleKey="TipiPendenza.Detail.PortaleBackoffice">
+          <lnk-info-grid [items]="backofficeItems()" />
+          @if (t.portaleBackoffice?.form?.definizione) {
+            <div class="space-y-1 mt-3">
+              <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Definizione' | translate }}</div>
+              <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portaleBackoffice?.form?.definizione) }}</pre>
+            </div>
+          }
+          @if (t.portaleBackoffice?.validazione) {
+            <div class="space-y-1 mt-3">
+              <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Validazione' | translate }}</div>
+              <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portaleBackoffice?.validazione) }}</pre>
+            </div>
+          }
+          @if (t.portaleBackoffice?.trasformazione?.definizione) {
+            <div class="space-y-1 mt-3">
+              <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TemplateDefinizione' | translate }}</div>
+              <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portaleBackoffice?.trasformazione?.definizione) }}</pre>
+            </div>
+          }
+        </lnk-detail-section>
+      } @else {
+        <p class="text-sm text-[var(--muted-foreground)] py-4">{{ 'TipiPendenza.Config.NonConfigurato' | translate }}</p>
       }
-    </div>
-
-    <lnk-detail-section titleKey="TipiPendenza.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
-    </lnk-detail-section>
-
-    @if (t.portaleBackoffice) {
-      <lnk-detail-section titleKey="TipiPendenza.Detail.PortaleBackoffice">
-        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portaleBackoffice) }}</pre>
-      </lnk-detail-section>
     }
 
-    @if (t.portalePagamento) {
-      <lnk-detail-section titleKey="TipiPendenza.Detail.PortalePagamento">
-        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portalePagamento) }}</pre>
-      </lnk-detail-section>
+    <!-- PORTALE PAGAMENTO -->
+    @if (activeTab() === 'pagamento') {
+      @if (hasPagamento()) {
+        <lnk-detail-section titleKey="TipiPendenza.Detail.PortalePagamento">
+          <lnk-info-grid [items]="pagamentoItems()" />
+          @if (t.portalePagamento?.form?.definizione) {
+            <div class="space-y-1 mt-3">
+              <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Definizione' | translate }}</div>
+              <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portalePagamento?.form?.definizione) }}</pre>
+            </div>
+          }
+          @if (t.portalePagamento?.form?.impaginazione) {
+            <div class="space-y-1 mt-3">
+              <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Impaginazione' | translate }}</div>
+              <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portalePagamento?.form?.impaginazione) }}</pre>
+            </div>
+          }
+          @if (t.portalePagamento?.validazione) {
+            <div class="space-y-1 mt-3">
+              <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Validazione' | translate }}</div>
+              <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portalePagamento?.validazione) }}</pre>
+            </div>
+          }
+          @if (t.portalePagamento?.trasformazione?.definizione) {
+            <div class="space-y-1 mt-3">
+              <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TemplateDefinizione' | translate }}</div>
+              <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.portalePagamento?.trasformazione?.definizione) }}</pre>
+            </div>
+          }
+        </lnk-detail-section>
+      } @else {
+        <p class="text-sm text-[var(--muted-foreground)] py-4">{{ 'TipiPendenza.Config.NonConfigurato' | translate }}</p>
+      }
     }
 
-    @if (t.visualizzazione) {
-      <lnk-detail-section titleKey="TipiPendenza.Detail.Visualizzazione">
-        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.visualizzazione) }}</pre>
-      </lnk-detail-section>
+    <!-- AVVISATURA EMAIL -->
+    @if (activeTab() === 'avvMail') {
+      @if (hasAvvMail()) {
+        @for (pr of mailPromemoria(); track pr.titleKey) {
+          <lnk-detail-section [titleKey]="pr.titleKey">
+            <lnk-info-grid [items]="promemoriaItems(pr)" />
+            @if (pr.p.oggetto) {
+              <div class="space-y-1 mt-3">
+                <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Oggetto' | translate }}</div>
+                <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(pr.p.oggetto) }}</pre>
+              </div>
+            }
+            @if (pr.p.messaggio) {
+              <div class="space-y-1 mt-3">
+                <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Messaggio' | translate }}</div>
+                <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(pr.p.messaggio) }}</pre>
+              </div>
+            }
+          </lnk-detail-section>
+        }
+      } @else {
+        <p class="text-sm text-[var(--muted-foreground)] py-4">{{ 'TipiPendenza.Config.NonConfigurato' | translate }}</p>
+      }
+    }
+
+    <!-- AVVISATURA APP IO -->
+    @if (activeTab() === 'avvAppIO') {
+      @if (hasAvvAppIO()) {
+        @for (pr of appIoPromemoria(); track pr.titleKey) {
+          <lnk-detail-section [titleKey]="pr.titleKey">
+            <lnk-info-grid [items]="promemoriaItems(pr)" />
+            @if (pr.p.oggetto) {
+              <div class="space-y-1 mt-3">
+                <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Oggetto' | translate }}</div>
+                <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(pr.p.oggetto) }}</pre>
+              </div>
+            }
+            @if (pr.p.messaggio) {
+              <div class="space-y-1 mt-3">
+                <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Messaggio' | translate }}</div>
+                <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(pr.p.messaggio) }}</pre>
+              </div>
+            }
+          </lnk-detail-section>
+        }
+      } @else {
+        <p class="text-sm text-[var(--muted-foreground)] py-4">{{ 'TipiPendenza.Config.NonConfigurato' | translate }}</p>
+      }
+    }
+
+    <!-- ALTRE FUNZIONI -->
+    @if (activeTab() === 'altre') {
+      @if (hasAltre()) {
+        @if (t.tracciatoCsv) {
+          <lnk-detail-section titleKey="TipiPendenza.Config.TracciatoCsv">
+            <lnk-info-grid [items]="tracciatoItems()" />
+            @if (t.tracciatoCsv.richiesta) {
+              <div class="space-y-1 mt-3">
+                <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Richiesta' | translate }}</div>
+                <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.tracciatoCsv.richiesta) }}</pre>
+              </div>
+            }
+            @if (t.tracciatoCsv.risposta) {
+              <div class="space-y-1 mt-3">
+                <div class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Risposta' | translate }}</div>
+                <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.tracciatoCsv.risposta) }}</pre>
+              </div>
+            }
+          </lnk-detail-section>
+        }
+        @if (t.visualizzazione) {
+          <lnk-detail-section titleKey="TipiPendenza.Config.Visualizzazione">
+            <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(t.visualizzazione) }}</pre>
+          </lnk-detail-section>
+        }
+      } @else {
+        <p class="text-sm text-[var(--muted-foreground)] py-4">{{ 'TipiPendenza.Config.NonConfigurato' | translate }}</p>
+      }
     }
   }
   </div>

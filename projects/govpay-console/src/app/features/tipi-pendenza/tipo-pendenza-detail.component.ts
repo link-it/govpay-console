@@ -23,11 +23,22 @@ import {
   InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
+  TabsComponent,
   type InfoGridItem,
+  type TabDef,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
-import type { TipoPendenza } from './tipo-pendenza.model';
+import type { TipoPendenza, TipoPendenzaAvvisatura, TipoPendenzaPortale, TipoPendenzaPromemoria } from './tipo-pendenza.model';
+
+/** Descrittore di un promemoria per il rendering strutturato. */
+interface PromemoriaView {
+  titleKey: string;
+  p: TipoPendenzaPromemoria;
+  allegaPdf: boolean;
+  soloEseguiti: boolean;
+  preavviso: boolean;
+}
 
 @Component({
   selector: 'lnk-tipo-pendenza-detail',
@@ -43,6 +54,7 @@ import type { TipoPendenza } from './tipo-pendenza.model';
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    TabsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tipo-pendenza-detail.component.html',
@@ -61,8 +73,22 @@ export class TipoPendenzaDetailComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre'>('dati');
+  readonly tabs = computed<TabDef[]>(() => [
+    { id: 'dati', labelKey: 'TipiPendenza.Form.TabDati' },
+    { id: 'backoffice', labelKey: 'TipiPendenza.Form.TabPortaleBackoffice' },
+    { id: 'pagamento', labelKey: 'TipiPendenza.Form.TabPortalePagamento' },
+    { id: 'avvMail', labelKey: 'TipiPendenza.Form.TabAvvisaturaMail' },
+    { id: 'avvAppIO', labelKey: 'TipiPendenza.Form.TabAvvisaturaAppIO' },
+    { id: 'altre', labelKey: 'TipiPendenza.Form.TabAltre' },
+  ]);
+
   readonly abilitatoTone = computed(() => (this.tipo()?.abilitato ? 'success' : 'muted'));
   readonly abilitatoLabelKey = computed(() => (this.tipo()?.abilitato ? 'Common.Yes' : 'Common.No'));
+
+  private yn(b: boolean | undefined): string {
+    return this.translate.instant(b ? 'Common.Yes' : 'Common.No');
+  }
 
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const t = this.tipo();
@@ -71,11 +97,64 @@ export class TipoPendenzaDetailComponent implements OnInit {
       { labelKey: 'TipiPendenza.Detail.IdTipoPendenza', value: t.idTipoPendenza, mono: true },
       { labelKey: 'TipiPendenza.Detail.Descrizione', value: t.descrizione, wide: true },
       { labelKey: 'TipiPendenza.Detail.CodificaIUV', value: t.codificaIUV, mono: true, hide: !t.codificaIUV },
-      { labelKey: 'TipiPendenza.Detail.PagaTerzi', value: this.translate.instant(t.pagaTerzi ? 'Common.Yes' : 'Common.No') },
+      { labelKey: 'TipiPendenza.Detail.PagaTerzi', value: this.yn(t.pagaTerzi) },
     ];
   });
 
-  /** Rende leggibile un blocco config opaco (read-only). */
+  private portaleItems(p: TipoPendenzaPortale | undefined): InfoGridItem[] {
+    if (!p) return [];
+    return [
+      { labelKey: 'TipiPendenza.Config.Abilitato', value: this.yn(p.abilitato) },
+      { labelKey: 'TipiPendenza.Config.TipoLayout', value: p.form?.tipo, hide: !p.form?.tipo, mono: true },
+      { labelKey: 'TipiPendenza.Config.TipoTemplate', value: p.trasformazione?.tipo, hide: !p.trasformazione?.tipo },
+      { labelKey: 'TipiPendenza.Config.Inoltro', value: p.inoltro, hide: !p.inoltro, mono: true },
+    ];
+  }
+
+  readonly backofficeItems = computed(() => this.portaleItems(this.tipo()?.portaleBackoffice));
+  readonly pagamentoItems = computed(() => this.portaleItems(this.tipo()?.portalePagamento));
+
+  readonly tracciatoItems = computed<InfoGridItem[]>(() => {
+    const tc = this.tipo()?.tracciatoCsv;
+    if (!tc) return [];
+    return [
+      { labelKey: 'TipiPendenza.Config.TipoTemplate', value: tc.tipo, hide: !tc.tipo },
+      { labelKey: 'TipiPendenza.Config.Intestazione', value: tc.intestazione, wide: true, hide: !tc.intestazione },
+    ];
+  });
+
+  readonly mailPromemoria = computed(() => this.promemoriaList(this.tipo()?.avvisaturaMail, true));
+  readonly appIoPromemoria = computed(() => this.promemoriaList(this.tipo()?.avvisaturaAppIO, false));
+
+  private promemoriaList(a: TipoPendenzaAvvisatura | undefined, mail: boolean): PromemoriaView[] {
+    if (!a) return [];
+    const rows: PromemoriaView[] = [
+      { titleKey: 'TipiPendenza.Config.PromemoriaAvviso', p: a.promemoriaAvviso!, allegaPdf: mail, soloEseguiti: false, preavviso: false },
+      { titleKey: 'TipiPendenza.Config.PromemoriaScadenza', p: a.promemoriaScadenza!, allegaPdf: false, soloEseguiti: false, preavviso: true },
+      { titleKey: 'TipiPendenza.Config.PromemoriaRicevuta', p: a.promemoriaRicevuta!, allegaPdf: mail, soloEseguiti: true, preavviso: false },
+    ];
+    return rows.filter((r) => !!r.p);
+  }
+
+  /** Righe info-grid per un promemoria (usato dal template). */
+  promemoriaItems(pr: PromemoriaView): InfoGridItem[] {
+    const p = pr.p;
+    const items: InfoGridItem[] = [{ labelKey: 'TipiPendenza.Config.Abilitato', value: this.yn(p.abilitato) }];
+    if (pr.preavviso) items.push({ labelKey: 'TipiPendenza.Config.Preavviso', value: p.preavviso != null ? String(p.preavviso) : undefined, hide: p.preavviso == null });
+    items.push({ labelKey: 'TipiPendenza.Config.TipoTemplate', value: p.tipo, hide: !p.tipo });
+    if (pr.allegaPdf) items.push({ labelKey: 'TipiPendenza.Config.AllegaPdf', value: this.yn(p.allegaPdf) });
+    if (pr.soloEseguiti) items.push({ labelKey: 'TipiPendenza.Config.SoloEseguiti', value: this.yn(p.soloEseguiti) });
+    return items;
+  }
+
+  /** True se la sezione ha almeno un contenuto (per il messaggio "non configurato"). */
+  readonly hasBackoffice = computed(() => !!this.tipo()?.portaleBackoffice);
+  readonly hasPagamento = computed(() => !!this.tipo()?.portalePagamento);
+  readonly hasAvvMail = computed(() => this.mailPromemoria().length > 0);
+  readonly hasAvvAppIO = computed(() => this.appIoPromemoria().length > 0);
+  readonly hasAltre = computed(() => !!this.tipo()?.tracciatoCsv || !!this.tipo()?.visualizzazione);
+
+  /** Rende leggibile un blocco JSON opaco (read-only). */
   formatJson(payload: unknown): string {
     return payload ? JSON.stringify(payload, null, 2) : '';
   }

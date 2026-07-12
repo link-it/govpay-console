@@ -15,6 +15,14 @@
       risposta) e personalizzazione dettaglio (`visualizzazione`).
     Il salvataggio preserva le chiavi non modellate e omette i blocchi vuoti.
 
+  * [Frontend] feat(tipi-pendenza): vista di dettaglio (read-only) arricchita
+    con la stessa struttura a tab della maschera. I blocchi config sono resi in
+    forma leggibile — info-grid dei campi scalari (abilitato, tipo layout/
+    template, inoltro; flag `allegaPdf`/`soloEseguiti`/`preavviso` sui
+    promemoria) e blocchi JSON etichettati (definizione, impaginazione,
+    validazione, template, oggetto/messaggio, tracciato) — al posto del dump
+    JSON grezzo. I blocchi assenti mostrano "Non configurato".
+
   * [Frontend] feat(shared-ui): nuovo `@core/ui/json-field` — editor JSON
     (textarea con validazione di sintassi, "carica da file" con pretty-print,
     svuota) come `ControlValueAccessor` con valore = oggetto parsato. Usato dai
