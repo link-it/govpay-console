@@ -36,6 +36,7 @@ import type {
   TipoPendenzaPortale,
   TipoPendenzaPromemoria,
   TipoPendenzaReplace,
+  TipoPendenzaTracciatoCsv,
 } from './tipo-pendenza.model';
 
 /** Pattern id tipo pendenza (max 35). */
@@ -90,13 +91,14 @@ export class TipoPendenzaFormComponent implements OnInit {
   /** Opzioni per il select `inoltro` (idA2A delle applicazioni). */
   readonly applicazioni = signal<string[]>([]);
 
-  readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO'>('dati');
+  readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre'>('dati');
   readonly tabs = computed<TabDef[]>(() => [
     { id: 'dati', labelKey: 'TipiPendenza.Form.TabDati' },
     { id: 'backoffice', labelKey: 'TipiPendenza.Form.TabPortaleBackoffice' },
     { id: 'pagamento', labelKey: 'TipiPendenza.Form.TabPortalePagamento' },
     { id: 'avvMail', labelKey: 'TipiPendenza.Form.TabAvvisaturaMail' },
     { id: 'avvAppIO', labelKey: 'TipiPendenza.Form.TabAvvisaturaAppIO' },
+    { id: 'altre', labelKey: 'TipiPendenza.Form.TabAltre' },
   ]);
 
   readonly form = this.fb.group({
@@ -109,6 +111,13 @@ export class TipoPendenzaFormComponent implements OnInit {
     portalePagamento: this.buildPortaleGroup(true),
     avvisaturaMail: this.buildAvvisaturaGroup(true),
     avvisaturaAppIO: this.buildAvvisaturaGroup(false),
+    tracciatoCsv: this.fb.group({
+      tipo: this.fb.control(''),
+      intestazione: this.fb.control(''),
+      richiesta: this.fb.control<unknown>(null),
+      risposta: this.fb.control<unknown>(null),
+    }),
+    visualizzazione: this.fb.control<unknown>(null),
   });
 
   /** Gruppo di un canale di avvisatura (mail o App IO). `mail` abilita `allegaPdf`. */
@@ -199,6 +208,16 @@ export class TipoPendenzaFormComponent implements OnInit {
     this.patchPortale(this.form.controls.portalePagamento, t.portalePagamento);
     this.patchAvvisatura(this.form.controls.avvisaturaMail, t.avvisaturaMail);
     this.patchAvvisatura(this.form.controls.avvisaturaAppIO, t.avvisaturaAppIO);
+    const tc = t.tracciatoCsv;
+    if (tc) {
+      this.form.controls.tracciatoCsv.patchValue({
+        tipo: tc.tipo ?? '',
+        intestazione: tc.intestazione ?? '',
+        richiesta: tc.richiesta ?? null,
+        risposta: tc.risposta ?? null,
+      });
+    }
+    this.form.controls.visualizzazione.setValue(t.visualizzazione ?? null);
   }
 
   private patchAvvisatura(group: ReturnType<TipoPendenzaFormComponent['buildAvvisaturaGroup']>, a?: TipoPendenzaAvvisatura): void {
@@ -297,14 +316,19 @@ export class TipoPendenzaFormComponent implements OnInit {
     return empty ? undefined : p;
   }
 
-  /** Sotto-oggetti config non ancora editati (tracciato/visualizzazione), preservati. */
-  private preservedConfig(): Partial<TipoPendenzaReplace> {
-    const l = this.loaded;
-    if (!l) return {};
-    return {
-      visualizzazione: l.visualizzazione,
-      tracciatoCsv: l.tracciatoCsv,
+  /** Ricostruisce il tracciato CSV; `undefined` se tutti i campi sono vuoti. */
+  private buildTracciato(raw: Record<string, unknown> | undefined, loaded: TipoPendenzaTracciatoCsv | undefined): TipoPendenzaTracciatoCsv | undefined {
+    if (!raw) return loaded;
+    const s = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+    const t: TipoPendenzaTracciatoCsv = {
+      ...(loaded ?? {}),
+      tipo: s(raw['tipo']),
+      intestazione: s(raw['intestazione']),
+      richiesta: raw['richiesta'] ?? undefined,
+      risposta: raw['risposta'] ?? undefined,
     };
+    const empty = t.tipo == null && t.intestazione == null && t.richiesta == null && t.risposta == null;
+    return empty ? undefined : t;
   }
 
   save(): void {
@@ -318,10 +342,11 @@ export class TipoPendenzaFormComponent implements OnInit {
     const portalePagamento = this.buildPortale(raw['portalePagamento'] as Record<string, unknown>, this.loaded?.portalePagamento);
     const avvisaturaMail = this.buildAvvisatura(raw['avvisaturaMail'] as Record<string, unknown>, this.loaded?.avvisaturaMail);
     const avvisaturaAppIO = this.buildAvvisatura(raw['avvisaturaAppIO'] as Record<string, unknown>, this.loaded?.avvisaturaAppIO);
+    const tracciatoCsv = this.buildTracciato(raw['tracciatoCsv'] as Record<string, unknown>, this.loaded?.tracciatoCsv);
+    const visualizzazione = (raw['visualizzazione'] ?? undefined) as Record<string, unknown> | undefined;
 
     if (this.editId) {
       const body: TipoPendenzaReplace = {
-        ...this.preservedConfig(),
         descrizione: raw['descrizione'] as string,
         codificaIUV: (raw['codificaIUV'] as string) || undefined,
         pagaTerzi: raw['pagaTerzi'] as boolean,
@@ -330,6 +355,8 @@ export class TipoPendenzaFormComponent implements OnInit {
         portalePagamento,
         avvisaturaMail,
         avvisaturaAppIO,
+        tracciatoCsv,
+        visualizzazione,
       };
       this.api
         .replace(this.editId, body, this.etag)
@@ -351,6 +378,8 @@ export class TipoPendenzaFormComponent implements OnInit {
         portalePagamento,
         avvisaturaMail,
         avvisaturaAppIO,
+        tracciatoCsv,
+        visualizzazione,
       };
       this.api
         .create(body)

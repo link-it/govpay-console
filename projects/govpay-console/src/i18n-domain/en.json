@@ -747,7 +747,8 @@
       "VerificaCampi": "Check the fields: some contain invalid JSON.",
       "Invalido": "Invalid data: check the configuration fields.",
       "TabAvvisaturaMail": "Email notifications",
-      "TabAvvisaturaAppIO": "App IO notifications"
+      "TabAvvisaturaAppIO": "App IO notifications",
+      "TabAltre": "Other functions"
     },
     "Config": {
       "Abilitato": "Enabled",
@@ -768,7 +769,13 @@
       "SoloEseguiti": "Executed payments only",
       "PromemoriaAvviso": "Payment notice",
       "PromemoriaScadenza": "Payment due reminder",
-      "PromemoriaRicevuta": "Payment receipt"
+      "PromemoriaRicevuta": "Payment receipt",
+      "TracciatoCsv": "CSV tracks parser",
+      "Intestazione": "Outcome header line",
+      "Richiesta": "Request template",
+      "Risposta": "Response template",
+      "Visualizzazione": "Item detail customization",
+      "VisualizzazioneHint": "Item detail visualization template (JSON)."
     }
   },
   "Applicazioni": {

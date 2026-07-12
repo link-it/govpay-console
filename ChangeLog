@@ -1,3 +1,25 @@
+2026-07-12  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(tipi-pendenza): gestione completa della configurazione
+    (`TipoPendenzaConfig`) nella maschera di dettaglio, ispirata alla console
+    legacy ma adattata alla V2 (i blocchi config sono oggetti JSON, non più
+    base64). Form ristrutturata a tab: Dati · Portale backoffice · Portale
+    pagamento · Avvisatura email · Avvisatura App IO · Altre funzioni.
+    - Portali (backoffice/pagamento): form (tipo layout + definizione/
+      impaginazione), validazione (JSON Schema), trasformazione (freemarker +
+      template), inoltro (applicazione da `/applicazioni`).
+    - Avvisatura email/App IO: promemoria avviso/scadenza/ricevuta (tipo,
+      oggetto, messaggio, abilitato; `allegaPdf` solo mail, `soloEseguiti` sulla
+      ricevuta, `preavviso` sulla scadenza).
+    - Altre funzioni: parser tracciato CSV (tipo, intestazione, richiesta,
+      risposta) e personalizzazione dettaglio (`visualizzazione`).
+    Il salvataggio preserva le chiavi non modellate e omette i blocchi vuoti.
+
+  * [Frontend] feat(shared-ui): nuovo `@core/ui/json-field` — editor JSON
+    (textarea con validazione di sintassi, "carica da file" con pretty-print,
+    svuota) come `ControlValueAccessor` con valore = oggetto parsato. Usato dai
+    campi struttura dei tipi pendenza.
+
 2026-07-07  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(applicazioni, operatori): impostazione password

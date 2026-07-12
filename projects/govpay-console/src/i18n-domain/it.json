@@ -967,7 +967,8 @@
       "VerificaCampi": "Verifica i campi: alcuni contengono JSON non valido.",
       "Invalido": "Dati non validi: verifica i campi di configurazione.",
       "TabAvvisaturaMail": "Avvisatura email",
-      "TabAvvisaturaAppIO": "Avvisatura App IO"
+      "TabAvvisaturaAppIO": "Avvisatura App IO",
+      "TabAltre": "Altre funzioni"
     },
     "Config": {
       "Abilitato": "Abilitato",
@@ -988,7 +989,13 @@
       "SoloEseguiti": "Solo pagamenti eseguiti",
       "PromemoriaAvviso": "Notifica avviso di pagamento",
       "PromemoriaScadenza": "Promemoria scadenza pagamento",
-      "PromemoriaRicevuta": "Notifica ricevuta di pagamento"
+      "PromemoriaRicevuta": "Notifica ricevuta di pagamento",
+      "TracciatoCsv": "Parser tracciati CSV",
+      "Intestazione": "Linea intestazione esito",
+      "Richiesta": "Template richiesta",
+      "Risposta": "Template risposta",
+      "Visualizzazione": "Personalizzazione dettaglio pendenza",
+      "VisualizzazioneHint": "Template di visualizzazione del dettaglio pendenza (JSON)."
     }
   },
   "Applicazioni": {
