@@ -81,14 +81,14 @@ import { SelectComponent, type SelectOption } from '@core/ui/select/select.compo
         }
 
         @if (tipoValue()) {
-          <label class="flex flex-col gap-1">
+          <div class="flex flex-col gap-1">
             <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Oggetto' | translate }}</span>
             <lnk-code-field formControlName="oggetto" format="auto" [rows]="4" />
-          </label>
-          <label class="flex flex-col gap-1">
+          </div>
+          <div class="flex flex-col gap-1">
             <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Messaggio' | translate }}</span>
             <lnk-code-field formControlName="messaggio" format="auto" [rows]="6" />
-          </label>
+          </div>
         } @else {
           <div class="flex items-center gap-3 px-4 py-3 rounded-lg border border-dashed border-[var(--border)] text-sm text-[var(--muted-foreground)] bg-[var(--card-bg)]">
             <ng-icon name="bootstrapInfoCircle" size="1.1rem" class="shrink-0" />
