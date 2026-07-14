@@ -29,13 +29,9 @@
 
     <div class="grid grid-cols-2 gap-3">
       <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.Versione' | translate }}</span>
-        <select formControlName="versione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-          @for (v of versioni; track v) { <option [value]="v">{{ v }}</option> }
-        </select></label>
+        <lnk-select formControlName="versione" [options]="versioni" [allowEmpty]="false" [ariaLabel]="'Applicazioni.Connettore.Versione' | translate" /></label>
       <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.TipoAuth' | translate }}</span>
-        <select formControlName="tipoAutenticazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-          @for (t of tipiAuth; track t) { <option [value]="t">{{ t }}</option> }
-        </select></label>
+        <lnk-select formControlName="tipoAutenticazione" [options]="tipiAuth" [allowEmpty]="false" [ariaLabel]="'Applicazioni.Connettore.TipoAuth' | translate" /></label>
     </div>
 
     @if (authType() === 'BASIC') {

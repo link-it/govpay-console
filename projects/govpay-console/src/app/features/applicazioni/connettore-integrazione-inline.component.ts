@@ -18,6 +18,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService, InfoGridComponent, LoadingComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail, type ConnettoreCredenziali } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { SelectComponent } from '@core/ui/select/select.component';
 import { ApplicazioniConsoleApi } from './applicazioni.console-api';
 import type { ConnettoreIntegrazioneApplicazione, TipoAutIntegrazione, VersioneIntegrazione } from './applicazione.model';
 
@@ -33,7 +34,7 @@ const VERSIONI: VersioneIntegrazione[] = ['REST_V1', 'REST_V2'];
 @Component({
   selector: 'lnk-connettore-integrazione-inline',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent, SelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './connettore-integrazione-inline.component.html',

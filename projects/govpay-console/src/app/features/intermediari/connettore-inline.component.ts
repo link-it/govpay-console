@@ -19,6 +19,7 @@ import { SnackbarService } from '@linkit/shared-ui';
 import { InfoGridComponent, LoadingComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { SelectComponent } from '@core/ui/select/select.component';
 import { NoAutofillDirective } from './no-autofill.directive';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type {
@@ -50,7 +51,7 @@ const CONNETTORE_LABEL: Record<string, string> = {
 @Component({
   selector: 'lnk-connettore-inline',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent, NoAutofillDirective],
+  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent, NoAutofillDirective, SelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './connettore-inline.component.html',

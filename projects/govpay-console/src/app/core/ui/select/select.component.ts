@@ -76,18 +76,20 @@ export interface SelectOption {
         [style.min-width.px]="width()"
         (keydown)="onPanelKeydown($event)"
       >
-        <button
-          type="button"
-          role="option"
-          class="lnk-select-opt"
-          [class.is-active]="!value()"
-          [attr.aria-selected]="!value()"
-          (click)="pick('')"
-        >
-          <span class="truncate lnk-select-ph">{{ placeholder() }}</span>
-          @if (!value()) { <ng-icon name="bootstrapCheck2" size="1rem" class="shrink-0" /> }
-        </button>
-        @for (o of options(); track o.value) {
+        @if (allowEmpty()) {
+          <button
+            type="button"
+            role="option"
+            class="lnk-select-opt"
+            [class.is-active]="!value()"
+            [attr.aria-selected]="!value()"
+            (click)="pick('')"
+          >
+            <span class="truncate lnk-select-ph">{{ placeholder() }}</span>
+            @if (!value()) { <ng-icon name="bootstrapCheck2" size="1rem" class="shrink-0" /> }
+          </button>
+        }
+        @for (o of normOptions(); track o.value) {
           <button
             type="button"
             role="option"
@@ -106,9 +108,17 @@ export interface SelectOption {
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectComponent), multi: true }],
 })
 export class SelectComponent implements ControlValueAccessor {
-  readonly options = input<SelectOption[]>([]);
+  /** Opzioni: oggetti `{value,label}` oppure semplici stringhe (value=label). */
+  readonly options = input<Array<SelectOption | string>>([]);
   readonly placeholder = input('');
   readonly ariaLabel = input('');
+  /** Mostra l'opzione "vuota" (clear) in cima. Disattivala per gli enum obbligatori. */
+  readonly allowEmpty = input(true);
+
+  /** Opzioni normalizzate (stringa → `{value,label}`). */
+  protected readonly normOptions = computed<SelectOption[]>(() =>
+    this.options().map((o) => (typeof o === 'string' ? { value: o, label: o } : o))
+  );
 
   private readonly triggerRef = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
   private readonly panelRef = viewChild<ElementRef<HTMLElement>>('panel');
@@ -121,7 +131,7 @@ export class SelectComponent implements ControlValueAccessor {
   protected readonly top = signal(0);
   protected readonly width = signal(0);
 
-  protected readonly currentLabel = computed(() => this.options().find((o) => o.value === this.value())?.label ?? '');
+  protected readonly currentLabel = computed(() => this.normOptions().find((o) => o.value === this.value())?.label ?? '');
 
   private onChange: (v: string) => void = () => {};
   private onTouched: () => void = () => {};

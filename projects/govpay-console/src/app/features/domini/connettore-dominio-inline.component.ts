@@ -17,6 +17,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService, InfoGridComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail, type ConnettoreCredenziali } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { SelectComponent } from '@core/ui/select/select.component';
 import { DominiConsoleApi } from './domini.console-api';
 import type { ConnettoreDominio, ConnettoreDominioDescriptor } from './connettore-dominio.model';
 
@@ -37,7 +38,7 @@ const CREDENZIALI_FIELDS: { key: keyof ConnettoreCredenziali; labelKey: string }
 @Component({
   selector: 'lnk-connettore-dominio-inline',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, InlineEditCardComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, InlineEditCardComponent, SelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './connettore-dominio-inline.component.html',

@@ -16,9 +16,7 @@
     </label>
     <label class="flex flex-col gap-1 max-w-xs">
       <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.versione">{{ 'Intermediari.Stazioni.Versione' | translate }}</span>
-      <select formControlName="versione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-        @for (v of versioni; track v) { <option [value]="v">{{ v }}</option> }
-      </select>
+      <lnk-select formControlName="versione" [options]="versioni" [allowEmpty]="false" [ariaLabel]="'Intermediari.Stazioni.Versione' | translate" />
     </label>
     <label class="flex items-center gap-2">
       <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
@@ -44,9 +42,7 @@
     <form edit [formGroup]="form" class="space-y-4">
       <label class="flex flex-col gap-1 max-w-xs">
         <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.versione">{{ 'Intermediari.Stazioni.Versione' | translate }}</span>
-        <select formControlName="versione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-          @for (v of versioni; track v) { <option [value]="v">{{ v }}</option> }
-        </select>
+        <lnk-select formControlName="versione" [options]="versioni" [allowEmpty]="false" [ariaLabel]="'Intermediari.Stazioni.Versione' | translate" />
       </label>
       <label class="flex items-center gap-2">
         <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />

@@ -26,6 +26,8 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
+import { SelectComponent, type SelectOption } from '@core/ui/select/select.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { EntrateConsoleApi } from './entrate.console-api';
 import { TIPI_CONTABILITA, type EntrataCreate, type EntrataReplace, type TipoContabilita } from './entrata.model';
 
@@ -46,6 +48,7 @@ const ID_PATTERN = /^.{1,255}$/;
     ListStickyToolbarDirective,
     RequiredLabelDirective,
     FormActionBarComponent,
+    SelectComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './entrata-form.component.html',
@@ -68,6 +71,11 @@ export class EntrataFormComponent implements OnInit {
   readonly saving = signal(false);
 
   readonly tipiContabilita = TIPI_CONTABILITA;
+  private readonly langChange = toSignal(this.translate.onLangChange);
+  readonly tipoContabilitaOptions = computed<SelectOption[]>(() => {
+    this.langChange();
+    return this.tipiContabilita.map((t) => ({ value: t, label: this.translate.instant('Entrate.TipoContabilita.' + t) }));
+  });
 
   readonly form = this.fb.nonNullable.group({
     idEntrata: ['', [Validators.required, Validators.pattern(ID_PATTERN)]],
