@@ -28,14 +28,15 @@ import {
   type TabDef,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { decodeBase64 } from '@core/utils/base64';
+import { ConfigFieldViewComponent } from '@core/ui/config-field-view/config-field-view.component';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
 import type { TipoPendenza, TipoPendenzaAvvisatura, TipoPendenzaPortale, TipoPendenzaPromemoria } from './tipo-pendenza.model';
 
 /** Descrittore di un promemoria per il rendering strutturato. */
 interface PromemoriaView {
   titleKey: string;
-  p: TipoPendenzaPromemoria;
+  /** Dati del promemoria; assente se non configurato. */
+  p?: TipoPendenzaPromemoria;
   allegaPdf: boolean;
   soloEseguiti: boolean;
   preavviso: boolean;
@@ -56,6 +57,7 @@ interface PromemoriaView {
     LoadingComponent,
     ListStickyToolbarDirective,
     TabsComponent,
+    ConfigFieldViewComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tipo-pendenza-detail.component.html',
@@ -127,48 +129,25 @@ export class TipoPendenzaDetailComponent implements OnInit {
   readonly mailPromemoria = computed(() => this.promemoriaList(this.tipo()?.avvisaturaMail, true));
   readonly appIoPromemoria = computed(() => this.promemoriaList(this.tipo()?.avvisaturaAppIO, false));
 
+  /** Tutti e tre i promemoria del canale, sempre presenti (assenti → `p` undefined). */
   private promemoriaList(a: TipoPendenzaAvvisatura | undefined, mail: boolean): PromemoriaView[] {
-    if (!a) return [];
-    const rows: PromemoriaView[] = [
-      { titleKey: 'TipiPendenza.Config.PromemoriaAvviso', p: a.promemoriaAvviso!, allegaPdf: mail, soloEseguiti: false, preavviso: false },
-      { titleKey: 'TipiPendenza.Config.PromemoriaScadenza', p: a.promemoriaScadenza!, allegaPdf: false, soloEseguiti: false, preavviso: true },
-      { titleKey: 'TipiPendenza.Config.PromemoriaRicevuta', p: a.promemoriaRicevuta!, allegaPdf: mail, soloEseguiti: true, preavviso: false },
+    return [
+      { titleKey: 'TipiPendenza.Config.PromemoriaAvviso', p: a?.promemoriaAvviso, allegaPdf: mail, soloEseguiti: false, preavviso: false },
+      { titleKey: 'TipiPendenza.Config.PromemoriaScadenza', p: a?.promemoriaScadenza, allegaPdf: false, soloEseguiti: false, preavviso: true },
+      { titleKey: 'TipiPendenza.Config.PromemoriaRicevuta', p: a?.promemoriaRicevuta, allegaPdf: mail, soloEseguiti: true, preavviso: false },
     ];
-    return rows.filter((r) => !!r.p);
   }
 
-  /** Righe info-grid per un promemoria (usato dal template). */
+  /** Righe info-grid per un promemoria (vuote se non configurato). */
   promemoriaItems(pr: PromemoriaView): InfoGridItem[] {
     const p = pr.p;
+    if (!p) return [];
     const items: InfoGridItem[] = [{ labelKey: 'TipiPendenza.Config.Abilitato', value: this.yn(p.abilitato) }];
     if (pr.preavviso) items.push({ labelKey: 'TipiPendenza.Config.Preavviso', value: p.preavviso != null ? String(p.preavviso) : undefined, hide: p.preavviso == null });
     items.push({ labelKey: 'TipiPendenza.Config.TipoTemplate', value: p.tipo, hide: !p.tipo });
     if (pr.allegaPdf) items.push({ labelKey: 'TipiPendenza.Config.AllegaPdf', value: this.yn(p.allegaPdf) });
     if (pr.soloEseguiti) items.push({ labelKey: 'TipiPendenza.Config.SoloEseguiti', value: this.yn(p.soloEseguiti) });
     return items;
-  }
-
-  /** True se la sezione ha almeno un contenuto (per il messaggio "non configurato"). */
-  readonly hasBackoffice = computed(() => !!this.tipo()?.portaleBackoffice);
-  readonly hasPagamento = computed(() => !!this.tipo()?.portalePagamento);
-  readonly hasAvvMail = computed(() => this.mailPromemoria().length > 0);
-  readonly hasAvvAppIO = computed(() => this.appIoPromemoria().length > 0);
-  readonly hasAltre = computed(() => !!this.tipo()?.tracciatoCsv || !!this.tipo()?.visualizzazione);
-
-  /**
-   * Rende leggibile un blocco config (read-only). Il valore è memorizzato come
-   * stringa base64: viene decodificato e, se è JSON, indentato; i template
-   * freemarker restano grezzi.
-   */
-  formatJson(payload: unknown): string {
-    if (payload == null || payload === '') return '';
-    let text = typeof payload === 'string' ? decodeBase64(payload) : JSON.stringify(payload, null, 2);
-    try {
-      text = JSON.stringify(JSON.parse(text), null, 2);
-    } catch {
-      /* contenuto non-JSON (es. freemarker): mostrato grezzo */
-    }
-    return text;
   }
 
   ngOnInit(): void {

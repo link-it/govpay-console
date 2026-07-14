@@ -50,6 +50,7 @@ export type CodeFieldFormat = 'json' | 'text' | 'auto';
     <div
       class="rounded border transition-colors"
       [style.border-color]="borderColor()"
+      [style.box-shadow]="hasContent() && !invalid() && !dragging() ? 'inset 3px 0 0 var(--primary)' : null"
       [style.background-color]="dragging() ? 'color-mix(in srgb, var(--primary) 6%, transparent)' : null"
       (dragenter)="onDragEnter($event)"
       (dragover)="onDragOver($event)"

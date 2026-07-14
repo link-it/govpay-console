@@ -756,6 +756,7 @@
       "FormInserimentoHint": "Describes the fields filled in by the citizen",
       "TipoLayout": "Layout type",
       "Nessuno": "None",
+      "Configurato": "Configured",
       "NonConfigurato": "Not configured",
       "Definizione": "Definition",
       "Impaginazione": "Layout",
