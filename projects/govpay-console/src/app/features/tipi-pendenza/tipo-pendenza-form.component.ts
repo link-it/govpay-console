@@ -170,6 +170,10 @@ export class TipoPendenzaFormComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('idTipoPendenza');
     this.editId = id;
     this.editId$.set(id);
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    if (tab && (['dati', 'backoffice', 'pagamento', 'avvMail', 'avvAppIO', 'altre'] as string[]).includes(tab)) {
+      this.activeTab.set(tab as 'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre');
+    }
     this.system.setBreadcrumbs([
       { label: 'Nav.TipiPendenza', url: '/tipi-pendenza' },
       { label: id ?? this.translate.instant('TipiPendenza.Form.Nuovo') },
@@ -375,7 +379,7 @@ export class TipoPendenzaFormComponent implements OnInit {
           this.saving.set(false);
           if (!res) return;
           this.snackbar.success(this.translate.instant('TipiPendenza.Form.Aggiornato'));
-          this.router.navigate(['/tipi-pendenza', this.editId]);
+          this.router.navigate(['/tipi-pendenza', this.editId], { queryParams: { tab: this.activeTab() } });
         });
     } else {
       const body: TipoPendenzaCreate = {
@@ -398,7 +402,7 @@ export class TipoPendenzaFormComponent implements OnInit {
           this.saving.set(false);
           if (!created) return;
           this.snackbar.success(this.translate.instant('TipiPendenza.Form.Salvato'));
-          this.router.navigate(['/tipi-pendenza', body.idTipoPendenza]);
+          this.router.navigate(['/tipi-pendenza', body.idTipoPendenza], { queryParams: { tab: this.activeTab() } });
         });
     }
   }

@@ -41,7 +41,13 @@ import { decodeBase64 } from '@core/utils/base64';
       }
     </div>
     @if (configured() && expanded()) {
-      <pre class="overflow-auto max-h-80 rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs mt-2">{{ text() }}</pre>
+      <div class="relative mt-2">
+        <button type="button" class="btn btn-ghost btn-sm absolute top-1.5 right-1.5" (click)="copy()">
+          <ng-icon [name]="copied() ? 'bootstrapCheck2' : 'bootstrapClipboard'" size="1rem" />
+          <span>{{ (copied() ? 'Common.Copied' : 'Common.Copy') | translate }}</span>
+        </button>
+        <pre class="overflow-auto max-h-80 rounded border border-[var(--border)] bg-[var(--muted)] p-3 pr-24 text-xs">{{ text() }}</pre>
+      </div>
     }
   `,
 })
@@ -50,6 +56,15 @@ export class ConfigFieldViewComponent {
   readonly value = input<unknown>(null);
 
   protected readonly expanded = signal(false);
+  protected readonly copied = signal(false);
+
+  /** Copia il contenuto negli appunti con feedback temporaneo. */
+  protected copy(): void {
+    void navigator.clipboard?.writeText(this.text()).then(() => {
+      this.copied.set(true);
+      setTimeout(() => this.copied.set(false), 1500);
+    });
+  }
 
   readonly configured = computed(() => {
     const v = this.value();

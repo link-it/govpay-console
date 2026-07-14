@@ -157,6 +157,10 @@ export class TipoPendenzaDetailComponent implements OnInit {
       return;
     }
     this.idTipoPendenza = id;
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    if (tab && (['dati', 'backoffice', 'pagamento', 'avvMail', 'avvAppIO', 'altre'] as string[]).includes(tab)) {
+      this.activeTab.set(tab as 'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre');
+    }
     this.system.setBreadcrumbs([{ label: 'Nav.TipiPendenza', url: '/tipi-pendenza' }, { label: id }]);
     this.fetch();
   }

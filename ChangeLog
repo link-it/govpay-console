@@ -1,3 +1,26 @@
+2026-07-15  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(shared-ui): nuovo `@core/ui/select` (`lnk-select`) —
+    dropdown con la UI del menu profilo (pannello flottante che esce dai
+    contenitori, chiusura su click-fuori/Escape/scroll, navigazione da
+    tastiera; opzioni come `string[]` o `{value,label}`, opzione vuota
+    disattivabile). Sostituisce tutti i `<select>` nativi delle form
+    (tipi pendenza, entrate, domini, applicazioni, intermediari).
+
+  * [Frontend] feat(tipi-pendenza): dettaglio config a campi completi. Nuovo
+    `@core/ui/config-field-view`: ogni campo mostra un badge Configurato /
+    Non configurato (a destra); i configurati rivelano il contenuto solo su
+    richiesta, in un riquadro ad altezza fissa scrollabile con pulsante
+    "Copia". Nel tab Altre funzioni, richiesta/risposta sono raggruppate sotto
+    "Parser tracciati CSV", distinte dalla personalizzazione dettaglio.
+
+  * [Frontend] feat(tipi-pendenza): nella maschera il `lnk-code-field`
+    compilato è evidenziato con un bordo sinistro coral; il tab attivo è
+    condiviso tra dettaglio e form (modifica/annulla/salva mantengono la
+    scheda visualizzata via query param `tab`).
+
+  * [Frontend] fix(entrate): ripristinata la spaziatura dei campi nella form.
+
 2026-07-14  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(tipi-pendenza): editing dei template ripensato in unità

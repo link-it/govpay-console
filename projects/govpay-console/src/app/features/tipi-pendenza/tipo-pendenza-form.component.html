@@ -4,7 +4,7 @@
       [titleKey]="isEdit() ? 'TipiPendenza.Form.ModificaTitolo' : 'TipiPendenza.Form.NuovoTitolo'"
       subtitleKey="TipiPendenza.Form.Subtitle"
     >
-      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+      <a [routerLink]="backLink()" [queryParams]="isEdit() ? { tab: activeTab() } : null" class="btn btn-secondary btn-sm">
         <ng-icon name="bootstrapChevronLeft" size="1rem" />
         <span>{{ 'Common.Cancel' | translate }}</span>
       </a>
@@ -227,7 +227,7 @@
 
         <lnk-form-action-bar>
           <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">{{ 'Common.Save' | translate }}</button>
-          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+          <a [routerLink]="backLink()" [queryParams]="isEdit() ? { tab: activeTab() } : null" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
           @if (form.invalid && form.touched) {
             <span class="ml-2 text-xs text-[var(--status-danger-text)]">{{ 'TipiPendenza.Form.VerificaCampi' | translate }}</span>
           }

@@ -71,6 +71,7 @@ import {
   bootstrapUpload,
   bootstrapArrowCounterclockwise,
   bootstrapBell,
+  bootstrapClipboard,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -139,4 +140,5 @@ export const APP_ICONS = {
   bootstrapUpload,
   bootstrapArrowCounterclockwise,
   bootstrapBell,
+  bootstrapClipboard,
 };

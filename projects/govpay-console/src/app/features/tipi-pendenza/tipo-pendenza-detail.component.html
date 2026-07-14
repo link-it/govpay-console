@@ -3,7 +3,7 @@
     <lnk-page-header [titleKey]="tipo()?.descrizione || tipo()?.idTipoPendenza || '—'" subtitleKey="TipiPendenza.Detail.Subtitle">
       <div class="flex items-center gap-2">
         @if (tipo(); as t) {
-          <a [routerLink]="['/tipi-pendenza', t.idTipoPendenza, 'modifica']" class="btn btn-primary btn-sm">
+          <a [routerLink]="['/tipi-pendenza', t.idTipoPendenza, 'modifica']" [queryParams]="{ tab: activeTab() }" class="btn btn-primary btn-sm">
             <ng-icon name="bootstrapPencil" size="1rem" />
             <span>{{ 'TipiPendenza.Form.Modifica' | translate }}</span>
           </a>
@@ -100,10 +100,16 @@
     <!-- ALTRE FUNZIONI -->
     @if (activeTab() === 'altre') {
       <lnk-detail-section titleKey="TipiPendenza.Form.TabAltre">
+        <!-- Parser tracciati CSV: tipo/intestazione + richiesta/risposta -->
+        <div class="text-sm font-semibold mb-2">{{ 'TipiPendenza.Config.TracciatoCsv' | translate }}</div>
         @if (tracciatoItems().length) { <lnk-info-grid [items]="tracciatoItems()" /> }
-        <div class="mt-3 divide-y divide-[var(--border)]">
+        <div class="mt-2 divide-y divide-[var(--border)]">
           <lnk-config-field-view labelKey="TipiPendenza.Config.Richiesta" [value]="t.tracciatoCsv?.richiesta" />
           <lnk-config-field-view labelKey="TipiPendenza.Config.Risposta" [value]="t.tracciatoCsv?.risposta" />
+        </div>
+
+        <!-- Personalizzazione dettaglio pendenza -->
+        <div class="mt-5 divide-y divide-[var(--border)]">
           <lnk-config-field-view labelKey="TipiPendenza.Config.Visualizzazione" [value]="t.visualizzazione" />
         </div>
       </lnk-detail-section>
