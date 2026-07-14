@@ -57,108 +57,109 @@
           </lnk-detail-section>
         </div>
 
-        <!-- ── Portale backoffice ───────────────────────────────── -->
+        <!-- ── Portale backoffice (unità tipo→template) ─────────── -->
         <div [hidden]="activeTab() !== 'backoffice'" formGroupName="portaleBackoffice">
+          @let bkc = form.controls.portaleBackoffice.controls;
           <lnk-detail-section titleKey="TipiPendenza.Form.TabPortaleBackoffice">
             <div class="space-y-5">
               <label class="flex items-center gap-2">
                 <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
                 <span class="text-sm">{{ 'TipiPendenza.Config.Abilitato' | translate }}</span>
               </label>
-              <div class="space-y-3">
-                <div class="text-sm font-semibold">{{ 'TipiPendenza.Config.FormInserimento' | translate }}</div>
-                <label class="flex flex-col gap-1 max-w-xs">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TipoLayout' | translate }}</span>
-                  <select formControlName="formTipo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                    <option value="">{{ 'TipiPendenza.Config.Nessuno' | translate }}</option>
-                    @for (o of formTipoOptions; track o) { <option [value]="o">{{ o }}</option> }
-                  </select>
-                </label>
-                <div class="flex flex-col gap-1">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Definizione' | translate }}</span>
-                  <lnk-code-field formControlName="formDefinizione" format="json" [rows]="6" />
-                </div>
-              </div>
-              <div class="flex flex-col gap-1">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Validazione' | translate }}</span>
-                <lnk-code-field formControlName="validazione" format="json" [rows]="6" />
-              </div>
-              <div class="space-y-3">
-                <div class="text-sm font-semibold">{{ 'TipiPendenza.Config.Trasformazione' | translate }}</div>
-                <label class="flex flex-col gap-1 max-w-xs">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TipoTemplate' | translate }}</span>
-                  <select formControlName="trasformazioneTipo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                    <option value="">{{ 'TipiPendenza.Config.Nessuno' | translate }}</option>
-                    <option value="freemarker">Freemarker</option>
-                  </select>
-                </label>
-                <div class="flex flex-col gap-1">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TemplateDefinizione' | translate }}</span>
-                  <lnk-code-field formControlName="trasformazioneDefinizione" format="auto" [rows]="6" />
-                </div>
-              </div>
-              <label class="flex flex-col gap-1 max-w-xs">
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.FormInserimento"
+                purposeKey="TipiPendenza.Config.FormInserimentoHint"
+                icon="bootstrapFileEarmarkCode"
+                [tipo]="bkc.formTipo"
+                [tipoOptions]="formTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoLayout"
+                [content]="bkc.formDefinizione"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Validazione"
+                icon="bootstrapShieldCheck"
+                [content]="bkc.validazione"
+                fixedFormat="json"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Trasformazione"
+                icon="bootstrapArrowRight"
+                [tipo]="bkc.trasformazioneTipo"
+                [tipoOptions]="trasformazioneTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoTemplate"
+                [content]="bkc.trasformazioneDefinizione"
+                codeFormat="auto"
+              />
+
+              <div class="flex flex-col gap-1 max-w-xs">
                 <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Inoltro' | translate }}</span>
-                <select formControlName="inoltro" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                  <option value="">{{ 'TipiPendenza.Config.Nessuno' | translate }}</option>
-                  @for (a of applicazioni(); track a) { <option [value]="a">{{ a }}</option> }
-                </select>
-              </label>
+                <lnk-select
+                  formControlName="inoltro"
+                  [options]="applicazioniOptions()"
+                  [placeholder]="'TipiPendenza.Config.Nessuno' | translate"
+                  [ariaLabel]="'TipiPendenza.Config.Inoltro' | translate"
+                />
+              </div>
             </div>
           </lnk-detail-section>
         </div>
 
-        <!-- ── Portale pagamento ────────────────────────────────── -->
+        <!-- ── Portale pagamento (pilota: unità tipo→template) ───── -->
         <div [hidden]="activeTab() !== 'pagamento'" formGroupName="portalePagamento">
+          @let pgc = form.controls.portalePagamento.controls;
           <lnk-detail-section titleKey="TipiPendenza.Form.TabPortalePagamento">
             <div class="space-y-5">
               <label class="flex items-center gap-2">
                 <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
                 <span class="text-sm">{{ 'TipiPendenza.Config.Abilitato' | translate }}</span>
               </label>
-              <div class="space-y-3">
-                <div class="text-sm font-semibold">{{ 'TipiPendenza.Config.FormInserimento' | translate }}</div>
-                <label class="flex flex-col gap-1 max-w-xs">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TipoLayout' | translate }}</span>
-                  <select formControlName="formTipo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                    <option value="">{{ 'TipiPendenza.Config.Nessuno' | translate }}</option>
-                    @for (o of formTipoOptions; track o) { <option [value]="o">{{ o }}</option> }
-                  </select>
-                </label>
-                <div class="flex flex-col gap-1">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Definizione' | translate }}</span>
-                  <lnk-code-field formControlName="formDefinizione" format="json" [rows]="6" />
-                </div>
-                <div class="flex flex-col gap-1">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Impaginazione' | translate }}</span>
-                  <lnk-code-field formControlName="formImpaginazione" format="json" [rows]="6" />
-                </div>
-              </div>
-              <div class="flex flex-col gap-1">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Validazione' | translate }}</span>
-                <lnk-code-field formControlName="validazione" format="json" [rows]="6" />
-              </div>
-              <div class="space-y-3">
-                <div class="text-sm font-semibold">{{ 'TipiPendenza.Config.Trasformazione' | translate }}</div>
-                <label class="flex flex-col gap-1 max-w-xs">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TipoTemplate' | translate }}</span>
-                  <select formControlName="trasformazioneTipo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                    <option value="">{{ 'TipiPendenza.Config.Nessuno' | translate }}</option>
-                    <option value="freemarker">Freemarker</option>
-                  </select>
-                </label>
-                <div class="flex flex-col gap-1">
-                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TemplateDefinizione' | translate }}</span>
-                  <lnk-code-field formControlName="trasformazioneDefinizione" format="auto" [rows]="6" />
-                </div>
-              </div>
-              <label class="flex flex-col gap-1 max-w-xs">
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.FormInserimento"
+                purposeKey="TipiPendenza.Config.FormInserimentoHint"
+                icon="bootstrapFileEarmarkCode"
+                [tipo]="pgc.formTipo"
+                [tipoOptions]="formTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoLayout"
+                [content]="pgc.formDefinizione"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Impaginazione"
+                icon="bootstrapFileEarmarkCode"
+                [content]="pgc.formImpaginazione!"
+                fixedFormat="json"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Validazione"
+                icon="bootstrapShieldCheck"
+                [content]="pgc.validazione"
+                fixedFormat="json"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Trasformazione"
+                icon="bootstrapArrowRight"
+                [tipo]="pgc.trasformazioneTipo"
+                [tipoOptions]="trasformazioneTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoTemplate"
+                [content]="pgc.trasformazioneDefinizione"
+                codeFormat="auto"
+              />
+
+              <div class="flex flex-col gap-1 max-w-xs">
                 <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Inoltro' | translate }}</span>
-                <select formControlName="inoltro" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                  <option value="">{{ 'TipiPendenza.Config.Nessuno' | translate }}</option>
-                  @for (a of applicazioni(); track a) { <option [value]="a">{{ a }}</option> }
-                </select>
-              </label>
+                <lnk-select
+                  formControlName="inoltro"
+                  [options]="applicazioniOptions()"
+                  [placeholder]="'TipiPendenza.Config.Nessuno' | translate"
+                  [ariaLabel]="'TipiPendenza.Config.Inoltro' | translate"
+                />
+              </div>
             </div>
           </lnk-detail-section>
         </div>
@@ -185,36 +186,41 @@
           </lnk-detail-section>
         </div>
 
-        <!-- ── Altre funzioni ───────────────────────────────────── -->
+        <!-- ── Altre funzioni (unità tipo→template) ─────────────── -->
         <div [hidden]="activeTab() !== 'altre'">
-          <lnk-detail-section titleKey="TipiPendenza.Config.TracciatoCsv">
-            <div class="space-y-5" formGroupName="tracciatoCsv">
-              <label class="flex flex-col gap-1 max-w-xs">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.TipoTemplate' | translate }}</span>
-                <select formControlName="tipo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                  <option value="">{{ 'TipiPendenza.Config.Nessuno' | translate }}</option>
-                  <option value="freemarker">Freemarker</option>
-                </select>
-              </label>
-              <label class="flex flex-col gap-1">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Intestazione' | translate }}</span>
-                <input type="text" formControlName="intestazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
-              </label>
-              <div class="flex flex-col gap-1">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Richiesta' | translate }}</span>
-                <lnk-code-field formControlName="richiesta" format="auto" [rows]="6" />
-              </div>
-              <div class="flex flex-col gap-1">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Risposta' | translate }}</span>
-                <lnk-code-field formControlName="risposta" format="auto" [rows]="6" />
-              </div>
-            </div>
-          </lnk-detail-section>
+          @let tcc = form.controls.tracciatoCsv.controls;
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabAltre">
+            <div class="space-y-5">
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.TracciatoCsv"
+                purposeKey="TipiPendenza.Config.TracciatoCsvHint"
+                icon="bootstrapFileEarmarkText"
+                [tipo]="tcc.tipo"
+                [tipoOptions]="trasformazioneTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoTemplate"
+              >
+                <label class="flex flex-col gap-1">
+                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Intestazione' | translate }}</span>
+                  <input type="text" [formControl]="tcc.intestazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                </label>
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Richiesta' | translate }}</span>
+                  <lnk-code-field [formControl]="tcc.richiesta" format="auto" [rows]="6" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Risposta' | translate }}</span>
+                  <lnk-code-field [formControl]="tcc.risposta" format="auto" [rows]="6" />
+                </div>
+              </lnk-template-unit>
 
-          <lnk-detail-section titleKey="TipiPendenza.Config.Visualizzazione">
-            <div class="space-y-2">
-              <p class="text-xs text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.VisualizzazioneHint' | translate }}</p>
-              <lnk-code-field formControlName="visualizzazione" format="json" [rows]="8" />
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Visualizzazione"
+                purposeKey="TipiPendenza.Config.VisualizzazioneHint"
+                icon="bootstrapFileEarmarkCode"
+                [content]="form.controls.visualizzazione"
+                fixedFormat="json"
+                codeFormat="json"
+              />
             </div>
           </lnk-detail-section>
         </div>

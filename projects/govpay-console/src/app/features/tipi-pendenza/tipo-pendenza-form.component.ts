@@ -27,6 +27,8 @@ import {
 import { problemDetail } from '@core/models';
 import { CodeFieldComponent } from '@core/ui/code-field/code-field.component';
 import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
+import { TemplateUnitComponent, type TemplateTipoOption } from '@core/ui/template-unit/template-unit.component';
+import { SelectComponent } from '@core/ui/select/select.component';
 import { PromemoriaFieldsComponent } from './promemoria-fields.component';
 import { ApplicazioniConsoleApi } from '@feature/applicazioni/applicazioni.console-api';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
@@ -64,6 +66,8 @@ const FORM_TIPO_OPTIONS = ['angular2-json-schema-form', 'surveyjs'];
     TabsComponent,
     CodeFieldComponent,
     FormActionBarComponent,
+    TemplateUnitComponent,
+    SelectComponent,
     PromemoriaFieldsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -90,8 +94,12 @@ export class TipoPendenzaFormComponent implements OnInit {
   readonly saving = signal(false);
 
   readonly formTipoOptions = FORM_TIPO_OPTIONS;
+  /** Opzioni tipo→formato per le unità template (form / trasformazione). */
+  readonly formTipoUnitOptions: TemplateTipoOption[] = FORM_TIPO_OPTIONS.map((v) => ({ value: v, label: v, format: 'json' }));
+  readonly trasformazioneTipoUnitOptions: TemplateTipoOption[] = [{ value: 'freemarker', label: 'Freemarker', format: 'freemarker' }];
   /** Opzioni per il select `inoltro` (idA2A delle applicazioni). */
   readonly applicazioni = signal<string[]>([]);
+  readonly applicazioniOptions = computed(() => this.applicazioni().map((a) => ({ value: a, label: a })));
 
   readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre'>('dati');
   readonly tabs = computed<TabDef[]>(() => [

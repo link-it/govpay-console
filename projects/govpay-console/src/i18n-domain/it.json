@@ -973,6 +973,7 @@
     "Config": {
       "Abilitato": "Abilitato",
       "FormInserimento": "Form di inserimento dati",
+      "FormInserimentoHint": "Descrive i campi compilati dal cittadino",
       "TipoLayout": "Tipo layout",
       "Nessuno": "Nessuno",
       "NonConfigurato": "Non configurato",
@@ -992,11 +993,20 @@
       "PromemoriaScadenza": "Promemoria scadenza pagamento",
       "PromemoriaRicevuta": "Notifica ricevuta di pagamento",
       "TracciatoCsv": "Parser tracciati CSV",
+      "TracciatoCsvHint": "Elabora i file CSV del caricamento massivo (Freemarker)",
       "Intestazione": "Linea intestazione esito",
       "Richiesta": "Template richiesta",
       "Risposta": "Template risposta",
       "Visualizzazione": "Personalizzazione dettaglio pendenza",
       "VisualizzazioneHint": "Template di visualizzazione del dettaglio pendenza (JSON)."
+    },
+    "Template": {
+      "Tipo": "Tipo",
+      "Vuoto": "Scegli un tipo per configurare il template."
+    },
+    "Fmt": {
+      "Json": "JSON",
+      "Freemarker": "Freemarker"
     }
   },
   "Applicazioni": {

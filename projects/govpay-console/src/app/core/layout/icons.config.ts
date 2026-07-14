@@ -70,6 +70,7 @@ import {
   bootstrapFileEarmarkCode,
   bootstrapUpload,
   bootstrapArrowCounterclockwise,
+  bootstrapBell,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -137,4 +138,5 @@ export const APP_ICONS = {
   bootstrapFileEarmarkCode,
   bootstrapUpload,
   bootstrapArrowCounterclockwise,
+  bootstrapBell,
 };

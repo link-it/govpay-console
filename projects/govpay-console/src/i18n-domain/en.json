@@ -753,6 +753,7 @@
     "Config": {
       "Abilitato": "Enabled",
       "FormInserimento": "Data entry form",
+      "FormInserimentoHint": "Describes the fields filled in by the citizen",
       "TipoLayout": "Layout type",
       "Nessuno": "None",
       "NonConfigurato": "Not configured",
@@ -772,11 +773,20 @@
       "PromemoriaScadenza": "Payment due reminder",
       "PromemoriaRicevuta": "Payment receipt",
       "TracciatoCsv": "CSV tracks parser",
+      "TracciatoCsvHint": "Processes bulk-upload CSV files (Freemarker)",
       "Intestazione": "Outcome header line",
       "Richiesta": "Request template",
       "Risposta": "Response template",
       "Visualizzazione": "Item detail customization",
       "VisualizzazioneHint": "Item detail visualization template (JSON)."
+    },
+    "Template": {
+      "Tipo": "Type",
+      "Vuoto": "Choose a type to configure the template."
+    },
+    "Fmt": {
+      "Json": "JSON",
+      "Freemarker": "Freemarker"
     }
   },
   "Applicazioni": {
