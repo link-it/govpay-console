@@ -1,9 +1,37 @@
+2026-07-14  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(tipi-pendenza): editing dei template ripensato in unità
+    "tipo → template". Nuovo `@core/ui/template-unit`: ogni template vive in un
+    riquadro col proprio tipo, badge del formato (JSON / Freemarker) derivato
+    dal tipo, stato vuoto quando il tipo non è scelto, ed editor. Adottato in
+    tutti i tab config (portale backoffice/pagamento: definizione,
+    impaginazione, validazione, trasformazione; tracciato CSV: intestazione +
+    richiesta/risposta; visualizzazione) e nei promemoria dell'avvisatura
+    (oggetto/messaggio gated dal tipo).
+
+  * [Frontend] feat(shared-ui): nuovo `@core/ui/code-field` (sostituisce
+    `json-field`) — editor per contenuti JSON / Freemarker / testo, nascosto di
+    default (mostra su richiesta), con caricamento file + **drag & drop** e
+    reset. I valori sono memorizzati come **stringa base64**: decodifica in
+    lettura e codifica in scrittura (`@core/utils/base64`).
+
+  * [Frontend] feat(shared-ui): nuovo `@core/ui/select` (`lnk-select`) —
+    dropdown con la UI del menu profilo (pannello flottante che esce dai
+    contenitori, chiusura su click-fuori/Escape/scroll, navigazione da
+    tastiera). Sostituisce i `<select>` nativi della maschera tipi pendenza.
+
+  * [Frontend] feat(form): barra delle azioni (salva/annulla) **sticky in
+    basso** nelle form di edit (`@core/ui/form-action-bar`): resta visibile
+    mentre la form scorre; bordo e ombra solo quando è ancorata. Adottata in
+    tutte le form a pagina intera (tipi pendenza, domini, operatori,
+    applicazioni, ruoli, entrate, intermediari).
+
 2026-07-12  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(tipi-pendenza): gestione completa della configurazione
     (`TipoPendenzaConfig`) nella maschera di dettaglio, ispirata alla console
-    legacy ma adattata alla V2 (i blocchi config sono oggetti JSON, non più
-    base64). Form ristrutturata a tab: Dati · Portale backoffice · Portale
+    legacy (i blocchi config sono stringhe base64 di contenuti JSON o template
+    freemarker). Form ristrutturata a tab: Dati · Portale backoffice · Portale
     pagamento · Avvisatura email · Avvisatura App IO · Altre funzioni.
     - Portali (backoffice/pagamento): form (tipo layout + definizione/
       impaginazione), validazione (JSON Schema), trasformazione (freemarker +
