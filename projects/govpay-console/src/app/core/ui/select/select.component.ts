@@ -14,6 +14,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  booleanAttribute,
   computed,
   forwardRef,
   inject,
@@ -23,30 +24,50 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /** Opzione del dropdown. */
 export interface SelectOption {
   value: string;
   label: string;
+  /** Testo secondario sotto la label. */
+  description?: string;
+  /** Icona (nome ng-icon) mostrata a sinistra. */
+  icon?: string;
+  /** Opzione non selezionabile. */
+  disabled?: boolean;
+  /** Etichetta del gruppo di appartenenza (per il raggruppamento). */
+  group?: string;
+}
+
+interface OptionGroup {
+  key: string;
+  label?: string;
+  options: SelectOption[];
 }
 
 /**
- * Dropdown personalizzato (sostituisce `<select>`) con la stessa UI del menu
- * profilo della sidebar: trigger + pannello flottante `position: fixed`
- * (esce dai contenitori con `overflow: hidden`), chiusura su click-fuori,
- * `Escape` e scroll, navigazione da tastiera.
+ * Dropdown personalizzato (sostituisce `<select>`) con la UI del menu profilo:
+ * trigger + pannello flottante `position: fixed` (esce dai contenitori con
+ * `overflow: hidden`), chiusura su click-fuori / `Escape` / scroll, navigazione
+ * da tastiera.
  *
- * È un `ControlValueAccessor`: il valore è la `value` dell'opzione scelta
- * (stringa vuota = nessuna).
+ * Funzioni: **ricerca/filtro** (`searchable`), **selezione multipla**
+ * (`multiple`, valore = `string[]`), **opzioni ricche** (descrizione, icona,
+ * disabilitate) e **gruppi** (`group`).
+ *
+ * È un `ControlValueAccessor`: valore = `value` dell'opzione (stringa vuota =
+ * nessuna) in single, oppure `string[]` in multiple.
  *
  * ```html
- * <lnk-select [formControl]="tipo" [options]="opts" [placeholder]="'…Nessuno' | translate" />
+ * <lnk-select [formControl]="tipo" [options]="opts" [placeholder]="'…' | translate" />
+ * <lnk-select [formControl]="tags" [options]="opts" multiple searchable />
  * ```
  */
 @Component({
   selector: 'lnk-select',
   standalone: true,
-  imports: [NgIcon],
+  imports: [NgIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
@@ -61,7 +82,7 @@ export interface SelectOption {
       (click)="toggle()"
       (keydown)="onTriggerKeydown($event)"
     >
-      <span class="truncate" [class.lnk-select-ph]="!currentLabel()">{{ currentLabel() || placeholder() }}</span>
+      <span class="truncate" [class.lnk-select-ph]="!hasSelection()">{{ triggerText() }}</span>
       <ng-icon name="bootstrapChevronDown" size="1rem" class="opacity-60 shrink-0" />
     </button>
 
@@ -70,37 +91,72 @@ export interface SelectOption {
         #panel
         class="lnk-select-panel"
         role="listbox"
+        [attr.aria-multiselectable]="multiple() || null"
         tabindex="-1"
         [style.left.px]="left()"
-        [style.top.px]="top()"
+        [style.top.px]="dropUp() ? null : top()"
+        [style.bottom.px]="dropUp() ? bottomPos() : null"
         [style.min-width.px]="width()"
+        [style.max-height.px]="maxH()"
         (keydown)="onPanelKeydown($event)"
       >
-        @if (allowEmpty()) {
+        @if (searchable()) {
+          <div class="lnk-select-search">
+            <ng-icon name="bootstrapSearch" size="0.9rem" class="opacity-60 shrink-0" />
+            <input
+              #search
+              type="text"
+              [value]="query()"
+              [attr.placeholder]="searchPlaceholder() || (placeholder() || '')"
+              (input)="query.set($any($event.target).value)"
+              (keydown)="onSearchKeydown($event)"
+            />
+          </div>
+        }
+
+        @if (allowEmpty() && !multiple()) {
           <button
             type="button"
             role="option"
             class="lnk-select-opt"
-            [class.is-active]="!value()"
-            [attr.aria-selected]="!value()"
+            [class.is-active]="!hasSelection()"
+            [attr.aria-selected]="!hasSelection()"
             (click)="pick('')"
           >
-            <span class="truncate lnk-select-ph">{{ placeholder() }}</span>
-            @if (!value()) { <ng-icon name="bootstrapCheck2" size="1rem" class="shrink-0" /> }
+            <span class="flex-1 min-w-0 truncate lnk-select-ph">{{ placeholder() }}</span>
+            @if (!hasSelection()) { <ng-icon name="bootstrapCheck2" size="1rem" class="shrink-0" /> }
           </button>
         }
-        @for (o of normOptions(); track o.value) {
-          <button
-            type="button"
-            role="option"
-            class="lnk-select-opt"
-            [class.is-active]="o.value === value()"
-            [attr.aria-selected]="o.value === value()"
-            (click)="pick(o.value)"
-          >
-            <span class="truncate">{{ o.label }}</span>
-            @if (o.value === value()) { <ng-icon name="bootstrapCheck2" size="1rem" class="shrink-0" /> }
-          </button>
+
+        @for (g of groups(); track g.key) {
+          @if (g.label) { <div class="lnk-select-group">{{ g.label }}</div> }
+          @for (o of g.options; track o.value) {
+            <button
+              type="button"
+              role="option"
+              class="lnk-select-opt"
+              [disabled]="o.disabled"
+              [class.is-active]="isSelected(o.value)"
+              [attr.aria-selected]="isSelected(o.value)"
+              (click)="choose(o)"
+            >
+              @if (multiple()) {
+                <span class="lnk-select-check" [class.is-on]="isSelected(o.value)">
+                  @if (isSelected(o.value)) { <ng-icon name="bootstrapCheck2" size="0.85rem" /> }
+                </span>
+              }
+              @if (o.icon) { <ng-icon [name]="o.icon" size="1rem" class="shrink-0 opacity-80" /> }
+              <span class="flex-1 min-w-0">
+                <span class="block truncate">{{ o.label }}</span>
+                @if (o.description) { <span class="block truncate text-xs text-[var(--muted-foreground)]">{{ o.description }}</span> }
+              </span>
+              @if (!multiple() && isSelected(o.value)) { <ng-icon name="bootstrapCheck2" size="1rem" class="shrink-0" /> }
+            </button>
+          }
+        }
+
+        @if (!groups().length) {
+          <div class="lnk-select-empty">{{ 'Common.NoResults' | translate }}</div>
         }
       </div>
     }
@@ -108,38 +164,86 @@ export interface SelectOption {
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectComponent), multi: true }],
 })
 export class SelectComponent implements ControlValueAccessor {
-  /** Opzioni: oggetti `{value,label}` oppure semplici stringhe (value=label). */
+  /** Opzioni: oggetti `SelectOption` oppure semplici stringhe (value=label). */
   readonly options = input<Array<SelectOption | string>>([]);
   readonly placeholder = input('');
   readonly ariaLabel = input('');
-  /** Mostra l'opzione "vuota" (clear) in cima. Disattivala per gli enum obbligatori. */
-  readonly allowEmpty = input(true);
+  /** Mostra l'opzione "vuota" (clear) in cima. Solo single. */
+  readonly allowEmpty = input(true, { transform: booleanAttribute });
+  /** Selezione multipla: il valore del control diventa `string[]`. */
+  readonly multiple = input(false, { transform: booleanAttribute });
+  /** Mostra un campo di ricerca nel pannello. */
+  readonly searchable = input(false, { transform: booleanAttribute });
+  readonly searchPlaceholder = input('');
+
+  private readonly triggerRef = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
+  private readonly panelRef = viewChild<ElementRef<HTMLElement>>('panel');
+  private readonly searchRef = viewChild<ElementRef<HTMLInputElement>>('search');
+  private readonly host = inject(ElementRef) as ElementRef<HTMLElement>;
+
+  /** Valori selezionati (uno solo in single mode). */
+  protected readonly selected = signal<string[]>([]);
+  protected readonly disabled = signal(false);
+  protected readonly isOpen = signal(false);
+  protected readonly query = signal('');
+  protected readonly left = signal(0);
+  protected readonly top = signal(0);
+  protected readonly bottomPos = signal(0);
+  protected readonly width = signal(0);
+  protected readonly maxH = signal(320);
+  protected readonly dropUp = signal(false);
 
   /** Opzioni normalizzate (stringa → `{value,label}`). */
   protected readonly normOptions = computed<SelectOption[]>(() =>
     this.options().map((o) => (typeof o === 'string' ? { value: o, label: o } : o))
   );
 
-  private readonly triggerRef = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
-  private readonly panelRef = viewChild<ElementRef<HTMLElement>>('panel');
-  private readonly host = inject(ElementRef) as ElementRef<HTMLElement>;
+  /** Opzioni filtrate dalla ricerca. */
+  private readonly filtered = computed<SelectOption[]>(() => {
+    const q = this.query().trim().toLowerCase();
+    if (!this.searchable() || !q) return this.normOptions();
+    return this.normOptions().filter(
+      (o) => o.label.toLowerCase().includes(q) || (o.description ?? '').toLowerCase().includes(q)
+    );
+  });
 
-  protected readonly value = signal('');
-  protected readonly disabled = signal(false);
-  protected readonly isOpen = signal(false);
-  protected readonly left = signal(0);
-  protected readonly top = signal(0);
-  protected readonly width = signal(0);
+  /** Opzioni raggruppate (un gruppo senza label se non c'è `group`). */
+  protected readonly groups = computed<OptionGroup[]>(() => {
+    const out: OptionGroup[] = [];
+    const byKey = new Map<string, OptionGroup>();
+    for (const o of this.filtered()) {
+      const key = o.group ?? '';
+      let g = byKey.get(key);
+      if (!g) {
+        g = { key, label: o.group, options: [] };
+        byKey.set(key, g);
+        out.push(g);
+      }
+      g.options.push(o);
+    }
+    return out;
+  });
 
-  protected readonly currentLabel = computed(() => this.normOptions().find((o) => o.value === this.value())?.label ?? '');
+  protected readonly hasSelection = computed(() => this.selected().length > 0);
 
-  private onChange: (v: string) => void = () => {};
+  protected readonly triggerText = computed(() => {
+    const labels = this.normOptions()
+      .filter((o) => this.selected().includes(o.value))
+      .map((o) => o.label);
+    return labels.length ? labels.join(', ') : this.placeholder();
+  });
+
+  private onChange: (v: unknown) => void = () => {};
   private onTouched: () => void = () => {};
 
   writeValue(v: unknown): void {
-    this.value.set(typeof v === 'string' ? v : v == null ? '' : String(v));
+    if (this.multiple()) {
+      this.selected.set(Array.isArray(v) ? v.map(String) : []);
+    } else {
+      this.selected.set(v == null || v === '' ? [] : [String(v)]);
+    }
   }
-  registerOnChange(fn: (v: string) => void): void {
+  registerOnChange(fn: (v: unknown) => void): void {
     this.onChange = fn;
   }
   registerOnTouched(fn: () => void): void {
@@ -147,33 +251,71 @@ export class SelectComponent implements ControlValueAccessor {
   }
   setDisabledState(d: boolean): void {
     this.disabled.set(d);
-    if (d) this.isOpen.set(false);
+    if (d) this.close();
+  }
+
+  protected isSelected(v: string): boolean {
+    return this.selected().includes(v);
   }
 
   protected toggle(): void {
     if (this.disabled()) return;
     if (this.isOpen()) {
-      this.isOpen.set(false);
+      this.close();
       return;
     }
     const r = this.triggerRef().nativeElement.getBoundingClientRect();
+    const PANEL_MAX = 320;
+    const spaceBelow = window.innerHeight - r.bottom - 8;
+    const spaceAbove = r.top - 8;
+    // Apre verso l'alto se sotto non c'è spazio a sufficienza e sopra ce n'è di più.
+    const up = spaceBelow < Math.min(PANEL_MAX, 240) && spaceAbove > spaceBelow;
+    this.dropUp.set(up);
     this.left.set(r.left);
-    this.top.set(r.bottom + 4);
-    this.width.set(r.width);
+    // Il pannello non è più stretto del trigger, ma ha un minimo leggibile.
+    this.width.set(Math.max(r.width, 240));
+    if (up) {
+      this.bottomPos.set(window.innerHeight - r.top + 4);
+      this.maxH.set(Math.min(PANEL_MAX, spaceAbove));
+    } else {
+      this.top.set(r.bottom + 4);
+      this.maxH.set(Math.min(PANEL_MAX, spaceBelow));
+    }
     this.isOpen.set(true);
-    // Focus l'opzione attiva (o la prima) dopo il render del pannello.
     setTimeout(() => {
+      const s = this.searchRef()?.nativeElement;
+      if (s) {
+        s.focus();
+        return;
+      }
       const p = this.panelRef()?.nativeElement;
       const target = p?.querySelector<HTMLElement>('.is-active') ?? p?.querySelector<HTMLElement>('.lnk-select-opt') ?? p;
       target?.focus();
     });
   }
 
+  private close(): void {
+    this.isOpen.set(false);
+    this.query.set('');
+  }
+
+  /** Click su un'opzione: single seleziona e chiude, multiple commuta. */
+  protected choose(o: SelectOption): void {
+    if (o.disabled) return;
+    if (this.multiple()) {
+      this.selected.update((arr) => (arr.includes(o.value) ? arr.filter((x) => x !== o.value) : [...arr, o.value]));
+      this.onChange(this.selected());
+      this.onTouched();
+    } else {
+      this.pick(o.value);
+    }
+  }
+
   protected pick(v: string): void {
-    this.value.set(v);
+    this.selected.set(v === '' ? [] : [v]);
     this.onChange(v);
     this.onTouched();
-    this.isOpen.set(false);
+    this.close();
     this.triggerRef().nativeElement.focus();
   }
 
@@ -184,21 +326,34 @@ export class SelectComponent implements ControlValueAccessor {
     }
   }
 
+  protected onSearchKeydown(e: KeyboardEvent): void {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.firstOption()?.focus();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      this.close();
+      this.triggerRef().nativeElement.focus();
+    }
+  }
+
   protected onPanelKeydown(e: KeyboardEvent): void {
-    const opts = Array.from(this.panelRef()?.nativeElement.querySelectorAll<HTMLButtonElement>('.lnk-select-opt') ?? []);
+    const opts = this.optionEls();
     const i = opts.indexOf(document.activeElement as HTMLButtonElement);
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        opts[Math.min(opts.length - 1, i + 1)]?.focus();
+        if (i < 0) this.firstOption()?.focus();
+        else opts[Math.min(opts.length - 1, i + 1)]?.focus();
         break;
       case 'ArrowUp':
         e.preventDefault();
-        opts[Math.max(0, i - 1)]?.focus();
+        if (i <= 0) this.searchRef()?.nativeElement.focus();
+        else opts[i - 1]?.focus();
         break;
       case 'Home':
         e.preventDefault();
-        opts[0]?.focus();
+        this.firstOption()?.focus();
         break;
       case 'End':
         e.preventDefault();
@@ -206,21 +361,28 @@ export class SelectComponent implements ControlValueAccessor {
         break;
       case 'Escape':
         e.preventDefault();
-        this.isOpen.set(false);
+        this.close();
         this.triggerRef().nativeElement.focus();
         break;
     }
   }
 
+  private optionEls(): HTMLButtonElement[] {
+    return Array.from(this.panelRef()?.nativeElement.querySelectorAll<HTMLButtonElement>('.lnk-select-opt:not(:disabled)') ?? []);
+  }
+  private firstOption(): HTMLButtonElement | undefined {
+    return this.optionEls()[0];
+  }
+
   @HostListener('document:click', ['$event.target'])
   onDocClick(target: EventTarget | null): void {
     if (!this.isOpen()) return;
-    if (target instanceof Node && !this.host.nativeElement.contains(target)) this.isOpen.set(false);
+    if (target instanceof Node && !this.host.nativeElement.contains(target)) this.close();
   }
 
   @HostListener('window:scroll')
   @HostListener('window:resize')
   onViewportChange(): void {
-    if (this.isOpen()) this.isOpen.set(false);
+    if (this.isOpen()) this.close();
   }
 }

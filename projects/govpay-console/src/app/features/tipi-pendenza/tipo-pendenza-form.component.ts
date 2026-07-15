@@ -97,9 +97,11 @@ export class TipoPendenzaFormComponent implements OnInit {
   /** Opzioni tipo→formato per le unità template (form / trasformazione). */
   readonly formTipoUnitOptions: TemplateTipoOption[] = FORM_TIPO_OPTIONS.map((v) => ({ value: v, label: v, format: 'json' }));
   readonly trasformazioneTipoUnitOptions: TemplateTipoOption[] = [{ value: 'freemarker', label: 'Freemarker', format: 'freemarker' }];
-  /** Opzioni per il select `inoltro` (idA2A delle applicazioni). */
-  readonly applicazioni = signal<string[]>([]);
-  readonly applicazioniOptions = computed(() => this.applicazioni().map((a) => ({ value: a, label: a })));
+  /** Applicazioni per il select `inoltro` (idA2A + principal). */
+  readonly applicazioni = signal<{ idA2A: string; principal: string }[]>([]);
+  readonly applicazioniOptions = computed(() =>
+    this.applicazioni().map((a) => ({ value: a.idA2A, label: a.idA2A, description: a.principal }))
+  );
 
   readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre'>('dati');
   readonly tabs = computed<TabDef[]>(() => [
@@ -207,7 +209,7 @@ export class TipoPendenzaFormComponent implements OnInit {
     this.applicazioniApi
       .list({ limit: 200 })
       .pipe(catchError(() => of({ results: [] })))
-      .subscribe((slice) => this.applicazioni.set((slice.results ?? []).map((a) => a.idA2A)));
+      .subscribe((slice) => this.applicazioni.set((slice.results ?? []).map((a) => ({ idA2A: a.idA2A, principal: a.principal }))));
   }
 
   private patchFrom(t: TipoPendenza): void {
