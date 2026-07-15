@@ -13,10 +13,8 @@ import { ChangeDetectionStrategy, Component, computed, effect, input, signal } f
 import { ReactiveFormsModule, type FormControl } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { StatusBadgeComponent, type StatusTone } from '@linkit/shared-ui';
+import { StatusBadgeComponent, type StatusTone, SelectComponent } from '@linkit/shared-ui';
 import { CodeFieldComponent, type CodeFieldFormat } from '@core/ui/code-field/code-field.component';
-import { SelectComponent } from '@core/ui/select/select.component';
-
 /** Opzione del selettore "tipo" con il formato che ne deriva. */
 export interface TemplateTipoOption {
   value: string;

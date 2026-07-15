@@ -15,11 +15,9 @@ import { NgTemplateOutlet } from '@angular/common';
 import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, InfoGridComponent, RequiredLabelDirective, type InfoGridItem } from '@linkit/shared-ui';
+import { SnackbarService, InfoGridComponent, RequiredLabelDirective, SelectComponent, type InfoGridItem, type LnkSelectOption } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
-import { SelectComponent, type SelectOption } from '@core/ui/select/select.component';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { toSignal } from '@angular/core/rxjs-interop';
 import { DominiConsoleApi } from './domini.console-api';
 import { TIPI_CONTABILITA, type EntrataDominio, type EntrataDominioCreate, type EntrataDominioReplace, type EntrataDominioSummary, type TipoContabilita } from './dominio.model';
 
@@ -52,7 +50,7 @@ export class EntrataDominioInlineComponent {
 
   readonly tipiContabilita: TipoContabilita[] = TIPI_CONTABILITA;
   private readonly langChange = toSignal(this.translate.onLangChange);
-  readonly tipoContabilitaOptions = computed<SelectOption[]>(() => {
+  readonly tipoContabilitaOptions = computed<LnkSelectOption[]>(() => {
     this.langChange();
     return this.tipiContabilita.map((t) => ({ value: t, label: this.translate.instant('Domini.TipoContabilita.' + t) }));
   });

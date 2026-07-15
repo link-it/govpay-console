@@ -16,11 +16,9 @@ import { catchError, map, of, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '@linkit/shared-ui';
-import { InfoGridComponent, LoadingComponent, type InfoGridItem } from '@linkit/shared-ui';
+import { InfoGridComponent, LoadingComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
-import { SelectComponent } from '@core/ui/select/select.component';
-import { NoAutofillDirective } from './no-autofill.directive';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { NoAutofillDirective } from './no-autofill.directive';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type {
   Connettore,

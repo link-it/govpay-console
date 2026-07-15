@@ -14,12 +14,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, RequiredLabelDirective } from '@linkit/shared-ui';
+import { SnackbarService, RequiredLabelDirective, SelectComponent } from '@linkit/shared-ui';
 import type { DominioSummary } from '@core/models';
 import { problemDetail } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
-import { SelectComponent } from '@core/ui/select/select.component';
-import { IntermediariConsoleApi } from './intermediari.console-api';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { StazioneCreate, StazioneReplace, StazioneSummary, VersioneStazione } from './intermediario.model';
 
 const ID_PATTERN = /^[a-zA-Z0-9\-_]{1,35}$/;

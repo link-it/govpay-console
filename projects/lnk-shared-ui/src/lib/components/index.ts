@@ -24,6 +24,7 @@ export * from './loading/loading.component';
 export * from './tabs/tabs.component';
 export * from './search-input/search-input.component';
 export * from './select-input/select-input.component';
+export * from './select/select.component';
 export * from './date-input/date-input.component';
 export * from './detail-section/detail-section.component';
 export * from './detail-group/detail-group.component';

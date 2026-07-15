@@ -15,11 +15,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, InfoGridComponent, LoadingComponent, type InfoGridItem } from '@linkit/shared-ui';
+import { SnackbarService, InfoGridComponent, LoadingComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail, type ConnettoreCredenziali } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
-import { SelectComponent } from '@core/ui/select/select.component';
-import { ApplicazioniConsoleApi } from './applicazioni.console-api';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { ApplicazioniConsoleApi } from './applicazioni.console-api';
 import type { ConnettoreIntegrazioneApplicazione, TipoAutIntegrazione, VersioneIntegrazione } from './applicazione.model';
 
 const TIPI_AUTH: TipoAutIntegrazione[] = ['NONE', 'BASIC', 'SSL'];

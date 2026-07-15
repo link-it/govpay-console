@@ -14,11 +14,9 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, InfoGridComponent, type InfoGridItem } from '@linkit/shared-ui';
+import { SnackbarService, InfoGridComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail, type ConnettoreCredenziali } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
-import { SelectComponent } from '@core/ui/select/select.component';
-import { DominiConsoleApi } from './domini.console-api';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { DominiConsoleApi } from './domini.console-api';
 import type { ConnettoreDominio, ConnettoreDominioDescriptor } from './connettore-dominio.model';
 
 /** Campi credenziali (write-only) esposti nella sotto-form. */

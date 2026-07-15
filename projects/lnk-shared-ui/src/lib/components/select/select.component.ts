@@ -1,12 +1,17 @@
 /*
- * GovPay - Porta di Accesso al Nodo dei Pagamenti SPC
- * http://www.gov4j.it/govpay
- *
  * Copyright (c) 2014-2026 Link.it srl (http://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
  * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
@@ -26,8 +31,8 @@ import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
-/** Opzione del dropdown. */
-export interface SelectOption {
+/** Opzione del dropdown `lnk-select`. */
+export interface LnkSelectOption {
   value: string;
   label: string;
   /** Testo secondario sotto la label. */
@@ -43,14 +48,14 @@ export interface SelectOption {
 interface OptionGroup {
   key: string;
   label?: string;
-  options: SelectOption[];
+  options: LnkSelectOption[];
 }
 
 /**
  * Dropdown personalizzato (sostituisce `<select>`) con la UI del menu profilo:
  * trigger + pannello flottante `position: fixed` (esce dai contenitori con
  * `overflow: hidden`), chiusura su click-fuori / `Escape` / scroll, navigazione
- * da tastiera.
+ * da tastiera, apertura verso l'alto se in fondo non c'è spazio.
  *
  * Funzioni: **ricerca/filtro** (`searchable`), **selezione multipla**
  * (`multiple`, valore = `string[]`), **opzioni ricche** (descrizione, icona,
@@ -161,11 +166,136 @@ interface OptionGroup {
       </div>
     }
   `,
+  styles: `
+    .lnk-select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      width: fit-content;
+      min-width: 12rem;
+      max-width: 22rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      background: var(--card-bg);
+      color: var(--foreground);
+      font-size: 0.875rem;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+    .lnk-select-trigger:hover:not(:disabled) {
+      border-color: var(--ring);
+    }
+    .lnk-select-trigger:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+    .lnk-select-trigger:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .lnk-select-ph {
+      color: var(--muted-foreground);
+    }
+    .lnk-select-panel {
+      position: fixed;
+      z-index: 50;
+      padding: 0.25rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--card-bg);
+      box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
+      overflow-y: auto;
+      max-width: min(90vw, 28rem);
+    }
+    :host-context(.dark) .lnk-select-panel {
+      box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.7);
+    }
+    .lnk-select-opt {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 0;
+      border-radius: 0.375rem;
+      background: transparent;
+      color: var(--foreground);
+      font-size: 0.875rem;
+      text-align: left;
+      cursor: pointer;
+    }
+    .lnk-select-opt:hover:not(:disabled),
+    .lnk-select-opt:focus-visible {
+      background: var(--muted);
+      outline: none;
+    }
+    .lnk-select-opt.is-active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .lnk-select-opt:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .lnk-select-search {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.625rem;
+      margin-bottom: 0.25rem;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .lnk-select-search input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      outline: none;
+      font: inherit;
+      font-size: 0.875rem;
+      color: var(--foreground);
+    }
+    .lnk-select-group {
+      padding: 0.375rem 0.75rem 0.25rem;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      color: var(--muted-foreground);
+    }
+    .lnk-select-empty {
+      padding: 0.75rem;
+      font-size: 0.8125rem;
+      text-align: center;
+      color: var(--muted-foreground);
+    }
+    .lnk-select-check {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 0.25rem;
+      color: var(--primary);
+    }
+    .lnk-select-check.is-on {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 15%, transparent);
+    }
+  `,
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectComponent), multi: true }],
 })
 export class SelectComponent implements ControlValueAccessor {
-  /** Opzioni: oggetti `SelectOption` oppure semplici stringhe (value=label). */
-  readonly options = input<Array<SelectOption | string>>([]);
+  /** Opzioni: oggetti `LnkSelectOption` oppure semplici stringhe (value=label). */
+  readonly options = input<Array<LnkSelectOption | string>>([]);
   readonly placeholder = input('');
   readonly ariaLabel = input('');
   /** Mostra l'opzione "vuota" (clear) in cima. Solo single. */
@@ -194,12 +324,12 @@ export class SelectComponent implements ControlValueAccessor {
   protected readonly dropUp = signal(false);
 
   /** Opzioni normalizzate (stringa → `{value,label}`). */
-  protected readonly normOptions = computed<SelectOption[]>(() =>
+  protected readonly normOptions = computed<LnkSelectOption[]>(() =>
     this.options().map((o) => (typeof o === 'string' ? { value: o, label: o } : o))
   );
 
   /** Opzioni filtrate dalla ricerca. */
-  private readonly filtered = computed<SelectOption[]>(() => {
+  private readonly filtered = computed<LnkSelectOption[]>(() => {
     const q = this.query().trim().toLowerCase();
     if (!this.searchable() || !q) return this.normOptions();
     return this.normOptions().filter(
@@ -300,7 +430,7 @@ export class SelectComponent implements ControlValueAccessor {
   }
 
   /** Click su un'opzione: single seleziona e chiude, multiple commuta. */
-  protected choose(o: SelectOption): void {
+  protected choose(o: LnkSelectOption): void {
     if (o.disabled) return;
     if (this.multiple()) {
       this.selected.update((arr) => (arr.includes(o.value) ? arr.filter((x) => x !== o.value) : [...arr, o.value]));

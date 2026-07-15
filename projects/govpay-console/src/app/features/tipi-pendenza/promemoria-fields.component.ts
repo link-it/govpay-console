@@ -13,10 +13,8 @@ import { ChangeDetectionStrategy, Component, computed, effect, input, signal } f
 import { ReactiveFormsModule, type FormGroup } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { StatusBadgeComponent, type StatusTone } from '@linkit/shared-ui';
+import { StatusBadgeComponent, type StatusTone, SelectComponent, type LnkSelectOption } from '@linkit/shared-ui';
 import { CodeFieldComponent } from '@core/ui/code-field/code-field.component';
-import { SelectComponent, type SelectOption } from '@core/ui/select/select.component';
-
 /**
  * Blocco campi di un singolo promemoria di avvisatura (avviso / scadenza /
  * ricevuta), reso come card coerente con `lnk-template-unit`: intestazione con
@@ -104,7 +102,7 @@ export class PromemoriaFieldsComponent {
   readonly titleKey = input.required<string>();
 
   /** Opzioni del tipo template (solo Freemarker). */
-  readonly tipoOptions: SelectOption[] = [{ value: 'freemarker', label: 'Freemarker' }];
+  readonly tipoOptions: LnkSelectOption[] = [{ value: 'freemarker', label: 'Freemarker' }];
 
   readonly hasAllegaPdf = computed(() => !!this.group().get('allegaPdf'));
   readonly hasSoloEseguiti = computed(() => !!this.group().get('soloEseguiti'));

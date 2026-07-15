@@ -13,6 +13,22 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.27.0] — 2026-07-15
+
+### Aggiunto
+
+- **`lnk-select` — dropdown personalizzato** (sostituto di `<select>`) con la UI
+  del menu profilo: trigger + pannello flottante `position: fixed` (esce dai
+  contenitori con `overflow: hidden`), chiusura su click-fuori / `Escape` /
+  scroll, navigazione da tastiera, apertura verso l'alto quando in fondo manca
+  spazio. Funzioni: ricerca/filtro (`searchable`), selezione multipla
+  (`multiple`, valore `string[]`), opzioni ricche (`description`, `icon`,
+  `disabled`) e gruppi (`group`). `ControlValueAccessor`; opzioni come
+  `string[]` o `LnkSelectOption[]`. Trigger dimensionato al contenuto
+  (`fit-content`, min 12rem / max 22rem).
+
+---
+
 ## [0.26.0] — 2026-07-10
 
 ### Aggiunto

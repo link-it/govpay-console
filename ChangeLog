@@ -1,11 +1,15 @@
 2026-07-15  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
-  * [Frontend] feat(shared-ui): nuovo `@core/ui/select` (`lnk-select`) —
-    dropdown con la UI del menu profilo (pannello flottante che esce dai
-    contenitori, chiusura su click-fuori/Escape/scroll, navigazione da
-    tastiera; opzioni come `string[]` o `{value,label}`, opzione vuota
-    disattivabile). Sostituisce tutti i `<select>` nativi delle form
-    (tipi pendenza, entrate, domini, applicazioni, intermediari).
+  * [Frontend] feat(shared-ui): nuovo `lnk-select` — dropdown con la UI del
+    menu profilo (pannello flottante che esce dai contenitori, chiusura su
+    click-fuori/Escape/scroll, navigazione da tastiera, apertura verso l'alto
+    se in fondo manca spazio; trigger `fit-content` con min/max-width).
+    Ricerca/filtro, selezione multipla, opzioni ricche (descrizione, icona,
+    disabilitate) e gruppi. Sostituisce tutti i `<select>` nativi delle form
+    (tipi pendenza, entrate, domini, applicazioni, intermediari); nel select
+    inoltro le applicazioni mostrano il `principal` come descrizione.
+    **Promosso in `@linkit/shared-ui` 0.27.0** (via `sync:lib`); l'interfaccia
+    opzione è `LnkSelectOption` (per non collidere con `lnk-select-input`).
 
   * [Frontend] feat(tipi-pendenza): dettaglio config a campi completi. Nuovo
     `@core/ui/config-field-view`: ogni campo mostra un badge Configurato /
