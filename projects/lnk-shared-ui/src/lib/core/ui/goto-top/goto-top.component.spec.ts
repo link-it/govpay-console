@@ -46,13 +46,12 @@ describe('GotoTopComponent', () => {
     setScrollY(0);
   });
 
-  it('default: pulsante invisibile (opacity-0, tabIndex -1)', () => {
+  it('default: pulsante invisibile (opacity-0, inert)', () => {
     const fixture = TestBed.createComponent(GotoTopComponent);
     fixture.detectChanges();
     const btn = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
     expect(btn.classList).toContain('opacity-0');
-    expect(btn.tabIndex).toBe(-1);
-    expect(btn.getAttribute('aria-hidden')).toBe('true');
+    expect(btn.hasAttribute('inert')).toBe(true);
   });
 
   it('window:scroll > 200 → pulsante diventa visibile', () => {
@@ -66,8 +65,7 @@ describe('GotoTopComponent', () => {
     fixture.detectChanges();
 
     expect(btn.classList).not.toContain('opacity-0');
-    expect(btn.tabIndex).toBe(0);
-    expect(btn.getAttribute('aria-hidden')).toBe('false');
+    expect(btn.hasAttribute('inert')).toBe(false);
   });
 
   it("scrollToTop() invoca window.scrollTo({ top: 0, behavior: 'smooth' })", () => {

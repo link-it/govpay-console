@@ -25,6 +25,10 @@
 
   * [Frontend] fix(entrate): ripristinata la spaziatura dei campi nella form.
 
+  * [Frontend] fix(shared-ui): `lnk-goto-top` usa `inert` da nascosto invece di
+    `aria-hidden`+`tabindex` — risolve il warning a11y "Blocked aria-hidden …
+    retained focus". Via `@linkit/shared-ui 0.28.1`.
+
   * [Frontend] feat(liste): persistenza opzionale dello stato lista (filtri +
     ordinamento) oltre il refresh, attivabile per feature col flag
     `persistState` nel config della lista (es. `pendenze-config.json`, dove è

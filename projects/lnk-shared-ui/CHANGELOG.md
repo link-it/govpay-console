@@ -13,6 +13,17 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.28.1] — 2026-07-15
+
+### Risolto
+
+- **`lnk-goto-top` — accessibilità**: da nascosto usa l'attributo `inert`
+  invece di `aria-hidden` + `tabindex=-1`. Evita il warning "Blocked
+  aria-hidden on an element because its descendant retained focus" quando il
+  pulsante viene nascosto mentre ha ancora il focus (dopo il click di scroll).
+
+---
+
 ## [0.28.0] — 2026-07-15
 
 ### Aggiunto
