@@ -297,7 +297,7 @@ export class PagamentiListComponent implements OnInit {
     this.listState.set(PagamentiListComponent.STATE_KEY, {
       filters: this.filters(),
       sort: this.sort(),
-    });
+    }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);

@@ -306,7 +306,7 @@ export class ApplicazioniListComponent implements OnInit {
   }
 
   private reset(): void {
-    this.listState.set(ApplicazioniListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() });
+    this.listState.set(ApplicazioniListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);

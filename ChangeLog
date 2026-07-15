@@ -25,6 +25,13 @@
 
   * [Frontend] fix(entrate): ripristinata la spaziatura dei campi nella form.
 
+  * [Frontend] feat(liste): persistenza opzionale dello stato lista (filtri +
+    ordinamento) oltre il refresh, attivabile per feature col flag
+    `persistState` nel config della lista (es. `pendenze-config.json`, dove è
+    abilitato). Il valore è offuscato in `sessionStorage`/`localStorage` (non
+    in chiaro, es. filtri con PII). Via `@linkit/shared-ui 0.28.0`
+    (`ListStateService` persistente, `DisplayConfig.persistState`).
+
 2026-07-14  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(tipi-pendenza): editing dei template ripensato in unità

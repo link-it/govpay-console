@@ -221,7 +221,7 @@ export class TracciatiListComponent implements OnInit {
     // Persisti filtri/ordinamento per il ripristino al return dal detail.
     this.listState.set(TracciatiListComponent.STATE_KEY, {
       filters: this.filters(),
-    });
+    }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);

@@ -289,6 +289,12 @@ export interface DisplayConfig {
   table?: TableConfig;
   /** Mappa dei gruppi di option (stati, label, tag, icone, …). */
   options?: DisplayOptionsMap;
+  /**
+   * Persistenza dello stato lista (filtri + ordinamento) per questa feature:
+   * `false`/assente = solo in-memory; `true`/`'session'` = sessionStorage;
+   * `'local'` = localStorage. Vedi `ListStateService`.
+   */
+  persistState?: boolean | 'session' | 'local';
   /** Eventuali altre varianti accessibili tramite `configRow=`. */
-  [key: string]: ItemRowConfig | TableConfig | DisplayOptionsMap | undefined;
+  [key: string]: ItemRowConfig | TableConfig | DisplayOptionsMap | boolean | 'session' | 'local' | undefined;
 }

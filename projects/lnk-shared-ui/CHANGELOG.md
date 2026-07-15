@@ -13,6 +13,24 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.28.0] — 2026-07-15
+
+### Aggiunto
+
+- **`ListStateService` — persistenza opzionale** dello stato lista (filtri +
+  ordinamento). Oltre alla cache in-memory, `set(key, value, persist)` può
+  scrivere su **sessionStorage** (`true`/`'session'`) o **localStorage**
+  (`'local'`); `get()` usa lo storage come fallback (ripristino dopo refresh
+  anche prima del caricamento del config). Nuovo tipo `ListStatePersistence`.
+- **`DisplayConfig.persistState`** — flag di feature (`boolean | 'session' |
+  'local'`) per attivare la persistenza dalla config della lista
+  (es. `pendenze-config.json`).
+- Il valore persistito è **offuscato** (JSON → XOR → base64) per non essere
+  leggibile in chiaro nello storage (es. filtri con PII). Non è cifratura
+  sicura, ma riduce l'esposizione accidentale.
+
+---
+
 ## [0.27.0] — 2026-07-15
 
 ### Aggiunto
