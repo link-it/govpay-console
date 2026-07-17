@@ -2,7 +2,8 @@
   "Common": {
     "Copy": "Copy",
     "Copied": "Copied",
-    "Edit": "Edit"
+    "Edit": "Edit",
+    "Required": "Required field"
   },
   "Password": {
     "Imposta": "Set password",

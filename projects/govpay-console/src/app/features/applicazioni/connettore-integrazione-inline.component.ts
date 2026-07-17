@@ -9,10 +9,10 @@
  * the Free Software Foundation.
  */
 
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, input, signal } from '@angular/core';
+import { AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService, InfoGridComponent, LoadingComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
@@ -23,6 +23,7 @@ import type { ConnettoreIntegrazioneApplicazione, VersioneIntegrazione } from '.
 
 const TIPI_AUTH: TipoAutenticazioneConnettore[] = ['NONE', 'HTTPBASIC', 'SSL', 'HEADER', 'APIKEY', 'OAUTH2'];
 const VERSIONI: VersioneIntegrazione[] = ['REST_V1', 'REST_V2'];
+const SSL_TIPI: SslTipo[] = ['CLIENT', 'SERVER'];
 
 /**
  * Card **view/edit inline** del connettore di integrazione dell'applicazione.
@@ -55,12 +56,14 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
 
   readonly tipiAuth = TIPI_AUTH;
   readonly versioni = VERSIONI;
+  readonly sslTipi = SSL_TIPI;
 
   readonly form = this.fb.nonNullable.group({
     abilitato: [false],
     url: [''],
-    versione: ['REST_V1' as VersioneIntegrazione],
-    tipoAutenticazione: ['NONE' as TipoAutenticazioneConnettore],
+    // nullable: null + disabilitati finché l'URL non è valorizzato
+    versione: new FormControl<VersioneIntegrazione | null>(null),
+    tipoAutenticazione: new FormControl<TipoAutenticazioneConnettore | null>(null),
     username: [''],
     sslTipo: ['CLIENT'],
     ksLocation: [''],
@@ -86,8 +89,90 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
     }),
   });
 
-  readonly authType = toSignal(this.form.controls.tipoAutenticazione.valueChanges, {
-    initialValue: 'NONE' as TipoAutenticazioneConnettore,
+  // Stato del form come signal: uso getRawValue() così i valori restano leggibili
+  // anche quando Versione/Tipo auth sono disabilitati (esclusi da valueChanges).
+  private readonly formValue = toSignal(this.form.valueChanges.pipe(map(() => this.form.getRawValue())), {
+    initialValue: this.form.getRawValue(),
+  });
+
+  /** Tipo di autenticazione corrente (null finché il connettore non è configurato). */
+  readonly authType = computed<TipoAutenticazioneConnettore | null>(() => this.formValue().tipoAutenticazione ?? null);
+  protected readonly sslKind = computed(() => this.formValue().sslTipo);
+  protected readonly sslIsClient = computed(() => this.sslKind() === 'CLIENT');
+
+  /**
+   * Il connettore è "configurato" quando l'URL è valorizzato: **solo allora**
+   * Versione/Tipo auth sono abilitati e il BE pretende i campi obbligatori (per
+   * tipo). Stessa logica della console legacy (`required = !!url`), a prescindere
+   * da `abilitato`.
+   */
+  protected readonly hasUrl = computed(() => !!this.formValue().url?.trim());
+
+  /**
+   * Campi obbligatori mancanti come **computed puro** (signal-based): pilota il
+   * disabilitamento di Salva in modo reattivo (non si può usare `form.invalid`
+   * perché i validatori sono impostati in un `effect` che gira dopo la
+   * valutazione del template, zoneless). Con URL vuoto nessun obbligo; con URL
+   * valorizzato servono Versione, Tipo auth e i campi del tipo scelto (per
+   * HTTPBASIC anche la password). Deve restare allineato a `_connettoreGating`.
+   */
+  protected readonly missingRequired = computed(() => {
+    const v = this.formValue();
+    if (!v.url?.trim()) return false; // non configurato: nessun obbligo (né lato BE)
+    if (!v.versione || !v.tipoAutenticazione) return true;
+    switch (v.tipoAutenticazione) {
+      case 'HTTPBASIC':
+        return !v.username || !v.credenziali?.password;
+      case 'HEADER':
+        return !v.headerName;
+      case 'APIKEY':
+        return !v.apiId;
+      case 'OAUTH2':
+        return !v.clientId || !v.urlTokenEndpoint;
+      case 'SSL':
+        return !v.sslType || !v.tsType || !v.tsLocation || (v.sslTipo === 'CLIENT' && (!v.ksType || !v.ksLocation));
+      default:
+        return false;
+    }
+  });
+
+  /**
+   * Aggancia Versione/Tipo auth alla presenza dell'URL: abilitati con URL,
+   * azzerati e disabilitati senza. Imposta i `Validators.required` per tipo
+   * (credenziali opzionali, tranne la password HTTP Basic). Esegue solo
+   * transizioni reali per non entrare in loop.
+   */
+  private readonly _connettoreGating = effect(() => {
+    const on = this.hasUrl();
+    const auth = on ? this.authType() : null;
+    const ssl = auth === 'SSL';
+    const c = this.form.controls;
+    const req = (ctrl: AbstractControl, need: boolean) => {
+      ctrl.setValidators(need ? Validators.required : null);
+      ctrl.updateValueAndValidity({ emitEvent: false });
+    };
+    if (on) {
+      if (c.versione.disabled) c.versione.enable({ emitEvent: false });
+      if (c.tipoAutenticazione.disabled) c.tipoAutenticazione.enable({ emitEvent: false });
+    } else {
+      if (c.versione.value !== null) c.versione.setValue(null, { emitEvent: true });
+      if (c.tipoAutenticazione.value !== null) c.tipoAutenticazione.setValue(null, { emitEvent: true });
+      if (c.versione.enabled) c.versione.disable({ emitEvent: false });
+      if (c.tipoAutenticazione.enabled) c.tipoAutenticazione.disable({ emitEvent: false });
+    }
+    req(c.versione, on);
+    req(c.tipoAutenticazione, on);
+    req(c.username, auth === 'HTTPBASIC');
+    req(c.credenziali.controls.password, auth === 'HTTPBASIC');
+    req(c.headerName, auth === 'HEADER');
+    req(c.apiId, auth === 'APIKEY');
+    req(c.clientId, auth === 'OAUTH2');
+    req(c.urlTokenEndpoint, auth === 'OAUTH2');
+    req(c.sslType, ssl);
+    req(c.tsType, ssl);
+    req(c.tsLocation, ssl);
+    req(c.ksType, ssl && this.sslKind() === 'CLIENT');
+    req(c.ksLocation, ssl && this.sslKind() === 'CLIENT');
   });
 
   readonly statusTone = computed<'success' | 'muted'>(() => (this.connettore()?.abilitato ? 'success' : 'muted'));
@@ -127,11 +212,14 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
 
   private apply(c: ConnettoreIntegrazioneApplicazione): void {
     this.connettore.set(c);
+    // Senza URL il connettore non è configurato: Versione/Tipo auth restano null
+    // (coerente col gating), anche se il payload arrivasse incoerente.
+    const configured = !!c.url?.trim();
     this.form.patchValue({
       abilitato: c.abilitato,
       url: c.url ?? '',
-      versione: c.versione ?? 'REST_V1',
-      tipoAutenticazione: c.tipoAutenticazione ?? 'NONE',
+      versione: configured ? c.versione ?? null : null,
+      tipoAutenticazione: configured ? c.tipoAutenticazione ?? null : null,
       username: c.username ?? '',
       sslTipo: c.sslTipo ?? 'CLIENT',
       ksLocation: c.ksLocation ?? '',
@@ -161,8 +249,8 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
     const out: ConnettoreIntegrazioneApplicazione = {
       abilitato: r.abilitato,
       url: r.url || undefined,
-      versione: r.versione,
-      tipoAutenticazione: r.tipoAutenticazione,
+      versione: r.versione ?? undefined,
+      tipoAutenticazione: r.tipoAutenticazione ?? undefined,
       connectTimeoutMs: r.connectTimeoutMs ?? undefined,
       readTimeoutMs: r.readTimeoutMs ?? undefined,
     };
@@ -207,7 +295,7 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
   }
 
   save(): void {
-    if (this.saving()) return;
+    if (this.saving() || this.missingRequired()) return;
     this.saving.set(true);
     const connettore = this.buildConnettore();
     const creds = this.buildCredenziali();

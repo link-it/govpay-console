@@ -2,7 +2,8 @@
   "Common": {
     "Copy": "Copia",
     "Copied": "Copiato",
-    "Edit": "Modifica"
+    "Edit": "Modifica",
+    "Required": "Campo obbligatorio"
   },
   "Password": {
     "Imposta": "Imposta password",
