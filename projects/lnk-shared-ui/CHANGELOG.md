@@ -13,6 +13,17 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.28.2] — 2026-07-17
+
+### Risolto
+
+- **`lnk-select` — larghezza del trigger**: il button interno ora riempie
+  l'host (`width: 100%` + `box-sizing: border-box`) invece di usare
+  `width: fit-content` con `min/max-width`. Elimina l'area "morta" tra host
+  (block) e button e allinea il campo agli `input` adiacenti nelle form.
+
+---
+
 ## [0.28.1] — 2026-07-15
 
 ### Risolto

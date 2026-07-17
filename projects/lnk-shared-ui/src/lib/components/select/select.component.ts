@@ -172,9 +172,8 @@ interface OptionGroup {
       align-items: center;
       justify-content: space-between;
       gap: 0.5rem;
-      width: fit-content;
-      min-width: 12rem;
-      max-width: 22rem;
+      box-sizing: border-box;
+      width: 100%;
       padding: 0.5rem 0.75rem;
       border: 1px solid var(--border);
       border-radius: 0.375rem;
