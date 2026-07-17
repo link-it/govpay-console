@@ -15,7 +15,7 @@
  * connettore di integrazione (sub-resource singleton) e la codifica avvisi.
  */
 
-import type { Acl, DominioRef, PaginationParams, RuoloRef, SslTipo, TipoPendenzaRef } from '@core/models';
+import type { Acl, DominioRef, PaginationParams, RuoloRef, SslTipo, TipoAutenticazioneConnettore, TipoPendenzaRef } from '@core/models';
 
 /** Configurazione codifica IUV per gli avvisi (schema `CodificaAvvisi`). */
 export interface CodificaAvvisi {
@@ -68,8 +68,6 @@ export interface ApplicazioneReplace {
 
 /** Versione API di integrazione. */
 export type VersioneIntegrazione = 'REST_V1' | 'REST_V2';
-/** Autenticazione del connettore integrazione. */
-export type TipoAutIntegrazione = 'NONE' | 'BASIC' | 'SSL';
 
 /**
  * Connettore di integrazione dell'applicazione (schema
@@ -80,7 +78,7 @@ export interface ConnettoreIntegrazioneApplicazione {
   abilitato: boolean;
   url?: string;
   versione?: VersioneIntegrazione;
-  tipoAutenticazione?: TipoAutIntegrazione;
+  tipoAutenticazione?: TipoAutenticazioneConnettore;
   username?: string;
   sslTipo?: SslTipo;
   ksLocation?: string;
@@ -88,6 +86,14 @@ export interface ConnettoreIntegrazioneApplicazione {
   tsLocation?: string;
   tsType?: string;
   sslType?: string;
+  /** `tipoAutenticazione=HEADER`: nome dell'header (il valore è una credenziale). */
+  headerName?: string;
+  /** `tipoAutenticazione=APIKEY`: id (la api key è una credenziale). */
+  apiId?: string;
+  /** `tipoAutenticazione=OAUTH2`: client id (il client secret è una credenziale). */
+  clientId?: string;
+  scope?: string;
+  urlTokenEndpoint?: string;
   connectTimeoutMs?: number;
   readTimeoutMs?: number;
 }

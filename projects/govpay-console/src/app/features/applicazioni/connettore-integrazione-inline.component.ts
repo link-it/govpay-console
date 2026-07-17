@@ -16,11 +16,12 @@ import { catchError, of, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService, InfoGridComponent, LoadingComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
-import { problemDetail, type ConnettoreCredenziali } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { ApplicazioniConsoleApi } from './applicazioni.console-api';
-import type { ConnettoreIntegrazioneApplicazione, TipoAutIntegrazione, VersioneIntegrazione } from './applicazione.model';
+import { problemDetail, type ConnettoreCredenziali, type SslTipo, type TipoAutenticazioneConnettore } from '@core/models';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { ApplicazioniConsoleApi } from './applicazioni.console-api';
+import type { ConnettoreIntegrazioneApplicazione, VersioneIntegrazione } from './applicazione.model';
 
-const TIPI_AUTH: TipoAutIntegrazione[] = ['NONE', 'BASIC', 'SSL'];
+const TIPI_AUTH: TipoAutenticazioneConnettore[] = ['NONE', 'HTTPBASIC', 'SSL', 'HEADER', 'APIKEY', 'OAUTH2'];
 const VERSIONI: VersioneIntegrazione[] = ['REST_V1', 'REST_V2'];
 
 /**
@@ -59,7 +60,7 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
     abilitato: [false],
     url: [''],
     versione: ['REST_V1' as VersioneIntegrazione],
-    tipoAutenticazione: ['NONE' as TipoAutIntegrazione],
+    tipoAutenticazione: ['NONE' as TipoAutenticazioneConnettore],
     username: [''],
     sslTipo: ['CLIENT'],
     ksLocation: [''],
@@ -67,6 +68,11 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
     tsLocation: [''],
     tsType: [''],
     sslType: [''],
+    headerName: [''],
+    apiId: [''],
+    clientId: [''],
+    scope: [''],
+    urlTokenEndpoint: [''],
     connectTimeoutMs: [null as number | null],
     readTimeoutMs: [null as number | null],
     credenziali: this.fb.nonNullable.group({
@@ -74,11 +80,14 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
       ksPassword: [''],
       tsPassword: [''],
       ksPKeyPasswd: [''],
+      headerValue: [''],
+      apiKey: [''],
+      clientSecret: [''],
     }),
   });
 
   readonly authType = toSignal(this.form.controls.tipoAutenticazione.valueChanges, {
-    initialValue: 'NONE' as TipoAutIntegrazione,
+    initialValue: 'NONE' as TipoAutenticazioneConnettore,
   });
 
   readonly statusTone = computed<'success' | 'muted'>(() => (this.connettore()?.abilitato ? 'success' : 'muted'));
@@ -130,6 +139,11 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
       tsLocation: c.tsLocation ?? '',
       tsType: c.tsType ?? '',
       sslType: c.sslType ?? '',
+      headerName: c.headerName ?? '',
+      apiId: c.apiId ?? '',
+      clientId: c.clientId ?? '',
+      scope: c.scope ?? '',
+      urlTokenEndpoint: c.urlTokenEndpoint ?? '',
       connectTimeoutMs: c.connectTimeoutMs ?? null,
       readTimeoutMs: c.readTimeoutMs ?? null,
     });
@@ -143,21 +157,40 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
 
   private buildConnettore(): ConnettoreIntegrazioneApplicazione {
     const r = this.form.getRawValue();
-    return {
+    // Campi comuni; quelli di auth dipendono dal tipoAutenticazione.
+    const out: ConnettoreIntegrazioneApplicazione = {
       abilitato: r.abilitato,
       url: r.url || undefined,
       versione: r.versione,
       tipoAutenticazione: r.tipoAutenticazione,
-      username: r.username || undefined,
-      sslTipo: r.tipoAutenticazione === 'SSL' ? (r.sslTipo as 'CLIENT' | 'SERVER') : undefined,
-      ksLocation: r.ksLocation || undefined,
-      ksType: r.ksType || undefined,
-      tsLocation: r.tsLocation || undefined,
-      tsType: r.tsType || undefined,
-      sslType: r.sslType || undefined,
       connectTimeoutMs: r.connectTimeoutMs ?? undefined,
       readTimeoutMs: r.readTimeoutMs ?? undefined,
     };
+    switch (r.tipoAutenticazione) {
+      case 'HTTPBASIC':
+        out.username = r.username || undefined;
+        break;
+      case 'SSL':
+        out.sslTipo = (r.sslTipo as SslTipo) || undefined;
+        out.ksLocation = r.ksLocation || undefined;
+        out.ksType = r.ksType || undefined;
+        out.tsLocation = r.tsLocation || undefined;
+        out.tsType = r.tsType || undefined;
+        out.sslType = r.sslType || undefined;
+        break;
+      case 'HEADER':
+        out.headerName = r.headerName || undefined;
+        break;
+      case 'APIKEY':
+        out.apiId = r.apiId || undefined;
+        break;
+      case 'OAUTH2':
+        out.clientId = r.clientId || undefined;
+        out.scope = r.scope || undefined;
+        out.urlTokenEndpoint = r.urlTokenEndpoint || undefined;
+        break;
+    }
+    return out;
   }
 
   private buildCredenziali(): ConnettoreCredenziali {
@@ -167,6 +200,9 @@ export class ConnettoreIntegrazioneInlineComponent implements OnInit {
     if (c.ksPassword) out.ksPassword = c.ksPassword;
     if (c.tsPassword) out.tsPassword = c.tsPassword;
     if (c.ksPKeyPasswd) out.ksPKeyPasswd = c.ksPKeyPasswd;
+    if (c.headerValue) out.headerValue = c.headerValue;
+    if (c.apiKey) out.apiKey = c.apiKey;
+    if (c.clientSecret) out.clientSecret = c.clientSecret;
     return out;
   }
 

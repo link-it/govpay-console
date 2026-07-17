@@ -34,7 +34,7 @@
         <lnk-select formControlName="tipoAutenticazione" [options]="tipiAuth" [allowEmpty]="false" [ariaLabel]="'Applicazioni.Connettore.TipoAuth' | translate" /></label>
     </div>
 
-    @if (authType() === 'BASIC') {
+    @if (authType() === 'HTTPBASIC') {
       <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Username</span>
         <input type="text" formControlName="username" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
       <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Password</span>
@@ -59,6 +59,33 @@
           <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.tsPassword" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Key password</span>
           <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.ksPKeyPasswd" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      </div>
+    }
+
+    @if (authType() === 'HEADER') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Header name</span>
+        <input type="text" formControlName="headerName" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Header value</span>
+        <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.headerValue" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    }
+
+    @if (authType() === 'APIKEY') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">API id</span>
+        <input type="text" formControlName="apiId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">API key</span>
+        <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.apiKey" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    }
+
+    @if (authType() === 'OAUTH2') {
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Client id</span>
+          <input type="text" formControlName="clientId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Client secret</span>
+          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.clientSecret" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Scope</span>
+          <input type="text" formControlName="scope" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Token endpoint URL</span>
+          <input type="text" formControlName="urlTokenEndpoint" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
       </div>
     }
 
