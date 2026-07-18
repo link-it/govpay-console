@@ -70,6 +70,72 @@ export interface PendenzaRef {
   causaleBreve?: string;
 }
 
+/** Identificativo univoco di un soggetto pagoPA (persona fisica `F` / giuridica `G`). */
+export interface RtUniqueIdentifier {
+  entityUniqueIdentifierType?: string;
+  entityUniqueIdentifierValue?: string;
+}
+
+/** Soggetto (debitore/versante) nella conversione JSON di RT/RPT. */
+export interface RtSoggetto {
+  uniqueIdentifier?: RtUniqueIdentifier;
+  fullName?: string;
+  'e-mail'?: string;
+}
+
+/** Singolo trasferimento pagoPA (schema `ctTransfer`). */
+export interface RtTransfer {
+  idTransfer?: number;
+  transferAmount?: string;
+  fiscalCodePA?: string;
+  IBAN?: string;
+  remittanceInformation?: string;
+  transferCategory?: string;
+}
+
+/** Elenco trasferimenti. */
+export interface RtTransferList {
+  transfer?: RtTransfer[];
+}
+
+/** Conversione JSON della Ricevuta Telematica (campi pagoPA `paSendRT`). */
+export interface RtDettaglio {
+  receiptId?: string;
+  noticeNumber?: string;
+  fiscalCode?: string;
+  outcome?: string;
+  creditorReferenceId?: string;
+  paymentAmount?: string;
+  description?: string;
+  companyName?: string;
+  debtor?: RtSoggetto;
+  transferList?: RtTransferList;
+  idPSP?: string;
+  pspFiscalCode?: string;
+  PSPCompanyName?: string;
+  idChannel?: string;
+  channelDescription?: string;
+  paymentMethod?: string;
+  fee?: string;
+  paymentDateTime?: string;
+  applicationDate?: string;
+  transferDate?: string;
+  [k: string]: unknown;
+}
+
+/** Conversione JSON della Richiesta di Pagamento Telematica (campi pagoPA). */
+export interface RptDettaglio {
+  creditorReferenceId?: string;
+  paymentAmount?: string;
+  dueDate?: string;
+  lastPayment?: boolean;
+  description?: string;
+  companyName?: string;
+  debtor?: RtSoggetto;
+  transferList?: RtTransferList;
+  [k: string]: unknown;
+}
+
 /** Hyperlink della ricevuta (schema `RicevutaLinks`). */
 export interface RicevutaLinks {
   rpt: Link;
@@ -81,9 +147,9 @@ export interface RicevutaLinks {
 /** Dettaglio canonico (schema `Ricevuta`). */
 export interface Ricevuta extends RicevutaSummary {
   /** Conversione JSON della RPT; `null` se non disponibile (RT in standin). */
-  rpt?: Record<string, unknown> | null;
+  rpt?: RptDettaglio | null;
   /** Conversione JSON della RT; sempre presente nel dettaglio. */
-  rt: Record<string, unknown>;
+  rt: RtDettaglio;
   segnalazioni?: Segnalazione[];
   pendenza?: PendenzaRef;
   _links: RicevutaLinks;

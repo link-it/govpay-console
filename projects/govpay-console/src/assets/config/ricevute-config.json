@@ -1,4 +1,18 @@
 {
+  "detail": {
+    "sections": {
+      "generali": true,
+      "esitoPagamento": true,
+      "versante": true,
+      "enteCreditore": true,
+      "trasferimenti": true,
+      "psp": true,
+      "richiestaPagamento": true,
+      "pendenza": true,
+      "download": true,
+      "segnalazioni": true
+    }
+  },
   "options": {
     "STATI_RT": {
       "values": {

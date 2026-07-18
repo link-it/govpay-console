@@ -10,7 +10,10 @@
     </lnk-page-header>
 
     @if (ricevuta()) {
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
+        @if (importoFmt(); as imp) {
+          <span class="text-xl font-semibold text-[var(--foreground)] font-mono">{{ imp }}</span>
+        }
         <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabel()" />
       </div>
     }
@@ -26,11 +29,49 @@
     <lnk-loading />
   } @else if (ricevuta(); as r) {
 
-    <lnk-detail-section titleKey="Ricevute.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
-    </lnk-detail-section>
+    @if (showSection('generali')) {
+      <lnk-detail-section titleKey="Ricevute.Detail.Generali">
+        <lnk-info-grid [items]="generaliItems()" />
+      </lnk-detail-section>
+    }
 
-    @if (pendenza(); as p) {
+    @if (esitoRtItems().length && showSection('esitoPagamento')) {
+      <lnk-detail-section titleKey="Ricevute.Detail.EsitoPagamento">
+        <lnk-info-grid [items]="esitoRtItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (versanteItems().length && showSection('versante')) {
+      <lnk-detail-section titleKey="Ricevute.Detail.Versante">
+        <lnk-info-grid [items]="versanteItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (enteItems().length && showSection('enteCreditore')) {
+      <lnk-detail-section titleKey="Ricevute.Detail.EnteCreditore">
+        <lnk-info-grid [items]="enteItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (transfers().length && showSection('trasferimenti')) {
+      <lnk-detail-section titleKey="Ricevute.Detail.Trasferimenti">
+        <lnk-data-table [columns]="transferColumns" [rows]="transferRows()" [clickable]="false" emptyKey="Common.NoResults" />
+      </lnk-detail-section>
+    }
+
+    @if (pspItems().length && showSection('psp')) {
+      <lnk-detail-section titleKey="Ricevute.Detail.SezionePsp">
+        <lnk-info-grid [items]="pspItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (rptItems().length && showSection('richiestaPagamento')) {
+      <lnk-detail-section titleKey="Ricevute.Detail.RichiestaPagamento">
+        <lnk-info-grid [items]="rptItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (showSection('pendenza') && pendenza(); as p) {
       <lnk-detail-section titleKey="Ricevute.Detail.PendenzaCollegata">
         <lnk-info-grid [items]="pendenzaItems()" />
         <a [routerLink]="['/ricevute', idDominio, iuv, idRicevuta, 'pendenza', p.idA2A, p.idPendenza]" class="btn btn-secondary btn-sm mt-3">
@@ -40,6 +81,7 @@
       </lnk-detail-section>
     }
 
+    @if (showSection('download')) {
     <lnk-detail-section titleKey="Ricevute.Detail.Download">
       <div class="flex flex-col gap-4">
         <div class="flex flex-wrap items-center gap-2">
@@ -69,8 +111,9 @@
         </div>
       </div>
     </lnk-detail-section>
+    }
 
-    @if (r.segnalazioni?.length) {
+    @if (r.segnalazioni?.length && showSection('segnalazioni')) {
       <lnk-detail-section titleKey="Ricevute.Detail.Segnalazioni">
         <ul class="flex flex-col gap-2 text-sm">
           @for (s of r.segnalazioni; track $index) {
