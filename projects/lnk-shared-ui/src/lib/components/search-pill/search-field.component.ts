@@ -23,6 +23,7 @@ import {
   inject,
   input,
   model,
+  output,
   signal,
 } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
@@ -62,6 +63,7 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
             (input)="value.set($any($event.target).value)"
             (focus)="focused.set(true)"
             (blur)="focused.set(false)"
+            (keydown.enter)="enter.emit()"
           />
           @if (value()) {
             <button type="button" class="fld__clear" aria-label="Cancella"
@@ -86,6 +88,7 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
             (input)="value.set($any($event.target).value)"
             (focus)="focused.set(true)"
             (blur)="focused.set(false)"
+            (keydown.enter)="enter.emit()"
           />
           @if (value()) {
             <button type="button" class="fld__clear" aria-label="Cancella"
@@ -360,6 +363,8 @@ export class SearchFieldComponent {
   readonly field = input.required<SearchField>();
   readonly value = model<string>('');
   readonly labels = input<SearchPillLabels>(DEFAULT_LABELS);
+  /** Invio da un campo testo/data: il consumer avvia la ricerca. */
+  readonly enter = output<void>();
 
   protected readonly focused = signal(false);
   protected readonly open = signal(false);

@@ -66,6 +66,7 @@ import {
               [labels]="labels()"
               [value]="fieldValue(f)"
               (valueChange)="onFieldChange(f.id, $event)"
+              (enter)="search.emit()"
             />
           </div>
         }

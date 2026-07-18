@@ -13,6 +13,17 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.28.3] — 2026-07-18
+
+### Aggiunto
+
+- **`lnk-search-pill` — Invio nei filtri**: premere Invio in un campo testo/data
+  del popover filtri avvia la ricerca (equivalente al pulsante "Cerca"), come già
+  avviene nella query a testo libero. Nuovo output `enter` su `lnk-search-field`,
+  propagato dal form filtri.
+
+---
+
 ## [0.28.2] — 2026-07-17
 
 ### Risolto
