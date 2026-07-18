@@ -35,7 +35,21 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { RicevuteConsoleApi } from './ricevute.console-api';
-import { statoRtColor, statoRtLabel, type Ricevuta, type RicevutaFormato, type RtTransfer } from './ricevuta.model';
+import {
+  statoRtColor,
+  statoRtLabel,
+  type Ricevuta,
+  type RicevutaFormato,
+  type RptView,
+  type RtTransferView,
+  type RtView,
+} from './ricevuta.model';
+
+/** Tiene solo gli item valorizzati: le sezioni gated su `items().length` così si
+ *  nascondono automaticamente quando non hanno contenuto reale. */
+function compact(items: InfoGridItem[]): InfoGridItem[] {
+  return items.filter((i) => i.value != null && i.value !== '');
+}
 
 @Component({
   selector: 'lnk-ricevuta-detail',
@@ -128,97 +142,90 @@ export class RicevutaDetailComponent implements OnInit {
     ];
   });
 
+  /** Viste RT/RPT normalizzate al confine dell'API (vedi `RicevuteConsoleApi.get`). */
+  private readonly rtView = computed<RtView>(() => this.ricevuta()?.rtView ?? { transfers: [] });
+  private readonly rptView = computed<RptView>(() => this.ricevuta()?.rptView ?? {});
+
   /** Esito pagamento (RT). */
   readonly esitoRtItems = computed<InfoGridItem[]>(() => {
-    const rt = this.ricevuta()?.rt;
-    if (!rt) return [];
-    return [
-      { labelKey: 'Ricevute.Detail.Esito', value: rt.outcome, hide: !rt.outcome },
-      { labelKey: 'Ricevute.Detail.ImportoPagato', value: rt.paymentAmount != null ? formatEuro(rt.paymentAmount) : undefined, hide: rt.paymentAmount == null },
-      { labelKey: 'Ricevute.Detail.Commissione', value: rt.fee != null ? formatEuro(rt.fee) : undefined, hide: rt.fee == null },
-      { labelKey: 'Ricevute.Detail.MetodoPagamento', value: rt.paymentMethod, hide: !rt.paymentMethod },
-      { labelKey: 'Ricevute.Detail.DataOraPagamento', value: rt.paymentDateTime ? formatDateTime(rt.paymentDateTime) : undefined, hide: !rt.paymentDateTime },
-      { labelKey: 'Ricevute.Detail.DataApplicazione', value: rt.applicationDate ? formatDate(rt.applicationDate) : undefined, hide: !rt.applicationDate },
-      { labelKey: 'Ricevute.Detail.DataTrasferimento', value: rt.transferDate ? formatDate(rt.transferDate) : undefined, hide: !rt.transferDate },
-      { labelKey: 'Ricevute.Detail.ReceiptId', value: rt.receiptId, mono: true, hide: !rt.receiptId },
-      { labelKey: 'Ricevute.Detail.NumeroAvviso', value: rt.noticeNumber, mono: true, hide: !rt.noticeNumber },
-    ];
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.Esito', value: v.esito },
+      { labelKey: 'Ricevute.Detail.ImportoPagato', value: v.importoPagato != null ? formatEuro(v.importoPagato) : undefined },
+      { labelKey: 'Ricevute.Detail.Commissione', value: v.commissione != null ? formatEuro(v.commissione) : undefined },
+      { labelKey: 'Ricevute.Detail.MetodoPagamento', value: v.metodoPagamento },
+      { labelKey: 'Ricevute.Detail.DataOraPagamento', value: v.dataOraPagamento ? formatDateTime(v.dataOraPagamento) : undefined },
+      { labelKey: 'Ricevute.Detail.DataApplicazione', value: v.dataContabile ? formatDate(v.dataContabile) : undefined },
+      { labelKey: 'Ricevute.Detail.DataTrasferimento', value: v.dataTrasferimento ? formatDate(v.dataTrasferimento) : undefined },
+      { labelKey: 'Ricevute.Detail.ReceiptId', value: v.receiptId, mono: true },
+      { labelKey: 'Ricevute.Detail.NumeroAvviso', value: v.numeroAvviso, mono: true },
+    ]);
   });
 
   /** Versante / debitore (RT). */
   readonly versanteItems = computed<InfoGridItem[]>(() => {
-    const d = this.ricevuta()?.rt?.debtor;
-    if (!d) return [];
-    const id = d.uniqueIdentifier;
-    return [
-      { labelKey: 'Ricevute.Detail.Anagrafica', value: d.fullName, hide: !d.fullName },
-      { labelKey: 'Ricevute.Detail.TipoSoggetto', value: this.tipoSoggetto(id?.entityUniqueIdentifierType), hide: !id?.entityUniqueIdentifierType },
-      { labelKey: 'Ricevute.Detail.Identificativo', value: id?.entityUniqueIdentifierValue, mono: true, hide: !id?.entityUniqueIdentifierValue },
-      { labelKey: 'Ricevute.Detail.Email', value: d['e-mail'], hide: !d['e-mail'] },
-    ];
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.Anagrafica', value: v.versanteNome },
+      { labelKey: 'Ricevute.Detail.TipoSoggetto', value: this.tipoSoggetto(v.versanteTipo) },
+      { labelKey: 'Ricevute.Detail.Identificativo', value: v.versanteId, mono: true },
+      { labelKey: 'Ricevute.Detail.Email', value: v.versanteEmail },
+    ]);
   });
 
   /** Prestatore servizi di pagamento (RT). */
   readonly pspItems = computed<InfoGridItem[]>(() => {
-    const rt = this.ricevuta()?.rt;
-    if (!rt) return [];
-    const canale = [rt.idChannel, rt.channelDescription].filter(Boolean).join(' — ');
-    return [
-      { labelKey: 'Ricevute.Detail.PspDenominazione', value: rt.PSPCompanyName, hide: !rt.PSPCompanyName },
-      { labelKey: 'Ricevute.Detail.PspId', value: rt.idPSP, mono: true, hide: !rt.idPSP },
-      { labelKey: 'Ricevute.Detail.PspFiscalCode', value: rt.pspFiscalCode, mono: true, hide: !rt.pspFiscalCode },
-      { labelKey: 'Ricevute.Detail.Canale', value: canale || undefined, hide: !canale },
-    ];
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.PspDenominazione', value: v.pspNome },
+      { labelKey: 'Ricevute.Detail.PspId', value: v.pspId, mono: true },
+      { labelKey: 'Ricevute.Detail.PspFiscalCode', value: v.pspCf, mono: true },
+      { labelKey: 'Ricevute.Detail.Canale', value: v.canale },
+    ]);
   });
 
   /** Ente creditore (RT). */
   readonly enteItems = computed<InfoGridItem[]>(() => {
-    const rt = this.ricevuta()?.rt;
-    if (!rt) return [];
-    return [
-      { labelKey: 'Ricevute.Detail.EnteDenominazione', value: rt.companyName, hide: !rt.companyName },
-      { labelKey: 'Ricevute.Detail.EnteFiscalCode', value: rt.fiscalCode, mono: true, hide: !rt.fiscalCode },
-      { labelKey: 'Ricevute.Detail.CreditorReferenceId', value: rt.creditorReferenceId, mono: true, hide: !rt.creditorReferenceId },
-      { labelKey: 'Ricevute.Detail.Causale', value: rt.description, wide: true, hide: !rt.description },
-    ];
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.EnteDenominazione', value: v.enteNome },
+      { labelKey: 'Ricevute.Detail.EnteFiscalCode', value: v.enteCf, mono: true },
+      { labelKey: 'Ricevute.Detail.CreditorReferenceId', value: v.iuv, mono: true },
+      { labelKey: 'Ricevute.Detail.Causale', value: v.causale, wide: true },
+    ]);
   });
 
   /** Richiesta di pagamento (RPT), quando disponibile. */
   readonly rptItems = computed<InfoGridItem[]>(() => {
-    const rpt = this.ricevuta()?.rpt;
-    if (!rpt) return [];
-    return [
-      { labelKey: 'Ricevute.Detail.ImportoRichiesto', value: rpt.paymentAmount != null ? formatEuro(rpt.paymentAmount) : undefined, hide: rpt.paymentAmount == null },
-      { labelKey: 'Ricevute.Detail.Scadenza', value: rpt.dueDate ? formatDate(rpt.dueDate) : undefined, hide: !rpt.dueDate },
-      { labelKey: 'Ricevute.Detail.UltimoPagamento', value: this.siNo(rpt.lastPayment), hide: rpt.lastPayment == null },
-      { labelKey: 'Ricevute.Detail.CreditorReferenceId', value: rpt.creditorReferenceId, mono: true, hide: !rpt.creditorReferenceId },
-      { labelKey: 'Ricevute.Detail.Causale', value: rpt.description, wide: true, hide: !rpt.description },
-    ];
+    const v = this.rptView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.ImportoRichiesto', value: v.importoRichiesto != null ? formatEuro(v.importoRichiesto) : undefined },
+      { labelKey: 'Ricevute.Detail.Scadenza', value: v.scadenza ? formatDate(v.scadenza) : undefined },
+      { labelKey: 'Ricevute.Detail.DataEsecuzione', value: v.dataEsecuzione ? formatDate(v.dataEsecuzione) : undefined },
+      { labelKey: 'Ricevute.Detail.TipoVersamento', value: v.tipoVersamento },
+      { labelKey: 'Ricevute.Detail.UltimoPagamento', value: this.siNo(v.ultimoPagamento) },
+      { labelKey: 'Ricevute.Detail.CreditorReferenceId', value: v.iuv, mono: true },
+      { labelKey: 'Ricevute.Detail.Causale', value: v.causale, wide: true },
+    ]);
   });
 
-  /** Trasferimenti reali (RT) — usati per il gating della sezione. */
-  readonly transfers = computed<RtTransfer[]>(() => this.ricevuta()?.rt?.transferList?.transfer ?? []);
+  /** Trasferimenti normalizzati — usati per il gating della sezione. */
+  readonly transfers = computed<RtTransferView[]>(() => this.rtView().transfers);
 
   /** Righe tabella: trasferimenti + riga di totale (= importo ricevuta). */
-  readonly transferRows = computed<RtTransfer[]>(() => {
+  readonly transferRows = computed<RtTransferView[]>(() => {
     const rows = this.transfers();
     const importo = this.ricevuta()?.importo;
     if (!rows.length || importo == null) return rows;
-    const totale: RtTransfer = {
-      remittanceInformation: this.translate.instant('Ricevute.Detail.Transfer.Totale'),
-      transferAmount: String(importo),
-    };
-    return [...rows, totale];
+    return [...rows, { causale: this.translate.instant('Ricevute.Detail.Transfer.Totale'), importo: String(importo) }];
   });
 
-  /** Colonne: Causale in seconda posizione, Importo come ultima. CF beneficiario
-   *  e Categoria omessi per non sforare la larghezza (dati poco consultati e già
-   *  desumibili altrove). */
-  readonly transferColumns: ColumnDef<RtTransfer>[] = [
-    { key: 'idTransfer', header: 'Ricevute.Detail.Transfer.Num', format: (t) => (t.idTransfer ?? '').toString(), align: 'center', width: '3.5rem' },
-    { key: 'remittanceInformation', header: 'Ricevute.Detail.Transfer.Causale', format: (t) => t.remittanceInformation ?? '' },
-    { key: 'IBAN', header: 'Ricevute.Detail.Transfer.Iban', format: (t) => t.IBAN ?? '', cellClass: 'font-mono text-xs', width: '16rem' },
-    { key: 'transferAmount', header: 'Ricevute.Detail.Transfer.Importo', format: (t) => formatEuro(t.transferAmount), align: 'right', cellClass: 'font-mono', width: '8rem' },
+  /** Colonne: Causale in seconda posizione, Importo come ultima. */
+  readonly transferColumns: ColumnDef<RtTransferView>[] = [
+    { key: 'num', header: 'Ricevute.Detail.Transfer.Num', format: (t) => (t.num ?? '').toString(), align: 'center', width: '3.5rem' },
+    { key: 'causale', header: 'Ricevute.Detail.Transfer.Causale', format: (t) => t.causale ?? '' },
+    { key: 'iban', header: 'Ricevute.Detail.Transfer.Iban', format: (t) => t.iban ?? '', cellClass: 'font-mono text-xs', width: '16rem' },
+    { key: 'importo', header: 'Ricevute.Detail.Transfer.Importo', format: (t) => formatEuro(t.importo), align: 'right', cellClass: 'font-mono', width: '8rem' },
   ];
 
   private siNo(v: boolean | null | undefined): string | undefined {

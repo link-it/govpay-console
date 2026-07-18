@@ -10,10 +10,10 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { type Observable } from 'rxjs';
+import { map, type Observable } from 'rxjs';
 import { ConsoleApiService, type ParamValue } from '@core/services';
 import type { Slice } from '@core/models';
-import type { Ricevuta, RicevutaFormato, RicevutaSummary, RicevuteListFilters } from './ricevuta.model';
+import { normalizeRpt, normalizeRt, type Ricevuta, type RicevutaFormato, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
 
 const ACCEPT_BY_FORMATO: Record<RicevutaFormato, string> = {
   json: 'application/json',
@@ -41,9 +41,15 @@ export class RicevuteConsoleApi {
     return this.api.list<RicevutaSummary>('ricevute', filters as Record<string, ParamValue>);
   }
 
-  /** `GET /ricevute/{idDominio}/{iuv}/{idRicevuta}` — dettaglio. */
+  /**
+   * `GET /ricevute/{idDominio}/{iuv}/{idRicevuta}` — dettaglio. Normalizza qui
+   * `rt`/`rpt` (schema flat nuovo o verboso vecchio) in `rtView`/`rptView`, così
+   * il resto dell'app vede una sola forma (anti-corruption layer).
+   */
   get(idDominio: string, iuv: string, idRicevuta: string): Observable<Ricevuta> {
-    return this.api.get<Ricevuta>(this.path(idDominio, iuv, idRicevuta));
+    return this.api.get<Ricevuta>(this.path(idDominio, iuv, idRicevuta)).pipe(
+      map((r) => ({ ...r, rtView: normalizeRt(r.rt, r.rpt, r.codPsp), rptView: normalizeRpt(r.rpt) }))
+    );
   }
 
   /** `GET …/rpt` — RPT come Blob nel formato richiesto (json|xml; **no pdf**). */

@@ -104,6 +104,8 @@
       "RichiestaPagamento": "Payment request (RPT)",
       "ImportoRichiesto": "Requested amount",
       "Scadenza": "Due date",
+      "DataEsecuzione": "Execution date",
+      "TipoVersamento": "Payment type",
       "UltimoPagamento": "Last payment",
       "Transfer": {
         "Num": "#",

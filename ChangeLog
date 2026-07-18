@@ -1,3 +1,40 @@
+2026-07-18  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(ricevute): dettaglio arricchito. La conversione JSON di
+    `rt`/`rpt` viene "spacchettata" in sezioni leggibili: Esito pagamento,
+    Versante, Ente creditore, Trasferimenti (tabella con riga Totale = importo
+    ricevuta), PSP e Richiesta di pagamento (RPT); ogni sezione è mostrata solo
+    se ha contenuto. L'importo è messo in evidenza in testata (accanto allo
+    stato) e tolto dalle informazioni generali. La visibilità delle sezioni è
+    configurabile via `ricevute-config.json` (`detail.sections`): una sezione
+    può essere nascosta anche se i dati sono presenti.
+
+  * [Frontend] feat(ricevute): supporto ricevute multi-versione. Le ricevute
+    vecchie portano `versioneOggetto` in `rt`/`rpt` e usano lo schema verboso
+    (`ctRicevutaTelematica`), le nuove lo schema flat (`paSendRT`).
+    `RicevuteConsoleApi.get()` normalizza entrambe in `rtView`/`rptView` al
+    confine dell'API (anti-corruption layer), così il resto dell'app vede una
+    sola forma; l'IBAN, assente nella RT verbosa, è recuperato dalla RPT.
+
+2026-07-17  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(applicazioni): validazione del connettore di integrazione
+    per tipo di autenticazione. I campi obbligatori dipendono dalla presenza
+    dell'URL (connettore configurato), come la console legacy: Versione e Tipo
+    autenticazione sono abilitati solo con URL valorizzato; per il tipo scelto
+    scattano i campi obbligatori (per HTTPBASIC anche la password). Indicatori
+    visivi ("*") e messaggi "Campo obbligatorio"; Salva disabilitato tramite
+    computed reattivo. Aggiunto il selettore SSL client/server.
+
+  * [Frontend] feat(applicazioni): connettore allineato ai 6 tipi di
+    autenticazione condivisi (NONE, HTTPBASIC, SSL, HEADER, APIKEY, OAUTH2);
+    label di navigazione "Domini" rinominata in "Enti creditori".
+
+  * [Frontend] fix(shared-ui): `lnk-select` — il trigger riempie l'host
+    (`width: 100%` + `box-sizing: border-box`) invece di `fit-content`,
+    eliminando l'area "morta" tra host e pulsante e allineandolo agli `input`
+    adiacenti nelle form. Via `@linkit/shared-ui 0.28.2`.
+
 2026-07-15  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(shared-ui): nuovo `lnk-select` — dropdown con la UI del
