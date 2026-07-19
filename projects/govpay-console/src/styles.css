@@ -439,22 +439,6 @@ a {
   background: var(--muted);
 }
 
-/* Barra azioni form sticky in basso (lnk-form-action-bar): bordo superiore
-   (hairline via box-shadow, così non sposta il layout) e lieve ombra verso
-   l'alto, ma SOLO quando la barra è incollata al fondo (`--stuck`), non quando
-   riposa a fine pagina. */
-.lnk-form-action-bar--stuck {
-  box-shadow:
-    0 -1px 0 var(--border),
-    0 -6px 16px -12px rgba(0, 0, 0, 0.25);
-}
-
-.dark .lnk-form-action-bar--stuck {
-  box-shadow:
-    0 -1px 0 var(--border),
-    0 -6px 16px -10px rgba(0, 0, 0, 0.6);
-}
-
 /* ==========================================================================
    LINK HOVER — colore primary in hover/focus per link breadcrumb,
    celle link del data-table e altre azioni testuali "secondarie".

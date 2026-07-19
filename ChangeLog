@@ -1,3 +1,13 @@
+2026-07-19  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(shared-ui): `lnk-form-action-bar` promossa in libreria. La
+    barra azioni form (salva/annulla) sticky in basso passa da `@core/ui` a
+    `@linkit/shared-ui` con stili scoped (niente Tailwind): bordo/ombra solo
+    quando è incollata al fondo, dark via `:host-context`. L'inset orizzontale
+    è configurabile via `--lnk-action-bar-inset` (default `1.5rem`), così i 7
+    form consumer (applicazioni, domini, entrate, intermediari, operatori,
+    ruoli, tipi-pendenza) restano invariati. Via `@linkit/shared-ui 0.29.0`.
+
 2026-07-18  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(ricevute): dettaglio arricchito. La conversione JSON di
@@ -15,6 +25,11 @@
     `RicevuteConsoleApi.get()` normalizza entrambe in `rtView`/`rptView` al
     confine dell'API (anti-corruption layer), così il resto dell'app vede una
     sola forma; l'IBAN, assente nella RT verbosa, è recuperato dalla RPT.
+
+  * [Frontend] feat(shared-ui): `lnk-search-pill` avvia la ricerca con Invio
+    nei filtri. Premere Invio in un campo testo/data del popover filtri lancia
+    la ricerca (come il pulsante "Cerca"), coerente con la query a testo libero.
+    Via `@linkit/shared-ui 0.28.3`.
 
 2026-07-17  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 

@@ -16,7 +16,7 @@ import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
+import { FormActionBarComponent, SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   LoadingComponent,
@@ -26,7 +26,6 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail, type Acl } from '@core/models';
 import { AclEditorComponent } from '@core/ui/acl-editor/acl-editor.component';
-import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { RefMultiselectComponent, type RefOption } from '@core/ui/ref-multiselect/ref-multiselect.component';
 import { TipiPendenzaConsoleApi } from '@feature/tipi-pendenza';
 import { RuoliConsoleApi } from '@feature/ruoli';

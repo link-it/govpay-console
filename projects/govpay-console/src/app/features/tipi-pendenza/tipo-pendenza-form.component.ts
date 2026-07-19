@@ -16,7 +16,7 @@ import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, SystemFacade, TabsComponent, SelectComponent, type TabDef } from '@linkit/shared-ui';
+import { FormActionBarComponent, SnackbarService, SystemFacade, TabsComponent, SelectComponent, type TabDef } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   LoadingComponent,
@@ -26,7 +26,6 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { CodeFieldComponent } from '@core/ui/code-field/code-field.component';
-import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { TemplateUnitComponent, type TemplateTipoOption } from '@core/ui/template-unit/template-unit.component';import { PromemoriaFieldsComponent } from './promemoria-fields.component';
 import { ApplicazioniConsoleApi } from '@feature/applicazioni/applicazioni.console-api';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';

@@ -13,6 +13,19 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.29.0] — 2026-07-19
+
+### Aggiunto
+
+- **`lnk-form-action-bar`**: barra azioni form (salva/annulla) sticky in basso,
+  promossa dall'app alla libreria. Bordo/ombra solo quando è incollata al fondo
+  (`.lnk-form-action-bar--stuck`). Stili scoped (niente dipendenza da Tailwind);
+  l'inset orizzontale con cui sfondo/bordo sbordano fino ai lati del contenuto è
+  configurabile via `--lnk-action-bar-inset` (default `1.5rem`, invariato rispetto
+  ai consumer esistenti).
+
+---
+
 ## [0.28.3] — 2026-07-18
 
 ### Aggiunto

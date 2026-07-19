@@ -23,7 +23,7 @@ import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
+import { FormActionBarComponent, SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   LoadingComponent,
@@ -31,7 +31,6 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';
 import { RequiredLabelDirective } from '@linkit/shared-ui';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { IntermediarioCreate, IntermediarioReplace } from './intermediario.model';

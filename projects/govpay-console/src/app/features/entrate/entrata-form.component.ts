@@ -16,7 +16,7 @@ import { catchError, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, SystemFacade, SelectComponent, type LnkSelectOption } from '@linkit/shared-ui';
+import { FormActionBarComponent, SnackbarService, SystemFacade, SelectComponent, type LnkSelectOption } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   LoadingComponent,
@@ -25,7 +25,7 @@ import {
   RequiredLabelDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { FormActionBarComponent } from '@core/ui/form-action-bar/form-action-bar.component';import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { EntrateConsoleApi } from './entrate.console-api';
 import { TIPI_CONTABILITA, type EntrataCreate, type EntrataReplace, type TipoContabilita } from './entrata.model';
 

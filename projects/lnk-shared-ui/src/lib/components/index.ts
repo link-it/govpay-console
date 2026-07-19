@@ -32,6 +32,7 @@ export * from './detail-group/detail-group.token';
 export * from './info-grid/info-grid.component';
 export * from './status-badge/status-badge.component';
 export * from './confirm-dialog/confirm-dialog.component';
+export * from './form-action-bar/form-action-bar.component';
 
 // Search pill (barra di ricerca config-driven).
 export * from './search-pill/search-pill.types';
