@@ -13,6 +13,19 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.31.0] — 2026-07-23
+
+### Aggiunto
+
+- **`lnk-view-toggle`**: toggle solo-icone per la modalità di visualizzazione
+  lista (tabella `bootstrapTable` / righe `bootstrapList`), pensato per stare
+  accanto a `lnk-search-pill` così l'utente cambia vista senza aprire i tweaks.
+  Input `value`/`variant` (`pill`|`square`, allinea gli angoli alla pill) +
+  `tableKey`/`rowsKey`, output `valueChange`. Richiede `provideIcons` con
+  `bootstrapTable` e `bootstrapList`.
+
+---
+
 ## [0.30.0] — 2026-07-23
 
 ### Aggiunto

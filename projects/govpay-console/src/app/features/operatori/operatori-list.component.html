@@ -1,28 +1,31 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
-  <lnk-page-header titleKey="Nav.Operatori" subtitleKey="Operatori.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
-    <div class="flex items-center gap-2">
-      <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
-        {{ 'Common.Refresh' | translate }}
-      </button>
-      <a routerLink="/operatori/nuovo" class="btn btn-primary btn-sm">
-        {{ 'Operatori.Form.Nuovo' | translate }}
-      </a>
-    </div>
-  </lnk-page-header>
+    <lnk-page-header titleKey="Nav.Operatori" subtitleKey="Operatori.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
+      <div class="flex items-center gap-2">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+          {{ 'Common.Refresh' | translate }}
+        </button>
+        <a routerLink="/operatori/nuovo" class="btn btn-primary btn-sm">
+          {{ 'Operatori.Form.Nuovo' | translate }}
+        </a>
+      </div>
+    </lnk-page-header>
 
-  <lnk-search-pill
-    [fields]="searchFields()"
-    [(value)]="searchState"
-    [resultCount]="total()"
-    [showSort]="true"
-    [sortOptions]="sortOptions()"
-    [variant]="searchPillVariant()"
-    [density]="searchPillDensity()"
-    [labels]="pillLabels()"
-    [placeholder]="searchPlaceholder()"
-    (search)="onSearch($event)"
-  />
+    <div class="flex items-stretch gap-2">
+      <lnk-search-pill class="flex-1 min-w-0"
+        [fields]="searchFields()"
+        [(value)]="searchState"
+        [resultCount]="total()"
+        [showSort]="true"
+        [sortOptions]="sortOptions()"
+        [variant]="searchPillVariant()"
+        [density]="searchPillDensity()"
+        [labels]="pillLabels()"
+        [placeholder]="searchPlaceholder()"
+        (search)="onSearch($event)"
+      />
+      <lnk-view-toggle [value]="viewMode()" (valueChange)="onViewModeChange($event)" [variant]="searchPillVariant()" />
+    </div>
   </div>
 
   <div class="px-6 space-y-4">

@@ -1,32 +1,35 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
-  <lnk-page-header titleKey="Nav.Pendenze" subtitleKey="Pendenze.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0"
-    [countOnRequest]="true" [countLoading]="countLoading()" (requestCount)="requestCount()">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
-      {{ 'Common.Refresh' | translate }}
-    </button>
-  </lnk-page-header>
+    <lnk-page-header titleKey="Nav.Pendenze" subtitleKey="Pendenze.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0"
+      [countOnRequest]="true" [countLoading]="countLoading()" (requestCount)="requestCount()">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+        {{ 'Common.Refresh' | translate }}
+      </button>
+    </lnk-page-header>
 
-  <!-- Barra di ricerca (search-pill @linkit/shared-ui): i 4 filtri V2. -->
-  <lnk-search-pill
-    [fields]="searchFields()"
-    [(value)]="searchState"
-    [resultCount]="total()"
-    [showSort]="true"
-    [sortOptions]="sortOptions()"
-    [variant]="searchPillVariant()"
-    [density]="searchPillDensity()"
-    [labels]="pillLabels()"
-    [placeholder]="searchPlaceholder()"
-    (search)="onSearch($event)"
-  />
+    <!-- Barra di ricerca (search-pill @linkit/shared-ui): i 4 filtri V2. -->
+    <div class="flex items-stretch gap-2">
+      <lnk-search-pill class="flex-1 min-w-0"
+        [fields]="searchFields()"
+        [(value)]="searchState"
+        [resultCount]="total()"
+        [showSort]="true"
+        [sortOptions]="sortOptions()"
+        [variant]="searchPillVariant()"
+        [density]="searchPillDensity()"
+        [labels]="pillLabels()"
+        [placeholder]="searchPlaceholder()"
+        (search)="onSearch($event)"
+      />
+      <lnk-view-toggle [value]="viewMode()" (valueChange)="onViewModeChange($event)" [variant]="searchPillVariant()" />
+    </div>
 
-  <!-- La ricerca per debitore è tracciata lato server (audit GDPR). -->
-  @if (searchState().filters['identificativoDebitore']) {
-    <p class="text-xs text-[var(--muted-foreground)]">
-      {{ 'Pendenze.Filters.DebitoreHint' | translate }}
-    </p>
-  }
+    <!-- La ricerca per debitore è tracciata lato server (audit GDPR). -->
+    @if (searchState().filters['identificativoDebitore']) {
+      <p class="text-xs text-[var(--muted-foreground)]">
+        {{ 'Pendenze.Filters.DebitoreHint' | translate }}
+      </p>
+    }
   </div>
 
   <div class="px-6 space-y-4">

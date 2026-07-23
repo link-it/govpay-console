@@ -7,18 +7,21 @@
       </button>
     </lnk-page-header>
 
-    <lnk-search-pill
-      [fields]="searchFields()"
-      [(value)]="searchState"
-      [resultCount]="total()"
-      [showSort]="true"
-      [sortOptions]="sortOptions()"
-      [variant]="searchPillVariant()"
-      [density]="searchPillDensity()"
-      [labels]="pillLabels()"
-      [placeholder]="searchPlaceholder()"
-      (search)="onSearch($event)"
-    />
+    <div class="flex items-stretch gap-2">
+      <lnk-search-pill class="flex-1 min-w-0"
+        [fields]="searchFields()"
+        [(value)]="searchState"
+        [resultCount]="total()"
+        [showSort]="true"
+        [sortOptions]="sortOptions()"
+        [variant]="searchPillVariant()"
+        [density]="searchPillDensity()"
+        [labels]="pillLabels()"
+        [placeholder]="searchPlaceholder()"
+        (search)="onSearch($event)"
+      />
+      <lnk-view-toggle [value]="viewMode()" (valueChange)="onViewModeChange($event)" [variant]="searchPillVariant()" />
+    </div>
   </div>
 
   <div class="px-6 space-y-4">

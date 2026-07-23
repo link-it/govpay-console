@@ -1,3 +1,21 @@
+2026-07-23  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(liste): toggle vista tabella/righe accanto alla search-pill.
+    Nuovo `lnk-view-toggle` (solo icone) aggiunto in tutte le liste (pendenze,
+    ricevute, entrate, domini, operatori, applicazioni, tipi-pendenza,
+    intermediari, ruoli): permette di cambiare vista senza aprire i tweaks,
+    resta sincronizzato col controllo nei tweaks e segue la variante della
+    search-pill; i pulsanti icona sono allineati in altezza al pulsante Filtri
+    a ogni densità. Via `@linkit/shared-ui 0.31.0`.
+
+  * [Frontend] feat(pendenze,ricevute): conteggio totale **su richiesta**. Le
+    liste non richiedono più la COUNT lato BE ad ogni caricamento (costosa su
+    risorse grandi): l'infinite scroll usa `hasNextPage`. Il totale si ottiene
+    col pulsante "Mostra totale" nell'header, che rifà la stessa query (filtri
+    correnti) con `page=1&limit=1&total=true`. In futuro estendibile a
+    rendicontazioni e giornale-eventi (richiede supporto no-count lato API V1).
+    Via `@linkit/shared-ui 0.30.0` (`lnk-page-header` conteggio su richiesta).
+
 2026-07-19  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(shared-ui): `lnk-form-action-bar` promossa in libreria. La
