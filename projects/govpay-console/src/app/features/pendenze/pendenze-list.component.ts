@@ -265,8 +265,10 @@ export class PendenzeListComponent implements OnInit {
   readonly rows = signal<PendenzaSummary[]>([]);
   /** `hasNextPage` dello slice: pilota l'infinite scroll. */
   readonly hasMore = signal(false);
-  /** Totale risultati (`total=true` sulla prima pagina). `null` se non disponibile. */
+  /** Totale risultati: `null` finché non richiesto esplicitamente (COUNT on-demand). */
   readonly total = signal<number | null>(null);
+  /** Conteggio totale on-demand in corso. */
+  readonly countLoading = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -395,28 +397,37 @@ export class PendenzeListComponent implements OnInit {
     }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
+    // Il totale eventualmente mostrato non è più valido per i nuovi filtri.
+    this.total.set(null);
     this.fetch(false);
   }
 
-  private fetch(append: boolean): void {
-    this.loading.set(true);
-    this.error.set(null);
-
+  /** Filtri di ricerca senza paginazione, condivisi da lista e conteggio. */
+  private baseFilters(): PendenzeListFilters {
     const f = this.searchState().filters;
     // Il select dominio porta la ragioneSociale: risolvi verso l'idDominio API.
     const idDominio = f[F.idDominio] ? this.dominioIdByLabel().get(f[F.idDominio]) : undefined;
-    const filters: PendenzeListFilters = {
-      page: this.page(),
-      limit: PAGE_SIZE,
-      sort: formatOrdinamento(this.sort()),
-      // Conteggio totale solo sulla prima pagina (evita COUNT extra per pagina).
-      total: append ? undefined : true,
+    return {
       idPendenza: f[F.idPendenza] || undefined,
       numeroAvviso: f[F.numeroAvviso] || undefined,
       idDominio: idDominio || undefined,
       identificativoDebitore: f[F.identificativoDebitore] || undefined,
       // NB: F.dataInizio / F.dataFine sono in anteprima nella UI ma non ancora
       // inviati: la API V2 non supporta (per ora) il filtro per range di date.
+    };
+  }
+
+  private fetch(append: boolean): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    // Nessun `total`: la COUNT è costosa su questa risorsa → conteggio on-demand
+    // (vedi requestCount). L'infinite scroll usa `hasNextPage`, non il totale.
+    const filters: PendenzeListFilters = {
+      ...this.baseFilters(),
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
     };
 
     this.api
@@ -436,10 +447,29 @@ export class PendenzeListComponent implements OnInit {
         } else {
           this.rows.set(results);
         }
-        const totalResults = slice.pagination?.totalResults;
-        if (totalResults != null) this.total.set(totalResults);
         this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
+      });
+  }
+
+  /** Conteggio totale **su richiesta**: stessa query (filtri correnti) con
+   *  `page/limit=1` e `total=true`, così la COUNT lato BE avviene solo se
+   *  l'utente la chiede esplicitamente. */
+  requestCount(): void {
+    if (this.countLoading()) return;
+    this.countLoading.set(true);
+    this.api
+      .list({ ...this.baseFilters(), page: 1, limit: 1, total: true })
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of<Slice<PendenzaSummary>>({ results: [] });
+        })
+      )
+      .subscribe((slice) => {
+        const t = slice.pagination?.totalResults;
+        if (t != null) this.total.set(t);
+        this.countLoading.set(false);
       });
   }
 }

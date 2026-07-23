@@ -44,6 +44,7 @@
     "DateFrom": "Da",
     "DateTo": "A",
     "GotoTop": "Torna su",
+    "ShowTotal": "Mostra totale",
     "Unknown": "Sconosciuto",
     "NewItems": "{{count}} nuovi elementi disponibili",
     "NewData": "Nuovi dati disponibili"

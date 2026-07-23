@@ -1,6 +1,7 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
-  <lnk-page-header titleKey="Nav.Pendenze" subtitleKey="Pendenze.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
+  <lnk-page-header titleKey="Nav.Pendenze" subtitleKey="Pendenze.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0"
+    [countOnRequest]="true" [countLoading]="countLoading()" (requestCount)="requestCount()">
     <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
       {{ 'Common.Refresh' | translate }}
     </button>

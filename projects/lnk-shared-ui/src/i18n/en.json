@@ -44,6 +44,7 @@
     "DateFrom": "From",
     "DateTo": "To",
     "GotoTop": "Back to top",
+    "ShowTotal": "Show total",
     "Unknown": "Unknown",
     "NewItems": "{{count}} new items available",
     "NewData": "New data available"

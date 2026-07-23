@@ -100,22 +100,22 @@ describe('PendenzeListComponent', () => {
     expect(fields.find((f) => f.id === 'dataFine')!.kind).toBe('date');
   });
 
-  it('ngOnInit carica con i parametri V2 di default (page/limit/sort/total)', () => {
+  it('ngOnInit carica senza richiedere il totale (COUNT on-demand)', () => {
     const { comp, apiList } = setup();
     comp.ngOnInit();
     expect(apiList).toHaveBeenCalledWith({
       page: 1,
       limit: 25,
       sort: '-dataUltimoAggiornamento',
-      total: true,
       idPendenza: undefined,
       numeroAvviso: undefined,
       idDominio: undefined,
       identificativoDebitore: undefined,
     });
+    expect(apiList.mock.calls[0][0].total).toBeUndefined();
     expect(comp.rows().length).toBe(1);
     expect(comp.hasMore()).toBe(false);
-    expect(comp.total()).toBe(1);
+    expect(comp.total()).toBeNull();
   });
 
   it('onSearch inoltra i filtri di testo come query param', () => {
@@ -146,7 +146,7 @@ describe('PendenzeListComponent', () => {
     expect(comp.canLoadMore()).toBe(true);
   });
 
-  it('loadMore accoda la pagina successiva senza richiedere di nuovo il totale', () => {
+  it('loadMore accoda la pagina successiva; nessuna richiesta di totale', () => {
     const list = vi
       .fn()
       .mockReturnValueOnce(of(slice([summary('1')], true, 2)))
@@ -155,9 +155,24 @@ describe('PendenzeListComponent', () => {
     comp.ngOnInit();
     comp.loadMore();
     expect(comp.rows().map((r) => r.idPendenza)).toEqual(['1', '2']);
-    expect(list.mock.calls[0][0]).toMatchObject({ page: 1, total: true });
-    expect(list.mock.calls[1][0]).toMatchObject({ page: 2, total: undefined });
-    expect(comp.total()).toBe(2);
+    expect(list.mock.calls[0][0].total).toBeUndefined();
+    expect(list.mock.calls[1][0]).toMatchObject({ page: 2 });
+    expect(list.mock.calls[1][0].total).toBeUndefined();
+    // Il totale non viene mai letto dalla lista: resta null finché non richiesto.
+    expect(comp.total()).toBeNull();
+  });
+
+  it('requestCount conta on-demand con limit=1 e total=true', () => {
+    const list = vi
+      .fn()
+      .mockReturnValueOnce(of(slice([summary('1')], true)))
+      .mockReturnValueOnce(of(slice([summary('1')], true, 42)));
+    const { comp } = setup(list);
+    comp.ngOnInit();
+    comp.requestCount();
+    expect(list.mock.calls[1][0]).toMatchObject({ page: 1, limit: 1, total: true });
+    expect(comp.total()).toBe(42);
+    expect(comp.countLoading()).toBe(false);
   });
 
   it('in errore imposta error e mostra snackbar', () => {

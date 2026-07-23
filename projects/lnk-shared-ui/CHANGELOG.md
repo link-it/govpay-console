@@ -13,6 +13,20 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.30.0] — 2026-07-23
+
+### Aggiunto
+
+- **`lnk-page-header` — conteggio su richiesta**: nuovi input `countOnRequest`
+  e `countLoading`, output `requestCount` e input `showTotalKey` (default
+  `Common.ShowTotal`). Quando `total` è `null` e `countOnRequest` è attivo, al
+  posto del contatore mostra un pulsante "Mostra totale" che emette
+  `requestCount` (spinner durante il conteggio). Per risorse grandi dove la
+  COUNT lato BE è costosa e va richiesta esplicitamente.
+- i18n: `Common.ShowTotal` (it/en).
+
+---
+
 ## [0.29.0] — 2026-07-19
 
 ### Aggiunto

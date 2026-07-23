@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { formatNumber } from '../../utils';
 import { LoadingComponent } from '../loading/loading.component';
@@ -58,6 +58,13 @@ const TITLE_SIZE_PRESETS: Record<string, string> = {
             <lnk-loading [inline]="true" size="sm" [labelKey]="null" />
           } @else if (totalLabel(); as t) {
             <span class="text-sm font-medium text-[var(--muted-foreground)] tabular-nums whitespace-nowrap">{{ t }}</span>
+          } @else if (countOnRequest()) {
+            @if (countLoading()) {
+              <lnk-loading [inline]="true" size="sm" [labelKey]="null" />
+            } @else {
+              <button type="button" class="text-sm font-medium text-[var(--primary)] hover:underline whitespace-nowrap"
+                (click)="requestCount.emit()">{{ showTotalKey() | translate }}</button>
+            }
           }
         </div>
         @if (subtitleKey(); as key) {
@@ -77,6 +84,18 @@ export class PageHeaderComponent {
   readonly total = input<number | null | undefined>(null);
   /** Se `true` sostituisce il counter con uno spinner inline. */
   readonly loading = input<boolean, unknown>(false, { transform: booleanAttribute });
+  /**
+   * Se `true` e `total` è ancora `null`, al posto del counter mostra un pulsante
+   * "mostra totale" che emette `requestCount`. Utile per risorse grandi dove il
+   * conteggio è costoso e va richiesto esplicitamente.
+   */
+  readonly countOnRequest = input<boolean, unknown>(false, { transform: booleanAttribute });
+  /** Spinner al posto del pulsante mentre il conteggio on-demand è in corso. */
+  readonly countLoading = input<boolean, unknown>(false, { transform: booleanAttribute });
+  /** Chiave i18n del pulsante "mostra totale". */
+  readonly showTotalKey = input<string>('Common.ShowTotal');
+  /** Emesso al click su "mostra totale": il consumer esegue il conteggio. */
+  readonly requestCount = output<void>();
   /**
    * Dimensione del titolo. Preset (`sm` | `md` | `lg` | `xl` | `2xl`)
    * o stringa Tailwind arbitraria (es. `'text-3xl'`, `'text-[28px]'`).

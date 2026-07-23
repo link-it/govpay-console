@@ -222,6 +222,8 @@ export class RicevuteListComponent implements OnInit {
   readonly rows = signal<RicevutaSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);
+  /** Conteggio totale on-demand in corso. */
+  readonly countLoading = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -312,25 +314,35 @@ export class RicevuteListComponent implements OnInit {
     this.listState.set(RicevuteListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
+    // Il totale eventualmente mostrato non è più valido per i nuovi filtri.
+    this.total.set(null);
     this.fetch(false);
   }
 
-  private fetch(append: boolean): void {
-    this.loading.set(true);
-    this.error.set(null);
-
+  /** Filtri di ricerca senza paginazione, condivisi da lista e conteggio. */
+  private baseFilters(): RicevuteListFilters {
     const f = this.searchState().filters;
-    const filters: RicevuteListFilters = {
-      page: this.page(),
-      limit: PAGE_SIZE,
-      sort: formatOrdinamento(this.sort()),
-      total: append ? undefined : true,
+    return {
       iuv: f[F.iuv] || undefined,
       idRicevuta: f[F.idRicevuta] || undefined,
       idDominio: f[F.idDominio] || undefined,
       // Formato data richiesto dal backend: YYYY-MM-DDTHH:MM.
       dataDa: f[F.dataDa] ? `${f[F.dataDa]}T00:00` : undefined,
       dataA: f[F.dataA] ? `${f[F.dataA]}T23:59` : undefined,
+    };
+  }
+
+  private fetch(append: boolean): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    // Nessun `total`: la COUNT è costosa su questa risorsa → conteggio on-demand
+    // (vedi requestCount). L'infinite scroll usa `hasNextPage`, non il totale.
+    const filters: RicevuteListFilters = {
+      ...this.baseFilters(),
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
     };
 
     this.api
@@ -347,10 +359,29 @@ export class RicevuteListComponent implements OnInit {
         const results = slice.results ?? [];
         if (append) this.rows.update((prev) => [...prev, ...results]);
         else this.rows.set(results);
-        const totalResults = slice.pagination?.totalResults;
-        if (totalResults != null) this.total.set(totalResults);
         this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
+      });
+  }
+
+  /** Conteggio totale **su richiesta**: stessa query (filtri correnti) con
+   *  `page/limit=1` e `total=true`, così la COUNT lato BE avviene solo se
+   *  l'utente la chiede esplicitamente. */
+  requestCount(): void {
+    if (this.countLoading()) return;
+    this.countLoading.set(true);
+    this.api
+      .list({ ...this.baseFilters(), page: 1, limit: 1, total: true })
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of<Slice<RicevutaSummary>>({ results: [] });
+        })
+      )
+      .subscribe((slice) => {
+        const t = slice.pagination?.totalResults;
+        if (t != null) this.total.set(t);
+        this.countLoading.set(false);
       });
   }
 }
