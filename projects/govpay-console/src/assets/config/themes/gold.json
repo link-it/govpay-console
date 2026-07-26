@@ -38,11 +38,11 @@
       "cardBorder": "#ece4d0",
       "cardHover": "#f8f4e9",
       "muted": "#f3ecdb",
-      "mutedForeground": "#7c766a"
+      "mutedForeground": "#746e63"
     },
     "buttons": {
       "primaryBackground": "#f5c518",
-      "primaryText": "#1f1d1a",
+      "primaryText": "#16202b",
       "primaryHover": "#e0b20d",
       "secondaryBackground": "#ffffff",
       "secondaryText": "#1f1d1a",
@@ -63,7 +63,7 @@
         "trackBackground": "#f3ecdb",
         "trackRadius": "0.75rem",
         "pillBackground": "#f5c518",
-        "pillText": "#1f1d1a",
+        "pillText": "#16202b",
         "pillShadow": "0 1px 3px rgb(245 197 24 / 0.35)",
         "badgeBackgroundActive": "#1f1d1a1a",
         "badgeTextActive": "#1f1d1a"

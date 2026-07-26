@@ -27,7 +27,7 @@
       "textSecondary": "#6f6a63",
       "itemHover": "#e3f3e480",
       "itemActive": "#d7eed8",
-      "itemActiveText": "#2d8b31",
+      "itemActiveText": "#267429",
       "footerBackground": "#ffffff",
       "footerBorder": "#d3ecd4"
     },
@@ -42,7 +42,7 @@
     },
     "buttons": {
       "primaryBackground": "#37a93c",
-      "primaryText": "#ffffff",
+      "primaryText": "#16202b",
       "primaryHover": "#309535",
       "secondaryBackground": "#ffffff",
       "secondaryText": "#1e1b18",
@@ -63,7 +63,7 @@
         "trackBackground": "#e7f5e8",
         "trackRadius": "0.75rem",
         "pillBackground": "#37a93c",
-        "pillText": "#ffffff",
+        "pillText": "#16202b",
         "pillShadow": "0 1px 3px rgb(55 169 60 / 0.35)",
         "badgeBackgroundActive": "#ffffff33",
         "badgeTextActive": "#ffffff"

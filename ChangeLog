@@ -18,6 +18,13 @@
       scrollabili).
     Componenti di libreria coinvolti via `@linkit/shared-ui` 0.31.1 → 0.32.0.
 
+  * [Frontend] feat(a11y): contrasti accessibili anche nei 15 temi esempio
+    (`themes/*.json`, esclusi govpay e govpay-a11y). Resi ≥4.5:1 tutti i token di
+    **testo** (muted/secondario, testo principale, testo su bottoni/pill scelto
+    bianco/scuro in base allo sfondo, testo item-attivo sidebar), mantenendo
+    intatti i colori-identità (primaryColor/sfondi) e gli swatch. Gestito anche
+    il caso sidebar scura (testo schiarito).
+
 2026-07-23  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(liste): toggle vista tabella/righe accanto alla search-pill.

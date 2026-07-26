@@ -27,7 +27,7 @@
       "textSecondary": "#94a3b8",
       "itemHover": "#1e293b",
       "itemActive": "#1e293b",
-      "itemActiveText": "#ff4050",
+      "itemActiveText": "#ff4f5e",
       "footerBackground": "#0f172a",
       "footerBorder": "#1e293b"
     },
@@ -38,11 +38,11 @@
       "cardBorder": "#e2e8f0",
       "cardHover": "#f4f8fa",
       "muted": "#eef2f6",
-      "mutedForeground": "#64748b"
+      "mutedForeground": "#627288"
     },
     "buttons": {
       "primaryBackground": "#ff4050",
-      "primaryText": "#ffffff",
+      "primaryText": "#16202b",
       "primaryHover": "#e6394a",
       "secondaryBackground": "#ffffff",
       "secondaryText": "#213349",
@@ -63,7 +63,7 @@
         "trackBackground": "#eef2f6",
         "trackRadius": "0.75rem",
         "pillBackground": "#ff4050",
-        "pillText": "#ffffff",
+        "pillText": "#16202b",
         "pillShadow": "0 1px 3px rgb(255 64 80 / 0.35)",
         "badgeBackgroundActive": "#ffffff33",
         "badgeTextActive": "#ffffff"

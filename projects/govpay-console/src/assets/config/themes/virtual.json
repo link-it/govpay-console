@@ -42,7 +42,7 @@
     },
     "buttons": {
       "primaryBackground": "#8b5cf6",
-      "primaryText": "#ffffff",
+      "primaryText": "#000000",
       "primaryHover": "#7a51d8",
       "secondaryBackground": "#ffffff",
       "secondaryText": "#1e1b18",
@@ -63,7 +63,7 @@
         "trackBackground": "#f1ebfe",
         "trackRadius": "0.75rem",
         "pillBackground": "#8b5cf6",
-        "pillText": "#ffffff",
+        "pillText": "#000000",
         "pillShadow": "0 1px 3px rgb(139 92 246 / 0.35)",
         "badgeBackgroundActive": "#ffffff33",
         "badgeTextActive": "#ffffff"
