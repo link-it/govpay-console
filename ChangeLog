@@ -1,3 +1,23 @@
+2026-07-26  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(a11y): remediation accessibilità WCAG 2.2 AA — gate superato
+    (0 violazioni su 34 viste; prima: 4 critical + 662 serious). Vedi
+    NOTE-CLAUDE/a11y (report aggiornato "dopo").
+    - **color-contrast** (668): nuovo tema `themes/govpay-a11y.json` reso default
+      (switcher "GovPay (AA)"). Token testo muted/secondario #6a8da5 -> #476882 e
+      coral #ff4050 -> #d32637 (hover #bf2130), solo sezione light → tutti ≥4.5:1.
+      Rimosso l'`opacity` su testo (about, dashboard, sidebar, logout,
+      lnk-language-menu) in favore di `--muted-foreground`; About "dirty" usa
+      `--status-warning-text`.
+    - **link-name** (34): `aria-label` "Vai alla home" sul link-logo della
+      sidebar (chiave i18n `Layout.Home`).
+    - **aria-valid-attr-value** (4 critical): `lnk-tabs` senza `aria-controls`
+      pendente.
+    - **scrollable-region-focusable** (3): nuova direttiva
+      `lnkScrollableRegionFocusable` sui `<pre>` di codice/JSON (tabindex=0 se
+      scrollabili).
+    Componenti di libreria coinvolti via `@linkit/shared-ui` 0.31.1 → 0.32.0.
+
 2026-07-23  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(liste): toggle vista tabella/righe accanto alla search-pill.

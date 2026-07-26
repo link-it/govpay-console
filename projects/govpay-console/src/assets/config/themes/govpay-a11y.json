@@ -24,7 +24,7 @@
       "background": "#ffffff",
       "border": "#cce3ed",
       "text": "#213349",
-      "textSecondary": "#4a6c86",
+      "textSecondary": "#476882",
       "itemHover": "#cce3ed80",
       "itemActive": "#cce3ed",
       "itemActiveText": "#d32637",
@@ -38,7 +38,7 @@
       "cardBorder": "#cce3ed",
       "cardHover": "#f4f8fa",
       "muted": "#f4f8fa",
-      "mutedForeground": "#4a6c86"
+      "mutedForeground": "#476882"
     },
     "buttons": {
       "primaryBackground": "#d32637",

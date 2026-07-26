@@ -36,7 +36,7 @@ import { VERSION, getFullVersion } from '@environments';
         }
         @if (version.gitDirty) {
           <dt class="font-medium text-[var(--muted-foreground)]">{{ 'About.Status' | translate }}</dt>
-          <dd class="text-[var(--warning)]">{{ 'About.Dirty' | translate }}</dd>
+          <dd class="text-[var(--status-warning-text)]">{{ 'About.Dirty' | translate }}</dd>
         }
       </dl>
     </section>
