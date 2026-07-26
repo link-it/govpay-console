@@ -13,6 +13,18 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.32.0] — 2026-07-26
+
+### Aggiunto
+
+- **`lnkScrollableRegionFocusable`**: direttiva che rende un contenitore
+  scrollabile raggiungibile da tastiera — imposta `tabindex="0"` solo quando c'è
+  overflow effettivo (ricalcolato su resize e cambio contenuto), lo rimuove
+  altrimenti. Per i blocchi `<pre>` di codice/JSON (axe
+  `scrollable-region-focusable`, WCAG 2.1.1).
+
+---
+
 ## [0.31.2] — 2026-07-26
 
 ### Risolto

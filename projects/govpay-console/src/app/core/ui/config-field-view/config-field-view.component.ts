@@ -12,7 +12,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { StatusBadgeComponent } from '@linkit/shared-ui';
+import { ScrollableRegionFocusableDirective, StatusBadgeComponent } from '@linkit/shared-ui';
 import { decodeBase64 } from '@core/utils/base64';
 
 /**
@@ -24,7 +24,7 @@ import { decodeBase64 } from '@core/utils/base64';
 @Component({
   selector: 'lnk-config-field-view',
   standalone: true,
-  imports: [NgIcon, TranslatePipe, StatusBadgeComponent],
+  imports: [NgIcon, TranslatePipe, StatusBadgeComponent, ScrollableRegionFocusableDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block py-2' },
   template: `
@@ -46,7 +46,7 @@ import { decodeBase64 } from '@core/utils/base64';
           <ng-icon [name]="copied() ? 'bootstrapCheck2' : 'bootstrapClipboard'" size="1rem" />
           <span>{{ (copied() ? 'Common.Copied' : 'Common.Copy') | translate }}</span>
         </button>
-        <pre class="overflow-auto max-h-80 rounded border border-[var(--border)] bg-[var(--muted)] p-3 pr-24 text-xs">{{ text() }}</pre>
+        <pre lnkScrollableRegionFocusable class="overflow-auto max-h-80 rounded border border-[var(--border)] bg-[var(--muted)] p-3 pr-24 text-xs">{{ text() }}</pre>
       </div>
     }
   `,

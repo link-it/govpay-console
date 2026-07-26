@@ -37,13 +37,13 @@
 
     @if (e.parametriRichiesta) {
       <lnk-detail-section titleKey="GiornaleEventi.Detail.ParametriRichiesta">
-        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRichiesta) }}</pre>
+        <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRichiesta) }}</pre>
       </lnk-detail-section>
     }
 
     @if (e.parametriRisposta) {
       <lnk-detail-section titleKey="GiornaleEventi.Detail.ParametriRisposta">
-        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRisposta) }}</pre>
+        <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRisposta) }}</pre>
       </lnk-detail-section>
     }
   }

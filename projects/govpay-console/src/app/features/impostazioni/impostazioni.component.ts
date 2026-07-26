@@ -26,6 +26,7 @@ import {
   EmptyStateComponent,
   LoadingComponent,
   PageHeaderComponent,
+  ScrollableRegionFocusableDirective,
 } from '@linkit/shared-ui';
 import { ImpostazioniApi, type Configurazione } from './impostazioni.api';
 
@@ -38,6 +39,7 @@ import { ImpostazioniApi, type Configurazione } from './impostazioni.api';
     DetailSectionComponent,
     EmptyStateComponent,
     LoadingComponent,
+    ScrollableRegionFocusableDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './impostazioni.component.html',
