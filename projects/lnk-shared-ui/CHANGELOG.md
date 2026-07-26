@@ -13,6 +13,18 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.31.2] — 2026-07-26
+
+### Risolto
+
+- **a11y (`lnk-tabs`)**: rimosso `aria-controls` dai `role="tab"`. I pannelli
+  sono renderizzati dal chiamante e solo quello attivo è nel DOM, quindi il
+  riferimento era pendente (axe `aria-valid-attr-value`, *critical*).
+  `aria-controls` è opzionale nel pattern ARIA tabs; restano `role=tab` +
+  `aria-selected`.
+
+---
+
 ## [0.31.1] — 2026-07-26
 
 ### Risolto

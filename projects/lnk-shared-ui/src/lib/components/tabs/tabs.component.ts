@@ -264,13 +264,16 @@ export type TabsSize = 'md' | 'sm';
   `,
   template: `
     <div role="tablist" [class]="tablistClass()">
+      <!-- Niente aria-controls: i pannelli sono renderizzati dal chiamante e
+           solo quello attivo è nel DOM (@if su activeId), quindi il riferimento
+           risulterebbe pendente (a11y: aria-valid-attr-value). aria-controls è
+           opzionale nel pattern ARIA tabs; restano role=tab + aria-selected. -->
       @for (tab of tabs(); track tab.id) {
         <button
           type="button"
           role="tab"
           [id]="'tab-' + tab.id"
           [attr.aria-selected]="activeId() === tab.id"
-          [attr.aria-controls]="'tabpanel-' + tab.id"
           [attr.tabindex]="activeId() === tab.id ? 0 : -1"
           [disabled]="tab.disabled || null"
           [class]="'lnk-tab lnk-tab--' + variant()"
