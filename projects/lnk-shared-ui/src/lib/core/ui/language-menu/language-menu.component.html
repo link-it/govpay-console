@@ -47,7 +47,7 @@
           @if (lang.flag) {
             <span class="text-base leading-none">{{ lang.flag }}</span>
           } @else {
-            <span class="text-xs font-mono opacity-70 w-6 text-center">{{ lang.short || lang.code.toUpperCase() }}</span>
+            <span class="text-xs font-mono text-[var(--muted-foreground)] w-6 text-center">{{ lang.short || lang.code.toUpperCase() }}</span>
           }
           <span class="flex-1 text-left truncate">{{ lang.label }}</span>
           @if (current().code === lang.code) {

@@ -5,6 +5,9 @@
     "Edit": "Modifica",
     "Required": "Campo obbligatorio"
   },
+  "Layout": {
+    "Home": "Vai alla home"
+  },
   "Password": {
     "Imposta": "Imposta password",
     "Nuova": "Nuova password",

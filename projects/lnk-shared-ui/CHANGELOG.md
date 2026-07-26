@@ -13,6 +13,16 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.31.1] — 2026-07-26
+
+### Risolto
+
+- **a11y (contrasto)**: `lnk-language-menu` — il codice lingua non usa più
+  `opacity-70` (abbassava il contrasto sotto 4.5:1) ma il token
+  `--muted-foreground`, già conforme AA.
+
+---
+
 ## [0.31.0] — 2026-07-23
 
 ### Aggiunto

@@ -29,8 +29,9 @@
       "darkModeTogglePosition": "sidebar",
       "languageSelectorPosition": "sidebar",
       "settingsMenuPosition": "profile",
-      "themeUrl": "assets/config/themes/govpay.json",
+      "themeUrl": "assets/config/themes/govpay-a11y.json",
       "themes": [
+        { "id": "govpay-a11y", "label": "GovPay (AA)", "url": "assets/config/themes/govpay-a11y.json", "color": "#d32637" },
         { "id": "govpay", "label": "GovPay", "url": "assets/config/themes/govpay.json", "color": "#ff4050" },
         { "id": "gold", "label": "Gold", "url": "assets/config/themes/gold.json", "color": "#f5c518" },
         { "id": "caramel", "label": "Caramel", "url": "assets/config/themes/caramel.json", "color": "#a86b3c" },

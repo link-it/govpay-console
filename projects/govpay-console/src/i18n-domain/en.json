@@ -5,6 +5,9 @@
     "Edit": "Edit",
     "Required": "Required field"
   },
+  "Layout": {
+    "Home": "Go to home"
+  },
   "Password": {
     "Imposta": "Set password",
     "Nuova": "New password",
