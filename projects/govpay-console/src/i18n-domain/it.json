@@ -8,6 +8,10 @@
   "Layout": {
     "Home": "Vai alla home"
   },
+  "Auth": {
+    "ShowPassword": "Mostra password",
+    "HidePassword": "Nascondi password"
+  },
   "Password": {
     "Imposta": "Imposta password",
     "Nuova": "Nuova password",

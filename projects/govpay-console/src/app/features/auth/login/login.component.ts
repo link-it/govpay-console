@@ -19,6 +19,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ConfigService } from '@linkit/shared-ui';
 import { AuthService } from '@core/auth';
@@ -38,6 +39,7 @@ import type { AuthMode } from '@linkit/shared-ui';
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
+    NgIcon,
     LanguageMenuComponent,
     ColorSchemeToggleComponent,
     GlobalTweaksHostComponent,
@@ -80,6 +82,8 @@ export class LoginComponent {
   readonly selectedMode = signal<AuthMode>(this.defaultMode());
   readonly loading = this.auth.loading;
   readonly error = this.auth.error;
+  /** Mostra/nasconde la password in chiaro nel campo di login. */
+  readonly showPassword = signal(false);
   /** Mostra il pulsante "Mock login" solo in dev. */
   readonly showMockLogin = !environment.production;
 
@@ -142,6 +146,10 @@ export class LoginComponent {
 
   selectMode(mode: AuthMode): void {
     this.selectedMode.set(mode);
+  }
+
+  togglePassword(): void {
+    this.showPassword.update((v) => !v);
   }
 
   async submitBasic(): Promise<void> {
