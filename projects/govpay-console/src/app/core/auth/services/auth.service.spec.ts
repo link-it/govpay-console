@@ -97,6 +97,39 @@ describe('AuthService', () => {
     svc.setUser({ id: '1', username: 'u' }, 'OAuth2', 'tok123');
     expect(svc.authorizationHeader()).toBe('Bearer tok123');
   });
+
+  it('revalidate(): sessione viva → resta autenticato senza sloggare', async () => {
+    const { svc, api } = makeService();
+    const user: AuthUser = { id: 'u', username: 'u' };
+    api.getProfile.mockReturnValue(of(user));
+
+    const ok = await svc.revalidate();
+
+    expect(ok).toBe(true);
+    expect(svc.isAuthenticated()).toBe(true);
+    expect(svc.user()?.username).toBe('u');
+  });
+
+  it('revalidate(): 401 → clear e non autenticato', async () => {
+    const { svc, api } = makeService();
+    svc.setUser({ id: '1', username: 'u' }, 'Basic', 'tok');
+    api.getProfile.mockReturnValue(throwError(() => ({ status: 401 })));
+
+    const ok = await svc.revalidate();
+
+    expect(ok).toBe(false);
+    expect(svc.isAuthenticated()).toBe(false);
+    expect(svc.user()).toBeNull();
+  });
+
+  it('revalidate(): chiamate concorrenti deduplicate (una sola getProfile)', async () => {
+    const { svc, api } = makeService();
+    api.getProfile.mockReturnValue(of({ id: 'u', username: 'u' } as AuthUser));
+
+    await Promise.all([svc.revalidate(), svc.revalidate(), svc.revalidate()]);
+
+    expect(api.getProfile).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('mapProfileToUser', () => {
