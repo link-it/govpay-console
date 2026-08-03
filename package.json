@@ -28,6 +28,8 @@
     "test:app": "vitest run projects/govpay-console",
     "test:app:watch": "vitest projects/govpay-console",
     "test:app:coverage": "vitest run --coverage --coverage.include=projects/govpay-console/src/app/**/*.ts projects/govpay-console",
+    "a11y": "node \"${A11Y_TOOL:?set A11Y_TOOL to the gov-a11y checkout path}/a11y-scan.mjs\" --base ${A11Y_BASE:-http://localhost:4200} --config ./ci/a11y/targets.json --out ./a11y-report --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --fail-on serious --no-incomplete",
+    "a11y:full": "node \"${A11Y_TOOL:?set A11Y_TOOL to the gov-a11y checkout path}/a11y-scan.mjs\" --base ${A11Y_BASE:-http://localhost:4200} --config ./ci/a11y/targets.json --out ./a11y-report --tags wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa --fail-on serious --fail-on-nameless --screen-reader --lighthouse --no-incomplete",
     "sync:lib": "node scripts/sync-shared-ui.mjs",
     "lint": "eslint .",
     "version:generate": "node scripts/generate-version.js",

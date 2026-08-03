@@ -46,3 +46,6 @@ projects/*/src/environments/version.ts
 # `scripts/merge-i18n.js`). Le fonti vivono in
 # `projects/lnk-shared-ui/src/i18n/` e `projects/<consumer>/src/i18n-domain/`.
 projects/*/src/assets/i18n/*.json
+
+# Report accessibilità generati (npm run a11y e a11y:full)
+/a11y-report
