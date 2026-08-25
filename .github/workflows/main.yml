@@ -224,7 +224,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ vars.DOCKERHUB_NAMESPACE || github.repository_owner }}/govpay-console
+          images: ${{ vars.DOCKERHUB_NAMESPACE || 'linkitaly' }}/govpay-console
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
