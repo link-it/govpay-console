@@ -1404,5 +1404,17 @@
         "Aggiornamento": "Live updating…"
       }
     }
+  },
+  "PagoPA": {
+    "EnteCreditore": {
+      "Cerca": "Search on pagoPA",
+      "Placeholder": "Company name or tax code…",
+      "NessunRisultato": "No creditor entity found on pagoPA.",
+      "FormHint": "Search the entity on pagoPA to pre-fill the domain fields.",
+      "Precompilato": "Fields pre-filled from the pagoPA registry."
+    },
+    "Iban": {
+      "Suggerimenti": "{{count}} IBANs enabled on pagoPA"
+    }
   }
 }

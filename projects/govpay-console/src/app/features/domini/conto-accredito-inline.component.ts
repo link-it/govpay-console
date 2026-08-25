@@ -18,6 +18,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService, InfoGridComponent, RequiredLabelDirective, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { PagopaConsoleApi } from '@feature/pagopa';
 import { DominiConsoleApi } from './domini.console-api';
 import type { ContoAccredito, ContoAccreditoCreate, ContoAccreditoReplace, ContoAccreditoSummary } from './dominio.model';
 
@@ -35,11 +36,16 @@ const IBAN_PATTERN = /^.{1,35}$/;
 export class ContoAccreditoInlineComponent {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(DominiConsoleApi);
+  private readonly pagopa = inject(PagopaConsoleApi);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
 
   readonly idDominio = input.required<string>();
   readonly conto = input<ContoAccreditoSummary | null>(null);
+
+  /** IBAN abilitati su pagoPA per il dominio (datalist di suggerimento in creazione). */
+  readonly ibanSuggeriti = signal<string[]>([]);
+  private ibanLoaded = false;
 
   readonly saved = output<void>();
   readonly cancelCreate = output<void>();
@@ -90,6 +96,17 @@ export class ContoAccreditoInlineComponent {
       if (c) {
         this.form.controls.ibanAccredito.disable();
         this.form.patchValue({ ibanAccredito: c.ibanAccredito, descrizione: c.descrizione ?? '', abilitato: c.abilitato ?? true }, { emitEvent: false });
+      }
+    });
+    // In creazione: carica una volta gli IBAN pagoPA del dominio come suggerimenti.
+    effect(() => {
+      const idDominio = this.idDominio();
+      if (this.isCreate() && idDominio && !this.ibanLoaded) {
+        this.ibanLoaded = true;
+        this.pagopa
+          .listIban(idDominio)
+          .pipe(catchError(() => of([])))
+          .subscribe((ibans) => this.ibanSuggeriti.set(ibans.filter((i) => i.attivo).map((i) => i.iban)));
       }
     });
     // Carica una volta il dettaglio completo: serve sia alla vista sia alla modifica.

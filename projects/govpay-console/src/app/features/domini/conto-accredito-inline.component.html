@@ -2,7 +2,16 @@
   <form [formGroup]="form" class="lnk-inline-card--editing rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 space-y-4">
     <div class="text-sm font-semibold">{{ 'Domini.ContiAccredito.Nuovo' | translate }}</div>
     <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.ibanAccredito">{{ 'Domini.ContiAccredito.Iban' | translate }}</span>
-      <input type="text" formControlName="ibanAccredito" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <input type="text" formControlName="ibanAccredito" list="pagopa-iban-suggeriti" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+      @if (ibanSuggeriti().length) {
+        <datalist id="pagopa-iban-suggeriti">
+          @for (iban of ibanSuggeriti(); track iban) {
+            <option [value]="iban"></option>
+          }
+        </datalist>
+        <span class="text-xs text-[var(--muted-foreground)]">{{ 'PagoPA.Iban.Suggerimenti' | translate: { count: ibanSuggeriti().length } }}</span>
+      }
+    </label>
     <ng-container [ngTemplateOutlet]="anagrafica" />
     <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.ContiAccredito.Abilitato' | translate }}</span></label>
     <div class="flex items-center gap-2">

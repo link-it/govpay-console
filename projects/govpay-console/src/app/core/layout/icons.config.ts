@@ -77,6 +77,7 @@ import {
   bootstrapPlayFill,
   bootstrapStopFill,
   bootstrapFileEarmarkZip,
+  bootstrapArrowClockwise,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -151,4 +152,5 @@ export const APP_ICONS = {
   bootstrapPlayFill,
   bootstrapStopFill,
   bootstrapFileEarmarkZip,
+  bootstrapArrowClockwise,
 };

@@ -1,0 +1,45 @@
+<div class="relative">
+  <label class="flex flex-col gap-1 text-sm">
+    <span class="text-[var(--muted-foreground)]">{{ 'PagoPA.EnteCreditore.Cerca' | translate }}</span>
+    <div class="relative">
+      <input
+        type="text"
+        class="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 pr-9 text-sm"
+        [value]="query()"
+        [placeholder]="'PagoPA.EnteCreditore.Placeholder' | translate"
+        (input)="onInput($event)"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        autocomplete="off"
+      />
+      <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]">
+        @if (loading() || resolving()) {
+          <ng-icon name="bootstrapArrowClockwise" size="1rem" class="animate-spin" />
+        } @else {
+          <ng-icon name="bootstrapSearch" size="1rem" />
+        }
+      </span>
+    </div>
+  </label>
+
+  @if (open() && results().length) {
+    <ul class="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-[var(--border)] bg-[var(--card-bg)] py-1 shadow-lg">
+      @for (ente of results(); track ente.taxCode) {
+        <li>
+          <button
+            type="button"
+            class="flex w-full flex-col items-start gap-0.5 px-3 py-2 text-left text-sm hover:bg-[var(--muted)]"
+            (click)="pick(ente)"
+          >
+            <span class="font-medium">{{ ente.companyName }}</span>
+            <span class="font-mono text-xs text-[var(--muted-foreground)]">{{ ente.taxCode }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  } @else if (open() && !loading() && query().length >= 2) {
+    <div class="absolute z-20 mt-1 w-full rounded-md border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-sm text-[var(--muted-foreground)] shadow-lg">
+      {{ 'PagoPA.EnteCreditore.NessunRisultato' | translate }}
+    </div>
+  }
+</div>

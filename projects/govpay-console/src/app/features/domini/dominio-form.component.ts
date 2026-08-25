@@ -25,6 +25,7 @@ import {
   RequiredLabelDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { EnteCreditoreLookupComponent, type EnteCreditore } from '@feature/pagopa';
 import { DominiConsoleApi } from './domini.console-api';
 import type { DominioCreate, DominioReplace } from './dominio.model';
 
@@ -45,6 +46,7 @@ const ID_PATTERN = /^[0-9]{11}$/;
     ListStickyToolbarDirective,
     RequiredLabelDirective,
     FormActionBarComponent,
+    EnteCreditoreLookupComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dominio-form.component.html',
@@ -147,6 +149,28 @@ export class DominioFormComponent implements OnInit {
           });
         });
     }
+  }
+
+  /**
+   * Precompila il form dall'anagrafica pagoPA selezionata nel lookup (solo in
+   * creazione). `auxDigit`/`segregationCode` arrivano come stringa da pagoPA →
+   * convertiti a numero per il form.
+   */
+  onEnteCreditoreSelected(ente: EnteCreditore): void {
+    const toNum = (v?: string): number | null => {
+      if (v == null || v.trim() === '') return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+    this.form.patchValue({
+      idDominio: ente.taxCode,
+      ragioneSociale: ente.companyName,
+      idStazione: ente.stationId ?? '',
+      cbill: ente.cbill ?? '',
+      auxDigit: toNum(ente.auxDigit),
+      segregationCode: toNum(ente.segregationCode),
+    });
+    this.snackbar.success(this.translate.instant('PagoPA.EnteCreditore.Precompilato'));
   }
 
   /** Compone il body (Create/Replace condividono i campi tranne idDominio). */

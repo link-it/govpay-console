@@ -1624,5 +1624,17 @@
         "Aggiornamento": "Aggiornamento in tempo reale…"
       }
     }
+  },
+  "PagoPA": {
+    "EnteCreditore": {
+      "Cerca": "Cerca su pagoPA",
+      "Placeholder": "Denominazione o codice fiscale…",
+      "NessunRisultato": "Nessun ente creditore trovato su pagoPA.",
+      "FormHint": "Cerca l’ente su pagoPA per precompilare i campi del dominio.",
+      "Precompilato": "Campi precompilati dall’anagrafica pagoPA."
+    },
+    "Iban": {
+      "Suggerimenti": "{{count}} IBAN abilitati su pagoPA"
+    }
   }
 }
