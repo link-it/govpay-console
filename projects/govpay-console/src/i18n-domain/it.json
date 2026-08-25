@@ -1532,6 +1532,7 @@
     "Rendicontazioni": "Rendicontazioni",
     "Incassi": "Incassi",
     "Monitoraggio": "Monitoraggio",
+    "Manutenzione": "Manutenzione",
     "GiornaleEventi": "Giornale eventi",
     "Tracciati": "Tracciati",
     "Anagrafiche": "Anagrafiche",
@@ -1544,7 +1545,8 @@
     "Operatori": "Operatori",
     "Ruoli": "Ruoli",
     "Impostazioni": "Impostazioni",
-    "Profilo": "Profilo"
+    "Profilo": "Profilo",
+    "Operazioni": "Operazioni"
   },
   "CodeField": {
     "Carica": "Carica da file",
@@ -1556,5 +1558,71 @@
     "Caratteri": "caratteri",
     "Drop": "Rilascia il file per caricarlo",
     "NonValido": "JSON non valido"
+  },
+  "Operazioni": {
+    "Subtitle": "Operazioni batch schedulabili o avviabili manualmente.",
+    "Empty": {
+      "Title": "Nessuna operazione",
+      "Description": "Il catalogo delle operazioni è vuoto."
+    },
+    "Columns": {
+      "Id": "Codice",
+      "Nome": "Nome",
+      "Descrizione": "Descrizione",
+      "Frequenza": "Frequenza",
+      "UltimaEsecuzione": "Ultima esecuzione",
+      "ProssimaEsecuzione": "Prossima esecuzione",
+      "Abilitata": "Abilitata"
+    },
+    "Stati": {
+      "InCoda": "In coda",
+      "InCorso": "In corso",
+      "Completata": "Completata",
+      "Fallita": "Fallita",
+      "Annullata": "Annullata"
+    },
+    "Detail": {
+      "Subtitle": "Dettaglio dell’operazione e relative esecuzioni.",
+      "Generali": "Informazioni generali",
+      "Esecuzioni": "Esecuzioni",
+      "Avvia": "Avvia ora",
+      "AvviaErrore": "Avvio dell’operazione non riuscito.",
+      "AvviaSuccesso": "Esecuzione avviata.",
+      "Id": "Codice",
+      "Nome": "Nome",
+      "Descrizione": "Descrizione",
+      "Frequenza": "Frequenza schedulata",
+      "ProssimaEsecuzione": "Prossima esecuzione",
+      "Abilitata": "Abilitata",
+      "LockAttivo": "In esecuzione"
+    },
+    "Esecuzioni": {
+      "Empty": "Nessuna esecuzione",
+      "Columns": {
+        "Id": "ID esecuzione",
+        "Inizio": "Inizio",
+        "Fine": "Fine",
+        "Stato": "Stato"
+      },
+      "Detail": {
+        "Titolo": "Esecuzione",
+        "Subtitle": "Dettaglio dell’esecuzione.",
+        "Dati": "Dati esecuzione",
+        "Esito": "Esito",
+        "Dettaglio": "Dettaglio",
+        "Id": "ID esecuzione",
+        "Percentuale": "Completamento",
+        "Inizio": "Inizio",
+        "Fine": "Fine",
+        "Forzata": "Avvio manuale",
+        "Descrizione": "Descrizione",
+        "Successo": "Completata con successo",
+        "Fallimento": "Terminata con errori",
+        "Annulla": "Annulla",
+        "AnnullaErrore": "Annullamento non riuscito.",
+        "AnnullaSuccesso": "Richiesta di annullamento inviata.",
+        "Aggiornamento": "Aggiornamento in tempo reale…"
+      }
+    }
   }
 }

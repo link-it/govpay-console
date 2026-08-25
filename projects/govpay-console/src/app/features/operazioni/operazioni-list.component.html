@@ -1,0 +1,28 @@
+<section class="space-y-4 pb-6 lnk-list-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
+    <lnk-page-header titleKey="Nav.Operazioni" subtitleKey="Operazioni.Subtitle" [loading]="loading() && rows().length === 0">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+        {{ 'Common.Refresh' | translate }}
+      </button>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!" />
+  } @else if (loading() && !hasRows()) {
+    <lnk-loading />
+  } @else if (showEmptyState()) {
+    <lnk-empty-state icon="bootstrapInboxes" titleKey="Operazioni.Empty.Title" descriptionKey="Operazioni.Empty.Description" />
+  } @else {
+    <lnk-data-table
+      [columns]="columns()"
+      [rows]="rows()"
+      [clickable]="true"
+      emptyKey="Operazioni.Empty.Title"
+      (rowClick)="onRowClick($event)"
+    />
+  }
+  </div>
+</section>

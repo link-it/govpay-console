@@ -1,0 +1,70 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Operazioni.Esecuzioni.Detail.Titolo" subtitleKey="Operazioni.Esecuzioni.Detail.Subtitle">
+      <a [routerLink]="backUrl()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+      @if (attiva()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="annulla()" [disabled]="annullando()">
+          <ng-icon name="bootstrapStopFill" size="1rem" />
+          <span>{{ 'Operazioni.Esecuzioni.Detail.Annulla' | translate }}</span>
+        </button>
+      }
+    </lnk-page-header>
+    @if (esecuzione()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+        @if (polling()) {
+          <span class="inline-flex items-center gap-1.5 text-xs text-[var(--muted-foreground)]">
+            <lnk-loading [inline]="true" size="sm" [labelKey]="null" />
+            {{ 'Operazioni.Esecuzioni.Detail.Aggiornamento' | translate }}
+          </span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
+      <a [routerLink]="backUrl()" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !esecuzione()) {
+    <lnk-loading />
+  } @else if (esecuzione(); as e) {
+
+    <lnk-detail-section titleKey="Operazioni.Esecuzioni.Detail.Dati">
+      <lnk-info-grid [items]="datiItems()" />
+    </lnk-detail-section>
+
+    @if (esito(); as esito) {
+      <lnk-detail-section titleKey="Operazioni.Esecuzioni.Detail.Esito">
+        <div class="space-y-2">
+          <lnk-status-badge
+            [tone]="esito.successo ? 'success' : 'danger'"
+            [labelKey]="esito.successo ? 'Operazioni.Esecuzioni.Detail.Successo' : 'Operazioni.Esecuzioni.Detail.Fallimento'"
+          />
+          @if (esito.messaggio) {
+            <p class="text-sm">{{ esito.messaggio }}</p>
+          }
+          @if (esito.errori && esito.errori.length) {
+            <ul class="list-disc space-y-1 pl-5 text-sm text-[var(--danger)]">
+              @for (err of esito.errori; track err) {
+                <li>{{ err }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </lnk-detail-section>
+    }
+
+    @if (e.dettaglio) {
+      <lnk-detail-section titleKey="Operazioni.Esecuzioni.Detail.Dettaglio">
+        <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs whitespace-pre-wrap">{{ e.dettaglio }}</pre>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

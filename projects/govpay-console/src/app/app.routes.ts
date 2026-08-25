@@ -71,6 +71,11 @@ export const routes: Routes = [
         loadChildren: () => import('@feature/tracciati').then((m) => m.TRACCIATI_ROUTES),
       },
       {
+        path: 'operazioni',
+        canActivate: [authGuard],
+        loadChildren: () => import('@feature/operazioni').then((m) => m.OPERAZIONI_ROUTES),
+      },
+      {
         path: 'domini',
         canActivate: [aclGuard('hasConfig')],
         loadChildren: () => import('@feature/domini').then((m) => m.DOMINI_ROUTES),

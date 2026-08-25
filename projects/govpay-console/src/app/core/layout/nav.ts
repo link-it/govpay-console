@@ -107,6 +107,14 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    label: 'Nav.Manutenzione',
+    icon: 'bootstrapTools',
+    feature: 'GESTIONE_MANUTENZIONE',
+    children: [
+      { label: 'Nav.Operazioni', icon: 'bootstrapGear', route: '/operazioni', feature: 'MENU_OPERAZIONI' },
+    ],
+  },
+  {
     label: 'Nav.Impostazioni',
     icon: 'bootstrapGear',
     feature: 'MENU_IMPOSTAZIONI',

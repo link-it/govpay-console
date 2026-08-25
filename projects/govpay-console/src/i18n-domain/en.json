@@ -1312,6 +1312,7 @@
     "Rendicontazioni": "Reporting",
     "Incassi": "Cash-ins",
     "Monitoraggio": "Monitoring",
+    "Manutenzione": "Maintenance",
     "GiornaleEventi": "Event log",
     "Tracciati": "Streams",
     "Anagrafiche": "Master data",
@@ -1324,7 +1325,8 @@
     "Operatori": "Operators",
     "Ruoli": "Roles",
     "Impostazioni": "Settings",
-    "Profilo": "Profile"
+    "Profilo": "Profile",
+    "Operazioni": "Operations"
   },
   "CodeField": {
     "Carica": "Load from file",
@@ -1336,5 +1338,71 @@
     "Caratteri": "characters",
     "Drop": "Drop the file to load it",
     "NonValido": "Invalid JSON"
+  },
+  "Operazioni": {
+    "Subtitle": "Scheduled or manually-triggered batch operations.",
+    "Empty": {
+      "Title": "No operations",
+      "Description": "The operations catalog is empty."
+    },
+    "Columns": {
+      "Id": "Code",
+      "Nome": "Name",
+      "Descrizione": "Description",
+      "Frequenza": "Frequency",
+      "UltimaEsecuzione": "Last run",
+      "ProssimaEsecuzione": "Next run",
+      "Abilitata": "Enabled"
+    },
+    "Stati": {
+      "InCoda": "Queued",
+      "InCorso": "Running",
+      "Completata": "Completed",
+      "Fallita": "Failed",
+      "Annullata": "Cancelled"
+    },
+    "Detail": {
+      "Subtitle": "Operation detail and its executions.",
+      "Generali": "General",
+      "Esecuzioni": "Executions",
+      "Avvia": "Run now",
+      "AvviaErrore": "Failed to start the operation.",
+      "AvviaSuccesso": "Execution started.",
+      "Id": "Code",
+      "Nome": "Name",
+      "Descrizione": "Description",
+      "Frequenza": "Scheduled frequency",
+      "ProssimaEsecuzione": "Next run",
+      "Abilitata": "Enabled",
+      "LockAttivo": "Running"
+    },
+    "Esecuzioni": {
+      "Empty": "No executions",
+      "Columns": {
+        "Id": "Execution ID",
+        "Inizio": "Start",
+        "Fine": "End",
+        "Stato": "Status"
+      },
+      "Detail": {
+        "Titolo": "Execution",
+        "Subtitle": "Execution detail.",
+        "Dati": "Execution data",
+        "Esito": "Outcome",
+        "Dettaglio": "Detail",
+        "Id": "Execution ID",
+        "Percentuale": "Progress",
+        "Inizio": "Start",
+        "Fine": "End",
+        "Forzata": "Manual start",
+        "Descrizione": "Description",
+        "Successo": "Completed successfully",
+        "Fallimento": "Finished with errors",
+        "Annulla": "Cancel",
+        "AnnullaErrore": "Cancellation failed.",
+        "AnnullaSuccesso": "Cancellation request sent.",
+        "Aggiornamento": "Live updating…"
+      }
+    }
   }
 }
