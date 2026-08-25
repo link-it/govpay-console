@@ -59,6 +59,16 @@
         }
       },
       {
+        "key": "formatoRichiesta",
+        "header": "Tracciati.Columns.Formato",
+        "width": "6rem",
+        "cell": {
+          "type": "text",
+          "field": "formatoRichiesta",
+          "default": "—"
+        }
+      },
+      {
         "key": "dataOraCaricamento",
         "header": "Tracciati.Columns.DataCaricamento",
         "cellClass": "font-mono text-xs",

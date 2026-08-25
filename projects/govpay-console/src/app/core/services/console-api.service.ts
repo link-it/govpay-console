@@ -145,11 +145,12 @@ export class ConsoleApiService {
   /**
    * `POST` `multipart/form-data` (es. upload tracciato pendenze). Il
    * `Content-Type` (con boundary) è impostato automaticamente dal browser
-   * quando il body è una `FormData`: non va forzato a mano. Ritorna la
-   * risposta completa (header `Location`/`ETag`).
+   * quando il body è una `FormData`: non va forzato a mano. `params` popola la
+   * query string (es. `idDominio`/`formato`). Ritorna la risposta completa
+   * (header `Location`/`ETag`).
    */
-  postMultipart<T>(path: string, form: FormData): Observable<HttpResponse<T>> {
-    return this.http.post<T>(this.urlFor(path), form, { observe: 'response' });
+  postMultipart<T>(path: string, form: FormData, params: Record<string, ParamValue> = {}): Observable<HttpResponse<T>> {
+    return this.http.post<T>(this.urlFor(path), form, { observe: 'response', params: this.toParams(params) });
   }
 
   /**

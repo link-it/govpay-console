@@ -94,7 +94,7 @@
       "MENU_INCASSI": false,
       "GESTIONE_MONITORAGGIO": true,
       "MENU_GIORNALE_EVENTI": true,
-      "MENU_TRACCIATI": false,
+      "MENU_TRACCIATI": true,
       "GESTIONE_ANAGRAFICHE": true,
       "MENU_DOMINI": true,
       "MENU_TIPI_PENDENZA": true,

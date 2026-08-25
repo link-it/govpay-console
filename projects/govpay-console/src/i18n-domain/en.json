@@ -503,17 +503,26 @@
     "AllLoaded": "All results loaded."
   },
   "Tracciati": {
-    "Subtitle": "Bulk import of pending items.",
+    "Subtitle": "Bulk payment-notice upload flows.",
     "Filters": {
-      "Stato": "Status"
+      "Placeholder": "Search flows…",
+      "Dominio": "Creditor entity",
+      "DominioPlaceholder": "Entity tax code",
+      "Stato": "Status",
+      "Formato": "Format",
+      "Operatore": "Operator",
+      "OperatorePlaceholder": "Sender operator",
+      "DataDa": "Uploaded from",
+      "DataA": "Uploaded to"
     },
     "Empty": {
-      "Title": "No batches",
-      "Description": "No batches match the current filters."
+      "Title": "No flows",
+      "Description": "No flows match the current filters."
     },
     "Columns": {
       "NomeFile": "File name",
-      "Dominio": "Creditor",
+      "Dominio": "Creditor entity",
+      "Formato": "Format",
       "DataCaricamento": "Uploaded",
       "DataAggiornamento": "Updated",
       "Esito": "OK / Tot",
@@ -523,30 +532,85 @@
     "Stati": {
       "InAttesa": "Pending",
       "InElaborazione": "Processing",
-      "Eseguito": "Done",
-      "EseguitoConErrori": "Done with errors",
+      "Eseguito": "Completed",
+      "EseguitoConErrori": "Completed with errors",
       "Scartato": "Rejected",
       "ElaborazioneStampa": "Printing"
     },
+    "Upload": {
+      "Nuovo": "New flow",
+      "Titolo": "Upload a flow",
+      "File": "File (JSON or CSV)",
+      "Dominio": "Creditor entity",
+      "DominioPlaceholder": "Select an entity…",
+      "DominioCsvHint": "For CSV files the creditor entity is required.",
+      "Carica": "Upload",
+      "InCorso": "Uploading…",
+      "Successo": "Flow uploaded successfully.",
+      "Errore": "Flow upload failed."
+    },
     "Detail": {
-      "Subtitle": "Batch detail.",
+      "Subtitle": "Flow detail.",
+      "Tabs": {
+        "Dati": "Data",
+        "Operazioni": "Operations"
+      },
       "Generali": "General",
-      "EnteCreditore": "Creditor",
+      "EnteCreditore": "Creditor entity",
       "Contatori": "Operations",
+      "ScaricaRichiesta": "Download request",
+      "ScaricaEsito": "Download outcome",
+      "ScaricaStampe": "Download notices (ZIP)",
+      "DownloadErrore": "Download failed.",
       "NomeFile": "File name",
+      "Formato": "Format",
       "DataCaricamento": "Upload date",
       "DataAggiornamento": "Last update",
       "Operatore": "Operator",
-      "DescrizioneStato": "Status description",
+      "DescrizioneStato": "Status detail",
       "IdDominio": "Domain ID",
-      "RagioneSociale": "Name",
+      "RagioneSociale": "Legal name",
       "OperazioniTotali": "Total operations",
       "OperazioniEseguite": "Successful operations",
       "OperazioniFallite": "Failed operations",
       "AvvisiTotali": "Total notices",
       "AvvisiStampati": "Printed notices",
-      "AvvisiFalliti": "Failed notices",
-      "Dominio": "Domain"
+      "AvvisiFalliti": "Failed notices"
+    },
+    "Operazioni": {
+      "Empty": "No operations",
+      "Columns": {
+        "Numero": "No.",
+        "Tipo": "Type",
+        "Pendenza": "Debt position",
+        "Avviso": "Notice",
+        "Stato": "Status"
+      },
+      "Stati": {
+        "Eseguito": "Completed",
+        "Scartato": "Rejected",
+        "NonValido": "Invalid"
+      },
+      "Tipi": {
+        "Add": "Insert",
+        "Del": "Cancellation",
+        "NonValida": "Invalid"
+      },
+      "Detail": {
+        "Titolo": "Operation",
+        "Subtitle": "Flow row detail.",
+        "Dati": "Operation data",
+        "Richiesta": "Request",
+        "Risposta": "Response",
+        "Numero": "Sequence",
+        "Tipo": "Operation type",
+        "DescrizioneStato": "Status detail",
+        "Pendenza": "Debt position ID",
+        "Avviso": "Notice number",
+        "Applicazione": "Application",
+        "EnteCreditore": "Creditor entity",
+        "SoggettoPagatore": "Payer"
+      }
     }
   },
   "Domini": {

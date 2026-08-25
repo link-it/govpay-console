@@ -725,7 +725,15 @@
   "Tracciati": {
     "Subtitle": "Tracciati di caricamento massivo delle pendenze.",
     "Filters": {
-      "Stato": "Stato"
+      "Placeholder": "Cerca tracciati…",
+      "Dominio": "Ente creditore",
+      "DominioPlaceholder": "Codice fiscale ente",
+      "Stato": "Stato",
+      "Formato": "Formato",
+      "Operatore": "Operatore",
+      "OperatorePlaceholder": "Operatore mittente",
+      "DataDa": "Caricati dal",
+      "DataA": "Caricati al"
     },
     "Empty": {
       "Title": "Nessun tracciato",
@@ -734,6 +742,7 @@
     "Columns": {
       "NomeFile": "Nome file",
       "Dominio": "Ente creditore",
+      "Formato": "Formato",
       "DataCaricamento": "Caricamento",
       "DataAggiornamento": "Aggiornamento",
       "Esito": "OK / Tot",
@@ -748,12 +757,33 @@
       "Scartato": "Scartato",
       "ElaborazioneStampa": "Elaborazione stampa"
     },
+    "Upload": {
+      "Nuovo": "Nuovo tracciato",
+      "Titolo": "Carica un tracciato",
+      "File": "File (JSON o CSV)",
+      "Dominio": "Ente creditore",
+      "DominioPlaceholder": "Seleziona un ente…",
+      "DominioCsvHint": "Per i file CSV è obbligatorio selezionare l’ente creditore.",
+      "Carica": "Carica",
+      "InCorso": "Caricamento…",
+      "Successo": "Tracciato caricato con successo.",
+      "Errore": "Caricamento del tracciato non riuscito."
+    },
     "Detail": {
       "Subtitle": "Dettaglio del tracciato.",
+      "Tabs": {
+        "Dati": "Dati",
+        "Operazioni": "Operazioni"
+      },
       "Generali": "Informazioni generali",
       "EnteCreditore": "Ente creditore",
       "Contatori": "Operazioni",
+      "ScaricaRichiesta": "Scarica richiesta",
+      "ScaricaEsito": "Scarica esito",
+      "ScaricaStampe": "Scarica stampe (ZIP)",
+      "DownloadErrore": "Download non riuscito.",
       "NomeFile": "Nome file",
+      "Formato": "Formato",
       "DataCaricamento": "Data caricamento",
       "DataAggiornamento": "Ultimo aggiornamento",
       "Operatore": "Operatore",
@@ -765,8 +795,42 @@
       "OperazioniFallite": "Operazioni fallite",
       "AvvisiTotali": "Avvisi totali",
       "AvvisiStampati": "Avvisi stampati",
-      "AvvisiFalliti": "Avvisi falliti",
-      "Dominio": "Dominio"
+      "AvvisiFalliti": "Avvisi falliti"
+    },
+    "Operazioni": {
+      "Empty": "Nessuna operazione",
+      "Columns": {
+        "Numero": "N°",
+        "Tipo": "Tipo",
+        "Pendenza": "Pendenza",
+        "Avviso": "Avviso",
+        "Stato": "Stato"
+      },
+      "Stati": {
+        "Eseguito": "Eseguito",
+        "Scartato": "Scartato",
+        "NonValido": "Non valido"
+      },
+      "Tipi": {
+        "Add": "Inserimento",
+        "Del": "Annullamento",
+        "NonValida": "Non valida"
+      },
+      "Detail": {
+        "Titolo": "Operazione",
+        "Subtitle": "Dettaglio della riga del tracciato.",
+        "Dati": "Dati operazione",
+        "Richiesta": "Richiesta",
+        "Risposta": "Risposta",
+        "Numero": "Progressivo",
+        "Tipo": "Tipo operazione",
+        "DescrizioneStato": "Descrizione stato",
+        "Pendenza": "Identificativo pendenza",
+        "Avviso": "Numero avviso",
+        "Applicazione": "Applicazione",
+        "EnteCreditore": "Ente creditore",
+        "SoggettoPagatore": "Soggetto pagatore"
+      }
     }
   },
   "Domini": {

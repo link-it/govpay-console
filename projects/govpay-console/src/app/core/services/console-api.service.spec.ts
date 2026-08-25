@@ -91,19 +91,21 @@ describe('ConsoleApiService', () => {
   });
 
   describe('postMultipart', () => {
-    it('inoltra la FormData senza forzare il Content-Type, osservando la response', () => {
+    it('inoltra la FormData senza forzare il Content-Type, con query params', () => {
       const post = vi.fn().mockReturnValue(of(new HttpResponse({ body: { id: 't1' } })));
       const svc = makeService('/govpay-console-api', { post });
       const form = new FormData();
       form.append('file', new Blob(['a;b;c']), 'tracciato.csv');
 
-      svc.postMultipart('pendenze/tracciati', form).subscribe();
+      svc.postMultipart('pendenze/tracciati', form, { idDominio: '12345678901', formato: 'CSV' }).subscribe();
 
       expect(post).toHaveBeenCalledTimes(1);
       const [url, body, options] = post.mock.calls[0];
       expect(url).toBe('/govpay-console-api/pendenze/tracciati');
       expect(body).toBe(form);
-      expect(options).toEqual({ observe: 'response' });
+      expect(options.observe).toBe('response');
+      expect(options.params.get('idDominio')).toBe('12345678901');
+      expect(options.params.get('formato')).toBe('CSV');
     });
   });
 });
