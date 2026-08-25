@@ -13,7 +13,10 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { map, type Observable } from 'rxjs';
 import { ConfigService } from '@linkit/shared-ui';
-import type { Slice } from '@core/models';
+import type { JsonPatchOp, Slice } from '@core/models';
+
+/** Media type per i documenti JSON Patch (RFC 6902). */
+const JSON_PATCH_CONTENT_TYPE = 'application/json-patch+json';
 
 /** Valore ammissibile per un query param serializzabile. */
 export type ParamValue = string | number | boolean | undefined | null;
@@ -60,6 +63,8 @@ interface GovApiConfigWithConsole {
  * this.consoleApi.list<PendenzaSummary>('pendenze', { page: 1, limit: 25 });
  * this.consoleApi.get<Pendenza>(`pendenze/${idA2A}/${idPendenza}`);
  * this.consoleApi.getBlob(`pendenze/${idA2A}/${idPendenza}/avviso`, 'application/pdf');
+ * this.consoleApi.patch('impostazioni/mail/server', ops, etag); // Impostazioni (JSON Patch)
+ * this.consoleApi.postMultipart('pendenze/tracciati', form);     // upload tracciato
  * ```
  */
 @Injectable({ providedIn: 'root' })
@@ -138,6 +143,16 @@ export class ConsoleApiService {
   }
 
   /**
+   * `POST` `multipart/form-data` (es. upload tracciato pendenze). Il
+   * `Content-Type` (con boundary) è impostato automaticamente dal browser
+   * quando il body è una `FormData`: non va forzato a mano. Ritorna la
+   * risposta completa (header `Location`/`ETag`).
+   */
+  postMultipart<T>(path: string, form: FormData): Observable<HttpResponse<T>> {
+    return this.http.post<T>(this.urlFor(path), form, { observe: 'response' });
+  }
+
+  /**
    * `PUT` (replace) con concorrenza ottimistica: invia `If-Match` se fornito e
    * ritorna body + nuovo `ETag`. Un 412 (ETag non combacia) / 428 (If-Match
    * mancante) arriva come `HttpErrorResponse` al `catchError` del chiamante.
@@ -154,6 +169,24 @@ export class ConsoleApiService {
   /** `PUT` senza body di risposta (es. credenziali connettore → 204). */
   putVoid(path: string, body: unknown): Observable<void> {
     return this.http.put<void>(this.urlFor(path), body).pipe(map(() => undefined));
+  }
+
+  /**
+   * `PATCH` **JSON Patch (RFC 6902)** con concorrenza ottimistica. Usato solo
+   * dai singleton di configurazione dell'area Impostazioni (update parziale che
+   * non azzera i campi non gestiti dalla UI); altrove si usa `put` (replace).
+   *
+   * Invia il documento con content-type `application/json-patch+json` e
+   * `If-Match` se fornito; ritorna body + nuovo `ETag`. Un 412 (ETag non
+   * combacia) / 428 (If-Match mancante) arriva come `HttpErrorResponse` al
+   * `catchError` del chiamante.
+   */
+  patch<T>(path: string, ops: JsonPatchOp[], ifMatch?: string | null): Observable<WithETag<T>> {
+    let headers = new HttpHeaders({ 'Content-Type': JSON_PATCH_CONTENT_TYPE });
+    if (ifMatch) headers = headers.set('If-Match', ifMatch);
+    return this.http
+      .patch<T>(this.urlFor(path), ops, { observe: 'response', headers })
+      .pipe(map((res) => ({ body: res.body as T, etag: res.headers.get('ETag') })));
   }
 
   /**

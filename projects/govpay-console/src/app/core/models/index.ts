@@ -16,3 +16,4 @@ export * from './govpay-common.model';
 export * from './connettore.model';
 export * from './acl.model';
 export * from './ref.model';
+export * from './json-patch.model';

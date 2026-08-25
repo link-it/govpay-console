@@ -9,21 +9,23 @@
  * the Free Software Foundation.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { of } from 'rxjs';
 import { ConfigService } from '@linkit/shared-ui';
 import { ConsoleApiService } from './console-api.service';
+import type { JsonPatchOp } from '@core/models';
 
 /** Crea una ConsoleApiService con ConfigService/HttpClient stubbati. */
-function makeService(consoleBase?: string): ConsoleApiService {
+function makeService(consoleBase?: string, http: Partial<HttpClient> = {}): ConsoleApiService {
   const fakeConfig = {
     appConfig: () => (consoleBase === undefined ? undefined : { GOVAPI: { CONSOLE: consoleBase } }),
   } as unknown as ConfigService;
 
   const injector = Injector.create({
     providers: [
-      { provide: HttpClient, useValue: {} as HttpClient },
+      { provide: HttpClient, useValue: http as HttpClient },
       { provide: ConfigService, useValue: fakeConfig },
       { provide: ConsoleApiService, deps: [] as never[] },
     ],
@@ -50,6 +52,58 @@ describe('ConsoleApiService', () => {
       expect(svc.urlFor('pendenze')).toBe('/govpay-console-api/pendenze');
       expect(svc.urlFor('/pendenze')).toBe('/govpay-console-api/pendenze');
       expect(svc.urlFor('pendenze/A2A/ID/avviso')).toBe('/govpay-console-api/pendenze/A2A/ID/avviso');
+    });
+  });
+
+  describe('patch (JSON Patch RFC 6902)', () => {
+    const ops: JsonPatchOp[] = [{ op: 'replace', path: '/abilitato', value: false }];
+
+    it('invia il documento con content-type json-patch e If-Match, ritorna body+etag', () => {
+      const patch = vi.fn().mockReturnValue(
+        of(new HttpResponse({ body: { abilitato: false }, headers: new HttpHeaders({ ETag: 'v2' }) })),
+      );
+      const svc = makeService('/govpay-console-api', { patch });
+
+      let result: { body: unknown; etag: string | null } | undefined;
+      svc.patch('impostazioni/mail/server', ops, 'v1').subscribe((r) => (result = r));
+
+      expect(patch).toHaveBeenCalledTimes(1);
+      const [url, body, options] = patch.mock.calls[0];
+      expect(url).toBe('/govpay-console-api/impostazioni/mail/server');
+      expect(body).toBe(ops);
+      expect(options.observe).toBe('response');
+      const headers = options.headers as HttpHeaders;
+      expect(headers.get('Content-Type')).toBe('application/json-patch+json');
+      expect(headers.get('If-Match')).toBe('v1');
+      expect(result).toEqual({ body: { abilitato: false }, etag: 'v2' });
+    });
+
+    it('omette If-Match se non fornito', () => {
+      const patch = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, headers: new HttpHeaders() })));
+      const svc = makeService('/govpay-console-api', { patch });
+
+      svc.patch('impostazioni/hardening', ops).subscribe();
+
+      const headers = patch.mock.calls[0][2].headers as HttpHeaders;
+      expect(headers.get('Content-Type')).toBe('application/json-patch+json');
+      expect(headers.has('If-Match')).toBe(false);
+    });
+  });
+
+  describe('postMultipart', () => {
+    it('inoltra la FormData senza forzare il Content-Type, osservando la response', () => {
+      const post = vi.fn().mockReturnValue(of(new HttpResponse({ body: { id: 't1' } })));
+      const svc = makeService('/govpay-console-api', { post });
+      const form = new FormData();
+      form.append('file', new Blob(['a;b;c']), 'tracciato.csv');
+
+      svc.postMultipart('pendenze/tracciati', form).subscribe();
+
+      expect(post).toHaveBeenCalledTimes(1);
+      const [url, body, options] = post.mock.calls[0];
+      expect(url).toBe('/govpay-console-api/pendenze/tracciati');
+      expect(body).toBe(form);
+      expect(options).toEqual({ observe: 'response' });
     });
   });
 });
