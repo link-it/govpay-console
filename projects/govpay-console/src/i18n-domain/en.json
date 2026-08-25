@@ -421,7 +421,11 @@
   "GiornaleEventi": {
     "Subtitle": "System events log.",
     "Filters": {
-      "SearchPlaceholder": "Search by IUV…",
+      "Placeholder": "Search events…",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "e.g. RF...",
+      "IdDominio": "Domain",
+      "IdDominioPlaceholder": "Domain ID",
       "Esito": "Outcome",
       "Categoria": "Category"
     },
@@ -461,14 +465,14 @@
       "API_MAGGIOLI_JPPA": "Maggioli API",
       "API_MYPIVOT": "MyPivot API",
       "API_SECIM": "Secim API",
-      "GOVPAY": "GovPay Core"
+      "GOVPAY": "GovPay Core",
+      "API_USER": "User API",
+      "API_LEGACY": "Legacy API"
     },
     "Detail": {
       "Subtitle": "Event detail.",
       "Generali": "General",
       "Riferimenti": "References",
-      "ParametriRichiesta": "Request parameters",
-      "ParametriRisposta": "Response parameters",
       "DataEvento": "Date and time",
       "Categoria": "Category",
       "Componente": "Component",
@@ -481,8 +485,22 @@
       "Ccp": "CCP",
       "IdA2A": "Application ID",
       "IdPendenza": "Pending item ID",
-      "IdSessione": "Session ID"
-    }
+      "Tabs": {
+        "Dati": "Data",
+        "Richiesta": "Request",
+        "Risposta": "Response"
+      },
+      "SottotipoEsito": "Outcome code",
+      "DettaglioEsito": "Outcome detail",
+      "IdPagamento": "Payment ID",
+      "TransactionId": "Transaction ID",
+      "ClusterId": "Node",
+      "Headers": "HTTP headers",
+      "Payload": "Payload",
+      "NoHeaders": "No headers recorded.",
+      "NoPayload": "No payload recorded."
+    },
+    "AllLoaded": "All results loaded."
   },
   "Tracciati": {
     "Subtitle": "Bulk import of pending items.",

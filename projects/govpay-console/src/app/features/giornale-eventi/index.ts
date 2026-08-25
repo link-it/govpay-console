@@ -10,7 +10,7 @@
  */
 
 export * from './evento.model';
-export * from './giornale-eventi.api';
+export * from './giornale-eventi.console-api';
 export * from './giornale-eventi.routes';
 export * from './giornale-eventi-list.component';
 export * from './evento-detail.component';

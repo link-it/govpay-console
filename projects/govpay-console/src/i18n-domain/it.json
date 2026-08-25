@@ -421,7 +421,11 @@
   "GiornaleEventi": {
     "Subtitle": "Tracciamento degli eventi di sistema.",
     "Filters": {
-      "SearchPlaceholder": "Cerca per IUV…",
+      "Placeholder": "Cerca eventi…",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "Es. RF...",
+      "IdDominio": "Dominio",
+      "IdDominioPlaceholder": "ID dominio",
       "Esito": "Esito",
       "Categoria": "Categoria"
     },
@@ -461,7 +465,9 @@
       "API_MAGGIOLI_JPPA": "API Maggioli",
       "API_MYPIVOT": "API MyPivot",
       "API_SECIM": "API Secim",
-      "GOVPAY": "Core GovPay"
+      "GOVPAY": "Core GovPay",
+      "API_USER": "API Utente",
+      "API_LEGACY": "API Legacy"
     },
     "Tipi": {
       "API_BACKOFFICE": {
@@ -687,8 +693,6 @@
       "Subtitle": "Dettaglio dell'evento.",
       "Generali": "Informazioni generali",
       "Riferimenti": "Riferimenti",
-      "ParametriRichiesta": "Parametri richiesta",
-      "ParametriRisposta": "Parametri risposta",
       "DataEvento": "Data e ora",
       "Categoria": "Categoria",
       "Componente": "Componente",
@@ -701,8 +705,22 @@
       "Ccp": "CCP",
       "IdA2A": "ID applicazione",
       "IdPendenza": "ID pendenza",
-      "IdSessione": "ID sessione"
-    }
+      "Tabs": {
+        "Dati": "Dati",
+        "Richiesta": "Richiesta",
+        "Risposta": "Risposta"
+      },
+      "SottotipoEsito": "Codice esito",
+      "DettaglioEsito": "Dettaglio esito",
+      "IdPagamento": "ID pagamento",
+      "TransactionId": "ID transazione",
+      "ClusterId": "Nodo",
+      "Headers": "Header HTTP",
+      "Payload": "Payload",
+      "NoHeaders": "Nessun header registrato.",
+      "NoPayload": "Nessun payload registrato."
+    },
+    "AllLoaded": "Tutti i risultati caricati."
   },
   "Tracciati": {
     "Subtitle": "Tracciati di caricamento massivo delle pendenze.",
