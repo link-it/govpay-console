@@ -2,20 +2,25 @@
   "options": {
     "STATI_RENDICONTAZIONE": {
       "values": {
-        "Acquisito": {
+        "ACQUISITO": {
           "label": "Rendicontazioni.Stati.Acquisito",
           "background": "var(--status-success-bg)",
           "color": "var(--status-success-text)"
         },
-        "Anomalo": {
+        "ANOMALO": {
           "label": "Rendicontazioni.Stati.Anomalo",
           "background": "var(--status-warning-bg)",
           "color": "var(--status-warning-text)"
         },
-        "Rifiutato": {
+        "RIFIUTATO": {
           "label": "Rendicontazioni.Stati.Rifiutato",
           "background": "var(--status-danger-bg)",
           "color": "var(--status-danger-text)"
+        },
+        "OBSOLETO": {
+          "label": "Rendicontazioni.Stati.Obsoleto",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
         }
       }
     }
@@ -36,9 +41,10 @@
       {
         "key": "idDominio",
         "header": "Rendicontazioni.Columns.Dominio",
+        "cellClass": "font-mono text-xs",
         "cell": {
           "type": "text",
-          "field": "ragioneSocialeDominio"
+          "field": "idDominio"
         }
       },
       {
@@ -46,17 +52,28 @@
         "header": "Rendicontazioni.Columns.Psp",
         "cell": {
           "type": "text",
-          "field": "ragioneSocialePsp"
+          "field": "idPsp"
         }
       },
       {
-        "key": "data",
-        "header": "Rendicontazioni.Columns.DataFlusso",
-        "sortable": true,
-        "width": "8rem",
+        "key": "revisione",
+        "header": "Rendicontazioni.Columns.Revisione",
+        "align": "right",
+        "cellClass": "font-mono text-xs",
+        "width": "5rem",
         "cell": {
-          "type": "date",
-          "field": "dataFlusso"
+          "type": "number",
+          "field": "revisione"
+        }
+      },
+      {
+        "key": "dataAcquisizione",
+        "header": "Rendicontazioni.Columns.DataAcquisizione",
+        "sortable": true,
+        "width": "11rem",
+        "cell": {
+          "type": "datetime",
+          "field": "dataAcquisizione"
         }
       },
       {
@@ -115,15 +132,15 @@
       "text": [
         {
           "type": "text",
-          "field": "ragioneSocialeDominio",
+          "field": "idDominio",
           "hideEmpty": true,
-          "tooltip": "Rendicontazioni.Detail.Dominio"
+          "tooltip": "Rendicontazioni.Detail.IdDominio"
         },
         {
           "type": "text",
-          "field": "ragioneSocialePsp",
+          "field": "idPsp",
           "hideEmpty": true,
-          "tooltip": "Rendicontazioni.Detail.Psp"
+          "tooltip": "Rendicontazioni.Detail.IdPsp"
         },
         {
           "type": "number",
@@ -147,8 +164,8 @@
         "options": "STATI_RENDICONTAZIONE"
       },
       {
-        "type": "date",
-        "field": "dataFlusso"
+        "type": "datetime",
+        "field": "dataAcquisizione"
       }
     ]
   }

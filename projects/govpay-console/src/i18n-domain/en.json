@@ -315,59 +315,59 @@
   "Rendicontazioni": {
     "Subtitle": "Reconciliation flows received from PSPs.",
     "Filters": {
-      "SearchPlaceholder": "Search by flow code…",
-      "Stato": "Status"
+      "Placeholder": "Search flows…",
+      "IdFlusso": "Flow identifier",
+      "IdFlussoPlaceholder": "Flow ID",
+      "Dominio": "Creditor entity",
+      "DominioPlaceholder": "Entity tax code",
+      "Psp": "PSP",
+      "PspPlaceholder": "PSP ID",
+      "Stato": "Status",
+      "DataDa": "Acquired from",
+      "DataA": "Acquired to"
     },
     "Empty": {
-      "Title": "No reconciliations",
+      "Title": "No reconciliation flows",
       "Description": "No reconciliation flows match the current filters."
     },
     "Columns": {
-      "IdFlusso": "Flow ID",
-      "Dominio": "Creditor",
+      "IdFlusso": "Flow identifier",
+      "Dominio": "Creditor entity",
       "Psp": "PSP",
+      "Revisione": "Rev.",
+      "DataAcquisizione": "Acquisition date",
       "DataFlusso": "Flow date",
-      "DataRegolamento": "Settlement",
-      "NumPagamenti": "# Pmts",
+      "DataRegolamento": "Settlement date",
+      "NumPagamenti": "Payments",
       "Importo": "Amount",
       "Stato": "Status"
     },
     "Stati": {
       "Acquisito": "Acquired",
       "Anomalo": "Anomalous",
-      "Rifiutato": "Rejected"
+      "Rifiutato": "Rejected",
+      "Obsoleto": "Obsolete"
     },
     "Detail": {
       "Subtitle": "Reconciliation flow detail.",
       "Generali": "General",
-      "EnteCreditore": "Creditor",
+      "EnteCreditore": "Creditor entity",
       "Psp": "PSP",
-      "Segnalazioni": "Notices",
-      "Pagamenti": "Reconciled payments",
-      "IdFlusso": "Flow ID",
+      "ScaricaXml": "Download XML",
+      "DownloadErrore": "Flow download failed.",
+      "IdFlusso": "Flow identifier",
+      "Revisione": "Revision",
+      "DescrizioneStato": "Status detail",
       "DataFlusso": "Flow date",
+      "DataAcquisizione": "Acquisition date",
       "DataRegolamento": "Settlement date",
-      "DataPubblicazione": "Publication",
+      "SctBonifico": "SCT transfer",
       "Importo": "Total amount",
-      "NumeroPagamenti": "Payment count",
-      "Trn": "TRN",
+      "NumeroPagamenti": "Number of payments",
+      "DataInizio": "First payment",
+      "DataFine": "Last payment",
       "IdDominio": "Domain ID",
-      "RagioneSocialeDominio": "Creditor name",
-      "IdPsp": "PSP ID",
-      "RagioneSocialePsp": "PSP name",
-      "Iuv": "IUV",
-      "Iur": "IUR",
-      "Indice": "Index",
-      "Data": "Date",
-      "Esito": "Outcome",
-      "Dominio": "Domain"
-    },
-    "Esiti": {
-      "Eseguito": "Executed",
-      "Revocato": "Revoked",
-      "EseguitoStandin": "Executed (standin)",
-      "EseguitoStandinNoRPT": "Executed (standin, no RPT)",
-      "Riconciliato": "Reconciled"
+      "IdPsp": "PSP ID"
     }
   },
   "Incassi": {

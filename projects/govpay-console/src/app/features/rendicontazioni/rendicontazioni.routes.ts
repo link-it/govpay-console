@@ -18,10 +18,8 @@ export const RENDICONTAZIONI_ROUTES: Routes = [
       import('./rendicontazioni-list.component').then((m) => m.RendicontazioniListComponent),
   },
   {
-    // Path canonico GovPay: idDominio + idFlusso + dataFlusso (ISO 8601).
-    // Il dataFlusso include `:` e `+` che vanno encoded dalla list quando
-    // si naviga, ma non più ri-encoded dall'API service.
-    path: ':idDominio/:idFlusso/:dataFlusso',
+    // Path canonico V2: quaterna idDominio + idFlusso + idPsp + revisione.
+    path: ':idDominio/:idFlusso/:idPsp/:revisione',
     loadComponent: () =>
       import('./rendicontazione-detail.component').then((m) => m.RendicontazioneDetailComponent),
   },

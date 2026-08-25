@@ -315,8 +315,16 @@
   "Rendicontazioni": {
     "Subtitle": "Flussi di rendicontazione ricevuti dai PSP.",
     "Filters": {
-      "SearchPlaceholder": "Cerca per codice flusso…",
-      "Stato": "Stato"
+      "Placeholder": "Cerca flussi…",
+      "IdFlusso": "Identificativo flusso",
+      "IdFlussoPlaceholder": "ID flusso",
+      "Dominio": "Ente creditore",
+      "DominioPlaceholder": "Codice fiscale ente",
+      "Psp": "PSP",
+      "PspPlaceholder": "ID PSP",
+      "Stato": "Stato",
+      "DataDa": "Acquisiti dal",
+      "DataA": "Acquisiti al"
     },
     "Empty": {
       "Title": "Nessuna rendicontazione",
@@ -326,6 +334,8 @@
       "IdFlusso": "Identificativo flusso",
       "Dominio": "Ente creditore",
       "Psp": "PSP",
+      "Revisione": "Rev.",
+      "DataAcquisizione": "Data acquisizione",
       "DataFlusso": "Data flusso",
       "DataRegolamento": "Data regolamento",
       "NumPagamenti": "N° pag.",
@@ -335,39 +345,29 @@
     "Stati": {
       "Acquisito": "Acquisito",
       "Anomalo": "Anomalo",
-      "Rifiutato": "Rifiutato"
+      "Rifiutato": "Rifiutato",
+      "Obsoleto": "Obsoleto"
     },
     "Detail": {
       "Subtitle": "Dettaglio del flusso di rendicontazione.",
       "Generali": "Informazioni generali",
       "EnteCreditore": "Ente creditore",
       "Psp": "PSP",
-      "Segnalazioni": "Segnalazioni",
-      "Pagamenti": "Pagamenti rendicontati",
+      "ScaricaXml": "Scarica XML",
+      "DownloadErrore": "Download del flusso non riuscito.",
       "IdFlusso": "Identificativo flusso",
+      "Revisione": "Revisione",
+      "DescrizioneStato": "Descrizione stato",
       "DataFlusso": "Data flusso",
+      "DataAcquisizione": "Data acquisizione",
       "DataRegolamento": "Data regolamento",
-      "DataPubblicazione": "Data pubblicazione",
+      "SctBonifico": "Bonifico SCT",
       "Importo": "Importo totale",
       "NumeroPagamenti": "Numero pagamenti",
-      "Trn": "TRN",
+      "DataInizio": "Primo pagamento",
+      "DataFine": "Ultimo pagamento",
       "IdDominio": "ID dominio",
-      "RagioneSocialeDominio": "Ragione sociale ente",
-      "IdPsp": "ID PSP",
-      "RagioneSocialePsp": "Ragione sociale PSP",
-      "Iuv": "IUV",
-      "Iur": "IUR",
-      "Indice": "Indice",
-      "Data": "Data",
-      "Esito": "Esito",
-      "Dominio": "Dominio"
-    },
-    "Esiti": {
-      "Eseguito": "Eseguito",
-      "Revocato": "Revocato",
-      "EseguitoStandin": "Eseguito (standin)",
-      "EseguitoStandinNoRPT": "Eseguito (standin, no RPT)",
-      "Riconciliato": "Riconciliato"
+      "IdPsp": "ID PSP"
     }
   },
   "Incassi": {

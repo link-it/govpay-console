@@ -22,9 +22,7 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService, LanguageService } from '@linkit/shared-ui';
-import { ListStateService, SystemFacade } from '@linkit/shared-ui';
-import { SnackbarService } from '@linkit/shared-ui';
+import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -48,8 +46,8 @@ import {
   type SearchPillLabels,
   type SearchState,
 } from '@linkit/shared-ui';
-import { TweaksRegistry } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { dayToIso } from '@core/utils/date';
 import { GiornaleEventiConsoleApi } from './giornale-eventi.console-api';
 import {
   CATEGORIA_EVENTO_LABEL,
@@ -80,23 +78,6 @@ const F = {
 function defaultSearchState(): SearchState {
   const s = initialSearchState([]);
   return { ...s, filters: { ...s.filters, [F.dataDa]: daysAgoIso(1) } };
-}
-
-/**
- * Converte una data `YYYY-MM-DD` nell'istante ISO 8601 completo (RFC 3339,
- * richiesto da `/eventi`) di inizio (`00:00:00`) o fine (`23:59:59`) giornata
- * in ora locale, serializzato in UTC (`…Z`). Ritorna `undefined` se la data
- * è vuota o malformata.
- */
-function dayToIso(date: string | undefined, endOfDay: boolean): string | undefined {
-  if (!date) return undefined;
-  const [y, m, d] = date.split('-').map(Number);
-  if (!y || !m || !d) return undefined;
-  const dt = endOfDay
-    ? new Date(y, m - 1, d, 23, 59, 59, 0)
-    : new Date(y, m - 1, d, 0, 0, 0, 0);
-  // Rimuovi i millisecondi: `2026-08-23T22:00:00Z` (parser BE più stretti).
-  return dt.toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
 @Component({
