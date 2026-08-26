@@ -48,7 +48,7 @@
           <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
         }</label>
       <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Password</span>
-        <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+        <lnk-secret-input [formControl]="form.controls.credenziali.controls.password" />
         @if (form.controls.credenziali.controls.password.invalid && form.controls.credenziali.controls.password.touched) {
           <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
         }</label>
@@ -84,11 +84,11 @@
             <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
           }</label>
         <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore password</span>
-          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.ksPassword" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.ksPassword" /></label>
         <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore password</span>
-          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.tsPassword" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.tsPassword" /></label>
         <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Key password</span>
-          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.ksPKeyPasswd" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.ksPKeyPasswd" /></label>
       </div>
     }
 
@@ -99,7 +99,7 @@
           <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
         }</label>
       <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Header value</span>
-        <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.headerValue" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <lnk-secret-input [formControl]="form.controls.credenziali.controls.headerValue" /></label>
     }
 
     @if (authType() === 'APIKEY') {
@@ -109,7 +109,7 @@
           <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
         }</label>
       <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">API key</span>
-        <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.apiKey" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <lnk-secret-input [formControl]="form.controls.credenziali.controls.apiKey" /></label>
     }
 
     @if (authType() === 'OAUTH2') {
@@ -120,7 +120,7 @@
             <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
           }</label>
         <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Client secret</span>
-          <input type="password" autocomplete="new-password" [formControl]="form.controls.credenziali.controls.clientSecret" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.clientSecret" /></label>
         <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Scope</span>
           <input type="text" formControlName="scope" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
         <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Token endpoint URL</span>

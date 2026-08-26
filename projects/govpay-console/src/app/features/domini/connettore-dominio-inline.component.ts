@@ -16,7 +16,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService, InfoGridComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail, type ConnettoreCredenziali } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { DominiConsoleApi } from './domini.console-api';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { SecretInputComponent } from '@core/ui/secret-input/secret-input.component';
+import { DominiConsoleApi } from './domini.console-api';
 import type { ConnettoreDominio, ConnettoreDominioDescriptor } from './connettore-dominio.model';
 
 /** Campi credenziali (write-only) esposti nella sotto-form. */
@@ -36,7 +38,7 @@ const CREDENZIALI_FIELDS: { key: keyof ConnettoreCredenziali; labelKey: string }
 @Component({
   selector: 'lnk-connettore-dominio-inline',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, InlineEditCardComponent, SelectComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, InlineEditCardComponent, SecretInputComponent, SelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './connettore-dominio-inline.component.html',

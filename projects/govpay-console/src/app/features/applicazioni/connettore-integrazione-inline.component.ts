@@ -18,6 +18,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService, InfoGridComponent, LoadingComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail, type ConnettoreCredenziali, type SslTipo, type TipoAutenticazioneConnettore } from '@core/models';
 import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { SecretInputComponent } from '@core/ui/secret-input/secret-input.component';
 import { ApplicazioniConsoleApi } from './applicazioni.console-api';
 import type { ConnettoreIntegrazioneApplicazione, VersioneIntegrazione } from './applicazione.model';
 
@@ -34,7 +35,7 @@ const SSL_TIPI: SslTipo[] = ['CLIENT', 'SERVER'];
 @Component({
   selector: 'lnk-connettore-integrazione-inline',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent, SelectComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent, SecretInputComponent, SelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './connettore-integrazione-inline.component.html',

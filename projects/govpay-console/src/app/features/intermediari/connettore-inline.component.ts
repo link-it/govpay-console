@@ -18,7 +18,8 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '@linkit/shared-ui';
 import { InfoGridComponent, LoadingComponent, SelectComponent, type InfoGridItem } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';import { NoAutofillDirective } from './no-autofill.directive';
+import { InlineEditCardComponent } from '@core/ui/inline-edit-card/inline-edit-card.component';
+import { SecretInputComponent } from '@core/ui/secret-input/secret-input.component';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type {
   Connettore,
@@ -49,7 +50,7 @@ const CONNETTORE_LABEL: Record<string, string> = {
 @Component({
   selector: 'lnk-connettore-inline',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent, NoAutofillDirective, SelectComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, InfoGridComponent, LoadingComponent, InlineEditCardComponent, SecretInputComponent, SelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './connettore-inline.component.html',
