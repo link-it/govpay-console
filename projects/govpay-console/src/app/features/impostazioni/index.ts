@@ -17,3 +17,6 @@ export * from './impostazioni-overview.component';
 export * from './servizio-gde-editor.component';
 export * from './app-io-server-editor.component';
 export * from './hardening-editor.component';
+export * from './mail-template-editor.component';
+export * from './app-io-template-editor.component';
+export * from './tracciati-csv-editor.component';

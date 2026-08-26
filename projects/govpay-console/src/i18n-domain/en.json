@@ -1337,6 +1337,25 @@
       "ReadTimeout": "Read timeout (ms)",
       "DenyOnFail": "Deny if the verification server is unreachable",
       "SecretKey": "Secret key"
+    },
+    "Template": {
+      "Avviso": "Notice reminder",
+      "Ricevuta": "Receipt reminder",
+      "Scadenza": "Due-date reminder",
+      "Oggetto": "Subject",
+      "Titolo": "Title",
+      "Messaggio": "Message",
+      "AllegaPdf": "Attach the PDF",
+      "SoloEseguiti": "Executed payments only",
+      "Preavviso": "Days of notice"
+    },
+    "TracciatiCsv": {
+      "Template": "FreeMarker template",
+      "Intestazione": "CSV header",
+      "Richiesta": "Request template (CSV → JSON)",
+      "RichiestaHint": "Transforms a record from CSV to JSON.",
+      "Risposta": "Response template (JSON → CSV)",
+      "RispostaHint": "Transforms a record from JSON to CSV."
     }
   },
   "Profilo": {

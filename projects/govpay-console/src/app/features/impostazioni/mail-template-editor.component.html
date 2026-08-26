@@ -1,0 +1,80 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Impostazioni.Aree.MailTemplate.Nome" subtitleKey="Impostazioni.Aree.MailTemplate.Desc">
+      <a routerLink="/impostazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+        <lnk-detail-section titleKey="Impostazioni.Template.Avviso">
+          <div class="space-y-4">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Oggetto' | translate }}</span>
+              <input type="text" formControlName="avvisoOggetto" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Messaggio' | translate }}</span>
+              <textarea formControlName="avvisoMessaggio" rows="5" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="avvisoAllegaPdf" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Impostazioni.Template.AllegaPdf' | translate }}</span>
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Impostazioni.Template.Ricevuta">
+          <div class="space-y-4">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Oggetto' | translate }}</span>
+              <input type="text" formControlName="ricevutaOggetto" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Messaggio' | translate }}</span>
+              <textarea formControlName="ricevutaMessaggio" rows="5" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+            </label>
+            <div class="flex flex-wrap items-center gap-6">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="ricevutaSoloEseguiti" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'Impostazioni.Template.SoloEseguiti' | translate }}</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="ricevutaAllegaPdf" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'Impostazioni.Template.AllegaPdf' | translate }}</span>
+              </label>
+            </div>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Impostazioni.Template.Scadenza">
+          <div class="space-y-4">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Oggetto' | translate }}</span>
+              <input type="text" formControlName="scadenzaOggetto" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Messaggio' | translate }}</span>
+              <textarea formControlName="scadenzaMessaggio" rows="5" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+            </label>
+            <label class="flex flex-col gap-1 max-w-[16rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Preavviso' | translate }}</span>
+              <input type="number" formControlName="scadenzaPreavviso" min="0" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+          <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

@@ -28,4 +28,16 @@ export const IMPOSTAZIONI_ROUTES: Routes = [
     path: 'hardening',
     loadComponent: () => import('./hardening-editor.component').then((m) => m.HardeningEditorComponent),
   },
+  {
+    path: 'mail-template',
+    loadComponent: () => import('./mail-template-editor.component').then((m) => m.MailTemplateEditorComponent),
+  },
+  {
+    path: 'app-io-template',
+    loadComponent: () => import('./app-io-template-editor.component').then((m) => m.AppIoTemplateEditorComponent),
+  },
+  {
+    path: 'tracciati-csv',
+    loadComponent: () => import('./tracciati-csv-editor.component').then((m) => m.TracciatiCsvEditorComponent),
+  },
 ];

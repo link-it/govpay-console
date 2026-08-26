@@ -1,0 +1,42 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Impostazioni.Aree.TracciatiCsv.Nome" subtitleKey="Impostazioni.Aree.TracciatiCsv.Desc">
+      <a routerLink="/impostazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+        <lnk-detail-section titleKey="Impostazioni.TracciatiCsv.Template">
+          <div class="space-y-4">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Intestazione' | translate }}</span>
+              <textarea formControlName="intestazione" rows="2" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Richiesta' | translate }}</span>
+              <textarea formControlName="richiesta" rows="8" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+              <span class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.RichiestaHint' | translate }}</span>
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Risposta' | translate }}</span>
+              <textarea formControlName="risposta" rows="8" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+              <span class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.RispostaHint' | translate }}</span>
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+          <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

@@ -1557,6 +1557,25 @@
       "ReadTimeout": "Timeout lettura (ms)",
       "DenyOnFail": "Nega se il server di verifica non è raggiungibile",
       "SecretKey": "Secret key"
+    },
+    "Template": {
+      "Avviso": "Promemoria avviso",
+      "Ricevuta": "Promemoria ricevuta",
+      "Scadenza": "Promemoria scadenza",
+      "Oggetto": "Oggetto",
+      "Titolo": "Titolo",
+      "Messaggio": "Messaggio",
+      "AllegaPdf": "Allega il PDF",
+      "SoloEseguiti": "Solo pagamenti eseguiti",
+      "Preavviso": "Giorni di preavviso"
+    },
+    "TracciatiCsv": {
+      "Template": "Template FreeMarker",
+      "Intestazione": "Intestazione CSV",
+      "Richiesta": "Template richiesta (CSV → JSON)",
+      "RichiestaHint": "Trasforma un record da CSV a JSON.",
+      "Risposta": "Template risposta (JSON → CSV)",
+      "RispostaHint": "Trasforma un record da JSON a CSV."
     }
   },
   "Profilo": {
