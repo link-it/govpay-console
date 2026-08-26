@@ -84,6 +84,7 @@ import {
   bootstrapPhone,
   bootstrapChatDots,
   bootstrapShieldLock,
+  bootstrapArrowRepeat,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -165,4 +166,5 @@ export const APP_ICONS = {
   bootstrapPhone,
   bootstrapChatDots,
   bootstrapShieldLock,
+  bootstrapArrowRepeat,
 };
