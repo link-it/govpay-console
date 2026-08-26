@@ -406,7 +406,11 @@ import { DENSITY_TOKENS } from './search-pill.tokens';
       border: 1px solid var(--sb-border);
       border-radius: 16px;
       box-shadow: var(--sb-shadow-lg);
-      overflow: hidden;
+      /* visible (non hidden) così i dropdown dei campi select (menu in
+         position:absolute) non vengono tagliati dal pannello; il contenuto è
+         gia' rientrato dal padding di .form, quindi gli angoli arrotondati
+         non sbordano. */
+      overflow: visible;
     }
 
     /* ── Variante "square": angoli moderati (rounded-md) allineati ai .btn ── */
