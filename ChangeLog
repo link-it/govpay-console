@@ -1,3 +1,32 @@
+2026-08-26  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(console-api-v2): wave-2 — estensione della Console API V2 a
+    Giornale Eventi, Rendicontazioni, Tracciati, Operazioni, pagoPA e
+    Impostazioni (spec openapi-20260825.yaml). Migrazione feature-by-feature
+    V1 → V2 (ConsoleApiService, Slice<T>, ETag/If-Match, RFC 7807) più due
+    aree nuove.
+    - **Infrastruttura**: ConsoleApiService.patch() (JSON Patch RFC 6902) e
+      postMultipart() (upload); util condiviso @core/utils/date.ts (dayToIso,
+      ISO 8601 completo per i filtri data V2).
+    - **Giornale Eventi**: read-only V2 con paginazione cursor + filtri
+      search-pill; dettaglio a tab con payload richiesta/risposta.
+    - **Rendicontazioni**: read-only V2, dettaglio per quaterna
+      (idDominio/idFlusso/idPsp/revisione) + download XML pagoPA.
+    - **Tracciati pendenze**: V2 con upload multipart, tab operazioni (cursor),
+      download richiesta/esito/stampe; dettaglio operazione annidato.
+    - **Operazioni asincrone** (nuova): catalogo + esecuzioni con avvio,
+      annullo e polling live fino a stato terminale. Nuovo gruppo nav
+      Manutenzione.
+    - **pagoPA** (nuova, lookup): typeahead enti creditori (precompila il form
+      Dominio) e datalist IBAN (conto accredito).
+    - **Impostazioni**: da blob V1 opaco a overview + 8 editor delle
+      sotto-risorse V2 (servizioGDE, giornale-eventi, mail/server+template,
+      app-io/server+template, tracciati-csv, hardening) con GET+ETag →
+      PUT-replace If-Match e segreti write-only su endpoint dedicati.
+    - **Domini**: aggiunto il connettore SEND (notifiche) al tab Connettori.
+    - Voci nav/flag abilitati (MENU_GIORNALE_EVENTI/TRACCIATI/OPERAZIONI/
+      IMPOSTAZIONI, GESTIONE_MANUTENZIONE), settingsMenuPosition=sidebar.
+
 2026-07-26  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(a11y): remediation accessibilità WCAG 2.2 AA — gate superato
