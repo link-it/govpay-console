@@ -9,6 +9,11 @@
  * the Free Software Foundation.
  */
 
-export * from './impostazioni.api';
-export * from './impostazioni.component';
+export * from './impostazioni.model';
+export * from './impostazioni.console-api';
+export * from './impostazioni.aree';
 export * from './impostazioni.routes';
+export * from './impostazioni-overview.component';
+export * from './servizio-gde-editor.component';
+export * from './app-io-server-editor.component';
+export * from './hardening-editor.component';

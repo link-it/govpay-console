@@ -33,7 +33,7 @@
       "profileMenuPosition": "sidebar",
       "darkModeTogglePosition": "none",
       "languageSelectorPosition": "none",
-      "settingsMenuPosition": "profile",
+      "settingsMenuPosition": "sidebar",
       "themeUrl": "assets/config/themes/govpay-a11y.json",
       "themes": [
         {
@@ -207,7 +207,7 @@
       "GESTIONE_MANUTENZIONE": true,
       "MENU_OPERAZIONI": true,
       "GESTIONE_IMPOSTAZIONI": true,
-      "MENU_IMPOSTAZIONI": false
+      "MENU_IMPOSTAZIONI": true
     },
     "Preferences": {
       "TIMEOUT": 30000,

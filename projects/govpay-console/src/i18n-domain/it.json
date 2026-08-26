@@ -1481,9 +1481,83 @@
     }
   },
   "Impostazioni": {
-    "Subtitle": "Configurazione generale del sistema.",
-    "ReadOnlyHint": "La modifica della configurazione richiede l'API PATCH /configurazioni e non è ancora esposta dall'interfaccia.",
-    "Empty": "Configurazione vuota."
+    "Subtitle": "Configurazione del sistema, suddivisa per area.",
+    "UltimaModifica": "Ultima modifica",
+    "InArrivo": "In arrivo",
+    "Salvato": "Impostazioni salvate.",
+    "SalvaErrore": "Salvataggio non riuscito.",
+    "ConflittoConcorrenza": "La configurazione è stata modificata da un altro utente. Ricarica e riprova.",
+    "Invalido": "Dati non validi.",
+    "Aree": {
+      "ServizioGde": {
+        "Nome": "Servizio GDE",
+        "Desc": "Connettore verso il Giornale degli Eventi."
+      },
+      "GiornaleEventi": {
+        "Nome": "Giornale eventi",
+        "Desc": "Politica di logging per interfaccia API."
+      },
+      "MailServer": {
+        "Nome": "Server mail",
+        "Desc": "Server SMTP per l’invio dei promemoria."
+      },
+      "MailTemplate": {
+        "Nome": "Template mail",
+        "Desc": "Template dei promemoria via email."
+      },
+      "AppIoServer": {
+        "Nome": "Server App IO",
+        "Desc": "Connettore verso App IO per le notifiche push."
+      },
+      "AppIoTemplate": {
+        "Nome": "Template App IO",
+        "Desc": "Template dei promemoria via notifica push."
+      },
+      "TracciatiCsv": {
+        "Nome": "Tracciati CSV",
+        "Desc": "Template FreeMarker per i tracciati CSV."
+      },
+      "Hardening": {
+        "Nome": "Hardening",
+        "Desc": "Google reCAPTCHA per irrobustire il login."
+      }
+    },
+    "ServizioGde": {
+      "Connettore": "Connettore",
+      "Abilitato": "Abilitato",
+      "Url": "URL servizio GDE",
+      "TipoAuth": "Tipo autenticazione",
+      "Username": "Username",
+      "AuthHint": "Le credenziali (password/segreti) si impostano nella sezione dedicata e non vengono mai mostrate.",
+      "Credenziali": "Credenziali",
+      "Password": "Password",
+      "Auth": {
+        "NONE": "Nessuna",
+        "HTTPBASIC": "HTTP Basic",
+        "SSL": "SSL",
+        "HEADER": "Header",
+        "APIKEY": "API Key",
+        "OAUTH2": "OAuth2"
+      }
+    },
+    "AppIoServer": {
+      "Connettore": "Connettore",
+      "Abilitato": "Abilitato",
+      "Url": "URL servizio App IO",
+      "Ttl": "Time to live (secondi)"
+    },
+    "Hardening": {
+      "ReCaptcha": "Google reCAPTCHA",
+      "Abilitato": "Abilitato",
+      "ServerUrl": "URL di verifica",
+      "SiteKey": "Site key",
+      "Soglia": "Soglia (0.1–1.0)",
+      "Parametro": "Nome parametro",
+      "ConnTimeout": "Timeout connessione (ms)",
+      "ReadTimeout": "Timeout lettura (ms)",
+      "DenyOnFail": "Nega se il server di verifica non è raggiungibile",
+      "SecretKey": "Secret key"
+    }
   },
   "Profilo": {
     "Subtitle": "Dati dell'utente connesso, domini e ACL.",

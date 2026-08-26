@@ -14,6 +14,18 @@ import { Routes } from '@angular/router';
 export const IMPOSTAZIONI_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () => import('./impostazioni.component').then((m) => m.ImpostazioniComponent),
+    loadComponent: () => import('./impostazioni-overview.component').then((m) => m.ImpostazioniOverviewComponent),
+  },
+  {
+    path: 'servizio-gde',
+    loadComponent: () => import('./servizio-gde-editor.component').then((m) => m.ServizioGdeEditorComponent),
+  },
+  {
+    path: 'app-io-server',
+    loadComponent: () => import('./app-io-server-editor.component').then((m) => m.AppIoServerEditorComponent),
+  },
+  {
+    path: 'hardening',
+    loadComponent: () => import('./hardening-editor.component').then((m) => m.HardeningEditorComponent),
   },
 ];

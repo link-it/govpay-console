@@ -1261,9 +1261,83 @@
     }
   },
   "Impostazioni": {
-    "Subtitle": "Global system configuration.",
-    "ReadOnlyHint": "Configuration updates require the PATCH /configurazioni API and are not yet exposed in the UI.",
-    "Empty": "Empty configuration."
+    "Subtitle": "System configuration, split by area.",
+    "UltimaModifica": "Last modified",
+    "InArrivo": "Coming soon",
+    "Salvato": "Settings saved.",
+    "SalvaErrore": "Save failed.",
+    "ConflittoConcorrenza": "The configuration was changed by another user. Reload and try again.",
+    "Invalido": "Invalid data.",
+    "Aree": {
+      "ServizioGde": {
+        "Nome": "GDE service",
+        "Desc": "Connector to the Events Journal."
+      },
+      "GiornaleEventi": {
+        "Nome": "Events journal",
+        "Desc": "Logging policy per API interface."
+      },
+      "MailServer": {
+        "Nome": "Mail server",
+        "Desc": "SMTP server for reminders."
+      },
+      "MailTemplate": {
+        "Nome": "Mail templates",
+        "Desc": "Email reminder templates."
+      },
+      "AppIoServer": {
+        "Nome": "App IO server",
+        "Desc": "Connector to App IO for push notifications."
+      },
+      "AppIoTemplate": {
+        "Nome": "App IO templates",
+        "Desc": "Push reminder templates."
+      },
+      "TracciatiCsv": {
+        "Nome": "CSV flows",
+        "Desc": "FreeMarker templates for CSV flows."
+      },
+      "Hardening": {
+        "Nome": "Hardening",
+        "Desc": "Google reCAPTCHA to harden login."
+      }
+    },
+    "ServizioGde": {
+      "Connettore": "Connector",
+      "Abilitato": "Enabled",
+      "Url": "GDE service URL",
+      "TipoAuth": "Authentication type",
+      "Username": "Username",
+      "AuthHint": "Credentials (password/secrets) are set in the dedicated section and never shown.",
+      "Credenziali": "Credentials",
+      "Password": "Password",
+      "Auth": {
+        "NONE": "None",
+        "HTTPBASIC": "HTTP Basic",
+        "SSL": "SSL",
+        "HEADER": "Header",
+        "APIKEY": "API Key",
+        "OAUTH2": "OAuth2"
+      }
+    },
+    "AppIoServer": {
+      "Connettore": "Connector",
+      "Abilitato": "Enabled",
+      "Url": "App IO service URL",
+      "Ttl": "Time to live (seconds)"
+    },
+    "Hardening": {
+      "ReCaptcha": "Google reCAPTCHA",
+      "Abilitato": "Enabled",
+      "ServerUrl": "Verification URL",
+      "SiteKey": "Site key",
+      "Soglia": "Threshold (0.1–1.0)",
+      "Parametro": "Parameter name",
+      "ConnTimeout": "Connection timeout (ms)",
+      "ReadTimeout": "Read timeout (ms)",
+      "DenyOnFail": "Deny if the verification server is unreachable",
+      "SecretKey": "Secret key"
+    }
   },
   "Profilo": {
     "Subtitle": "Connected user data, scope and ACLs.",

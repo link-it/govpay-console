@@ -78,6 +78,12 @@ import {
   bootstrapStopFill,
   bootstrapFileEarmarkZip,
   bootstrapArrowClockwise,
+  bootstrapListCheck,
+  bootstrapEnvelope,
+  bootstrapEnvelopePaper,
+  bootstrapPhone,
+  bootstrapChatDots,
+  bootstrapShieldLock,
 } from '@ng-icons/bootstrap-icons';
 
 /**
@@ -153,4 +159,10 @@ export const APP_ICONS = {
   bootstrapStopFill,
   bootstrapFileEarmarkZip,
   bootstrapArrowClockwise,
+  bootstrapListCheck,
+  bootstrapEnvelope,
+  bootstrapEnvelopePaper,
+  bootstrapPhone,
+  bootstrapChatDots,
+  bootstrapShieldLock,
 };
