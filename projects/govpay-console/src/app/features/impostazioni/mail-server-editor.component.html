@@ -1,0 +1,121 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Impostazioni.Aree.MailServer.Nome" subtitleKey="Impostazioni.Aree.MailServer.Desc">
+      <a routerLink="/impostazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+        <lnk-detail-section titleKey="Impostazioni.MailServer.Server">
+          <div class="space-y-5">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Impostazioni.MailServer.Abilitato' | translate }}</span>
+            </label>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.Host' | translate }}</span>
+                <input type="text" formControlName="host" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.Port' | translate }}</span>
+                <input type="number" formControlName="port" min="0" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.Username' | translate }}</span>
+                <input type="text" formControlName="username" autocomplete="off" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.From' | translate }}</span>
+                <input type="text" formControlName="from" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.ConnTimeout' | translate }}</span>
+                <input type="number" formControlName="connectionTimeoutMs" min="0" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.ReadTimeout' | translate }}</span>
+                <input type="number" formControlName="readTimeoutMs" min="0" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+            </div>
+
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="startTls" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Impostazioni.MailServer.StartTls' | translate }}</span>
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Impostazioni.MailServer.Ssl">
+          <div class="space-y-5">
+            <div class="flex flex-wrap items-center gap-6">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="sslAbilitato" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'Impostazioni.MailServer.SslAbilitato' | translate }}</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="sslHostnameVerifier" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'Impostazioni.MailServer.HostnameVerifier' | translate }}</span>
+              </label>
+            </div>
+            <label class="flex flex-col gap-1 max-w-[20rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.SslTipo' | translate }}</span>
+              <input type="text" formControlName="sslTipo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div class="space-y-3 rounded border border-[var(--border)] p-3">
+                <p class="text-xs font-semibold">{{ 'Impostazioni.MailServer.TrustStore' | translate }}</p>
+                <input type="text" formControlName="tsLocation" [placeholder]="'Impostazioni.MailServer.Location' | translate" class="w-full px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                <input type="text" formControlName="tsTipo" [placeholder]="'Impostazioni.MailServer.StoreTipo' | translate" class="w-full px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                <input type="text" formControlName="tsAlgorithm" [placeholder]="'Impostazioni.MailServer.Algorithm' | translate" class="w-full px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </div>
+              <div class="space-y-3 rounded border border-[var(--border)] p-3">
+                <p class="text-xs font-semibold">{{ 'Impostazioni.MailServer.KeyStore' | translate }}</p>
+                <input type="text" formControlName="ksLocation" [placeholder]="'Impostazioni.MailServer.Location' | translate" class="w-full px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                <input type="text" formControlName="ksTipo" [placeholder]="'Impostazioni.MailServer.StoreTipo' | translate" class="w-full px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                <input type="text" formControlName="ksAlgorithm" [placeholder]="'Impostazioni.MailServer.Algorithm' | translate" class="w-full px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </div>
+            </div>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+          <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+
+      <lnk-detail-section titleKey="Impostazioni.MailServer.Password" class="mt-4 block">
+        <form [formGroup]="credForm" (ngSubmit)="savePassword()" class="space-y-4">
+          <p class="text-xs text-[var(--muted-foreground)]">
+            {{ (passwordImpostata() ? 'Impostazioni.MailServer.PasswordImpostata' : 'Impostazioni.MailServer.PasswordNonImpostata') | translate }}
+          </p>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.NuovaPassword' | translate }}</span>
+              <input type="password" formControlName="nuovaPassword" autocomplete="new-password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.KsPassword' | translate }}</span>
+              <input type="password" formControlName="ksPassword" autocomplete="new-password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.TsPassword' | translate }}</span>
+              <input type="password" formControlName="tsPassword" autocomplete="new-password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+          </div>
+          <button type="submit" class="btn btn-secondary btn-sm" [disabled]="savingPassword()">{{ 'Impostazioni.MailServer.SalvaPassword' | translate }}</button>
+        </form>
+      </lnk-detail-section>
+    }
+  </div>
+</section>

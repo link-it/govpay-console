@@ -20,3 +20,5 @@ export * from './hardening-editor.component';
 export * from './mail-template-editor.component';
 export * from './app-io-template-editor.component';
 export * from './tracciati-csv-editor.component';
+export * from './mail-server-editor.component';
+export * from './giornale-eventi-editor.component';

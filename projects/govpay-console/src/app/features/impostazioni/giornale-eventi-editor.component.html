@@ -1,0 +1,57 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Impostazioni.Aree.GiornaleEventi.Nome" subtitleKey="Impostazioni.Aree.GiornaleEventi.Desc">
+      <a routerLink="/impostazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else if (stato()) {
+      <lnk-detail-section titleKey="Impostazioni.GiornaleEventi.Politica">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-[var(--muted-foreground)]">
+                <th class="py-2 pr-3 font-normal">{{ 'Impostazioni.GiornaleEventi.Interfaccia' | translate }}</th>
+                <th class="py-2 px-2 font-normal">{{ 'Impostazioni.GiornaleEventi.LettureLog' | translate }}</th>
+                <th class="py-2 px-2 font-normal">{{ 'Impostazioni.GiornaleEventi.LettureDump' | translate }}</th>
+                <th class="py-2 px-2 font-normal">{{ 'Impostazioni.GiornaleEventi.ScrittureLog' | translate }}</th>
+                <th class="py-2 px-2 font-normal">{{ 'Impostazioni.GiornaleEventi.ScrittureDump' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (iface of interfacce; track iface) {
+                <tr class="border-t border-[var(--border)]">
+                  <td class="py-2 pr-3 font-medium">{{ ifaceLabel(iface) }}</td>
+                  @for (cell of [['letture','log'],['letture','dump'],['scritture','log'],['scritture','dump']]; track cell[0] + cell[1]) {
+                    <td class="py-2 px-2">
+                      <select
+                        [value]="valore(iface, $any(cell[0]), $any(cell[1]))"
+                        (change)="onChange(iface, $any(cell[0]), $any(cell[1]), $event)"
+                        class="w-full min-w-[8rem] px-2 py-1.5 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                      >
+                        @for (p of politiche; track p) {
+                          <option [value]="p">{{ politicaLabel(p) }}</option>
+                        }
+                      </select>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </lnk-detail-section>
+
+      <lnk-form-action-bar>
+        <button type="button" class="btn btn-primary btn-sm" (click)="save()" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+        <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+      </lnk-form-action-bar>
+    }
+  </div>
+</section>

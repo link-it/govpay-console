@@ -40,4 +40,12 @@ export const IMPOSTAZIONI_ROUTES: Routes = [
     path: 'tracciati-csv',
     loadComponent: () => import('./tracciati-csv-editor.component').then((m) => m.TracciatiCsvEditorComponent),
   },
+  {
+    path: 'mail-server',
+    loadComponent: () => import('./mail-server-editor.component').then((m) => m.MailServerEditorComponent),
+  },
+  {
+    path: 'giornale-eventi',
+    loadComponent: () => import('./giornale-eventi-editor.component').then((m) => m.GiornaleEventiEditorComponent),
+  },
 ];

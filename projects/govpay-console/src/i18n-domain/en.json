@@ -1356,6 +1356,57 @@
       "RichiestaHint": "Transforms a record from CSV to JSON.",
       "Risposta": "Response template (JSON → CSV)",
       "RispostaHint": "Transforms a record from JSON to CSV."
+    },
+    "MailServer": {
+      "Server": "SMTP server",
+      "Abilitato": "Enabled",
+      "Host": "Host",
+      "Port": "Port",
+      "Username": "Username",
+      "From": "Sender",
+      "ConnTimeout": "Connection timeout (ms)",
+      "ReadTimeout": "Read timeout (ms)",
+      "StartTls": "STARTTLS",
+      "Ssl": "SSL/TLS",
+      "SslAbilitato": "SSL enabled",
+      "HostnameVerifier": "Verify hostname",
+      "SslTipo": "SSLContext type (e.g. TLS)",
+      "TrustStore": "TrustStore",
+      "KeyStore": "KeyStore",
+      "Location": "File path",
+      "StoreTipo": "Type (JKS, PKCS12…)",
+      "Algorithm": "Algorithm",
+      "Password": "Password",
+      "PasswordImpostata": "An SMTP password is already configured. Fill the fields to replace it.",
+      "PasswordNonImpostata": "No SMTP password configured.",
+      "NuovaPassword": "SMTP password",
+      "KsPassword": "KeyStore password",
+      "TsPassword": "TrustStore password",
+      "SalvaPassword": "Save password",
+      "PasswordSalvata": "Password updated."
+    },
+    "GiornaleEventi": {
+      "Politica": "Logging policy",
+      "Interfaccia": "Interface",
+      "LettureLog": "Reads · log",
+      "LettureDump": "Reads · dump",
+      "ScrittureLog": "Writes · log",
+      "ScrittureDump": "Writes · dump",
+      "Politiche": {
+        "SEMPRE": "Always",
+        "MAI": "Never",
+        "SOLO_ERRORE": "On error only"
+      },
+      "Interfacce": {
+        "apiEnte": "Entity API",
+        "apiPagamento": "Payment API",
+        "apiRagioneria": "Treasury API",
+        "apiBackoffice": "Backoffice API",
+        "apiPagoPA": "pagoPA API",
+        "apiPendenze": "Receivables API",
+        "apiBackendIO": "App IO API",
+        "apiMaggioliJPPA": "Maggioli JPPA API"
+      }
     }
   },
   "Profilo": {

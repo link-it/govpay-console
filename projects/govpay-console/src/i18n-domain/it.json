@@ -1576,6 +1576,57 @@
       "RichiestaHint": "Trasforma un record da CSV a JSON.",
       "Risposta": "Template risposta (JSON → CSV)",
       "RispostaHint": "Trasforma un record da JSON a CSV."
+    },
+    "MailServer": {
+      "Server": "Server SMTP",
+      "Abilitato": "Abilitato",
+      "Host": "Host",
+      "Port": "Porta",
+      "Username": "Username",
+      "From": "Mittente",
+      "ConnTimeout": "Timeout connessione (ms)",
+      "ReadTimeout": "Timeout lettura (ms)",
+      "StartTls": "STARTTLS",
+      "Ssl": "SSL/TLS",
+      "SslAbilitato": "SSL abilitato",
+      "HostnameVerifier": "Verifica hostname",
+      "SslTipo": "Tipo SSLContext (es. TLS)",
+      "TrustStore": "TrustStore",
+      "KeyStore": "KeyStore",
+      "Location": "Percorso file",
+      "StoreTipo": "Tipo (JKS, PKCS12…)",
+      "Algorithm": "Algoritmo",
+      "Password": "Password",
+      "PasswordImpostata": "Una password SMTP è già configurata. Compila i campi per sostituirla.",
+      "PasswordNonImpostata": "Nessuna password SMTP configurata.",
+      "NuovaPassword": "Password SMTP",
+      "KsPassword": "Password KeyStore",
+      "TsPassword": "Password TrustStore",
+      "SalvaPassword": "Salva password",
+      "PasswordSalvata": "Password aggiornata."
+    },
+    "GiornaleEventi": {
+      "Politica": "Politica di logging",
+      "Interfaccia": "Interfaccia",
+      "LettureLog": "Letture · log",
+      "LettureDump": "Letture · dump",
+      "ScrittureLog": "Scritture · log",
+      "ScrittureDump": "Scritture · dump",
+      "Politiche": {
+        "SEMPRE": "Sempre",
+        "MAI": "Mai",
+        "SOLO_ERRORE": "Solo errore"
+      },
+      "Interfacce": {
+        "apiEnte": "API Ente",
+        "apiPagamento": "API Pagamento",
+        "apiRagioneria": "API Ragioneria",
+        "apiBackoffice": "API Backoffice",
+        "apiPagoPA": "API pagoPA",
+        "apiPendenze": "API Pendenze",
+        "apiBackendIO": "API App IO",
+        "apiMaggioliJPPA": "API Maggioli JPPA"
+      }
     }
   },
   "Profilo": {
