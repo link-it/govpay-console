@@ -6,7 +6,9 @@
   <lnk-inline-edit-card [title]="descriptor().labelKey | translate" [(editing)]="editing" [saving]="saving()" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
     <div view><lnk-info-grid [items]="viewItems()" /></div>
     <form edit [formGroup]="form" class="space-y-4">
-      <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Connettori.Abilitato' | translate }}</span></label>
+      @if (hasAbilitato()) {
+        <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Connettori.Abilitato' | translate }}</span></label>
+      }
       <div class="grid grid-cols-2 gap-3">
         @for (f of descriptor().fields; track f.key) {
           @switch (f.kind) {

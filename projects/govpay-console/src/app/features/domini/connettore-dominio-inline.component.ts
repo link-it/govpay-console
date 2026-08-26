@@ -58,15 +58,27 @@ export class ConnettoreDominioInlineComponent implements OnInit {
   readonly editing = signal(false);
   readonly saving = signal(false);
   readonly abilitato = signal(false);
+  /** true se il connettore è configurato (usato per lo stato dei connettori senza flag `abilitato`, es. send). */
+  readonly configurato = signal(false);
 
   readonly showCredenziali = signal(false);
   readonly savingCredenziali = signal(false);
 
-  readonly statusTone = computed<'success' | 'muted'>(() => (this.abilitato() ? 'success' : 'muted'));
-  readonly statusLabel = computed(() => this.translate.instant(this.abilitato() ? 'Common.Yes' : 'Common.No'));
+  /** Il connettore ha un flag on/off `abilitato` (default true; `send` no). */
+  readonly hasAbilitato = computed(() => this.descriptor().hasAbilitato !== false);
 
-  /** Form dinamica: `abilitato` + un controllo per ogni campo del descrittore. */
-  form = new FormGroup<Record<string, FormControl>>({ abilitato: new FormControl(false, { nonNullable: true }) });
+  readonly statusTone = computed<'success' | 'muted'>(() =>
+    (this.hasAbilitato() ? this.abilitato() : this.configurato()) ? 'success' : 'muted'
+  );
+  readonly statusLabel = computed(() => {
+    if (!this.hasAbilitato()) {
+      return this.translate.instant(this.configurato() ? 'Domini.Connettori.Configurato' : 'Domini.Connettori.NonConfigurato');
+    }
+    return this.translate.instant(this.abilitato() ? 'Common.Yes' : 'Common.No');
+  });
+
+  /** Form dinamica: `abilitato` (se previsto) + un controllo per ogni campo del descrittore. */
+  form = new FormGroup<Record<string, FormControl>>({});
   readonly credenzialiForm = new FormGroup<Record<string, FormControl>>(
     Object.fromEntries(CREDENZIALI_FIELDS.map((f) => [f.key, new FormControl('', { nonNullable: true })])),
   );
@@ -75,7 +87,9 @@ export class ConnettoreDominioInlineComponent implements OnInit {
     // dipende da `ready` per ricomputare dopo il load
     if (!this.ready()) return [];
     const src: Record<string, unknown> = this.loaded ?? {};
-    const items: InfoGridItem[] = [{ labelKey: 'Domini.Connettori.Abilitato', value: this.translate.instant(this.abilitato() ? 'Common.Yes' : 'Common.No') }];
+    const items: InfoGridItem[] = this.hasAbilitato()
+      ? [{ labelKey: 'Domini.Connettori.Abilitato', value: this.translate.instant(this.abilitato() ? 'Common.Yes' : 'Common.No') }]
+      : [];
     for (const f of this.descriptor().fields) {
       const raw = src[f.key];
       if (raw === undefined || raw === null || raw === '') continue;
@@ -89,6 +103,8 @@ export class ConnettoreDominioInlineComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    // I connettori senza flag `abilitato` (es. send) non hanno quel controllo.
+    if (this.hasAbilitato()) this.form.addControl('abilitato', new FormControl(false, { nonNullable: true }));
     for (const f of this.descriptor().fields) {
       const init = f.kind === 'checkbox' ? false : f.kind === 'number' ? null : '';
       this.form.addControl(f.key, new FormControl(init, { nonNullable: f.kind !== 'number' }));
@@ -104,6 +120,7 @@ export class ConnettoreDominioInlineComponent implements OnInit {
         if (res?.body) {
           this.etag = res.etag;
           this.loaded = res.body;
+          this.configurato.set(true);
           this.patchFromLoaded();
         }
         this.ready.set(true);
@@ -111,9 +128,12 @@ export class ConnettoreDominioInlineComponent implements OnInit {
   }
 
   private patchFromLoaded(): void {
-    const b = this.loaded ?? { abilitato: false };
-    this.abilitato.set(!!b.abilitato);
-    const patch: Record<string, unknown> = { abilitato: !!b.abilitato };
+    const b = this.loaded ?? {};
+    const patch: Record<string, unknown> = {};
+    if (this.hasAbilitato()) {
+      this.abilitato.set(!!b['abilitato']);
+      patch['abilitato'] = !!b['abilitato'];
+    }
     for (const f of this.descriptor().fields) {
       const raw = b[f.key];
       if (f.kind === 'list') patch[f.key] = Array.isArray(raw) ? raw.join('\n') : '';
@@ -138,7 +158,8 @@ export class ConnettoreDominioInlineComponent implements OnInit {
         if (!known.has(k)) preserved[k] = val;
       }
     }
-    const body: ConnettoreDominio = { ...preserved, abilitato: !!v['abilitato'] };
+    const body: ConnettoreDominio = { ...preserved };
+    if (this.hasAbilitato()) body.abilitato = !!v['abilitato'];
     for (const f of this.descriptor().fields) {
       const raw = v[f.key];
       if (f.kind === 'list') {
@@ -170,7 +191,8 @@ export class ConnettoreDominioInlineComponent implements OnInit {
         if (!res) return;
         this.etag = res.etag;
         this.loaded = res.body;
-        this.abilitato.set(!!res.body.abilitato);
+        this.configurato.set(true);
+        if (this.hasAbilitato()) this.abilitato.set(!!res.body.abilitato);
         this.snackbar.success(this.translate.instant('Domini.Connettori.Aggiornato'));
         this.editing.set(false);
       });

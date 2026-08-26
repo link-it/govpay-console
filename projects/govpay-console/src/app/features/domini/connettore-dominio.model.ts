@@ -21,11 +21,14 @@
  */
 
 /** Segmento di path del connettore singleton. */
-export type ConnettoreDominioTipo = 'mypivot' | 'secim' | 'govpay' | 'hypersic-apk' | 'maggioli-jppa';
+export type ConnettoreDominioTipo = 'mypivot' | 'secim' | 'govpay' | 'hypersic-apk' | 'maggioli-jppa' | 'send';
 
-/** Rappresentazione permissiva del connettore (le GET non includono credenziali). */
+/**
+ * Rappresentazione permissiva del connettore (le GET non includono credenziali).
+ * `abilitato` è assente per i connettori senza flag on/off (es. `send`).
+ */
 export interface ConnettoreDominio {
-  abilitato: boolean;
+  abilitato?: boolean;
   [k: string]: unknown;
 }
 
@@ -48,6 +51,11 @@ export interface ConnettoreDominioDescriptor {
   fields: ConnettoreFieldDef[];
   /** Se true espone la sotto-form credenziali (write-only). */
   hasCredenziali: boolean;
+  /**
+   * Se `false` il connettore non ha un flag `abilitato` on/off (es. `send`:
+   * attivo appena configurato). Default (assente) = `true`.
+   */
+  hasAbilitato?: boolean;
 }
 
 const EMAIL_FIELDS: ConnettoreFieldDef[] = [
@@ -127,6 +135,18 @@ export const CONNETTORI_DOMINIO: ConnettoreDominioDescriptor[] = [
       { key: 'emailSubject', labelKey: 'Domini.Connettori.EmailSubject', kind: 'text' },
       { key: 'emailAllegato', labelKey: 'Domini.Connettori.EmailAllegato', kind: 'checkbox' },
       { key: 'downloadBaseUrl', labelKey: 'Domini.Connettori.DownloadBaseUrl', kind: 'text' },
+    ],
+  },
+  {
+    // SEND (NotificationPriceV23): niente flag `abilitato` (attivo appena
+    // configurato); `auth` è preservato as-is nel replace.
+    tipo: 'send',
+    labelKey: 'Domini.Connettori.Send',
+    hasCredenziali: true,
+    hasAbilitato: false,
+    fields: [
+      { key: 'url', labelKey: 'Domini.Connettori.Url', kind: 'text' },
+      { key: 'abilitaGDE', labelKey: 'Domini.Connettori.AbilitaGDE', kind: 'checkbox' },
     ],
   },
 ];

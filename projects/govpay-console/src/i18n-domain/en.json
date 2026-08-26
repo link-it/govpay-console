@@ -820,7 +820,11 @@
         "HeaderValue": "Header value",
         "Aggiornate": "Credentials updated.",
         "Errore": "Credentials update failed."
-      }
+      },
+      "Send": "SEND (notifications)",
+      "AbilitaGDE": "Enable GDE event sending",
+      "Configurato": "Configured",
+      "NonConfigurato": "Not configured"
     }
   },
   "TipiPendenza": {
