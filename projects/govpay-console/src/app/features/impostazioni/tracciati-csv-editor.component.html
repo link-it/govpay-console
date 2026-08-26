@@ -15,20 +15,24 @@
       <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
         <lnk-detail-section titleKey="Impostazioni.TracciatiCsv.Template">
           <div class="space-y-4">
-            <label class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 max-w-[16rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Tipo' | translate }}</span>
+              <lnk-select formControlName="tipo" [options]="tipoOptions" [placeholder]="'Impostazioni.Template.Nessuno' | translate" [ariaLabel]="'Impostazioni.Template.Tipo' | translate" />
+            </div>
+            <div class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Intestazione' | translate }}</span>
-              <textarea formControlName="intestazione" rows="2" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
-            </label>
-            <label class="flex flex-col gap-1">
+              <lnk-code-field formControlName="intestazione" format="auto" [rows]="3" />
+            </div>
+            <div class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Richiesta' | translate }}</span>
-              <textarea formControlName="richiesta" rows="8" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+              <lnk-code-field formControlName="richiesta" format="auto" [rows]="10" />
               <span class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.RichiestaHint' | translate }}</span>
-            </label>
-            <label class="flex flex-col gap-1">
+            </div>
+            <div class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Risposta' | translate }}</span>
-              <textarea formControlName="risposta" rows="8" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+              <lnk-code-field formControlName="risposta" format="auto" [rows]="10" />
               <span class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.RispostaHint' | translate }}</span>
-            </label>
+            </div>
           </div>
         </lnk-detail-section>
 

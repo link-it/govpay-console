@@ -16,7 +16,7 @@ import { catchError, of, type Observable } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
+import { SnackbarService, SystemFacade, SelectComponent, type LnkSelectOption } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   FormActionBarComponent,
@@ -25,8 +25,14 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { CodeFieldComponent } from '@core/ui/code-field/code-field.component';
 import { ImpostazioniConsoleApi } from './impostazioni.console-api';
-import type { ImpostazioniAppIoTemplatePromemoria } from './impostazioni.model';
+import type { ImpostazioniAppIoTemplatePromemoria, TipoTemplateTrasformazione } from './impostazioni.model';
+
+/** Contenuto template base64: passthrough del valore del `<lnk-code-field>`. */
+const b64 = (v: string | null | undefined): string | undefined => v || undefined;
+/** Opzioni del tipo template (solo Freemarker), come in tipi-pendenza. */
+const TIPO_OPTIONS: LnkSelectOption[] = [{ value: 'freemarker', label: 'Freemarker' }];
 
 /**
  * Editor **Impostazioni → Template App IO** (promemoria push). Come la variante
@@ -45,6 +51,8 @@ import type { ImpostazioniAppIoTemplatePromemoria } from './impostazioni.model';
     LoadingComponent,
     ListStickyToolbarDirective,
     FormActionBarComponent,
+    CodeFieldComponent,
+    SelectComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app-io-template-editor.component.html',
@@ -60,13 +68,17 @@ export class AppIoTemplateEditorComponent implements OnInit {
   private etag: string | null = null;
   readonly loading = signal(false);
   readonly saving = signal(false);
+  readonly tipoOptions = TIPO_OPTIONS;
 
   readonly form = this.fb.nonNullable.group({
+    avvisoTipo: ['freemarker'],
     avvisoOggetto: [''],
     avvisoMessaggio: [''],
+    ricevutaTipo: ['freemarker'],
     ricevutaOggetto: [''],
     ricevutaMessaggio: [''],
     ricevutaSoloEseguiti: [false],
+    scadenzaTipo: ['freemarker'],
     scadenzaOggetto: [''],
     scadenzaMessaggio: [''],
     scadenzaPreavviso: [null as number | null],
@@ -93,11 +105,14 @@ export class AppIoTemplateEditorComponent implements OnInit {
         this.etag = res.etag;
         const b = res.body;
         this.form.patchValue({
+          avvisoTipo: b.promemoriaAvviso?.tipo ?? 'freemarker',
           avvisoOggetto: b.promemoriaAvviso?.oggetto ?? '',
           avvisoMessaggio: b.promemoriaAvviso?.messaggio ?? '',
+          ricevutaTipo: b.promemoriaRicevuta?.tipo ?? 'freemarker',
           ricevutaOggetto: b.promemoriaRicevuta?.oggetto ?? '',
           ricevutaMessaggio: b.promemoriaRicevuta?.messaggio ?? '',
           ricevutaSoloEseguiti: b.promemoriaRicevuta?.soloEseguiti ?? false,
+          scadenzaTipo: b.promemoriaScadenza?.tipo ?? 'freemarker',
           scadenzaOggetto: b.promemoriaScadenza?.oggetto ?? '',
           scadenzaMessaggio: b.promemoriaScadenza?.messaggio ?? '',
           scadenzaPreavviso: b.promemoriaScadenza?.preavviso ?? null,
@@ -107,11 +122,11 @@ export class AppIoTemplateEditorComponent implements OnInit {
 
   private buildBody(): ImpostazioniAppIoTemplatePromemoria {
     const r = this.form.getRawValue();
-    const s = (v: string): string | undefined => v.trim() || undefined;
+    const tipo = (v: string): TipoTemplateTrasformazione => (v as TipoTemplateTrasformazione) || 'freemarker';
     return {
-      promemoriaAvviso: { tipo: 'freemarker', oggetto: s(r.avvisoOggetto), messaggio: s(r.avvisoMessaggio) },
-      promemoriaRicevuta: { tipo: 'freemarker', oggetto: s(r.ricevutaOggetto), messaggio: s(r.ricevutaMessaggio), soloEseguiti: r.ricevutaSoloEseguiti },
-      promemoriaScadenza: { tipo: 'freemarker', oggetto: s(r.scadenzaOggetto), messaggio: s(r.scadenzaMessaggio), preavviso: r.scadenzaPreavviso ?? undefined },
+      promemoriaAvviso: { tipo: tipo(r.avvisoTipo), oggetto: b64(r.avvisoOggetto), messaggio: b64(r.avvisoMessaggio) },
+      promemoriaRicevuta: { tipo: tipo(r.ricevutaTipo), oggetto: b64(r.ricevutaOggetto), messaggio: b64(r.ricevutaMessaggio), soloEseguiti: r.ricevutaSoloEseguiti },
+      promemoriaScadenza: { tipo: tipo(r.scadenzaTipo), oggetto: b64(r.scadenzaOggetto), messaggio: b64(r.scadenzaMessaggio), preavviso: r.scadenzaPreavviso ?? undefined },
     };
   }
 

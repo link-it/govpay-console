@@ -1571,7 +1571,9 @@
       "Messaggio": "Messaggio",
       "AllegaPdf": "Allega il PDF",
       "SoloEseguiti": "Solo pagamenti eseguiti",
-      "Preavviso": "Giorni di preavviso"
+      "Preavviso": "Giorni di preavviso",
+      "Tipo": "Tipo template",
+      "Nessuno": "Nessuno"
     },
     "TracciatiCsv": {
       "Template": "Template FreeMarker",

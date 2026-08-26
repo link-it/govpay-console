@@ -16,7 +16,7 @@ import { catchError, of, type Observable } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
+import { SnackbarService, SystemFacade, SelectComponent, type LnkSelectOption } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   FormActionBarComponent,
@@ -25,8 +25,12 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { CodeFieldComponent } from '@core/ui/code-field/code-field.component';
 import { ImpostazioniConsoleApi } from './impostazioni.console-api';
-import type { ImpostazioniTracciatiCsv } from './impostazioni.model';
+import type { ImpostazioniTracciatiCsv, TipoTemplateTrasformazione } from './impostazioni.model';
+
+/** Opzioni del tipo template (solo Freemarker), come in tipi-pendenza. */
+const TIPO_OPTIONS: LnkSelectOption[] = [{ value: 'freemarker', label: 'Freemarker' }];
 
 /**
  * Editor **Impostazioni → Tracciati CSV** (template FreeMarker di
@@ -45,6 +49,8 @@ import type { ImpostazioniTracciatiCsv } from './impostazioni.model';
     LoadingComponent,
     ListStickyToolbarDirective,
     FormActionBarComponent,
+    CodeFieldComponent,
+    SelectComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tracciati-csv-editor.component.html',
@@ -60,8 +66,10 @@ export class TracciatiCsvEditorComponent implements OnInit {
   private etag: string | null = null;
   readonly loading = signal(false);
   readonly saving = signal(false);
+  readonly tipoOptions = TIPO_OPTIONS;
 
   readonly form = this.fb.nonNullable.group({
+    tipo: ['freemarker'],
     intestazione: [''],
     richiesta: [''],
     risposta: [''],
@@ -88,6 +96,7 @@ export class TracciatiCsvEditorComponent implements OnInit {
         this.etag = res.etag;
         const b = res.body;
         this.form.patchValue({
+          tipo: b.tipo ?? 'freemarker',
           intestazione: b.intestazione ?? '',
           richiesta: b.richiesta ?? '',
           risposta: b.risposta ?? '',
@@ -96,12 +105,13 @@ export class TracciatiCsvEditorComponent implements OnInit {
   }
 
   private buildBody(): ImpostazioniTracciatiCsv {
+    // I contenuti sono base64: il valore del `<lnk-code-field>` è già base64.
     const r = this.form.getRawValue();
     return {
-      tipo: 'freemarker',
-      intestazione: r.intestazione,
-      richiesta: r.richiesta,
-      risposta: r.risposta,
+      tipo: (r.tipo as TipoTemplateTrasformazione) || 'freemarker',
+      intestazione: r.intestazione || '',
+      richiesta: r.richiesta || '',
+      risposta: r.risposta || '',
     };
   }
 

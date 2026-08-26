@@ -1351,7 +1351,9 @@
       "Messaggio": "Message",
       "AllegaPdf": "Attach the PDF",
       "SoloEseguiti": "Executed payments only",
-      "Preavviso": "Days of notice"
+      "Preavviso": "Days of notice",
+      "Tipo": "Template type",
+      "Nessuno": "None"
     },
     "TracciatiCsv": {
       "Template": "FreeMarker template",
