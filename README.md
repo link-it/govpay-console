@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://www.link.it/wp-content/uploads/2025/01/logo-govpay.svg" alt="GovPay Logo" width="200"/>
+</p>
+
 # GovPay Console v2
 
 Nuova versione della console di backoffice GovPay (riscrittura completa della
@@ -137,6 +141,63 @@ projects/
 - Header licenza GPL v3 in cima ad ogni file `.ts`.
 - Path alias: `@core/*`, `@feature/*`, `@environment`, `@environments`, `@assets/*`,
   `@linkit/shared-ui`.
+
+## Docker
+
+Il progetto include `docker/Dockerfile`, un Dockerfile multi-stage che builda
+l'applicazione dai sorgenti (stage Node) e la serve come contenuto statico
+tramite nginx.
+
+### Build & run
+
+```bash
+# Build dell'immagine (eseguire dalla root del repo: il build context è la root)
+docker build -t govpay-console:local -f docker/Dockerfile .
+
+# Avvio: l'app è servita su http://localhost:8080
+docker run --rm -p 8080:8080 govpay-console:local
+```
+
+Oppure con docker compose (espone la console su `http://localhost:10012`):
+
+```bash
+docker compose up --build
+```
+
+### Configurazione runtime
+
+| Variabile | Default | Descrizione |
+|-----------|---------|-------------|
+| `SERVER_PORT` | `8080` | Porta su cui ascolta nginx nel container |
+| `GOVPAY_API_BACKEND` | _(vuota)_ | Se valorizzata, nginx fa da reverse proxy per `/govpay-api-backoffice` verso questo backend, evitando problemi di CORS |
+| `GOVPAY_API_BACKEND_PATH` | `/govpay-api-backoffice` | Path upstream sul backend a cui mappare `/govpay-api-backoffice/*`. Usare `/` se il backend serve gli endpoint alla radice (`/rs/form/v1/...`): il prefisso `/govpay-api-backoffice` viene rimosso prima dell'inoltro |
+
+Esempio con proxy verso un backend GovPay reale:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e GOVPAY_API_BACKEND=https://lab.link.it \
+  govpay-console:local
+```
+
+Esempio con backend che espone gli endpoint alla radice (proxy same-origin,
+nessun CORS):
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e GOVPAY_API_BACKEND=http://govpay-console-api:8080 \
+  -e GOVPAY_API_BACKEND_PATH=/ \
+  govpay-console:local
+```
+
+> La configurazione dell'app (titoli, endpoint, temi, ecc.) resta in
+> `assets/config/app-config.json` ed è servita staticamente: può essere
+> sovrascritta montando un volume su
+> `/usr/share/nginx/html/assets/config/app-config.json`.
+
+> Per le immagini basate su release pubblicate (download da GitHub o build
+> locale già pronta) sono disponibili gli script in `docker/` (`build_image.sh`,
+> con i relativi `Dockerfile.github` / `Dockerfile.daFile`).
 
 ## Licenza
 
