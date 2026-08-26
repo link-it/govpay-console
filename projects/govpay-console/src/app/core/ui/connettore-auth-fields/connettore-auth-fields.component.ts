@@ -15,6 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SelectComponent } from '@linkit/shared-ui';
 import type { ConnettoreAuth, ConnettoreCredenziali, SslTipo, TipoAutenticazioneConnettore } from '@core/models';
+import { SecretInputComponent } from '@core/ui/secret-input/secret-input.component';
 
 /** Tipi di autenticazione del connettore (stessi valori degli intermediari). */
 export const TIPI_AUTH: TipoAutenticazioneConnettore[] = ['NONE', 'HTTPBASIC', 'SSL', 'HEADER', 'APIKEY', 'OAUTH2'];
@@ -100,7 +101,7 @@ export function buildConnettoreCredenziali(c: Record<string, string>): Connettor
 @Component({
   selector: 'lnk-connettore-auth-fields',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, SelectComponent],
+  imports: [ReactiveFormsModule, TranslatePipe, SelectComponent, SecretInputComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './connettore-auth-fields.component.html',
 })

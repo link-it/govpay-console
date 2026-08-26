@@ -102,15 +102,15 @@
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <label class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.NuovaPassword' | translate }}</span>
-              <input type="password" formControlName="nuovaPassword" autocomplete="new-password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              <lnk-secret-input formControlName="nuovaPassword" [ariaLabel]="'Impostazioni.MailServer.NuovaPassword' | translate" />
             </label>
             <label class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.KsPassword' | translate }}</span>
-              <input type="password" formControlName="ksPassword" autocomplete="new-password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              <lnk-secret-input formControlName="ksPassword" [ariaLabel]="'Impostazioni.MailServer.KsPassword' | translate" />
             </label>
             <label class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.MailServer.TsPassword' | translate }}</span>
-              <input type="password" formControlName="tsPassword" autocomplete="new-password" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              <lnk-secret-input formControlName="tsPassword" [ariaLabel]="'Impostazioni.MailServer.TsPassword' | translate" />
             </label>
           </div>
           <button type="submit" class="btn btn-secondary btn-sm" [disabled]="savingPassword()">{{ 'Impostazioni.MailServer.SalvaPassword' | translate }}</button>

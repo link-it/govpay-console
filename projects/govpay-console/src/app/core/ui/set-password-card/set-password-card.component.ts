@@ -16,6 +16,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { SecretInputComponent } from '@core/ui/secret-input/secret-input.component';
 
 /**
  * Policy password allineata alla validazione server-side (schema
@@ -43,7 +44,7 @@ function passwordPolicy(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'lnk-set-password-card',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, TranslatePipe, SecretInputComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   templateUrl: './set-password-card.component.html',

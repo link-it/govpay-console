@@ -25,6 +25,7 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { SecretInputComponent } from '@core/ui/secret-input/secret-input.component';
 import { ImpostazioniConsoleApi } from './impostazioni.console-api';
 import type { ImpostazioniMailServer } from './impostazioni.model';
 
@@ -47,6 +48,7 @@ import type { ImpostazioniMailServer } from './impostazioni.model';
     LoadingComponent,
     ListStickyToolbarDirective,
     FormActionBarComponent,
+    SecretInputComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './mail-server-editor.component.html',
