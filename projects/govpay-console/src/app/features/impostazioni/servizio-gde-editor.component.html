@@ -12,7 +12,7 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+      <form [formGroup]="form" (ngSubmit)="save()" autocomplete="off" class="space-y-4">
         <lnk-detail-section titleKey="Impostazioni.ServizioGde.Connettore">
           <div class="space-y-5">
             <label class="flex items-center gap-2">
@@ -25,21 +25,7 @@
               <input type="text" formControlName="url" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
             </label>
 
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <label class="flex flex-col gap-1">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.ServizioGde.TipoAuth' | translate }}</span>
-                <select formControlName="tipoAutenticazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]">
-                  @for (t of tipiAuth; track t) {
-                    <option [value]="t">{{ authLabel(t) }}</option>
-                  }
-                </select>
-              </label>
-              <label class="flex flex-col gap-1">
-                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.ServizioGde.Username' | translate }}</span>
-                <input type="text" formControlName="username" autocomplete="off" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
-              </label>
-            </div>
-            <p class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.ServizioGde.AuthHint' | translate }}</p>
+            <lnk-connettore-auth-fields [authGroup]="form.controls.auth" [credenzialiGroup]="form.controls.credenziali" />
           </div>
         </lnk-detail-section>
 
@@ -48,12 +34,6 @@
           <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
         </lnk-form-action-bar>
       </form>
-
-      @if (showCredenziali()) {
-        <div class="mt-4">
-          <lnk-set-password-card [submit]="submitCredenziali" titleKey="Impostazioni.ServizioGde.Credenziali" />
-        </div>
-      }
     }
   </div>
 </section>

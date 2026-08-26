@@ -30,15 +30,14 @@
                   <td class="py-2 pr-3 font-medium">{{ ifaceLabel(iface) }}</td>
                   @for (cell of [['letture','log'],['letture','dump'],['scritture','log'],['scritture','dump']]; track cell[0] + cell[1]) {
                     <td class="py-2 px-2">
-                      <select
-                        [value]="valore(iface, $any(cell[0]), $any(cell[1]))"
-                        (change)="onChange(iface, $any(cell[0]), $any(cell[1]), $event)"
-                        class="w-full min-w-[8rem] px-2 py-1.5 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-                      >
-                        @for (p of politiche; track p) {
-                          <option [value]="p">{{ politicaLabel(p) }}</option>
-                        }
-                      </select>
+                      <lnk-select
+                        class="block w-full min-w-[8rem]"
+                        [ngModel]="valore(iface, $any(cell[0]), $any(cell[1]))"
+                        (ngModelChange)="setValore(iface, $any(cell[0]), $any(cell[1]), $event)"
+                        [options]="politicheOptions"
+                        [allowEmpty]="false"
+                        [ariaLabel]="ifaceLabel(iface)"
+                      />
                     </td>
                   }
                 </tr>

@@ -9,10 +9,10 @@
  * the Free Software Foundation.
  */
 
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { catchError, of, type Observable } from 'rxjs';
+import { catchError, map, of, switchMap, type Observable } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -25,16 +25,20 @@ import {
   ListStickyToolbarDirective,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
-import type { ConnettoreAuth, TipoAutenticazioneConnettore } from '@core/models';
-import { SetPasswordCardComponent } from '@core/ui/set-password-card/set-password-card.component';
+import {
+  ConnettoreAuthFieldsComponent,
+  buildAuthGroup,
+  buildConnettoreAuth,
+  buildConnettoreCredenziali,
+  buildCredenzialiGroup,
+} from '@core/ui/connettore-auth-fields/connettore-auth-fields.component';
 import { ImpostazioniConsoleApi } from './impostazioni.console-api';
 import type { ImpostazioniAppIoServer } from './impostazioni.model';
 
-const TIPI_AUTH: TipoAutenticazioneConnettore[] = ['NONE', 'HTTPBASIC', 'SSL', 'HEADER', 'APIKEY', 'OAUTH2'];
-
 /**
  * Editor **Impostazioni → Server App IO** (connettore push). GET+ETag →
- * PUT-replace con If-Match. Credenziali write-only su endpoint dedicato.
+ * PUT-replace con If-Match; auth + credenziali write-only con la stessa
+ * modalità dei connettori degli intermediari ({@link ConnettoreAuthFieldsComponent}).
  */
 @Component({
   selector: 'lnk-app-io-server-editor',
@@ -49,7 +53,7 @@ const TIPI_AUTH: TipoAutenticazioneConnettore[] = ['NONE', 'HTTPBASIC', 'SSL', '
     LoadingComponent,
     ListStickyToolbarDirective,
     FormActionBarComponent,
-    SetPasswordCardComponent,
+    ConnettoreAuthFieldsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app-io-server-editor.component.html',
@@ -63,24 +67,17 @@ export class AppIoServerEditorComponent implements OnInit {
   private readonly translate = inject(TranslateService);
 
   private etag: string | null = null;
-  private loadedAuth: ConnettoreAuth | null = null;
 
   readonly loading = signal(false);
   readonly saving = signal(false);
-  readonly tipiAuth = TIPI_AUTH;
 
   readonly form = this.fb.nonNullable.group({
     abilitato: [false],
     url: [''],
     timeToLiveSecondi: [null as number | null],
-    tipoAutenticazione: ['NONE' as TipoAutenticazioneConnettore],
-    username: [''],
+    auth: buildAuthGroup(this.fb),
+    credenziali: buildCredenzialiGroup(this.fb),
   });
-
-  readonly showCredenziali = computed(() => this.form.controls.tipoAutenticazione.value !== 'NONE');
-
-  readonly submitCredenziali = (nuovaPassword: string): Observable<void> =>
-    this.api.putAppIoServerCredenziali({ password: nuovaPassword });
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([
@@ -102,44 +99,55 @@ export class AppIoServerEditorComponent implements OnInit {
         if (!res?.body) return;
         this.etag = res.etag;
         const b = res.body;
-        this.loadedAuth = b.auth ?? null;
-        this.form.patchValue({
-          abilitato: b.abilitato,
-          url: b.url ?? '',
-          timeToLiveSecondi: b.timeToLiveSecondi ?? null,
+        this.form.patchValue({ abilitato: b.abilitato, url: b.url ?? '', timeToLiveSecondi: b.timeToLiveSecondi ?? null });
+        this.form.controls.auth.patchValue({
           tipoAutenticazione: b.auth?.tipoAutenticazione ?? 'NONE',
           username: b.auth?.username ?? '',
+          sslTipo: b.auth?.sslTipo ?? 'CLIENT',
+          ksLocation: b.auth?.ksLocation ?? '',
+          ksType: b.auth?.ksType ?? '',
+          tsLocation: b.auth?.tsLocation ?? '',
+          tsType: b.auth?.tsType ?? '',
+          sslType: b.auth?.sslType ?? '',
+          headerName: b.auth?.headerName ?? '',
+          apiId: b.auth?.apiId ?? '',
+          clientId: b.auth?.clientId ?? '',
+          scope: b.auth?.scope ?? '',
+          urlTokenEndpoint: b.auth?.urlTokenEndpoint ?? '',
         });
+        this.form.controls.credenziali.reset();
       });
   }
 
   private buildBody(): ImpostazioniAppIoServer {
     const r = this.form.getRawValue();
-    const s = (v: string): string | undefined => v.trim() || undefined;
-    const auth: ConnettoreAuth = {
-      ...(this.loadedAuth ?? {}),
-      tipoAutenticazione: r.tipoAutenticazione,
-      username: s(r.username),
-    };
     return {
       abilitato: r.abilitato,
-      url: s(r.url),
+      url: r.url.trim() || undefined,
       timeToLiveSecondi: r.timeToLiveSecondi ?? undefined,
-      auth: r.tipoAutenticazione === 'NONE' && !this.loadedAuth ? undefined : auth,
+      auth: buildConnettoreAuth(r.auth as Record<string, string>),
     };
   }
 
   save(): void {
     if (this.saving()) return;
     this.saving.set(true);
+    const creds = buildConnettoreCredenziali(this.form.getRawValue().credenziali as Record<string, string>);
     this.api
       .putAppIoServer(this.buildBody(), this.etag)
-      .pipe(catchError((err) => this.onError(err)))
+      .pipe(
+        switchMap((res) =>
+          Object.keys(creds).length
+            ? this.api.putAppIoServerCredenziali(creds).pipe(map(() => res))
+            : of(res)
+        ),
+        catchError((err) => this.onError(err))
+      )
       .subscribe((res) => {
         this.saving.set(false);
         if (!res) return;
         this.etag = res.etag;
-        this.loadedAuth = res.body?.auth ?? this.loadedAuth;
+        this.form.controls.credenziali.reset();
         this.snackbar.success(this.translate.instant('Impostazioni.Salvato'));
       });
   }
@@ -151,9 +159,5 @@ export class AppIoServerEditorComponent implements OnInit {
       : 'Impostazioni.SalvaErrore';
     this.snackbar.error(problemDetail(err, this.translate.instant(key)));
     return of(null);
-  }
-
-  authLabel(tipo: string): string {
-    return this.translate.instant(`Impostazioni.ServizioGde.Auth.${tipo}`);
   }
 }

@@ -1309,20 +1309,7 @@
     "ServizioGde": {
       "Connettore": "Connector",
       "Abilitato": "Enabled",
-      "Url": "GDE service URL",
-      "TipoAuth": "Authentication type",
-      "Username": "Username",
-      "AuthHint": "Credentials (password/secrets) are set in the dedicated section and never shown.",
-      "Credenziali": "Credentials",
-      "Password": "Password",
-      "Auth": {
-        "NONE": "None",
-        "HTTPBASIC": "HTTP Basic",
-        "SSL": "SSL",
-        "HEADER": "Header",
-        "APIKEY": "API Key",
-        "OAUTH2": "OAuth2"
-      }
+      "Url": "GDE service URL"
     },
     "AppIoServer": {
       "Connettore": "Connector",
@@ -1566,5 +1553,30 @@
     "Iban": {
       "Suggerimenti": "{{count}} IBANs enabled on pagoPA"
     }
+  },
+  "ConnettoreAuth": {
+    "Auth": "Authentication",
+    "TipoAuth": "Authentication type",
+    "Credenziali": "Credentials",
+    "CredenzialiHint": "Credentials are write-only: never shown. Fill the fields only to set or replace them.",
+    "Username": "Username",
+    "HeaderName": "Header name",
+    "ApiId": "API ID",
+    "ClientId": "Client ID",
+    "Scope": "Scope",
+    "UrlTokenEndpoint": "Token endpoint URL",
+    "Ssl": "SSL mode",
+    "KeystoreLocation": "Keystore · path",
+    "KeystoreType": "Keystore · type",
+    "TruststoreLocation": "Truststore · path",
+    "TruststoreType": "Truststore · type",
+    "SubscriptionKey": "Subscription key",
+    "Password": "Password",
+    "HeaderValue": "Header value",
+    "ApiKey": "API key",
+    "ClientSecret": "Client secret",
+    "KeystorePassword": "Keystore · password",
+    "TruststorePassword": "Truststore · password",
+    "KeyPassword": "Private key · password"
   }
 }

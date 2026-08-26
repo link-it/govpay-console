@@ -1529,20 +1529,7 @@
     "ServizioGde": {
       "Connettore": "Connettore",
       "Abilitato": "Abilitato",
-      "Url": "URL servizio GDE",
-      "TipoAuth": "Tipo autenticazione",
-      "Username": "Username",
-      "AuthHint": "Le credenziali (password/segreti) si impostano nella sezione dedicata e non vengono mai mostrate.",
-      "Credenziali": "Credenziali",
-      "Password": "Password",
-      "Auth": {
-        "NONE": "Nessuna",
-        "HTTPBASIC": "HTTP Basic",
-        "SSL": "SSL",
-        "HEADER": "Header",
-        "APIKEY": "API Key",
-        "OAUTH2": "OAuth2"
-      }
+      "Url": "URL servizio GDE"
     },
     "AppIoServer": {
       "Connettore": "Connettore",
@@ -1786,5 +1773,30 @@
     "Iban": {
       "Suggerimenti": "{{count}} IBAN abilitati su pagoPA"
     }
+  },
+  "ConnettoreAuth": {
+    "Auth": "Autenticazione",
+    "TipoAuth": "Tipo autenticazione",
+    "Credenziali": "Credenziali",
+    "CredenzialiHint": "Le credenziali sono write-only: non vengono mai mostrate. Compila i campi solo per impostarle o sostituirle.",
+    "Username": "Username",
+    "HeaderName": "Nome header",
+    "ApiId": "API ID",
+    "ClientId": "Client ID",
+    "Scope": "Scope",
+    "UrlTokenEndpoint": "URL token endpoint",
+    "Ssl": "Modalità SSL",
+    "KeystoreLocation": "Keystore · percorso",
+    "KeystoreType": "Keystore · tipo",
+    "TruststoreLocation": "Truststore · percorso",
+    "TruststoreType": "Truststore · tipo",
+    "SubscriptionKey": "Subscription key",
+    "Password": "Password",
+    "HeaderValue": "Valore header",
+    "ApiKey": "API key",
+    "ClientSecret": "Client secret",
+    "KeystorePassword": "Keystore · password",
+    "TruststorePassword": "Truststore · password",
+    "KeyPassword": "Chiave privata · password"
   }
 }

@@ -18,9 +18,10 @@ import {
   signal,
 } from '@angular/core';
 import { catchError, of } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService } from '@linkit/shared-ui';
+import { SnackbarService, SelectComponent, type LnkSelectOption } from '@linkit/shared-ui';
 import { AuthService } from '@core/auth/services/auth.service';
 import { problemDetail } from '@core/models';
 import { TracciatiConsoleApi } from './tracciati.console-api';
@@ -34,7 +35,7 @@ import type { FormatoTracciato } from './tracciato.model';
 @Component({
   selector: 'lnk-tracciato-upload',
   standalone: true,
-  imports: [NgIcon, TranslatePipe],
+  imports: [NgIcon, TranslatePipe, FormsModule, SelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tracciato-upload.component.html',
 })
@@ -55,6 +56,10 @@ export class TracciatoUploadComponent {
   readonly domini = computed(() =>
     (this.auth.user()?.domini ?? []).filter((d) => d.idDominio && d.idDominio !== '*')
   );
+  /** Opzioni del select dominio (value = idDominio, label = ragioneSociale). */
+  readonly dominioOptions = computed<LnkSelectOption[]>(() =>
+    this.domini().map((d) => ({ value: d.idDominio, label: d.ragioneSociale || d.idDominio }))
+  );
 
   /** Formato desunto dall'estensione del file selezionato. */
   readonly formato = computed<FormatoTracciato | null>(() => {
@@ -74,10 +79,6 @@ export class TracciatoUploadComponent {
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.file.set(input.files?.[0] ?? null);
-  }
-
-  onDominioChange(event: Event): void {
-    this.idDominio.set((event.target as HTMLSelectElement).value);
   }
 
   submit(): void {

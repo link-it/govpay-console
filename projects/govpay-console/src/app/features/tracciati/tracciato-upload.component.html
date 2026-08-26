@@ -18,13 +18,14 @@
         {{ 'Tracciati.Upload.Dominio' | translate }}
         @if (dominioRequired()) { <span class="text-[var(--danger)]">*</span> }
       </span>
-      <select class="rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1.5 text-sm min-w-[14rem]"
-        (change)="onDominioChange($event)" [value]="idDominio()">
-        <option value="">{{ 'Tracciati.Upload.DominioPlaceholder' | translate }}</option>
-        @for (d of domini(); track d.idDominio) {
-          <option [value]="d.idDominio">{{ d.ragioneSociale || d.idDominio }}</option>
-        }
-      </select>
+      <lnk-select
+        class="block min-w-[14rem]"
+        [ngModel]="idDominio()"
+        (ngModelChange)="idDominio.set($event)"
+        [options]="dominioOptions()"
+        [placeholder]="'Tracciati.Upload.DominioPlaceholder' | translate"
+        [ariaLabel]="'Tracciati.Upload.Dominio' | translate"
+      />
     </label>
 
     @if (formato(); as f) {

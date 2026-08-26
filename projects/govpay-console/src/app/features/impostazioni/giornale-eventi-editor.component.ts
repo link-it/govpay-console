@@ -13,9 +13,10 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { Router, RouterLink } from '@angular/router';
 import { catchError, of, type Observable } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
+import { SnackbarService, SystemFacade, SelectComponent, type LnkSelectOption } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   FormActionBarComponent,
@@ -45,6 +46,7 @@ const POLITICHE: GdePolitica[] = ['SEMPRE', 'SOLO_ERRORE', 'MAI'];
   standalone: true,
   imports: [
     RouterLink,
+    FormsModule,
     NgIcon,
     TranslatePipe,
     PageHeaderComponent,
@@ -52,6 +54,7 @@ const POLITICHE: GdePolitica[] = ['SEMPRE', 'SOLO_ERRORE', 'MAI'];
     LoadingComponent,
     ListStickyToolbarDirective,
     FormActionBarComponent,
+    SelectComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './giornale-eventi-editor.component.html',
@@ -69,7 +72,10 @@ export class GiornaleEventiEditorComponent implements OnInit {
 
   readonly stato = signal<ImpostazioniGiornaleEventi | null>(null);
   readonly interfacce = GDE_INTERFACCE;
-  readonly politiche = POLITICHE;
+  readonly politicheOptions: LnkSelectOption[] = POLITICHE.map((p) => ({
+    value: p,
+    label: this.translate.instant(`Impostazioni.GiornaleEventi.Politiche.${p}`),
+  }));
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([
@@ -99,9 +105,8 @@ export class GiornaleEventiEditorComponent implements OnInit {
     return this.stato()?.[iface]?.[lato]?.[campo] ?? '';
   }
 
-  /** Aggiorna immutabilmente una cella. */
-  onChange(iface: keyof ImpostazioniGiornaleEventi, lato: Lato, campo: Campo, event: Event): void {
-    const value = (event.target as HTMLSelectElement).value as GdePolitica;
+  /** Aggiorna immutabilmente una cella (valore dal `lnk-select`). */
+  setValore(iface: keyof ImpostazioniGiornaleEventi, lato: Lato, campo: Campo, value: string): void {
     this.stato.update((s) => {
       if (!s) return s;
       const intf = s[iface];
@@ -109,7 +114,7 @@ export class GiornaleEventiEditorComponent implements OnInit {
         ...s,
         [iface]: {
           ...intf,
-          [lato]: { ...intf[lato], [campo]: value },
+          [lato]: { ...intf[lato], [campo]: value as GdePolitica },
         },
       };
     });
@@ -117,9 +122,6 @@ export class GiornaleEventiEditorComponent implements OnInit {
 
   ifaceLabel(iface: string): string {
     return this.translate.instant(`Impostazioni.GiornaleEventi.Interfacce.${iface}`);
-  }
-  politicaLabel(p: string): string {
-    return this.translate.instant(`Impostazioni.GiornaleEventi.Politiche.${p}`);
   }
 
   save(): void {
