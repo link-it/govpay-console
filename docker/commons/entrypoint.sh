@@ -18,6 +18,14 @@
 #                         Usare "/" se il backend serve gli endpoint alla radice
 #                         (es. /rs/form/v1/...): in tal caso il prefisso
 #                         /govpay-api-backoffice viene rimosso prima dell'inoltro.
+#   GOVPAY_CONSOLE_BASE_PATH
+#                         Base path da cui e' servita la console (default: /).
+#                         Es. "/govpay-console" per un'installazione
+#                         raggiungibile su https://host/govpay-console/. Viene
+#                         scritto nel tag <base href> di index.html: tutti gli
+#                         URL prodotti dalla build sono relativi, quindi asset,
+#                         file di configurazione e rotte Angular si allineano
+#                         di conseguenza.
 ##############################################################################
 
 set -e
@@ -36,6 +44,59 @@ log_info "========================================"
 ##############################################################################
 
 SERVER_PORT=${SERVER_PORT:-80}
+
+##############################################################################
+# Base path dell'applicazione
+##############################################################################
+
+# Normalizza nella forma "/prefisso/": slash iniziale e finale sempre presenti,
+# "/" quando la console sta alla radice.
+BASE_PATH="${GOVPAY_CONSOLE_BASE_PATH:-/}"
+BASE_PATH="/${BASE_PATH#/}"
+BASE_PATH="${BASE_PATH%/}/"
+
+# Il valore finisce sia in index.html sia nella configurazione nginx: si
+# accettano solo caratteri leciti in un path, per non doverne fare l'escape.
+if ! echo "${BASE_PATH}" | grep -qE '^/[A-Za-z0-9._~/-]*$'; then
+    log_error "GOVPAY_CONSOLE_BASE_PATH contiene caratteri non ammessi: ${GOVPAY_CONSOLE_BASE_PATH}"
+    exit 1
+fi
+
+INDEX_HTML="${GOVPAY_CONSOLE_HOME}/index.html"
+
+if [ ! -f "${INDEX_HTML}" ]; then
+    log_error "index.html non trovato in ${GOVPAY_CONSOLE_HOME}"
+    exit 1
+fi
+
+if ! grep -qE '<base[^>]*href="[^"]*"' "${INDEX_HTML}"; then
+    log_error "Nessun tag <base href> in ${INDEX_HTML}: impossibile impostare il base path"
+    exit 1
+fi
+
+# La sostituzione rimpiazza qualunque valore sia presente, non solo "/", ed e'
+# quindi idempotente: sopravvive ai restart del container, dove index.html e'
+# gia' stato riscritto da un avvio precedente.
+sed -i -E "s#<base[^>]*href=\"[^\"]*\"[^>]*>#<base href=\"${BASE_PATH}\">#" "${INDEX_HTML}"
+log_info "Base path applicazione: ${BASE_PATH}"
+
+# Quando la console non sta alla radice la si serve anche sotto il proprio
+# prefisso. Serve nelle installazioni in cui il reverse proxy davanti inoltra
+# ${BASE_PATH} senza riscriverlo: senza questa location nginx risponderebbe
+# index.html anche alle richieste di /prefisso/main-XXX.js, restituendo HTML
+# al posto del JavaScript. Dove invece il proxy rimuove il prefisso, le
+# richieste arrivano su "/" e questa location semplicemente non viene usata.
+BASE_LOCATION_BLOCK=""
+if [ "${BASE_PATH}" != "/" ]; then
+    BASE_LOCATION_BLOCK=$(cat <<EOF
+
+    location ${BASE_PATH} {
+        alias ${GOVPAY_CONSOLE_HOME}/;
+        try_files \$uri \$uri/ ${BASE_PATH}index.html;
+    }
+EOF
+)
+fi
 
 ##############################################################################
 # Blocco opzionale di reverse proxy verso il backend GovPay
@@ -91,7 +152,7 @@ server {
     location / {
         try_files \$uri \$uri/ /index.html;
     }
-${API_PROXY_BLOCK}
+${BASE_LOCATION_BLOCK}${API_PROXY_BLOCK}
     access_log ${GOVPAY_CONSOLE_LOGDIR}/access.log;
     error_log ${GOVPAY_CONSOLE_LOGDIR}/error.log;
 }
@@ -102,6 +163,7 @@ log_info "Riepilogo Configurazione"
 log_info "========================================"
 log_info "Porta Server: ${SERVER_PORT}"
 log_info "Document Root: ${GOVPAY_CONSOLE_HOME}"
+log_info "Base path: ${BASE_PATH}"
 log_info "Log Directory: ${GOVPAY_CONSOLE_LOGDIR}"
 log_info "Backend API: ${GOVPAY_API_BACKEND:-<nessuno>}"
 [ -n "${GOVPAY_API_BACKEND}" ] && log_info "Path upstream: ${UPSTREAM_PATH:-/}/"
