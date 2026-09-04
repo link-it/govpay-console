@@ -34,7 +34,7 @@ export class AuthApi {
   private readonly config = inject(ConfigService);
 
   private base(): string {
-    return this.config.appConfig()?.GOVAPI.GOVPAY ?? '/govpay-api-backoffice/rs/form/v1';
+    return this.config.appConfig()?.GOVAPI.GOVPAY ?? '/govpay-console-api';
   }
 
   /**

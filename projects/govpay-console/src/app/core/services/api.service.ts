@@ -62,7 +62,7 @@ export class ApiService {
   };
 
   baseUrl(): string {
-    return this.config.appConfig()?.GOVAPI.GOVPAY ?? '/govpay-api-backoffice/rs/form/v1';
+    return this.config.appConfig()?.GOVAPI.GOVPAY ?? '/govpay-console-api';
   }
 
   /** Costruisce l'URL completo per un dato `TipoOggetto`. */

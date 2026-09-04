@@ -10,8 +10,8 @@
  */
 
 /**
- * Modelli Pendenza allineati al backend GovPay legacy
- * (`/govpay-api-backoffice/rs/form/v1/pendenze`).
+ * Modelli Pendenza allineati al backend GovPay
+ * (`/govpay-console-api/pendenze`).
  *
  * I tipi sono volutamente "minimal" per la lista; il dettaglio in fase
  * successiva amplierà con `voci`, `pagamenti`, `ricevute`.
