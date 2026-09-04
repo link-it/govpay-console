@@ -19,7 +19,7 @@ import type { Pendenza, PendenzeListFilters } from './pendenza.model';
  * Client API per le Pendenze.
  *
  * Usa `ApiService` come wrapper di `HttpClient` (URL base + parametri tipizzati).
- * Endpoint canonico: `/govpay-api-backoffice/rs/form/v1/pendenze`.
+ * Endpoint canonico: `/govpay-console-api/pendenze`.
  */
 @Injectable({ providedIn: 'root' })
 export class PendenzeApi {

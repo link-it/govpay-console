@@ -10,14 +10,16 @@
 #   GOVPAY_CONSOLE_HOME   Document root dei file statici
 #   GOVPAY_CONSOLE_LOGDIR Directory dei log di nginx
 #   GOVPAY_API_BACKEND    Se valorizzata, nginx fa da reverse proxy per
-#                         /govpay-api-backoffice verso questo backend
+#                         /govpay-console-api verso questo backend
 #                         (es: https://lab.link.it). Evita problemi di CORS.
+#                         Il path lato client e' quello che l'app chiama, cioe'
+#                         GOVAPI.GOVPAY di app-config.json.
 #   GOVPAY_API_BACKEND_PATH
 #                         Path upstream sul backend a cui mappare le chiamate
-#                         /govpay-api-backoffice/* (default: /govpay-api-backoffice).
-#                         Usare "/" se il backend serve gli endpoint alla radice
-#                         (es. /rs/form/v1/...): in tal caso il prefisso
-#                         /govpay-api-backoffice viene rimosso prima dell'inoltro.
+#                         /govpay-console-api/* (default: /govpay/console-api,
+#                         come dichiarato in openapi.yaml di govpay-console-api).
+#                         Usare "/" se il backend serve gli endpoint alla radice:
+#                         in tal caso il prefisso viene rimosso prima dell'inoltro.
 #   GOVPAY_CONSOLE_BASE_PATH
 #                         Base path da cui e' servita la console (default: /).
 #                         Es. "/govpay-console" per un'installazione
@@ -103,7 +105,7 @@ fi
 ##############################################################################
 
 # Path upstream sul backend (default: stesso prefisso, nessun rewrite)
-GOVPAY_API_BACKEND_PATH="${GOVPAY_API_BACKEND_PATH:-/govpay-api-backoffice}"
+GOVPAY_API_BACKEND_PATH="${GOVPAY_API_BACKEND_PATH:-/govpay/console-api}"
 
 API_PROXY_BLOCK=""
 if [ -n "${GOVPAY_API_BACKEND}" ]; then
@@ -111,13 +113,13 @@ if [ -n "${GOVPAY_API_BACKEND}" ]; then
     BACKEND="${GOVPAY_API_BACKEND%/}"
     # Normalizza il path upstream: garantisce lo slash iniziale e rimuove
     # quello finale. "/" o stringa vuota -> upstream sulla radice del backend
-    # (il prefisso /govpay-api-backoffice viene rimosso prima dell'inoltro).
+    # (il prefisso viene rimosso prima dell'inoltro).
     UPSTREAM_PATH="/${GOVPAY_API_BACKEND_PATH#/}"
     UPSTREAM_PATH="${UPSTREAM_PATH%/}"
-    log_info "Reverse proxy /govpay-api-backoffice/ -> ${BACKEND}${UPSTREAM_PATH}/"
+    log_info "Reverse proxy /govpay-console-api/ -> ${BACKEND}${UPSTREAM_PATH}/"
     API_PROXY_BLOCK=$(cat <<EOF
 
-    location /govpay-api-backoffice/ {
+    location /govpay-console-api/ {
         proxy_pass ${BACKEND}${UPSTREAM_PATH}/;
         proxy_set_header Host \$proxy_host;
         proxy_set_header X-Real-IP \$remote_addr;

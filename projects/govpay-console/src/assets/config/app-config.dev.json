@@ -7,7 +7,7 @@
     },
     "STANDALONE": true,
     "GOVAPI": {
-      "GOVPAY": "/govpay-api-backoffice/rs/form/v1",
+      "GOVPAY": "/govpay-console-api",
       "GOVHUB": ""
     },
     "Auth": {
