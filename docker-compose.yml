@@ -37,6 +37,9 @@ services:
       - "10012:8080"           # host:container -> http://localhost:10012
     environment:
       SERVER_PORT: 8080
+      # Base path da cui e' servita la console. Scommenta per esporla sotto un
+      # prefisso invece che alla radice, es. http://localhost:10012/govpay-console/
+      # GOVPAY_CONSOLE_BASE_PATH: /govpay-console
       # Backend dei servizi: nginx fa da reverse proxy per /govpay-api-backoffice.
       # Sostituisci con l'URL del tuo backend GovPay.
       GOVPAY_API_BACKEND: https://lab.link.it
