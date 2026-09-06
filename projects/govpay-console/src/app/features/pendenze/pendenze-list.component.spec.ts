@@ -63,7 +63,7 @@ function setup(list?: ReturnType<typeof vi.fn>) {
       { provide: SystemFacade, useValue: { setBreadcrumbs: vi.fn() } },
       { provide: ListStateService, useValue: { get: () => null, set: vi.fn() } },
       { provide: SnackbarService, useValue: { error: snackbarError } },
-      { provide: TranslateService, useValue: { instant: (k: string) => k } },
+      { provide: TranslateService, useValue: { instant: (k: string) => k, use: vi.fn() } },
       { provide: Router, useValue: { navigate: vi.fn() } },
       {
         provide: AuthService,
