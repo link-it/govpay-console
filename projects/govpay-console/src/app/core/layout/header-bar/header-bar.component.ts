@@ -20,11 +20,11 @@ import {
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { SystemFacade } from '@core/system';
+import { ConfigService } from '@linkit/shared-ui';
+import { SystemFacade } from '@linkit/shared-ui';
 import { AuthService } from '@core/auth';
-import { ColorSchemeToggleComponent } from '@core/ui/color-scheme-toggle/color-scheme-toggle.component';
-import { LanguageMenuComponent } from '@core/ui/language-menu/language-menu.component';
+import { ColorSchemeToggleComponent } from '@linkit/shared-ui';
+import { LanguageMenuComponent } from '@linkit/shared-ui';
 
 const SCROLL_THRESHOLD = 8;
 

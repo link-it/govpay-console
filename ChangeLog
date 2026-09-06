@@ -16,452 +16,370 @@
     registrata e' il tag ed e' marcata come latest, sui branch protetti e' il
     nome del branch. Richiede il secret GOVPAY_DTRACK_API_KEY.
 
+2026-08-26  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(console-api-v2): wave-2 — estensione della Console API V2 a
+    Giornale Eventi, Rendicontazioni, Tracciati, Operazioni, pagoPA e
+    Impostazioni (spec openapi-20260825.yaml). Migrazione feature-by-feature
+    V1 → V2 (ConsoleApiService, Slice<T>, ETag/If-Match, RFC 7807) più due
+    aree nuove.
+    - **Infrastruttura**: ConsoleApiService.patch() (JSON Patch RFC 6902) e
+      postMultipart() (upload); util condiviso @core/utils/date.ts (dayToIso,
+      ISO 8601 completo per i filtri data V2).
+    - **Giornale Eventi**: read-only V2 con paginazione cursor + filtri
+      search-pill; dettaglio a tab con payload richiesta/risposta.
+    - **Rendicontazioni**: read-only V2, dettaglio per quaterna
+      (idDominio/idFlusso/idPsp/revisione) + download XML pagoPA.
+    - **Tracciati pendenze**: V2 con upload multipart, tab operazioni (cursor),
+      download richiesta/esito/stampe; dettaglio operazione annidato.
+    - **Operazioni asincrone** (nuova): catalogo + esecuzioni con avvio,
+      annullo e polling live fino a stato terminale. Nuovo gruppo nav
+      Manutenzione.
+    - **pagoPA** (nuova, lookup): typeahead enti creditori (precompila il form
+      Dominio) e datalist IBAN (conto accredito).
+    - **Impostazioni**: da blob V1 opaco a overview + 8 editor delle
+      sotto-risorse V2 (servizioGDE, giornale-eventi, mail/server+template,
+      app-io/server+template, tracciati-csv, hardening) con GET+ETag →
+      PUT-replace If-Match e segreti write-only su endpoint dedicati.
+    - **Domini**: aggiunto il connettore SEND (notifiche) al tab Connettori.
+    - Voci nav/flag abilitati (MENU_GIORNALE_EVENTI/TRACCIATI/OPERAZIONI/
+      IMPOSTAZIONI, GESTIONE_MANUTENZIONE), settingsMenuPosition=sidebar.
+
+2026-07-26  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(a11y): remediation accessibilità WCAG 2.2 AA — gate superato
+    (0 violazioni su 34 viste; prima: 4 critical + 662 serious). Vedi
+    NOTE-CLAUDE/a11y (report aggiornato "dopo").
+    - **color-contrast** (668): nuovo tema `themes/govpay-a11y.json` reso default
+      (switcher "GovPay (AA)"). Token testo muted/secondario #6a8da5 -> #476882 e
+      coral #ff4050 -> #d32637 (hover #bf2130), solo sezione light → tutti ≥4.5:1.
+      Rimosso l'`opacity` su testo (about, dashboard, sidebar, logout,
+      lnk-language-menu) in favore di `--muted-foreground`; About "dirty" usa
+      `--status-warning-text`.
+    - **link-name** (34): `aria-label` "Vai alla home" sul link-logo della
+      sidebar (chiave i18n `Layout.Home`).
+    - **aria-valid-attr-value** (4 critical): `lnk-tabs` senza `aria-controls`
+      pendente.
+    - **scrollable-region-focusable** (3): nuova direttiva
+      `lnkScrollableRegionFocusable` sui `<pre>` di codice/JSON (tabindex=0 se
+      scrollabili).
+    Componenti di libreria coinvolti via `@linkit/shared-ui` 0.31.1 → 0.32.0.
+
+  * [Frontend] feat(a11y): contrasti accessibili anche nei 15 temi esempio
+    (`themes/*.json`, esclusi govpay e govpay-a11y). Resi ≥4.5:1 tutti i token di
+    **testo** (muted/secondario, testo principale, testo su bottoni/pill scelto
+    bianco/scuro in base allo sfondo, testo item-attivo sidebar), mantenendo
+    intatti i colori-identità (primaryColor/sfondi) e gli swatch. Gestito anche
+    il caso sidebar scura (testo schiarito).
+
+2026-07-23  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(liste): toggle vista tabella/righe accanto alla search-pill.
+    Nuovo `lnk-view-toggle` (solo icone) aggiunto in tutte le liste (pendenze,
+    ricevute, entrate, domini, operatori, applicazioni, tipi-pendenza,
+    intermediari, ruoli): permette di cambiare vista senza aprire i tweaks,
+    resta sincronizzato col controllo nei tweaks e segue la variante della
+    search-pill; i pulsanti icona sono allineati in altezza al pulsante Filtri
+    a ogni densità. Via `@linkit/shared-ui 0.31.0`.
+
+  * [Frontend] feat(pendenze,ricevute): conteggio totale **su richiesta**. Le
+    liste non richiedono più la COUNT lato BE ad ogni caricamento (costosa su
+    risorse grandi): l'infinite scroll usa `hasNextPage`. Il totale si ottiene
+    col pulsante "Mostra totale" nell'header, che rifà la stessa query (filtri
+    correnti) con `page=1&limit=1&total=true`. In futuro estendibile a
+    rendicontazioni e giornale-eventi (richiede supporto no-count lato API V1).
+    Via `@linkit/shared-ui 0.30.0` (`lnk-page-header` conteggio su richiesta).
+
+2026-07-19  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(shared-ui): `lnk-form-action-bar` promossa in libreria. La
+    barra azioni form (salva/annulla) sticky in basso passa da `@core/ui` a
+    `@linkit/shared-ui` con stili scoped (niente Tailwind): bordo/ombra solo
+    quando è incollata al fondo, dark via `:host-context`. L'inset orizzontale
+    è configurabile via `--lnk-action-bar-inset` (default `1.5rem`), così i 7
+    form consumer (applicazioni, domini, entrate, intermediari, operatori,
+    ruoli, tipi-pendenza) restano invariati. Via `@linkit/shared-ui 0.29.0`.
+
+2026-07-18  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(ricevute): dettaglio arricchito. La conversione JSON di
+    `rt`/`rpt` viene "spacchettata" in sezioni leggibili: Esito pagamento,
+    Versante, Ente creditore, Trasferimenti (tabella con riga Totale = importo
+    ricevuta), PSP e Richiesta di pagamento (RPT); ogni sezione è mostrata solo
+    se ha contenuto. L'importo è messo in evidenza in testata (accanto allo
+    stato) e tolto dalle informazioni generali. La visibilità delle sezioni è
+    configurabile via `ricevute-config.json` (`detail.sections`): una sezione
+    può essere nascosta anche se i dati sono presenti.
+
+  * [Frontend] feat(ricevute): supporto ricevute multi-versione. Le ricevute
+    vecchie portano `versioneOggetto` in `rt`/`rpt` e usano lo schema verboso
+    (`ctRicevutaTelematica`), le nuove lo schema flat (`paSendRT`).
+    `RicevuteConsoleApi.get()` normalizza entrambe in `rtView`/`rptView` al
+    confine dell'API (anti-corruption layer), così il resto dell'app vede una
+    sola forma; l'IBAN, assente nella RT verbosa, è recuperato dalla RPT.
+
+  * [Frontend] feat(shared-ui): `lnk-search-pill` avvia la ricerca con Invio
+    nei filtri. Premere Invio in un campo testo/data del popover filtri lancia
+    la ricerca (come il pulsante "Cerca"), coerente con la query a testo libero.
+    Via `@linkit/shared-ui 0.28.3`.
+
+2026-07-17  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(applicazioni): validazione del connettore di integrazione
+    per tipo di autenticazione. I campi obbligatori dipendono dalla presenza
+    dell'URL (connettore configurato), come la console legacy: Versione e Tipo
+    autenticazione sono abilitati solo con URL valorizzato; per il tipo scelto
+    scattano i campi obbligatori (per HTTPBASIC anche la password). Indicatori
+    visivi ("*") e messaggi "Campo obbligatorio"; Salva disabilitato tramite
+    computed reattivo. Aggiunto il selettore SSL client/server.
+
+  * [Frontend] feat(applicazioni): connettore allineato ai 6 tipi di
+    autenticazione condivisi (NONE, HTTPBASIC, SSL, HEADER, APIKEY, OAUTH2);
+    label di navigazione "Domini" rinominata in "Enti creditori".
+
+  * [Frontend] fix(shared-ui): `lnk-select` — il trigger riempie l'host
+    (`width: 100%` + `box-sizing: border-box`) invece di `fit-content`,
+    eliminando l'area "morta" tra host e pulsante e allineandolo agli `input`
+    adiacenti nelle form. Via `@linkit/shared-ui 0.28.2`.
+
+2026-07-15  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(shared-ui): nuovo `lnk-select` — dropdown con la UI del
+    menu profilo (pannello flottante che esce dai contenitori, chiusura su
+    click-fuori/Escape/scroll, navigazione da tastiera, apertura verso l'alto
+    se in fondo manca spazio; trigger `fit-content` con min/max-width).
+    Ricerca/filtro, selezione multipla, opzioni ricche (descrizione, icona,
+    disabilitate) e gruppi. Sostituisce tutti i `<select>` nativi delle form
+    (tipi pendenza, entrate, domini, applicazioni, intermediari); nel select
+    inoltro le applicazioni mostrano il `principal` come descrizione.
+    **Promosso in `@linkit/shared-ui` 0.27.0** (via `sync:lib`); l'interfaccia
+    opzione è `LnkSelectOption` (per non collidere con `lnk-select-input`).
+
+  * [Frontend] feat(tipi-pendenza): dettaglio config a campi completi. Nuovo
+    `@core/ui/config-field-view`: ogni campo mostra un badge Configurato /
+    Non configurato (a destra); i configurati rivelano il contenuto solo su
+    richiesta, in un riquadro ad altezza fissa scrollabile con pulsante
+    "Copia". Nel tab Altre funzioni, richiesta/risposta sono raggruppate sotto
+    "Parser tracciati CSV", distinte dalla personalizzazione dettaglio.
+
+  * [Frontend] feat(tipi-pendenza): nella maschera il `lnk-code-field`
+    compilato è evidenziato con un bordo sinistro coral; il tab attivo è
+    condiviso tra dettaglio e form (modifica/annulla/salva mantengono la
+    scheda visualizzata via query param `tab`).
+
+  * [Frontend] fix(entrate): ripristinata la spaziatura dei campi nella form.
+
+  * [Frontend] fix(shared-ui): `lnk-goto-top` usa `inert` da nascosto invece di
+    `aria-hidden`+`tabindex` — risolve il warning a11y "Blocked aria-hidden …
+    retained focus". Via `@linkit/shared-ui 0.28.1`.
+
+  * [Frontend] feat(liste): persistenza opzionale dello stato lista (filtri +
+    ordinamento) oltre il refresh, attivabile per feature col flag
+    `persistState` nel config della lista (es. `pendenze-config.json`, dove è
+    abilitato). Il valore è offuscato in `sessionStorage`/`localStorage` (non
+    in chiaro, es. filtri con PII). Via `@linkit/shared-ui 0.28.0`
+    (`ListStateService` persistente, `DisplayConfig.persistState`).
+
+2026-07-14  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(tipi-pendenza): editing dei template ripensato in unità
+    "tipo → template". Nuovo `@core/ui/template-unit`: ogni template vive in un
+    riquadro col proprio tipo, badge del formato (JSON / Freemarker) derivato
+    dal tipo, stato vuoto quando il tipo non è scelto, ed editor. Adottato in
+    tutti i tab config (portale backoffice/pagamento: definizione,
+    impaginazione, validazione, trasformazione; tracciato CSV: intestazione +
+    richiesta/risposta; visualizzazione) e nei promemoria dell'avvisatura
+    (oggetto/messaggio gated dal tipo).
+
+  * [Frontend] feat(shared-ui): nuovo `@core/ui/code-field` (sostituisce
+    `json-field`) — editor per contenuti JSON / Freemarker / testo, nascosto di
+    default (mostra su richiesta), con caricamento file + **drag & drop** e
+    reset. I valori sono memorizzati come **stringa base64**: decodifica in
+    lettura e codifica in scrittura (`@core/utils/base64`).
+
+  * [Frontend] feat(shared-ui): nuovo `@core/ui/select` (`lnk-select`) —
+    dropdown con la UI del menu profilo (pannello flottante che esce dai
+    contenitori, chiusura su click-fuori/Escape/scroll, navigazione da
+    tastiera). Sostituisce i `<select>` nativi della maschera tipi pendenza.
+
+  * [Frontend] feat(form): barra delle azioni (salva/annulla) **sticky in
+    basso** nelle form di edit (`@core/ui/form-action-bar`): resta visibile
+    mentre la form scorre; bordo e ombra solo quando è ancorata. Adottata in
+    tutte le form a pagina intera (tipi pendenza, domini, operatori,
+    applicazioni, ruoli, entrate, intermediari).
+
+2026-07-12  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(tipi-pendenza): gestione completa della configurazione
+    (`TipoPendenzaConfig`) nella maschera di dettaglio, ispirata alla console
+    legacy (i blocchi config sono stringhe base64 di contenuti JSON o template
+    freemarker). Form ristrutturata a tab: Dati · Portale backoffice · Portale
+    pagamento · Avvisatura email · Avvisatura App IO · Altre funzioni.
+    - Portali (backoffice/pagamento): form (tipo layout + definizione/
+      impaginazione), validazione (JSON Schema), trasformazione (freemarker +
+      template), inoltro (applicazione da `/applicazioni`).
+    - Avvisatura email/App IO: promemoria avviso/scadenza/ricevuta (tipo,
+      oggetto, messaggio, abilitato; `allegaPdf` solo mail, `soloEseguiti` sulla
+      ricevuta, `preavviso` sulla scadenza).
+    - Altre funzioni: parser tracciato CSV (tipo, intestazione, richiesta,
+      risposta) e personalizzazione dettaglio (`visualizzazione`).
+    Il salvataggio preserva le chiavi non modellate e omette i blocchi vuoti.
+
+  * [Frontend] feat(tipi-pendenza): vista di dettaglio (read-only) arricchita
+    con la stessa struttura a tab della maschera. I blocchi config sono resi in
+    forma leggibile — info-grid dei campi scalari (abilitato, tipo layout/
+    template, inoltro; flag `allegaPdf`/`soloEseguiti`/`preavviso` sui
+    promemoria) e blocchi JSON etichettati (definizione, impaginazione,
+    validazione, template, oggetto/messaggio, tracciato) — al posto del dump
+    JSON grezzo. I blocchi assenti mostrano "Non configurato".
+
+  * [Frontend] feat(shared-ui): nuovo `@core/ui/json-field` — editor JSON
+    (textarea con validazione di sintassi, "carica da file" con pretty-print,
+    svuota) come `ControlValueAccessor` con valore = oggetto parsato. Usato dai
+    campi struttura dei tipi pendenza.
+
+2026-07-07  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(applicazioni, operatori): impostazione password
+    (aggiornamento spec 2026-07-07). Nuovi endpoint write-only
+    `PUT /applicazioni/{idA2A}/password` e `PUT /operatori/{principal}/password`;
+    componente condiviso `@core/ui/set-password-card` (validazione policy +
+    conferma, gestione 403). Sezione "Password" nei rispettivi dettagli.
+
+  * [Frontend] feat(liste): ordinamento dalla search-pill. Nuovo dropdown di
+    ordinamento configurabile (`showSort` + `sortOptions`) con selezione del
+    campo e scorciatoia di direzione (icona cliccabile), reso come pulsante
+    segmentato coerente col pulsante filtri. Abilitato su tutte le liste con
+    `sort` documentato: tipi pendenza, entrate, domini, operatori, applicazioni,
+    ruoli, intermediari, pendenze, ricevute.
+
+  * [Frontend] feat(liste): ordinamento anche dagli header di tabella su tutte
+    le colonne con campo `sort` supportato dall'API (non solo dalla search-pill).
+    Ordinamento di default per nome descrittivo anziché per codice/id
+    (intermediari `denominazione`, domini `ragioneSociale`, tipi pendenza ed
+    entrate `descrizione`). Allineati i campi sort dove la chiave colonna
+    differiva dal campo API (operatori `nome`, intermediari `codIntermediario`);
+    aggiunto il sort da header anche alla tabella ricevute.
+
+  * [Frontend] feat(liste): densità della search-pill selezionabile dal pannello
+    tweaks (compact/regular/comfortable), default `compact`.
+
+  * [Frontend] feat(ricevute): navigazione annidata alla pendenza collegata
+    (rotta `:idDominio/:iuv/:idRicevuta/pendenza/:idA2A/:idPendenza`) con
+    breadcrumb multilivello (Ricevute › IUV › Pendenza) e ritorno alla ricevuta.
+
+  * [Frontend] fix(domini): dettaglio più completo. Il tab Dati mostra le
+    sezioni Anagrafica e Contatti; le sotto-risorse (unità operative, conti di
+    accredito, entrate, tipi pendenza) mostrano tutti i campi sia in vista sia
+    in modifica (dettaglio caricato una volta e condiviso), incluso
+    `autStampaPosteItaliane` nei conti di accredito.
+
+  * [Frontend] style(anagrafiche): riordino delle voci nav (Intermediari in
+    cima, Entrate in fondo) e form a larghezza piena.
+
+  * [Frontend] feat(shared-ui): `lnk-search-pill` estesa (densità, dropdown di
+    ordinamento, hover chip garantito visibile anche col tema GovPay) e
+    `lnk-page-header` con azioni allineate in alto. Modifiche portate in
+    upstream e sincronizzate via `sync:lib` (@linkit/shared-ui 0.24.3).
+
+  * [Frontend] feat(shared-ui): `lnk-info-grid` con dimensione (S/M/L)
+    regolabile a runtime da un controllo globale del pannello tweaks
+    ("Dimensione dettagli", default `sm`) — si applica a tutte le griglie
+    informative dei dettagli. Via `sync:lib` (@linkit/shared-ui 0.25.0).
+
+2026-07-06  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat: estensione della GovPay Console API V2 a tutte le
+    anagrafiche e alle ricevute (openapi 2026-07-06). Update via PUT
+    (replace con If-Match/ETag), migrazione in-place delle feature V1
+    (rimozione dei client `*.api.ts` sostituiti). Infrastruttura comune
+    (Fase 0): `ConsoleApiService` esteso con `putBlob`/`putVoid`/`delete`;
+    nuovi modelli condivisi `@core/models` (`connettore`, `acl`, `ref`) e
+    componenti riusabili `@core/ui` (`acl-editor`, `ref-multiselect`,
+    `inline-edit-card`).
+
+  * [Frontend] feat(entrate): nuova sezione Entrate (tipi entrata globali)
+    su API V2 con CRUD (lista search-pill, dettaglio, form nuovo/modifica).
+
+  * [Frontend] feat(ruoli, operatori, applicazioni): migrazione in-place a
+    V2. Ruoli e Operatori con editor ACL condiviso (R/W per servizio) e
+    multi-select riferimenti (domini/tipiPendenza/ruoli con toggle "Tutti").
+    Applicazioni con connettore-integrazione singleton (GET/PUT + credenziali)
+    e codifica avvisi.
+
+  * [Frontend] feat(tipi-pendenza): migrazione a V2. Form sui campi core con
+    PUT che preserva invariate le sotto-strutture ricche non modellate.
+
+  * [Frontend] feat(domini): nuova sezione Domini (enti creditori) su V2 con
+    CRUD, logo binario (GET/PUT/DELETE, ≤256KB) e dettaglio a tab per le
+    sotto-risorse: Unità operative, Conti di accredito, Entrate del dominio,
+    Tipi pendenza del dominio e Connettori di notifica (mypivot, secim,
+    govpay, hypersic-apk, maggioli-jppa) con credenziali write-only. Gestione
+    inline (view/edit + creazione) con ETag/If-Match e preservazione dei
+    campi non modellati nei replace.
+
+  * [Frontend] feat(ricevute): migrazione a V2 in sola consultazione
+    (read-only). Lista con search-pill (iuv/idRicevuta/idDominio + range
+    date) e dettaglio per tupla `(idDominio, iuv, idRicevuta)` con download
+    RT (PDF/XML/JSON) e RPT (XML/JSON) via content-negotiation, pendenza
+    collegata e segnalazioni. Rimosso il client V1 `ricevute.api.ts`.
+
+  * [Frontend] chore: pulizia (Fase 8). Rimozione del codice V1 sostituito,
+    rimozione di dead code nelle rotte, allineamento voci nav e flag
+    `MENU_*`, pulizia chiavi i18n orfane. Piano di lavoro in
+    `NOTE-CLAUDE/REFACTORING-NUOVE-API/`.
+
+2026-07-01  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat: refactoring della sezione Pendenze sulla nuova
+    GovPay Console API V2. Nuovo client `ConsoleApiService`
+    (`@core/services`) su base `GOVAPI.CONSOLE` (`/govpay-console-api`),
+    con paginazione a slice (`Slice<T>` + `pagination.hasNextPage` +
+    `nextCursor`) ed errori RFC 7807 (`problemDetail`). `ApiService`/V1
+    resta per le altre feature (migrazione feature-by-feature).
+
+  * [Frontend] feat(pendenze): lista e dettaglio migrati alla V2.
+    Lista con i 4 filtri supportati (`idPendenza`, `numeroAvviso`,
+    `idDominio` come select dai domini del profilo, `identificativoDebitore`
+    con avviso audit GDPR), ordinamento `-dataUltimoAggiornamento`,
+    totale via `total=true` sulla prima pagina. Dettaglio con voci inline,
+    soggetto pagatore on-demand con consenso GDPR (`/informazioniDebitore`),
+    stampa avviso PDF e ricevute guidati dagli HAL `_links`.
+
+  * [Frontend] feat(shared-ui): nuovo `ConfirmDialogComponent`
+    (`lnk-confirm-dialog`) e util `downloadBlob` nella libreria
+    `@linkit/shared-ui`. NB: modifiche da replicare upstream
+    (`[GOVPAY]/govpay-console`) prima del prossimo `sync:lib`.
+
+  * [Frontend] chore: preset proxy `demo-v2` (`https://lab.link.it`) e
+    script `npm run start:demo-v2`; chiave config `GOVAPI.CONSOLE` (dev+prod).
+    Tipi V1 condivisi `DominioSummary`/`SoggettoPagatore` spostati in
+    `@core/models`. Documentazione in
+    `NOTE-CLAUDE/REFACTORING-NUOVE-API-PENDENZE/`.
+
+2026-06-29  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat: adozione della libreria condivisa
+    `@linkit/shared-ui` (v0.9.4) come copia mirror in
+    `projects/lnk-shared-ui`. Il workspace diventa multi-progetto
+    (app + libreria, build via ng-packagr). I componenti, le
+    direttive, le utility (ex `@shared`) e i servizi `ConfigService`,
+    `ThemeLoaderService`, `SystemFacade`, `LanguageService`
+    (ex `@core/{config,system,i18n}`), più snackbar/spinner/tweaks/
+    color-scheme-toggle/language-menu/goto-top/placeholder/
+    maintenance/help-sidebar ora provengono dalla libreria. Rimossi
+    i duplicati locali; in `@core/ui` resta solo `profile-menu`.
+
+  * [Frontend] feat: i18n splittato in `src/i18n-domain/{it,en}.json`
+    (chiavi di dominio) + i18n della libreria, mergiati al boot da
+    `scripts/merge-i18n.js`. `assets/i18n/*.json` ora è generato
+    (gitignored).
+
+  * [Frontend] chore: script `scripts/sync-shared-ui.mjs` per
+    sincronizzare la copia mirror dall'upstream
+    `[GOVPAY]/govpay-console` e `scripts/resolve-i18n-conflict.mjs`
+    per i conflitti i18n post-merge.
+
 2026-05-01  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
-  * [Frontend] feat(features): completata Fase 5 — anagrafiche, profilo,
-    impostazioni, dashboard reale (M5.18–M5.26).
-
-    - **Anagrafiche** (read-only nelle prime versioni; il form di
-      creazione/modifica è rimandato e richiederà Reactive Forms su
-      `*Post` schema):
-      * `Domini` (list + detail), filtri search/abilitato/intermediato.
-      * `TipiPendenza` (list + detail), filtri descrizione/abilitato.
-      * `Applicazioni` (list + detail) con domini autorizzati, tipi
-        pendenza, ruoli, flag API abilitate.
-      * `Operatori` (list + detail) con scope domini/tipi pendenza/ruoli.
-      * `Ruoli` (list + detail) con tabella ACL (servizio, R, W).
-      * `Registro intermediari` (list + detail read-only).
-
-    - **Profilo utente** (`/profilo`): dati `AuthUser` + tabella ACL
-      derivata da `aclRaw`, scope domini e tipi pendenza dell'utente
-      connesso.
-
-    - **Impostazioni** (`/impostazioni`): vista read-only della
-      configurazione di sistema (`GET /configurazioni`), suddivisa per
-      sezioni top-level con JSON formattato. Modifica via PATCH
-      `/configurazioni` non ancora esposta in UI.
-
-    - **Dashboard reale**: 3 KPI con conteggio asincrono e card cliccabili:
-      * Pendenze attive (`/pendenze?stato=NON_ESEGUITA&risPerPagina=1`)
-      * Riscossioni del mese (`/riscossioni?dataDa={primo-mese}`)
-      * Tracciati in lavorazione (`/pendenze/tracciati?statoTracciatoPendenza=IN_ELABORAZIONE`)
-
-    - `app.routes.ts`: tutti i placeholder rimossi tranne nessuno —
-      ogni voce sidebar ora carica la feature reale.
-    - i18n IT + EN: namespace nuovi/estesi `Domini`, `TipiPendenza`,
-      `Applicazioni`, `Operatori`, `Ruoli`, `Intermediari`, `Profilo`,
-      `Impostazioni`; `Dashboard.Cards.*Hint` aggiunte.
-
-  * [Frontend] feat(detail): pagine di dettaglio per Riscossioni,
-    Rendicontazioni, Incassi, Giornale Eventi, Tracciati (M5.13–M5.17).
-
-    Stesso pattern dei detail Pendenza/Ricevuta/Pagamento: page-header,
-    StatusBadge, DetailSection + InfoGrid, breadcrumb, drilldown da riga
-    della lista. Route nested all'interno di ogni feature, con
-    `loadComponent` lazy.
-
-    - **Riscossione** (`/riscossioni/:idDominio/:iuv/:iur/:indice`):
-      `GET /riscossioni/{idDominio}/{iuv}/{iur}/{indice}`. Mostra IUR/IUV/
-      idDominio/indice/tipo/data/importo/commissioni; sezione voce
-      pendenza (`vocePendenza` con `idVocePendenza`, descrizione, importo,
-      codiceContabilita, tipoContabilita, ibanAccredito); sezione
-      riferimenti con URL pendenza/RPP/incasso. Aggiunto tipo
-      `VocePendenzaRiscossione` e campo opzionale `vocePendenza` nel
-      modello.
-    - **Rendicontazione** (`/rendicontazioni/:idFlusso`):
-      `GET /flussiRendicontazione/{idFlusso}`. Sezioni generali/ente/PSP/
-      segnalazioni + tabella delle rendicontazioni contenute (IUV/IUR/
-      indice/data/importo/esito). Nuovi tipi `RendicontazioneDetail`,
-      `RendicontazioneVoce`, `RendicontazioneSegnalazione`.
-    - **Incasso** (`/incassi/:idDominio/:idIncasso`):
-      `GET /incassi/{idDominio}/{idIncasso}`. Generali (idIncasso,
-      causale, importo, data, dataValuta, dataContabile, ibanAccredito,
-      sct, iuv|idFlusso, descrizioneStato), ente, tabella riscossioni
-      riconciliate. Nuovo tipo `IncassoDetail` con `riscossioni`.
-    - **Evento** (`/giornale-eventi/:id`): `GET /eventi/{id}`. Generali,
-      riferimenti (idDominio/iuv/ccp/idA2A/idPendenza/idSessione), pre
-      formattate per `parametriRichiesta`/`parametriRisposta`. Nuovo tipo
-      `EventoDetail`.
-    - **Tracciato** (`/tracciati/:id`): `GET /pendenze/tracciati/{id}`.
-      Generali (nomeFile/dataOraCaricamento/dataOraUltimoAggiornamento/
-      operatoreMittente/descrizioneStato), ente, contatori
-      (numeroOperazioni{Totali,Eseguite,Fallite} + numeroAvvisi*).
-
-    Liste: aggiunto `(rowClick)` su tutte e 5 le data-table per
-    navigare al detail. i18n IT + EN: nuovi namespace `*.Detail.*`.
-
-  * [Frontend] fix(ricevute): modello allineato alla risposta reale di
-    `/rpp` (DEMO).
-
-    La response dell'endpoint non è "appiattita": `stato`, `dettaglioStato`,
-    `bloccante`, `rpt`, `rt`, `pendenza`, `modello` sono tutti al livello
-    top, mentre IUV/importo/causale/pagatore/dominio sono dentro `pendenza`.
-    Le colonne mostravano valori vuoti perché leggevano da `r.iuv`,
-    `r.importo`, `r.dominio`, ecc.
-
-    - `Ricevuta` ridisegnata: top-level `stato: StatoRpp`,
-      `dettaglioStato`, `bloccante`, `rpt: RptDati`, `rt: RtDati`,
-      `pendenza: PendenzaInRicevuta`, `modello`.
-    - Nuovo enum `StatoRpp` (11 valori: `RT_ACCETTATA_PA`,
-      `RT_RIFIUTATA_PA`, `RT_ESITO_SCONOSCIUTO_PA`, `RPT_ATTIVATA`,
-      `RPT_ACCETTATA_NODO`, `RPT_ACCETTATA_PSP`, `RPT_RIFIUTATA_NODO`,
-      `RPT_RIFIUTATA_PSP`, `RPT_ERRORE_INVIO_A_PSP`, `RPT_ANNULLATA`,
-      `RPT_SCADUTA`) con label/colore.
-    - `EsitoRicevuta` allineato all'enum `esitoRpt` dell'OpenAPI
-      (`IN_CORSO | RIFIUTATO | ESEGUITO | NON_ESEGUITO | ESEGUITO_PARZIALE
-      | DECORRENZA | DECORENNZA_PARZIALE` — refuso storico mantenuto).
-      È il filtro `esito` lato API, ≠ dello stato di risposta.
-    - Colonne lista riallineate a `r.pendenza.*` / `r.rt.*`:
-      IUV → `pendenza.iuvPagamento || pendenza.iuvAvviso`,
-      Pagatore → `pendenza.soggettoPagatore.anagrafica`,
-      Importo → `pendenza.importoPagato ?? pendenza.importo`,
-      Data pagamento → `rt.paymentDateTime || pendenza.dataPagamento`,
-      Stato → top-level `stato` con badge.
-    - Detail component (`ricevuta-detail`) e relativo template aggiornati
-      ai nuovi accessor; sezione "Riferimenti" linka direttamente
-      `/pendenze/{idDominio}/{numeroAvviso|iuv}`.
-    - i18n: nuovi `Ricevute.Stati.*` (InCorso, Eseguito, RtRifiutata,
-      Sconosciuto, Fallito, Annullato, Scaduto), `Ricevute.Esiti.*`
-      ridefinito su `esitoRpt`, colonna `DataRicevuta` rinominata a
-      "Data pagamento".
-    - `RicevuteListFilters` rivisto: aggiunti `idA2A`, `idPendenza`,
-      `dataRptDa/A`, `dataRtDa/A`; rimossi `dataDa/A` non supportati.
-
-  * [Frontend] fix(api): allinea path, filtri e ordinamento alle API
-    backoffice GovPay v1 reali (verificato su
-    `govpay-github/wars/api-backoffice/v1/govpay-api-backoffice-v1.yaml`
-    e `govpay-console-github/src/app/services/util.service.ts`).
-
-    Correzioni `URL_BY_TIPO` (segmenti URL):
-    - `ricevute` → `rpp`              (`/ricevute` POST-only, list su `/rpp`)
-    - `rendicontazioni` → `flussiRendicontazione`
-    - `tracciati` → `pendenze/tracciati`
-
-    Correzioni dei sort default (campi consentiti dall'OpenAPI):
-    - riscossioni: `dataRiscossione` → `data`
-    - rendicontazioni: `dataFlusso` → `data`
-    - incassi: `dataIncasso` → `data`
-    - giornale eventi: rimosso `ordinamento` (l'endpoint non lo accetta)
-    - tracciati: rimosso `ordinamento` (l'endpoint non lo accetta)
-    - ricevute: `dataRicevuta` → `dataRichiesta`
-
-    Correzioni di nome dei filtri (parametri query):
-    - rendicontazioni: `codFlusso` → `idFlusso`
-    - incassi: `idIncasso` → `idFlusso` (ricerca sul flusso di riferimento)
-    - tracciati: `stato` → `statoTracciatoPendenza`; rimossi `nomeFile`,
-      `tipo`, `dataDa/A` non supportati
-    - ricevute: rimossi `dataDa/A` (non supportati); il range UI mappa su
-      `dataRtDa/A` (data della ricevuta telematica)
-
-    Correzioni dei modelli e degli stati (allineati agli enum dell'OpenAPI):
-    - `Riscossione`: aggiunti `indice`, `tipo` (`ENTRATA | MBT |
-      ALTRO_INTERMEDIARIO | ENTRATA_PA_NON_INTERMEDIATA`), `idVocePendenza`,
-      `pendenza`, `rpp`, `incasso`, `commissioni`. Rinominato
-      `dataRiscossione` → `data`. Rimossi `dataPagamento`, `causale`,
-      `soggettoPagatore`, `ccp`, `dominio`.
-    - `Rendicontazione`: rinominato `codFlusso` → `idFlusso`. Stati
-      `Acquisito | Anomalo | Rifiutato` (Capitalized lato API, NON
-      uppercase). Rimosso `ALTRO_INTERMEDIARIO` (è un `tipoRiscossione`,
-      non uno stato). Aggiunti `trn`, `dataOraPubblicazione`.
-    - `Incasso`: rinominato `dataIncasso` → `data`. Stati riordinati a
-      `IN_ELABORAZIONE | ACQUISITO | ERRORE`. Rimossi `causaleTipo`, `trn`
-      (l'API espone solo `sct`). Aggiunti `dataValuta`, `ibanAccredito`,
-      `iuv`/`idFlusso` (oneOf di riferimento).
-    - `Tracciato`: rinominati `dataCaricamento` → `dataOraCaricamento`,
-      `dataCompletamento` → `dataOraUltimoAggiornamento`,
-      `numOperazioniTotali/Ok/Ko` → `numeroOperazioni{Totali,Eseguite,Fallite}`,
-      `operatore` → `operatoreMittente`. Stati allineati: `IN_ATTESA |
-      IN_ELABORAZIONE | ESEGUITO | ESEGUITO_CON_ERRORI | SCARTATO |
-      ELABORAZIONE_STAMPA`. Rimossi `tipo` (solo /pendenze/tracciati,
-      l'altro endpoint è `/tracciatiNotificaPagamenti`), `nomeFile`/
-      `dataDa/A`/`operatore` come filtri. La lista non sorta.
-    - `Evento`: corretto enum `EsitoEvento` `OK | KO | FAIL` (NON `FATAL`).
-      `severitaToEsito(4)` ora restituisce `FAIL`.
-
-    Aggiornati i template e l'i18n (IT + EN) per riflettere i nuovi stati
-    e le nuove colonne. Rimossa la toolbar di tracciati (search, tipo,
-    dataDa, dataA) — il backend accetta solo `idDominio` e
-    `statoTracciatoPendenza`.
-
-  * [Frontend] fix(api): formato corretto del parametro `ordinamento`.
-
-    Il backend GovPay BO accetta `+campo` (asc) / `-campo` (desc); il
-    formato pipe-separated `campo|direction` veniva interpretato come un
-    unico nome di campo, restituendo `100001` "Errore nella valorizzazione
-    dei parametri della richiesta" su `GET /pendenze`.
-
-    - Nuovo helper puro `formatOrdinamento(sort)` in
-      `shared/utils/sort.ts`, esportato dal barrel `@shared`.
-    - Sostituito il metodo privato `formatSort()` (8 occorrenze: pendenze,
-      ricevute, pagamenti, riscossioni, rendicontazioni, incassi,
-      giornale-eventi, tracciati) con la chiamata a `formatOrdinamento(
-      this.sort())`.
-    - Test unitario dedicato (`sort.spec.ts`, 3 test).
-
-  * [Frontend] feat(auth): allinea il modello utente alla `/profilo` reale
-    (BASIC + DEMO).
-
-    - Nuovi tipi raw `ProfiloResponse`, `ProfiloDominio`, `ProfiloTipoPendenza`,
-      `ProfiloAcl` in `core/auth/models/auth.model.ts`. Costante
-      `SERVIZIO_ACL` con i 9 nomi letterali dei servizi GovPay.
-    - Funzione pura `mapProfileToUser(profilo, principalFallback)`:
-      normalizza la risposta in `AuthUser` con `id`/`username`/`displayName`/
-      `email`/`acl`/`domini`/`tipiPendenza`/`aclRaw`/`autenticazione`.
-      `principalFallback` gestisce il caso BASIC dove il principal è
-      l'username del client.
-    - `AuthAcl` derivata: `hasPagamenti`, `hasPendenze`, `hasRendiIncassi`,
-      `hasGdE`, `hasApplicazioni`, `hasRuoli`, `hasPagoPA`, `hasCreditore`,
-      `hasSetting`, `hasConfig` (alias di `hasCreditore`),
-      `hasPagamentiePendenze` (AND di Pagamenti+Pendenze),
-      `hasTuttiDomini`/`hasTuttiTipiPendenza` (presenza di `*` nello scope),
-      `hasScrittura` (almeno una W tra i servizi). Una flag è `true` se
-      il servizio compare con autorizzazione `R` (la `W` non implica `R`).
-    - Helper `canWrite(user, servizio)` per le UI di dettaglio.
-    - `AuthApi.loginBasic`/`getProfile` ora mappano via pipe `map`,
-      restituendo `AuthUser` normalizzato.
-    - `AuthService.mockLogin` riusa il mapper costruendo una
-      `ProfiloResponse` fittizia con tutti i 9 servizi R/W (modello dell'
-      utente identico al caso reale).
-    - 4 test aggiuntivi sul mapper (totale: 34 test).
-
-2026-04-30  Alfonso Tatarelli <alfonso.tatarelli@link.it>
-
-  * [Frontend] feat(lists): replicate 5 liste mancanti — Riscossioni,
-    Rendicontazioni, Incassi, Giornale Eventi, Tracciati.
-
-    - Stesso pattern di Pendenze/Ricevute/Pagamenti: model + api +
-      list component + routes + index. Filtri toolbar (search + select
-      stato/categoria/tipo + range date), data table con badge di stato
-      tonale, infinite scroll, sort iniziale per data più recente.
-    - `Riscossioni` (`StatoRiscossione = RISCOSSA | INCASSATA`): filtro
-      per IUR, colonne IUR/IUV/Dominio/Pagatore/Data/Importo/Stato.
-    - `Rendicontazioni` (`ESEGUITO | ANOMALIA | ALTRO_INTERMEDIARIO`):
-      filtro per codice flusso, colonne CodFlusso/Dominio/PSP/DataFlusso/
-      DataRegolamento/N°Pagamenti/Importo/Stato.
-    - `Incassi` (`ACQUISITO | IN_ELABORAZIONE | ERRORE`): filtro per
-      identificativo incasso, colonne IdIncasso/TRN-SCT/Dominio/Causale/
-      Data/Importo/Stato.
-    - `Giornale Eventi`: filtro per IUV + esito (`OK | KO | FATAL` da
-      severità 0/2/4) + categoria (`INTERFACCIA | INTERNO | UTENTE`).
-      Colonne Data/Categoria/Tipo/Componente/IUV/Durata/Esito.
-    - `Tracciati` (6 stati: `NUOVO | IN_ELABORAZIONE | COMPLETATO_OK |
-      COMPLETATO_KO | COMPLETATO_PARZIALMENTE | ANNULLATO`, 2 tipi:
-      `PENDENZA | NOTIFICA_PAGAMENTI`): filtro per nome file, colonne
-      NomeFile/Tipo/DataCaricamento/DataCompletamento/Esito (OK/Tot)/
-      Operatore/Stato.
-    - `app.routes.ts` aggiornato: rimossi i placeholder per le 5 nuove
-      sezioni e collegati i loadChildren ai nuovi `*_ROUTES`. ACL
-      invariate (`hasRendiIncassi`, `hasGdE`, `authGuard`).
-    - i18n IT + EN: nuovi namespace `Riscossioni`, `Rendicontazioni`,
-      `Incassi`, `GiornaleEventi`, `Tracciati` con sezioni `Subtitle`,
-      `Filters`, `Empty`, `Columns`, `Stati`/`Esiti`/`Categorie`/`Tipi`.
-
-  * [Frontend] feat(detail): drilldown da Pendenze, Ricevute, Pagamenti
-    su pagine di dettaglio con sezioni info + stato.
-
-    - 3 nuovi componenti shared:
-      * `DetailSectionComponent` — card titolata con slot.
-      * `InfoGridComponent` — griglia label/value 1/2/3 colonne con
-        `InfoGridItem[]` (supporto `mono`, `wide`, `hide`).
-      * `StatusBadgeComponent` — badge tonale (success/info/warning/
-        danger/muted) con `color-mix` per sfondo tenue.
-    - `PendenzaDetailComponent` (`/pendenze/:idDominio/:numero`):
-      sezioni Informazioni generali, Ente creditore, Soggetto pagatore,
-      Ricevute associate (lista linkata).
-    - `RicevutaDetailComponent` (`/ricevute/:idDominio/:iuv[/:ccp]`):
-      generali + ente + pagatore + bottone download RT (se disponibile).
-    - `PagamentoDetailComponent` (`/pagamenti/:id`): generali + soggetto
-      versante.
-    - Riga della tabella ora cliccabile: `(rowClick)` → router.navigate
-      al detail. Chiavi composte costruite dal modello (numeroAvviso o
-      IUV per pendenze, IUV+CCP per ricevute, ID per pagamenti).
-    - Routing aggiornato in `{pendenze,ricevute,pagamenti}.routes.ts`
-      con `loadComponent` per il detail. Per ricevute due rotte (con e
-      senza CCP) per supportare entrambi i formati legacy.
-    - Breadcrumbs auto-aggiornati nel detail con link a "indietro".
-    - i18n: namespace `{Pendenze,Ricevute,Pagamenti}.Detail.*` IT + EN.
-
-  * [Frontend] feat(lists): toolbar filtri (search + select stato +
-    range date) per Pendenze, Ricevute, Pagamenti.
-
-    - Nuovi componenti shared: `SearchInputComponent` (debounce 300ms,
-      icona search, clear button), `SelectInputComponent` (label i18n,
-      placeholder), `DateInputComponent` (label i18n).
-    - Toolbar fluida che si dispone su righe diverse a seconda dello
-      spazio. Pulsante "Azzera filtri" visibile solo se almeno un
-      filtro è attivo.
-    - Empty state con messaggio dedicato "Nessun risultato per i filtri
-      impostati" + pulsante reset diretto.
-    - I filtri mappano sui filtri delle 3 API legacy:
-      * Pendenze: `numeroAvviso` (search), `stato`, `dataDa`/`dataA`.
-      * Ricevute: `iuv` (search), `esito`, `dataDa`/`dataA`.
-      * Pagamenti: `identificativoSoggettoVersante` (search), `stato`,
-        `dataDa`/`dataA`.
-    - Cambio filtro → reset() della lista (page=1, rows=[]) + fetch.
-      Le date HTML5 (`YYYY-MM-DD`) sono convertite in ISO 8601 con
-      orario 00:00:00/23:59:59.999 prima dell'invio al backend.
-    - i18n: chiavi `Common.{NoResultsForFilters,All,Clear,ResetFilters,
-      DateFrom,DateTo}`, `{Pendenze,Ricevute,Pagamenti}.Filters.*` IT + EN.
-
-  * [Frontend] feat(lists): scroll infinito per Pendenze, Ricevute,
-    Pagamenti (sostituisce la paginazione tradizionale).
-
-    - Nuova direttiva `lnkInfiniteScroll` (`shared/directives/`) basata
-      su `IntersectionObserver` con `rootMargin` configurabile e input
-      `enabled` per disattivarla durante il caricamento o quando non c'è
-      più nulla da caricare.
-    - Le 3 ListComponent ora accumulano i risultati (rows.update) invece
-      di sostituirli; sort/refresh resettano la lista a pagina 1.
-    - Sentinel in fondo alla lista con messaggio "Scorri per caricare
-      altri risultati…" oppure "Tutti i {{total}} risultati caricati."
-    - Rimosso il `<lnk-pagination>` dai template (componente disponibile
-      ma non più usato dalle 3 feature).
-    - i18n: `Pagination.LoadMoreHint` e `Pagination.AllLoaded` IT + EN.
-
-  * [Frontend] feat(ricevute, pagamenti): liste paginate riusando il
-    pattern delle Pendenze.
-
-    - `features/ricevute` — modello `Ricevuta` (IUV/CCP/idDominio),
-      `EsitoRicevuta` con 5 stati (`ESEGUITO`, `NON_ESEGUITO`,
-      `ESEGUITO_PARZIALE`, `DECORRENZA`, `DECORRENZA_PARZIALE`),
-      `RicevuteApi.list/get`, `RicevuteListComponent` con colonne
-      IUV / dominio / pagatore / causale / data / importo / esito.
-    - `features/pagamenti` — modello `Pagamento`, `StatoPagamento` con
-      8 stati (`IN_CORSO`, `ESEGUITO`, `ESEGUITO_PARZIALE`, `NON_ESEGUITO`,
-      `ANNULLATO`, `FALLITO`, `DECORRENZA`, `DECORRENZA_PARZIALE`),
-      `PagamentiApi.list/get`, `PagamentiListComponent` con colonne
-      ID / versante / # pendenze / data / importo / importo pagato / stato.
-    - Routing `loadChildren` `/ricevute` (authGuard) e `/pagamenti`
-      (`aclGuard('hasPagamenti', 'hasPagamentiePendenze')`).
-    - i18n IT + EN per Ricevute (Subtitle, Empty, Columns, Esiti) e
-      Pagamenti (Subtitle, Empty, Columns, Stati).
-
-  * [Frontend] feat(pendenze): prima feature concreta + building blocks
-    riusabili (DataTableComponent, PaginationComponent, PageHeader,
-    EmptyState, format helpers).
-
-    - `shared/components/data-table` — tabella tipizzata con `ColumnDef<T>`,
-      stato loading (skeleton), empty state, sort lato server, click di riga.
-    - `shared/components/pagination` — controlli 1-based, range "from-to of
-      total", selettore pageSize.
-    - `shared/components/page-header` — intestazione con slot azioni.
-    - `shared/components/empty-state` — placeholder con icona + slot.
-    - `shared/utils/format` — `formatEuro`, `formatDate`, `formatDateTime`,
-      `truncate` (Intl-based, no Moment).
-    - `features/pendenze` — modello `Pendenza`, mappa stati→i18n e colori,
-      `PendenzeApi` (`list`, `get`), `PendenzeListComponent` (list paginata
-      con sort, refresh, snackbar errore).
-    - Routing `loadChildren` `/pendenze` con `aclGuard('hasPendenze',
-      'hasPagamentiePendenze')`.
-    - i18n: chiavi Common.{Refresh,NoResults,LoadError},
-      Pagination.{RowsPerPage,RangeOf,...}, Pendenze.{Subtitle,Empty,Columns,
-      Stati} in `it.json` e `en.json`.
-    - Path alias `@core` e `@shared` (oltre ai `/*`) per import barrel.
-
-  * Primo commit GovPay Console v0.0.0
-
-  Riscrittura della console di backoffice GovPay (originale Angular 5
-  in govpay-github/wars/web-console) come seed riusabile Link.it.
-
-  Stack tecnologico
-  - **Node.js** >= 22.12
-  - **npm** >= 10.x
-  - **Angular** 21 con standalone components + signals
-  - **Tailwind CSS** 4 (via @tailwindcss/postcss)
-  - **Angular Material** 21
-  - **TypeScript** 5.9
-  - **Vitest** + happy-dom per test
-  - **ngx-translate** 17 per i18n
-  - **@ng-icons/bootstrap-icons** per le icone
-
-  Workspace
-  - Workspace Angular con `projects/govpay-console/` (predisposto per
-    librerie condivise future).
-  - Prefisso selettori `lnk-` (Link.it, seed-oriented).
-  - Path alias `@core/*`, `@feature/*`, `@shared/*`, `@environment`,
-    `@environments`, `@assets/*`.
-  - License header GPL v3 in cima a ogni `.ts`.
-  - ESLint + Prettier configurati.
-
-  Configurazione runtime
-  - Caricamento `assets/config/app-config*.json` + `assets/config/theme.json`
-    in parallelo via `provideAppInitializer` con cache-busting.
-  - `BrandingConfig` con logo, colori e theme annidato (topBar, header,
-    sidebar, content, buttons, fonts) — modello allineato a govpay-portal.
-  - `ThemeLoaderService` applica le CSS variables al `:root`.
-
-  Layout (modello GovHub)
-  - `MainLayoutComponent` con sidebar fissa desktop + drawer mobile +
-    bottom-nav + help sidebar + snackbar + spinner.
-  - `SidebarComponent` con voci da `core/layout/nav.ts` (NavItem con
-    children) — accordion quando espansa, flyout fixed quando collassata.
-  - `HeaderBarComponent` sticky trasparente + frosted glass al scroll.
-  - Auto-collapse responsive 1024-1280px.
-  - `ProfileMenuComponent` con dropup nel footer sidebar (avatar +
-    iniziali, voci profilo/impostazioni/info/esci).
-
-  Configurabili in posizione `header` | `sidebar` | `none`
-  - Profile menu (`profileMenuPosition`)
-  - Toggle dark mode (`darkModeTogglePosition`)
-  - Selettore lingua (`languageSelectorPosition`)
-
-  Tema Link.it / GovHub
-  - Palette ufficiale: CTA coral `#ff4050`, denim `#213349`,
-    accent-light `#cce3ed`, canvas `#f4f8fa`, font Prompt.
-  - Dark mode con classe `.dark` su `<html>`, override CSS variables
-    in `theme.dark`, modalità `light` / `dark` / `auto` (segue sistema).
-
-  i18n
-  - `LanguageService` signal-based integrato con `@ngx-translate`.
-  - Lingue configurabili in `app-config.json` con bandiera/sigla.
-  - File `it.json` e `en.json` con namespace App, Common, Auth, Layout,
-    Profile, Theme, Language, Snackbar, Help, Maintenance, About,
-    Dashboard, Placeholder, Nav.
-  - Tutte le label dell'app tradotte via pipe `translate`.
-
-  Auth (modello legacy)
-  - 4 modalità: Basic, SPID, IAM, OAuth2 (selezione runtime da config).
-  - `AuthService` signal-based con `loginBasic()`, `startRedirectLogin()`,
-    `logout()`, `restorePersisted()`, `authorizationHeader()`.
-  - `AuthInterceptor` (Basic + Bearer), XSRF, `CSP_NONCE`.
-  - Guards `authGuard`, `aclGuard(...flags)`, `maintenanceGuard`.
-  - Form login con tab modalità, mock-login dev.
-  - Tutte le 16 rotte legacy protette (pendenze, ricevute, pagamenti,
-    riscossioni, rendicontazioni, incassi, giornale-eventi, tracciati,
-    domini, tipi-pendenza, applicazioni, operatori, ruoli,
-    registro-intermediari, profilo, impostazioni).
-
-  ApiService base
-  - Wrapper `HttpClient` con metodi `list/get/post/put/patch/delete/raw`.
-  - Mapping `TipoOggetto` → segmento URL (allineato al backend GovPay
-    canonico `/govpay-api-backoffice/rs/form/v1`).
-  - `Pageable<T>`, `ApiError` modelli legacy.
-
-  Proxy dev configurabile
-  - `proxy.config.js` con preset commutabili via env `GP_BACKEND`:
-    `local`, `local-alt`, `dev-cloud`, `demo`, `sicilia`.
-  - Logging esplicito di ogni richiesta proxata.
-  - Path inoltrati: `/govpay-api-backoffice/*`,
-    `/govpay/backend/api/backoffice/*` (compat legacy),
-    `/govway/in/RegioneSiciliana/*`.
-
-  Versionamento (allineato a govpay-portal)
-  - `scripts/generate-version.js` auto-genera `version.ts` con
-    info git (hash, branch, tag, dirty), eseguito come `prebuild`.
-  - `scripts/bump-version.js` per `patch`/`minor`/`major`/`x.y.z`.
-  - Pagina `/about` con `getFullVersion()`.
-
-  Test (Vitest, 30 verdi)
-  - `nav.spec.ts` (6) — filtri feature/ACL, gruppi vuoti, mobile flatten.
-  - `system.facade.spec.ts` (4) — sidebar persist, breadcrumbs, loading.
-  - `system.facade.colorscheme.spec.ts` (5) — color scheme cycling.
-  - `theme-loader.service.spec.ts` (1 + 3) — applyTheme + dark merge.
-  - `snackbar.service.spec.ts` (4) — queue, dismiss, auto-dismiss.
-  - `auth.service.spec.ts` (5) — login Basic, 401, clear, OAuth2.
-  - `api.service.spec.ts` (2) — mappa URL_BY_TIPO.
-
-  Documentazione
-  - README con avvio, build, proxy preset, versionamento.
-  - `CALUDE-NOTE/PIANO-LAVORO.md` (fasi M0-M9).
-  - `CALUDE-NOTE/ARCHITETTURA.md` (stack, struttura, convenzioni).
-  - `CALUDE-NOTE/CHANGELOG.md` (storico dettagliato).
+  * [Frontend] Prima implementazione

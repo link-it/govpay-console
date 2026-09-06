@@ -14,6 +14,7 @@ import {
   Component,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -21,8 +22,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { SystemFacade } from '@linkit/shared-ui';
+import { SnackbarService } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
@@ -30,18 +31,25 @@ import {
   ListStickyToolbarDirective,
   InfoGridComponent,
   PageHeaderComponent,
+  ScrollableRegionFocusableDirective,
   StatusBadgeComponent,
+  TabsComponent,
   formatDateTime,
   type InfoGridItem,
-} from '@shared';
-import { GiornaleEventiApi } from './giornale-eventi.api';
+  type TabDef,
+} from '@linkit/shared-ui';
+import { problemDetail } from '@core/models';
+import { GiornaleEventiConsoleApi } from './giornale-eventi.console-api';
 import {
   CATEGORIA_EVENTO_LABEL,
   ESITO_EVENTO_COLOR,
   ESITO_EVENTO_LABEL,
-  severitaToEsito,
-  type EventoDetail,
+  type Evento,
+  type EventoRichiesta,
+  type EventoRisposta,
 } from './evento.model';
+
+type EventoTab = 'dati' | 'richiesta' | 'risposta';
 
 @Component({
   selector: 'lnk-evento-detail',
@@ -57,40 +65,67 @@ import {
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    ScrollableRegionFocusableDirective,
+    TabsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './evento-detail.component.html',
 })
 export class EventoDetailComponent implements OnInit {
-  private readonly api = inject(GiornaleEventiApi);
+  private readonly api = inject(GiornaleEventiConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
 
-  readonly evento = signal<EventoDetail | null>(null);
+  readonly evento = signal<Evento | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  readonly activeTab = signal<EventoTab>('dati');
+
+  /** Payload richiesta/risposta caricati on-demand (sub-resource) al primo accesso al tab. */
+  readonly richiesta = signal<EventoRichiesta | null>(null);
+  readonly richiestaLoading = signal(false);
+  readonly risposta = signal<EventoRisposta | null>(null);
+  readonly rispostaLoading = signal(false);
+
+  /** Presenza dei payload: gata i tab su `_links` del dettaglio. */
+  readonly hasRichiesta = computed(() => !!this.evento()?._links?.richiesta);
+  readonly hasRisposta = computed(() => !!this.evento()?._links?.risposta);
+
+  readonly tabs = computed<TabDef[]>(() => {
+    const tabs: TabDef[] = [{ id: 'dati', labelKey: 'GiornaleEventi.Detail.Tabs.Dati' }];
+    if (this.hasRichiesta()) tabs.push({ id: 'richiesta', labelKey: 'GiornaleEventi.Detail.Tabs.Richiesta' });
+    if (this.hasRisposta()) tabs.push({ id: 'risposta', labelKey: 'GiornaleEventi.Detail.Tabs.Risposta' });
+    return tabs;
+  });
+
+  /** Lazy load del payload al primo accesso al tab richiesta/risposta. */
+  private readonly _tabLoader = effect(() => {
+    const e = this.evento();
+    if (!e) return;
+    const tab = this.activeTab();
+    if (tab === 'richiesta' && this.hasRichiesta() && this.richiesta() === null && !this.richiestaLoading()) {
+      this.fetchRichiesta(e.id);
+    } else if (tab === 'risposta' && this.hasRisposta() && this.risposta() === null && !this.rispostaLoading()) {
+      this.fetchRisposta(e.id);
+    }
+  });
+
   readonly esitoTone = computed(() => {
     const e = this.evento();
-    if (!e) return 'muted';
-    const esito = e.esito ?? severitaToEsito(e.severita);
-    return ESITO_EVENTO_COLOR[esito] ?? 'muted';
+    return e ? ESITO_EVENTO_COLOR[e.esito] ?? 'muted' : 'muted';
   });
   readonly esitoLabelKey = computed(() => {
     const e = this.evento();
-    if (!e) return 'GiornaleEventi.Esiti.Ok';
-    const esito = e.esito ?? severitaToEsito(e.severita);
-    return ESITO_EVENTO_LABEL[esito];
+    return e ? ESITO_EVENTO_LABEL[e.esito] : 'GiornaleEventi.Esiti.Ok';
   });
 
   /**
-   * Helper: traduce `key` se la chiave esiste in i18n, altrimenti
-   * ritorna il `raw` come fallback. Usata per mappare `componente` e
-   * `tipoEvento` (enum dell'API GovPay) sulle label leggibili importate
-   * dal legacy (`mappingTipiEvento.govpay`).
+   * Helper: traduce `key` se esiste in i18n, altrimenti ritorna il `raw`.
+   * Usato per mappare `componente`/`tipoEvento` (enum API) su label leggibili.
    */
   private translateOrRaw(key: string, raw: string | undefined): string | undefined {
     if (!raw) return undefined;
@@ -105,11 +140,9 @@ export class EventoDetailComponent implements OnInit {
       { labelKey: 'GiornaleEventi.Detail.DataEvento', value: formatDateTime(e.dataEvento) },
       {
         labelKey: 'GiornaleEventi.Detail.Categoria',
-        // CATEGORIA_EVENTO_LABEL contiene chiavi i18n; risolvile qui
-        // perché `<lnk-info-grid>` non applica `| translate` ai value.
-        value: e.categoriaEvento
-          ? this.translate.instant(CATEGORIA_EVENTO_LABEL[e.categoriaEvento])
-          : undefined,
+        // CATEGORIA_EVENTO_LABEL contiene chiavi i18n: risolvile qui perché
+        // `<lnk-info-grid>` non applica `| translate` ai value.
+        value: e.categoriaEvento ? this.translate.instant(CATEGORIA_EVENTO_LABEL[e.categoriaEvento]) : undefined,
         hide: !e.categoriaEvento,
       },
       {
@@ -119,10 +152,7 @@ export class EventoDetailComponent implements OnInit {
       },
       {
         labelKey: 'GiornaleEventi.Detail.Tipo',
-        value: this.translateOrRaw(
-          `GiornaleEventi.Tipi.${e.componente}.${e.tipoEvento}`,
-          e.tipoEvento
-        ),
+        value: this.translateOrRaw(`GiornaleEventi.Tipi.${e.componente}.${e.tipoEvento}`, e.tipoEvento),
         wide: true,
         hide: !e.tipoEvento,
       },
@@ -130,9 +160,11 @@ export class EventoDetailComponent implements OnInit {
       { labelKey: 'GiornaleEventi.Detail.Ruolo', value: e.ruolo, hide: !e.ruolo },
       {
         labelKey: 'GiornaleEventi.Detail.Durata',
-        value: e.durataEvento != null ? `${e.durataEvento} ms` : undefined,
-        hide: e.durataEvento == null,
+        value: e.durataEventoMs != null ? `${e.durataEventoMs} ms` : undefined,
+        hide: e.durataEventoMs == null,
       },
+      { labelKey: 'GiornaleEventi.Detail.SottotipoEsito', value: e.sottotipoEsito, mono: true, hide: !e.sottotipoEsito },
+      { labelKey: 'GiornaleEventi.Detail.DettaglioEsito', value: e.dettaglioEsito, wide: true, hide: !e.dettaglioEsito },
     ];
   });
 
@@ -145,17 +177,15 @@ export class EventoDetailComponent implements OnInit {
       { labelKey: 'GiornaleEventi.Detail.Ccp', value: e.ccp, mono: true, hide: !e.ccp },
       { labelKey: 'GiornaleEventi.Detail.IdA2A', value: e.idA2A, mono: true, hide: !e.idA2A },
       { labelKey: 'GiornaleEventi.Detail.IdPendenza', value: e.idPendenza, mono: true, hide: !e.idPendenza },
-      { labelKey: 'GiornaleEventi.Detail.IdSessione', value: e.idSessione, mono: true, hide: !e.idSessione },
+      { labelKey: 'GiornaleEventi.Detail.IdPagamento', value: e.idPagamento, mono: true, hide: !e.idPagamento },
+      { labelKey: 'GiornaleEventi.Detail.TransactionId', value: e.transactionId, mono: true, hide: !e.transactionId },
+      { labelKey: 'GiornaleEventi.Detail.ClusterId', value: e.clusterId, mono: true, hide: !e.clusterId },
     ];
   });
 
-  /** Rotta "Indietro": dipende dal path da cui arriva il drilldown
-   *  (lista eventi, dettaglio pendenza, dettaglio ricevuta). */
+  /** Rotta "Indietro": dipende dal path da cui arriva il drilldown. */
   readonly backUrl = signal<string>('/giornale-eventi');
-  /** Query params opzionali del bottone Indietro (es. `{ tab: 'eventi' }`
-   *  per riaprire il dettaglio padre con il tab Eventi attivo). */
   readonly backQueryParams = signal<Record<string, string> | null>(null);
-  /** Label i18n del bottone "Indietro" (di default `Common.Back`). */
   readonly backLabelKey = signal<string>('Common.Back');
 
   ngOnInit(): void {
@@ -166,10 +196,9 @@ export class EventoDetailComponent implements OnInit {
       return;
     }
 
-    // Rileva la rotta padre dal path (es. `/pendenze/{idA2A}/{idPendenza}/eventi/{id}`).
-    // Quando il drilldown viene da pendenza/ricevuta, sia il bottone
-    // "Indietro" sia il breadcrumb passano `?tab=eventi` così la maschera
-    // padre apre direttamente sul tab Eventi.
+    // Rileva la rotta padre dal path (drilldown da pendenza/ricevuta):
+    // sia "Indietro" sia il breadcrumb passano `?tab=eventi` per riaprire il
+    // dettaglio padre sul tab Eventi.
     const url = this.router.url;
     if (url.startsWith('/pendenze/') && params.has('idA2A') && params.has('idPendenza')) {
       const a2a = params.get('idA2A')!;
@@ -208,11 +237,6 @@ export class EventoDetailComponent implements OnInit {
     this.fetch(id);
   }
 
-  formatJson(payload: Record<string, unknown> | undefined): string {
-    if (!payload) return '';
-    return JSON.stringify(payload, null, 2);
-  }
-
   private fetch(id: string): void {
     this.loading.set(true);
     this.error.set(null);
@@ -220,7 +244,7 @@ export class EventoDetailComponent implements OnInit {
       .get(id)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
           return of(null);
@@ -229,6 +253,38 @@ export class EventoDetailComponent implements OnInit {
       .subscribe((e) => {
         this.evento.set(e);
         this.loading.set(false);
+      });
+  }
+
+  private fetchRichiesta(id: number): void {
+    this.richiestaLoading.set(true);
+    this.api
+      .getRichiesta(id)
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of<EventoRichiesta>({ headers: [] });
+        })
+      )
+      .subscribe((r) => {
+        this.richiesta.set(r);
+        this.richiestaLoading.set(false);
+      });
+  }
+
+  private fetchRisposta(id: number): void {
+    this.rispostaLoading.set(true);
+    this.api
+      .getRisposta(id)
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of<EventoRisposta>({ headers: [] });
+        })
+      )
+      .subscribe((r) => {
+        this.risposta.set(r);
+        this.rispostaLoading.set(false);
       });
   }
 }

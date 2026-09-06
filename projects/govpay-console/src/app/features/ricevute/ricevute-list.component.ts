@@ -22,12 +22,9 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { ListStateService, SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
-  DateInputComponent,
   DisplayConfigLoader,
   EmptyStateComponent,
   LoadingComponent,
@@ -35,48 +32,37 @@ import {
   ListStickyToolbarDirective,
   ItemListComponent,
   PageHeaderComponent,
-  SearchInputComponent,
-  DATE_RANGE_OPTIONS,
+  SearchPillComponent,
+  ViewToggleComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
+  SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
-  daysAgoIso,
   formatDateTime,
   formatEuro,
   formatOrdinamento,
-  matchDateRangePreset,
-  truncate,
+  initialSearchState,
   type ColumnDef,
+  type SearchField,
+  type SearchPillLabels,
+  type SearchState,
   type SortEvent,
-} from '@shared';
-import { TweaksRegistry } from '@core/ui';
-import { RicevuteApi } from './ricevute.api';
-import {
-  STATO_RPP_COLOR,
-  STATO_RPP_LABEL,
-  type Ricevuta,
-  type RicevuteListFilters,
-} from './ricevuta.model';
+  type SortOption,
+} from '@linkit/shared-ui';
+import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { RicevuteConsoleApi } from './ricevute.console-api';
+import { statoRtColor, statoRtLabel, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
 
 const PAGE_SIZE = 25;
 
-/**
- * La lista "Ricevute" mostra solo gli `esito = ESEGUITO` (filtro fisso lato API):
- * le RPP non andate a buon fine vengono comunque elencate sotto Pendenze.
- */
-const ESITO_FISSO = 'ESEGUITO' as const;
-
-interface ListFilters {
-  search: string;
-  dataDa: string;
-  dataA: string;
-}
-
-/** Filtri di default: `dataDa` a 7 giorni fa (ultima settimana). */
-const defaultFilters = (): ListFilters => ({
-  search: '',
-  dataDa: daysAgoIso(7),
-  dataA: '',
-});
+/** Chiavi filtro (= id dei `SearchField` della pill) allineate ai filtri V2. */
+const F = {
+  iuv: 'iuv',
+  idDominio: 'idDominio',
+  idRicevuta: 'idRicevuta',
+  dataDa: 'dataDa',
+  dataA: 'dataA',
+} as const;
 
 @Component({
   selector: 'lnk-ricevute-list',
@@ -88,8 +74,8 @@ const defaultFilters = (): ListFilters => ({
     ItemListComponent,
     EmptyStateComponent,
     InfiniteScrollDirective,
-    SearchInputComponent,
-    DateInputComponent,
+    SearchPillComponent,
+    ViewToggleComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -97,24 +83,89 @@ const defaultFilters = (): ListFilters => ({
   templateUrl: './ricevute-list.component.html',
 })
 export class RicevuteListComponent implements OnInit {
-  private readonly api = inject(RicevuteApi);
+  private readonly api = inject(RicevuteConsoleApi);
   private readonly config = inject(ConfigService);
   private readonly system = inject(SystemFacade);
   private readonly listState = inject(ListStateService);
   private static readonly STATE_KEY = 'ricevute';
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+  private readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
+  /** Default modalità lista da config: globale con override per feature. */
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
     const layout = this.config.appConfig()?.Layout;
     return layout?.listViewByFeature?.['ricevute'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+
+  /** Override di sessione (tweaks) della variante search-pill. */
+  private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
+  readonly searchPillVariant = computed<'pill' | 'square'>(
+    () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
+
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.config.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
+  /**
+   * Config dei filtri della search-pill: i filtri supportati dalla API V2.
+   * `iuv`/`idRicevuta` match esatto, `idDominio` codice a 11 cifre, range di
+   * date sulla data di pagamento (inclusivo).
+   */
+  readonly searchFields = computed<SearchField[]>(() => {
+    this.lang.current();
+    const f = this.searchState().filters;
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: F.iuv, label: t('Ricevute.Filters.Iuv'), kind: 'text', placeholder: t('Ricevute.Filters.IuvPlaceholder'), span: 2 },
+      { id: F.idRicevuta, label: t('Ricevute.Filters.IdRicevuta'), kind: 'text', placeholder: t('Ricevute.Filters.IdRicevutaPlaceholder') },
+      { id: F.idDominio, label: t('Ricevute.Filters.Dominio'), kind: 'text', icon: 'bootstrapBuilding', placeholder: t('Ricevute.Filters.DominioPlaceholder') },
+      { id: F.dataDa, label: t('Ricevute.Filters.DataDa'), kind: 'date', icon: 'bootstrapCalendarEvent', max: f[F.dataA] || undefined },
+      { id: F.dataA, label: t('Ricevute.Filters.DataA'), kind: 'date', icon: 'bootstrapCalendarEvent', min: f[F.dataDa] || undefined },
+    ];
+  });
+
+  readonly searchPlaceholder = computed(() => {
+    this.lang.current();
+    return this.translate.instant('Ricevute.Filters.Placeholder');
+  });
+
+  /** Campi di ordinamento (offset). La modalità cursor userebbe l'ordine fisso. */
+  readonly sortOptions = computed<SortOption[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [{ id: 'dataPagamento', label: t('Ricevute.Columns.DataPagamento') }];
+  });
+
+  readonly pillLabels = computed<SearchPillLabels>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return {
+      filters: t('SearchPill.Filters'),
+      reset: t('SearchPill.Reset'),
+      close: t('SearchPill.Close'),
+      search: t('SearchPill.Search'),
+      activeSuffix: t('SearchPill.ActiveSuffix'),
+      resultsApproxPrefix: t('SearchPill.ResultsApproxPrefix'),
+      resultsSuffix: t('SearchPill.ResultsSuffix'),
+      noResults: t('SearchPill.NoResults'),
+      optionsFilter: t('SearchPill.OptionsFilter'),
+      none: t('SearchPill.None'),
+      noOptions: t('SearchPill.NoOptions'),
+      textPlaceholder: t('SearchPill.TextPlaceholder'),
+      selectPlaceholder: t('SearchPill.SelectPlaceholder'),
+      allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
+    };
+  });
 
   constructor() {
     const tweaks = inject(TweaksRegistry);
@@ -123,114 +174,111 @@ export class RicevuteListComponent implements OnInit {
         id: 'ricevute',
         titleKey: 'Tweaks.Layout',
         rows: [
-          { type: 'segmented', labelKey: 'Tweaks.View', hintKey: 'Tweaks.ViewHint',
-            options: VIEW_OPTIONS, value: this.viewMode,
-            onChange: (v) => this.onViewModeChange(v) },
-          { type: 'segmented', labelKey: 'Tweaks.Range', hintKey: 'Tweaks.RangeHint',
-            options: DATE_RANGE_OPTIONS,
-            value: computed(() => matchDateRangePreset(this.filters().dataDa)),
-            onChange: (v) => this.onDateRangeChange(v) },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.View',
+            hintKey: 'Tweaks.ViewHint',
+            options: VIEW_OPTIONS,
+            value: this.viewMode,
+            onChange: (v) => this.onViewModeChange(v),
+          },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.SearchPill',
+            hintKey: 'Tweaks.SearchPillHint',
+            options: SEARCH_PILL_VARIANT_OPTIONS,
+            value: this.searchPillVariant,
+            onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
+          },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.Density',
+            hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS,
+            value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable'),
+          },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => {
+          this.viewModeOverride.set(null);
+          this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
+        },
       })
     );
   }
 
+  /** Display config da `assets/config/ricevute-config.json` (null fino al fetch). */
   readonly rowConfig = toSignal(
-    this.displayConfigLoader.load('assets/config/ricevute-config.json').pipe(catchError(() => of(null))),
+    this.displayConfigLoader.load('assets/config/ricevute-config.json').pipe(
+      catchError(() => {
+        this.snackbar.error(this.translate.instant('Common.LoadError'));
+        return of(null);
+      }),
+    ),
     { initialValue: null },
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'dataRichiesta', direction: 'desc' });
-  readonly rows = signal<Ricevuta[]>([]);
-  readonly total = signal(0);
+  readonly sort = signal<SortEvent | null>({ key: 'dataPagamento', direction: 'desc' });
+  readonly rows = signal<RicevutaSummary[]>([]);
+  readonly hasMore = signal(false);
+  readonly total = signal<number | null>(null);
+  /** Conteggio totale on-demand in corso. */
+  readonly countLoading = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  readonly filters = signal<ListFilters>(defaultFilters());
+  readonly searchState = signal<SearchState>(initialSearchState([]));
+
   readonly hasActiveFilters = computed(() => {
-    const f = this.filters();
-    const d = defaultFilters();
-    return f.search !== d.search || f.dataDa !== d.dataDa || f.dataA !== d.dataA;
+    const f = this.searchState().filters;
+    return !!(f[F.iuv] || f[F.idRicevuta] || f[F.idDominio] || f[F.dataDa] || f[F.dataA]);
   });
 
   readonly hasError = computed(() => this.error() !== null);
   readonly hasRows = computed(() => this.rows().length > 0);
-  readonly hasMore = computed(() => this.rows().length < this.total());
-  readonly showEmptyState = computed(
-    () => !this.loading() && !this.hasError() && !this.hasRows()
-  );
+  readonly showEmptyState = computed(() => !this.loading() && !this.hasError() && !this.hasRows());
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly columns = computed<ColumnDef<Ricevuta>[]>(() => {
+  readonly columns = computed<ColumnDef<RicevutaSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<Ricevuta>(tableCfg.columns);
+    if (tableCfg?.columns?.length) return columnsFromConfig<RicevutaSummary>(tableCfg.columns);
     return [
-    {
-      key: 'iuv',
-      header: 'Ricevute.Columns.Iuv',
-      cellClass: 'font-mono text-xs',
-      format: (r) => r.pendenza?.iuvPagamento || r.pendenza?.iuvAvviso || '—',
-      width: '12rem',
-    },
-    {
-      key: 'dominio',
-      header: 'Ricevute.Columns.Dominio',
-      format: (r) => truncate(r.pendenza?.dominio?.ragioneSociale || r.pendenza?.dominio?.idDominio || ''),
-    },
-    {
-      key: 'soggettoPagatore',
-      header: 'Ricevute.Columns.Pagatore',
-      format: (r) => truncate(r.pendenza?.soggettoPagatore?.anagrafica),
-    },
-    {
-      key: 'causale',
-      header: 'Ricevute.Columns.Causale',
-      format: (r) => truncate(r.pendenza?.causale, 80),
-    },
-    {
-      key: 'dataPagamento',
-      header: 'Ricevute.Columns.DataRicevuta',
-      format: (r) => {
-        const dt = r.rt?.paymentDateTime || r.pendenza?.dataPagamento;
-        return dt ? formatDateTime(dt) : '—';
+      { key: 'iuv', header: 'Ricevute.Columns.Iuv', format: (r) => r.iuv, cellClass: 'font-mono text-xs', width: '14rem' },
+      { key: 'idRicevuta', header: 'Ricevute.Columns.IdRicevuta', format: (r) => r.idRicevuta, cellClass: 'font-mono text-xs' },
+      { key: 'idDominio', header: 'Ricevute.Columns.Dominio', format: (r) => r.idDominio, cellClass: 'font-mono text-xs' },
+      { key: 'dataPagamento', header: 'Ricevute.Columns.DataPagamento', format: (r) => formatDateTime(r.dataPagamento), width: '11rem' },
+      { key: 'importo', header: 'Ricevute.Columns.Importo', format: (r) => formatEuro(r.importo), align: 'right', cellClass: 'font-mono', width: '8rem' },
+      {
+        key: 'stato',
+        header: 'Ricevute.Columns.Stato',
+        cellType: 'badge',
+        cellTone: (r) => statoRtColor(r.stato),
+        format: (r) => statoRtLabel(r.stato),
+        width: '10rem',
       },
-      width: '11rem',
-    },
-    {
-      key: 'importo',
-      header: 'Ricevute.Columns.Importo',
-      format: (r) => formatEuro(r.pendenza?.importoPagato ?? r.pendenza?.importo),
-      align: 'right',
-      cellClass: 'font-mono',
-      width: '8rem',
-    },
-    {
-      key: 'stato',
-      header: 'Ricevute.Columns.Stato',
-      cellType: 'badge',
-      cellTone: (r) => STATO_RPP_COLOR[r.stato] ?? 'muted',
-      format: (r) => STATO_RPP_LABEL[r.stato] ?? r.stato,
-      sortable: true,
-      width: '10rem',
-    },
     ];
   });
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([{ label: 'Nav.Ricevute' }]);
-    // Ripristina filtri e ordinamento dopo back da dettaglio.
-    const saved = this.listState.get<{ filters: ListFilters; sort: SortEvent | null }>(RicevuteListComponent.STATE_KEY);
-    if (saved) {
-      this.filters.set(saved.filters);
-      if (saved.sort) this.sort.set(saved.sort);
-    }
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(RicevuteListComponent.STATE_KEY);
+    if (saved?.search) this.searchState.set(saved.search);
+    if (saved?.sort) this.sort.set(saved.sort);
+    this.syncPillSort();
     this.reset();
+  }
+
+  /** Allinea sort/dir della search-pill al `sort` signal. */
+  private syncPillSort(): void {
+    const s = this.sort();
+    this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
   }
 
   onSortChange(s: SortEvent): void {
     this.sort.set(s);
+    this.syncPillSort();
     this.reset();
   }
 
@@ -244,98 +292,98 @@ export class RicevuteListComponent implements OnInit {
     this.fetch(true);
   }
 
-  onSearchChange(value: string): void {
-    this.filters.update((f) => ({ ...f, search: value }));
-    this.reset();
-  }
-
-  onDataDaChange(value: string): void {
-    this.filters.update((f) => ({ ...f, dataDa: value }));
-    this.reset();
-  }
-
-  onDataAChange(value: string): void {
-    this.filters.update((f) => ({ ...f, dataA: value }));
+  onSearch(state: SearchState): void {
+    this.searchState.set(state);
+    if (state.sort) this.sort.set({ key: state.sort, direction: state.dir });
     this.reset();
   }
 
   resetFilters(): void {
-    this.filters.set(defaultFilters());
+    this.searchState.set(initialSearchState(this.searchFields()));
     this.reset();
   }
 
-  // ---- Tweaks panel handlers -----------------------------------------
   onViewModeChange(value: string): void {
     this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
   }
 
-  onDateRangeChange(value: string): void {
-    const days = Number(value);
-    if (!Number.isFinite(days) || days <= 0) return;
-    this.filters.update((f) => ({ ...f, dataDa: daysAgoIso(days), dataA: '' }));
-    this.reset();
-  }
-
-
-  onRowClick(r: Ricevuta): void {
-    const idDominio = r.pendenza?.dominio?.idDominio;
-    const iuv = r.pendenza?.iuvPagamento || r.pendenza?.iuvAvviso;
-    if (!idDominio || !iuv) return;
-    // CCP: per pagamenti pagoPA v2 il CCP coincide con `rt.receiptId`
-    // (vedi `govpay-console-github/util.service.ts:824,836-839`).
-    // Se l'RT non c'è (es. RPT_SCADUTA) fallback al placeholder `n/a`.
-    const ccp = r.rt?.receiptId || 'n/a';
-    this.router.navigate(['/ricevute', idDominio, iuv, ccp]);
+  onRowClick(r: RicevutaSummary): void {
+    if (!r.idDominio || !r.iuv || !r.idRicevuta) return;
+    this.router.navigate(['/ricevute', r.idDominio, r.iuv, r.idRicevuta]);
   }
 
   private reset(): void {
-    // Persisti filtri/ordinamento per il ripristino al return dal detail.
-    this.listState.set(RicevuteListComponent.STATE_KEY, {
-      filters: this.filters(),
-      sort: this.sort(),
-    });
+    this.listState.set(RicevuteListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
+    // Il totale eventualmente mostrato non è più valido per i nuovi filtri.
+    this.total.set(null);
     this.fetch(false);
+  }
+
+  /** Filtri di ricerca senza paginazione, condivisi da lista e conteggio. */
+  private baseFilters(): RicevuteListFilters {
+    const f = this.searchState().filters;
+    return {
+      iuv: f[F.iuv] || undefined,
+      idRicevuta: f[F.idRicevuta] || undefined,
+      idDominio: f[F.idDominio] || undefined,
+      // Formato data richiesto dal backend: YYYY-MM-DDTHH:MM.
+      dataDa: f[F.dataDa] ? `${f[F.dataDa]}T00:00` : undefined,
+      dataA: f[F.dataA] ? `${f[F.dataA]}T23:59` : undefined,
+    };
   }
 
   private fetch(append: boolean): void {
     this.loading.set(true);
     this.error.set(null);
 
-    const f = this.filters();
+    // Nessun `total`: la COUNT è costosa su questa risorsa → conteggio on-demand
+    // (vedi requestCount). L'infinite scroll usa `hasNextPage`, non il totale.
     const filters: RicevuteListFilters = {
-      pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
-      // ordinamento: formatOrdinamento(this.sort()),
-      // Filtro fisso: la lista mostra solo le RPP eseguite (RT acquisita).
-      esito: ESITO_FISSO,
-      iuv: f.search || undefined,
-      // `/rpp` non accetta `dataDa/A`; il filtro UI si applica alla data RT.
-      dataRtDa: f.dataDa ? `${f.dataDa}T00:00` : undefined,
-      dataRtA: f.dataA ? `${f.dataA}T23:59` : undefined,
+      ...this.baseFilters(),
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
     };
 
     this.api
       .list(filters)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of<Slice<RicevutaSummary>>({ results: [] });
         })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
-        if (append) {
-          this.rows.update((prev) => [...prev, ...results]);
-        } else {
-          this.rows.set(results);
-        }
-        this.total.set(page.numRisultati ?? 0);
+      .subscribe((slice) => {
+        const results = slice.results ?? [];
+        if (append) this.rows.update((prev) => [...prev, ...results]);
+        else this.rows.set(results);
+        this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
   }
 
+  /** Conteggio totale **su richiesta**: stessa query (filtri correnti) con
+   *  `page/limit=1` e `total=true`, così la COUNT lato BE avviene solo se
+   *  l'utente la chiede esplicitamente. */
+  requestCount(): void {
+    if (this.countLoading()) return;
+    this.countLoading.set(true);
+    this.api
+      .list({ ...this.baseFilters(), page: 1, limit: 1, total: true })
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of<Slice<RicevutaSummary>>({ results: [] });
+        })
+      )
+      .subscribe((slice) => {
+        const t = slice.pagination?.totalResults;
+        if (t != null) this.total.set(t);
+        this.countLoading.set(false);
+      });
+  }
 }

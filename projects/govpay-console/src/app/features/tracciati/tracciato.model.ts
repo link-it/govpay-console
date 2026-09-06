@@ -9,11 +9,15 @@
  * the Free Software Foundation.
  */
 
-import type { DominioSummary } from '../pendenze/pendenza.model';
+import type { DominioRef } from '@core/models';
 
-/**
- * Stato tracciato pendenze (OpenAPI `statoTracciatoPendenza`).
- */
+/** Hyperlink stile HAL (schema `Link`). */
+export interface Link {
+  href: string;
+  type?: string;
+}
+
+/** Stato di elaborazione del tracciato (schema `StatoTracciatoPendenza`). */
 export type StatoTracciato =
   | 'IN_ATTESA'
   | 'IN_ELABORAZIONE'
@@ -22,28 +26,109 @@ export type StatoTracciato =
   | 'SCARTATO'
   | 'ELABORAZIONE_STAMPA';
 
+/** Formato del file caricato (schema `FormatoTracciato`). */
+export type FormatoTracciato = 'JSON' | 'CSV';
+
+/** `_links` del tracciato: `self`/`richiesta`/`operazioni` sempre; `esito`/`stampe` condizionali. */
+export interface TracciatoLinks {
+  self?: Link;
+  richiesta?: Link;
+  esito?: Link;
+  stampe?: Link;
+  operazioni?: Link;
+  [rel: string]: Link | undefined;
+}
+
 /**
- * Risposta `tracciatoPendenzeIndex` di `GET /pendenze/tracciati`.
+ * Metadati di un tracciato di caricamento pendenze (schema `TracciatoPendenze`,
+ * unico per lista e dettaglio). Non include il contenuto: il payload originale
+ * è sulla sub-resource `/richiesta`.
  */
 export interface Tracciato {
   id: number;
   nomeFile: string;
-  dominio?: DominioSummary;
+  dominio: DominioRef;
+  idTipoPendenza?: string | null;
   /** ISO 8601 — data caricamento. */
   dataOraCaricamento: string;
   /** ISO 8601 — data ultimo aggiornamento elaborazione. */
-  dataOraUltimoAggiornamento?: string;
+  dataOraUltimoAggiornamento?: string | null;
   stato: StatoTracciato;
-  descrizioneStato?: string;
+  descrizioneStato?: string | null;
   numeroOperazioniTotali?: number;
   numeroOperazioniEseguite?: number;
   numeroOperazioniFallite?: number;
-  numeroAvvisiTotali?: number;
-  numeroAvvisiStampati?: number;
-  numeroAvvisiFalliti?: number;
-  /** Operatore del cruscotto che ha caricato il tracciato. */
+  numeroAvvisiTotali?: number | null;
+  numeroAvvisiStampati?: number | null;
+  numeroAvvisiFalliti?: number | null;
   operatoreMittente?: string;
   stampaAvvisi?: boolean;
+  formatoRichiesta: FormatoTracciato;
+  _links?: TracciatoLinks;
+}
+
+/** Tipologia dell'operazione (riga) del tracciato (schema `TipoOperazionePendenza`). */
+export type TipoOperazionePendenza = 'ADD' | 'DEL' | 'NON_VALIDA';
+
+/** Esito di elaborazione di una riga (schema `StatoOperazionePendenza`). */
+export type StatoOperazionePendenza = 'ESEGUITO' | 'SCARTATO' | 'NON_VALIDO';
+
+/** Voce della lista operazioni del tracciato (schema `OperazionePendenzaSummary`). */
+export interface OperazionePendenzaSummary {
+  numero: number;
+  tipoOperazione: TipoOperazionePendenza;
+  stato: StatoOperazionePendenza;
+  descrizioneStato?: string | null;
+  identificativoPendenza?: string | null;
+  numeroAvviso?: string | null;
+  idDominio?: string | null;
+  _links?: { self?: Link };
+}
+
+/** Categoria di un errore applicativo (schema `FaultBean`). */
+export type FaultCategoria = 'AUTORIZZAZIONE' | 'RICHIESTA' | 'OPERAZIONE' | 'PAGOPA' | 'EC' | 'INTERNO';
+
+/** Errore applicativo per un'operazione in esito negativo (schema `FaultBean`). */
+export interface FaultBean {
+  categoria: FaultCategoria;
+  codice: string;
+  descrizione: string;
+  dettaglio?: string;
+}
+
+/** Soggetto pagatore (anagrafica, solo nel dettaglio operazione). */
+export interface SoggettoPagatore {
+  tipo?: string;
+  identificativo?: string;
+  anagrafica?: string;
+  [k: string]: unknown;
+}
+
+/**
+ * Dettaglio di una singola operazione del tracciato (schema `OperazionePendenza`):
+ * summary + dati personali del soggetto pagatore + payload richiesta/risposta.
+ */
+export interface OperazionePendenza extends OperazionePendenzaSummary {
+  enteCreditore?: DominioRef;
+  soggettoPagatore?: SoggettoPagatore;
+  applicazione?: string | null;
+  /** Payload originale della riga, così come caricato. */
+  richiesta?: unknown;
+  /** Esito di elaborazione; null se non ancora elaborata. */
+  risposta?: EsitoOperazionePendenza | null;
+}
+
+/** Esito di elaborazione di una singola riga (schema `EsitoOperazionePendenza`). */
+export interface EsitoOperazionePendenza {
+  idA2A: string;
+  idPendenza: string;
+  tipoOperazione: TipoOperazionePendenza;
+  stato: StatoOperazionePendenza;
+  esito: string;
+  descrizioneEsito: string;
+  numero: number;
+  /** Avviso generato (positivo) o `FaultBean` (negativo). */
+  dati?: unknown;
 }
 
 export const STATO_TRACCIATO_LABEL: Record<StatoTracciato, string> = {
@@ -55,10 +140,7 @@ export const STATO_TRACCIATO_LABEL: Record<StatoTracciato, string> = {
   ELABORAZIONE_STAMPA: 'Tracciati.Stati.ElaborazioneStampa',
 };
 
-export const STATO_TRACCIATO_COLOR: Record<
-  StatoTracciato,
-  'success' | 'warning' | 'danger' | 'info' | 'muted'
-> = {
+export const STATO_TRACCIATO_COLOR: Record<StatoTracciato, 'success' | 'warning' | 'danger' | 'info' | 'muted'> = {
   IN_ATTESA: 'info',
   IN_ELABORAZIONE: 'info',
   ESEGUITO: 'success',
@@ -67,15 +149,35 @@ export const STATO_TRACCIATO_COLOR: Record<
   ELABORAZIONE_STAMPA: 'info',
 };
 
-/**
- * Filtri supportati da `GET /pendenze/tracciati`.
- *
- * NOTA: la GET non accetta `ordinamento`, `dataDa/A`, `nomeFile`, `tipo`.
- */
+export const STATO_OPERAZIONE_LABEL: Record<StatoOperazionePendenza, string> = {
+  ESEGUITO: 'Tracciati.Operazioni.Stati.Eseguito',
+  SCARTATO: 'Tracciati.Operazioni.Stati.Scartato',
+  NON_VALIDO: 'Tracciati.Operazioni.Stati.NonValido',
+};
+
+export const STATO_OPERAZIONE_COLOR: Record<StatoOperazionePendenza, 'success' | 'warning' | 'danger'> = {
+  ESEGUITO: 'success',
+  SCARTATO: 'danger',
+  NON_VALIDO: 'warning',
+};
+
+export const TIPO_OPERAZIONE_LABEL: Record<TipoOperazionePendenza, string> = {
+  ADD: 'Tracciati.Operazioni.Tipi.Add',
+  DEL: 'Tracciati.Operazioni.Tipi.Del',
+  NON_VALIDA: 'Tracciati.Operazioni.Tipi.NonValida',
+};
+
+/** Filtri di lista `GET /pendenze/tracciati` (offset). Date in ISO 8601 completo. */
 export interface TracciatiListFilters {
-  pagina?: number;
-  risPerPagina?: number;
-  /** Filtro stato — il parametro lato API si chiama `statoTracciatoPendenza`. */
-  statoTracciatoPendenza?: StatoTracciato;
+  page?: number;
+  limit?: number;
+  sort?: string;
+  total?: boolean;
+  cursor?: string;
   idDominio?: string;
+  stato?: StatoTracciato;
+  dataDa?: string;
+  dataA?: string;
+  operatoreMittente?: string;
+  formatoRichiesta?: FormatoTracciato;
 }

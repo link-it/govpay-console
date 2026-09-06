@@ -1,78 +1,189 @@
 <section class="space-y-4 pb-6 lnk-detail-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
   <lnk-page-header [titleKey]="dominio()?.ragioneSociale || dominio()?.idDominio || '—'" subtitleKey="Domini.Detail.Subtitle">
-    <a routerLink="/domini" class="btn btn-secondary btn-sm">
-      <ng-icon name="bootstrapChevronLeft" size="1rem" />
-      <span>{{ 'Common.Back' | translate }}</span>
-    </a>
-  </lnk-page-header>
-  @if (dominio(); as d) {
     <div class="flex items-center gap-2">
-      <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
-      @if (d.intermediato) {
-        <lnk-status-badge tone="info" labelKey="Domini.Detail.Intermediato" />
+      @if (dominio(); as d) {
+        <a [routerLink]="['/domini', d.idDominio, 'modifica']" class="btn btn-primary btn-sm">
+          <ng-icon name="bootstrapPencil" size="1rem" />
+          <span>{{ 'Domini.Form.Modifica' | translate }}</span>
+        </a>
       }
-      @if (d.scaricaFr) {
-        <lnk-status-badge tone="success" labelKey="Domini.Detail.ScaricaFr" />
-      }
+      <a routerLink="/domini" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
     </div>
-  }
+  </lnk-page-header>
+    @if (dominio()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="abilitatoTone()" [labelKey]="abilitatoLabelKey()" />
+      </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
+    }
   </div>
 
   <div class="px-6 space-y-4">
 
   @if (error()) {
-    <lnk-empty-state
-      icon="bootstrapExclamationTriangle"
-      titleKey="Common.LoadError"
-      [descriptionKey]="error()!"
-    >
+    <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
       <a routerLink="/domini" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
     </lnk-empty-state>
   } @else if (loading() && !dominio()) {
     <lnk-loading />
   } @else if (dominio(); as d) {
-    <lnk-detail-section titleKey="Domini.Detail.Anagrafica">
-      <lnk-info-grid [items]="anagraficaItems()" />
-    </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Domini.Detail.Contatti">
-      <lnk-info-grid [items]="contattiItems()" />
-    </lnk-detail-section>
-
-    <lnk-detail-section titleKey="Domini.Detail.PagoPA">
-      <lnk-info-grid [items]="pagopaItems()" />
-    </lnk-detail-section>
-
-    @if (d.unitaOperative || d.contiAccredito || d.entrate || d.tipiPendenza) {
-      <lnk-detail-section titleKey="Domini.Detail.SubResources">
-        <ul class="flex flex-col gap-2 text-sm">
-          @if (d.unitaOperative) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.UnitaOperative' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.unitaOperative }}</span>
-            </li>
-          }
-          @if (d.contiAccredito) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.ContiAccredito' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.contiAccredito }}</span>
-            </li>
-          }
-          @if (d.entrate) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.Entrate' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.entrate }}</span>
-            </li>
-          }
-          @if (d.tipiPendenza) {
-            <li class="flex items-center gap-2">
-              <span class="text-[var(--muted-foreground)]">{{ 'Domini.Detail.TipiPendenza' | translate }}:</span>
-              <span class="font-mono text-xs">{{ d.tipiPendenza }}</span>
-            </li>
-          }
-        </ul>
+    @if (activeTab() === 'dati') {
+      <lnk-detail-section titleKey="Domini.Detail.Generali">
+        <lnk-info-grid [items]="generaliItems()" />
       </lnk-detail-section>
+
+      @if (hasAnagrafica()) {
+        <lnk-detail-section titleKey="Domini.Detail.Anagrafica">
+          <lnk-info-grid [items]="anagraficaItems()" />
+        </lnk-detail-section>
+      }
+
+      @if (hasContatti()) {
+        <lnk-detail-section titleKey="Domini.Detail.Contatti">
+          <lnk-info-grid [items]="contattiItems()" />
+        </lnk-detail-section>
+      }
+
+      <lnk-detail-section titleKey="Domini.Detail.Logo">
+        <div class="flex items-center gap-4">
+          @if (logoUrl(); as url) {
+            <img [src]="url" alt="logo" class="h-16 w-16 rounded object-contain border border-[var(--border)] bg-[var(--card-bg)]" />
+          } @else {
+            <div class="h-16 w-16 rounded border border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]">
+              <ng-icon name="bootstrapBuilding" size="1.5rem" />
+            </div>
+          }
+          <div class="flex items-center gap-2">
+            <label class="btn btn-secondary btn-sm" [class.opacity-60]="logoBusy()">
+              <span>{{ 'Domini.Logo.Carica' | translate }}</span>
+              <input type="file" accept="image/png,image/jpeg" class="hidden" [disabled]="logoBusy()" (change)="onLogoSelected($event)" />
+            </label>
+            @if (logoUrl()) {
+              <button type="button" class="btn btn-ghost btn-sm" [disabled]="logoBusy()" (click)="removeLogo()">
+                {{ 'Domini.Logo.Rimuovi' | translate }}
+              </button>
+            }
+          </div>
+        </div>
+        <p class="mt-2 text-xs text-[var(--muted-foreground)]">{{ 'Domini.Logo.Hint' | translate }}</p>
+      </lnk-detail-section>
+    }
+
+    @if (activeTab() === 'unitaOperative') {
+      <div class="flex justify-end">
+        @if (!showCreateUo()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateUo.set(true)">
+            {{ 'Domini.UnitaOperative.Nuova' | translate }}
+          </button>
+        }
+      </div>
+
+      @if (showCreateUo()) {
+        <lnk-unita-operativa-inline [idDominio]="d.idDominio" [uo]="null" (saved)="onUnitaOperativaSaved()" (cancelCreate)="showCreateUo.set(false)" />
+      }
+
+      @if (uoLoading() && !unitaOperative()) {
+        <lnk-loading />
+      } @else if (unitaOperative()?.length === 0 && !showCreateUo()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.UnitaOperative.EmptyTitle" descriptionKey="Domini.UnitaOperative.EmptyDescription" />
+      } @else if (unitaOperative(); as uos) {
+        <div class="flex flex-col gap-4">
+          @for (u of uos; track u.idUnitaOperativa) {
+            <lnk-unita-operativa-inline [idDominio]="d.idDominio" [uo]="u" (saved)="onUnitaOperativaSaved()" />
+          }
+        </div>
+      }
+    }
+
+    @if (activeTab() === 'contiAccredito') {
+      <div class="flex justify-end">
+        @if (!showCreateConto()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateConto.set(true)">
+            {{ 'Domini.ContiAccredito.Nuovo' | translate }}
+          </button>
+        }
+      </div>
+
+      @if (showCreateConto()) {
+        <lnk-conto-accredito-inline [idDominio]="d.idDominio" [conto]="null" (saved)="onContoAccreditoSaved()" (cancelCreate)="showCreateConto.set(false)" />
+      }
+
+      @if (contiLoading() && !contiAccredito()) {
+        <lnk-loading />
+      } @else if (contiAccredito()?.length === 0 && !showCreateConto()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.ContiAccredito.EmptyTitle" descriptionKey="Domini.ContiAccredito.EmptyDescription" />
+      } @else if (contiAccredito(); as conti) {
+        <div class="flex flex-col gap-4">
+          @for (c of conti; track c.ibanAccredito) {
+            <lnk-conto-accredito-inline [idDominio]="d.idDominio" [conto]="c" (saved)="onContoAccreditoSaved()" />
+          }
+        </div>
+      }
+    }
+
+    @if (activeTab() === 'entrate') {
+      <div class="flex justify-end">
+        @if (!showCreateEntrata()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateEntrata.set(true)">
+            {{ 'Domini.EntrateDominio.Nuova' | translate }}
+          </button>
+        }
+      </div>
+
+      @if (showCreateEntrata()) {
+        <lnk-entrata-dominio-inline [idDominio]="d.idDominio" [entrata]="null" [entrateSuggestions]="entrateSuggestions()" [ibanSuggestions]="ibanSuggestions()" (saved)="onEntrataSaved()" (cancelCreate)="showCreateEntrata.set(false)" />
+      }
+
+      @if (entrateLoading() && !entrate()) {
+        <lnk-loading />
+      } @else if (entrate()?.length === 0 && !showCreateEntrata()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.EntrateDominio.EmptyTitle" descriptionKey="Domini.EntrateDominio.EmptyDescription" />
+      } @else if (entrate(); as ents) {
+        <div class="flex flex-col gap-4">
+          @for (e of ents; track e.idEntrata) {
+            <lnk-entrata-dominio-inline [idDominio]="d.idDominio" [entrata]="e" [ibanSuggestions]="ibanSuggestions()" (saved)="onEntrataSaved()" />
+          }
+        </div>
+      }
+    }
+
+    @if (activeTab() === 'tipiPendenza') {
+      <div class="flex justify-end">
+        @if (!showCreateTipo()) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="showCreateTipo.set(true)">
+            {{ 'Domini.TipiPendenzaDominio.Nuovo' | translate }}
+          </button>
+        }
+      </div>
+
+      @if (showCreateTipo()) {
+        <lnk-tipo-pendenza-dominio-inline [idDominio]="d.idDominio" [tipo]="null" [tipiSuggestions]="tipiSuggestions()" (saved)="onTipoPendenzaSaved()" (cancelCreate)="showCreateTipo.set(false)" />
+      }
+
+      @if (tipiLoading() && !tipiPendenza()) {
+        <lnk-loading />
+      } @else if (tipiPendenza()?.length === 0 && !showCreateTipo()) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Domini.TipiPendenzaDominio.EmptyTitle" descriptionKey="Domini.TipiPendenzaDominio.EmptyDescription" />
+      } @else if (tipiPendenza(); as tps) {
+        <div class="flex flex-col gap-4">
+          @for (t of tps; track t.idTipoPendenza) {
+            <lnk-tipo-pendenza-dominio-inline [idDominio]="d.idDominio" [tipo]="t" (saved)="onTipoPendenzaSaved()" />
+          }
+        </div>
+      }
+    }
+
+    @if (activeTab() === 'connettori') {
+      <div class="flex flex-col gap-4">
+        @for (c of connettori; track c.tipo) {
+          <lnk-connettore-dominio-inline [idDominio]="d.idDominio" [descriptor]="c" />
+        }
+      </div>
     }
   }
   </div>

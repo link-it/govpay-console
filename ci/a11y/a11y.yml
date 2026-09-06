@@ -1,0 +1,47 @@
+# ESEMPIO — copia in .github/workflows/a11y.yml e adatta lo step "Avvia l'app".
+# Verifica accessibilità di GovPay Console con gov-a11y (reusable action).
+name: accessibilita
+on: [push, pull_request]
+
+jobs:
+  a11y:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1) Avvia GovPay Console e rendila raggiungibile su una porta (adatta al progetto:
+      #    docker compose, npm run start:ci + wait-for, o un service container).
+      - name: Avvia l'app
+        run: |
+          # es.: npm ci && npm run start:ci & ; ./scripts/wait-for.sh http://localhost:4200
+          echo "avvia GovPay Console su http://localhost:4200"
+
+      # 2) Audit di accessibilità (clona il tool e legge ci/a11y/targets.json)
+      - name: Audit accessibilita'
+        uses: link-it/gov-a11y@v1
+        with:
+          base: http://localhost:4200
+          config: ci/a11y/targets.json
+          out: a11y-report
+          tags: wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa
+          fail-on: serious
+          fail-on-nameless: 'true'
+          screen-reader: 'true'
+          # no-incomplete: 'true'  # opzionale: nascondi "Da verificare" dal report
+          # lighthouse: 'true'   # opzionale: punteggio a11y 0-100 (più lento)
+        env:
+          A11Y_GOVPAYCONSOLE_USER: ${{ secrets.A11Y_GOVPAYCONSOLE_USER }}
+          A11Y_GOVPAYCONSOLE_PASS: ${{ secrets.A11Y_GOVPAYCONSOLE_PASS }}
+
+      # 3) Pubblica i report come artifact
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a11y-report
+          path: a11y-report
+
+      # 4) (Opzionale) SARIF su GitHub Code Scanning
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: a11y-report/a11y.sarif

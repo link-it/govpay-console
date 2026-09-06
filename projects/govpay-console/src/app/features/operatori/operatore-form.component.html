@@ -1,0 +1,77 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'Operatori.Form.ModificaTitolo' : 'Operatori.Form.NuovoTitolo'"
+      subtitleKey="Operatori.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+        <lnk-detail-section titleKey="Operatori.Detail.Generali">
+          <div class="space-y-5">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.principal">{{ 'Operatori.Detail.Principal' | translate }}</span>
+              <input
+                type="text"
+                formControlName="principal"
+                class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60"
+              />
+              @if (form.controls.principal.touched && form.controls.principal.invalid) {
+                <span class="text-xs text-[var(--danger)]">{{ 'Operatori.Form.Obbligatorio' | translate }}</span>
+              }
+            </label>
+
+            <label class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.nome">{{ 'Operatori.Detail.RagioneSociale' | translate }}</span>
+              <input
+                type="text"
+                formControlName="nome"
+                class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+              />
+              @if (form.controls.nome.touched && form.controls.nome.invalid) {
+                <span class="text-xs text-[var(--danger)]">{{ 'Operatori.Form.Obbligatorio' | translate }}</span>
+              }
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Operatori.Detail.Abilitato' | translate }}</span>
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Operatori.Detail.Domini">
+          <lnk-ref-multiselect [(value)]="domini" [allowAll]="true" placeholderKey="Operatori.Form.DominioPlaceholder" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Operatori.Detail.TipiPendenza">
+          <lnk-ref-multiselect [(value)]="tipiPendenza" [allowAll]="true" [suggestions]="tipiSuggestions()" placeholderKey="Operatori.Form.TipoPendenzaPlaceholder" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Operatori.Detail.Ruoli">
+          <lnk-ref-multiselect [(value)]="ruoli" [suggestions]="ruoliSuggestions()" placeholderKey="Operatori.Form.RuoloPlaceholder" />
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Operatori.Detail.Acl">
+          <lnk-acl-editor [(acl)]="aclValue" />
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

@@ -22,4 +22,9 @@ export const TRACCIATI_ROUTES: Routes = [
     loadComponent: () =>
       import('./tracciato-detail.component').then((m) => m.TracciatoDetailComponent),
   },
+  {
+    path: ':id/operazioni/:numero',
+    loadComponent: () =>
+      import('./operazione-detail.component').then((m) => m.OperazioneDetailComponent),
+  },
 ];

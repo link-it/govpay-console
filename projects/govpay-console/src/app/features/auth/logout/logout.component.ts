@@ -23,7 +23,7 @@ import { AuthService } from '@core/auth';
   imports: [TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<section class="min-h-screen flex items-center justify-center p-4">
-    <p class="opacity-70">{{ 'Auth.Logout.InProgress' | translate }}</p>
+    <p class="text-[var(--muted-foreground)]">{{ 'Auth.Logout.InProgress' | translate }}</p>
   </section>`,
 })
 export class LogoutComponent implements OnInit {

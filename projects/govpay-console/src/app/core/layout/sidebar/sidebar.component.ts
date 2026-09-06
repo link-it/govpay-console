@@ -13,16 +13,16 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import type { ExtraMenuItem } from '@core/config';
-import { SystemFacade } from '@core/system';
+import { ConfigService } from '@linkit/shared-ui';
+import type { ExtraMenuItem } from '@linkit/shared-ui';
+import { SystemFacade } from '@linkit/shared-ui';
 import { AuthService } from '@core/auth';
 import { VERSION } from '@environments';
 import { NAV_ITEMS, filterNav } from '../nav';
 import { SidebarItemComponent } from './sidebar-item.component';
 import { ProfileMenuComponent } from '../../ui/profile-menu/profile-menu.component';
-import { ColorSchemeToggleComponent } from '../../ui/color-scheme-toggle/color-scheme-toggle.component';
-import { LanguageMenuComponent } from '../../ui/language-menu/language-menu.component';
+import { ColorSchemeToggleComponent } from '@linkit/shared-ui';
+import { LanguageMenuComponent } from '@linkit/shared-ui';
 
 @Component({
   selector: 'lnk-sidebar',

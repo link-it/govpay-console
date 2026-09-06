@@ -45,8 +45,7 @@
         "width": "11rem",
         "cell": {
           "type": "text",
-          "field": "idDominio",
-          "truncate": 30
+          "field": "idDominio"
         }
       },
       {

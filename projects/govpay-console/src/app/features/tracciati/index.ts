@@ -10,7 +10,8 @@
  */
 
 export * from './tracciato.model';
-export * from './tracciati.api';
+export * from './tracciati.console-api';
 export * from './tracciati.routes';
 export * from './tracciati-list.component';
 export * from './tracciato-detail.component';
+export * from './operazione-detail.component';

@@ -1,0 +1,103 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'Domini.Form.ModificaTitolo' : 'Domini.Form.NuovoTitolo'"
+      subtitleKey="Domini.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+        @if (!isEdit()) {
+          <div class="rounded-lg border border-dashed border-[var(--border)] bg-[var(--muted)]/40 p-4 space-y-2">
+            <p class="text-xs text-[var(--muted-foreground)]">{{ 'PagoPA.EnteCreditore.FormHint' | translate }}</p>
+            <lnk-ente-creditore-lookup (selected)="onEnteCreditoreSelected($event)" />
+          </div>
+        }
+        <lnk-detail-section titleKey="Domini.Detail.Generali">
+          <div class="space-y-5">
+            <div class="grid grid-cols-2 gap-4">
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idDominio">{{ 'Domini.Detail.IdDominio' | translate }}</span>
+                <input type="text" formControlName="idDominio" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60" />
+                @if (form.controls.idDominio.touched && form.controls.idDominio.invalid) {
+                  <span class="text-xs text-[var(--danger)]">{{ 'Domini.Form.IdNonValido' | translate }}</span>
+                }
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.ragioneSociale">{{ 'Domini.Detail.RagioneSociale' | translate }}</span>
+                <input type="text" formControlName="ragioneSociale" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                @if (form.controls.ragioneSociale.touched && form.controls.ragioneSociale.invalid) {
+                  <span class="text-xs text-[var(--danger)]">{{ 'Domini.Form.Obbligatorio' | translate }}</span>
+                }
+              </label>
+            </div>
+            <div class="flex flex-wrap items-center gap-6">
+              <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Detail.Abilitato' | translate }}</span></label>
+              <label class="flex items-center gap-2"><input type="checkbox" formControlName="intermediato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Detail.Intermediato' | translate }}</span></label>
+              <label class="flex items-center gap-2"><input type="checkbox" formControlName="scaricaFr" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Detail.ScaricaFr' | translate }}</span></label>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">{{ 'Domini.Form.IntermediatoHint' | translate }}</p>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Domini.Form.SezionePagoPA">
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Gln' | translate }}</span>
+              <input type="text" formControlName="gln" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.IdStazione' | translate }}</span>
+              <input type="text" formControlName="idStazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.AuxDigit' | translate }}</span>
+              <input type="number" min="0" max="3" formControlName="auxDigit" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.SegregationCode' | translate }}</span>
+              <input type="number" min="0" max="49" formControlName="segregationCode" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.IuvPrefix' | translate }}</span>
+              <input type="text" formControlName="iuvPrefix" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Cbill' | translate }}</span>
+              <input type="text" formControlName="cbill" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Domini.Form.SezioneAnagrafica">
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Indirizzo' | translate }}</span>
+              <input type="text" formControlName="indirizzo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Civico' | translate }}</span>
+              <input type="text" formControlName="civico" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Cap' | translate }}</span>
+              <input type="text" formControlName="cap" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Localita' | translate }}</span>
+              <input type="text" formControlName="localita" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Provincia' | translate }}</span>
+              <input type="text" formControlName="provincia" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Nazione' | translate }}</span>
+              <input type="text" formControlName="nazione" maxlength="2" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm uppercase focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Email' | translate }}</span>
+              <input type="email" formControlName="email" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Pec' | translate }}</span>
+              <input type="email" formControlName="pec" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Tel' | translate }}</span>
+              <input type="text" formControlName="tel" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Web' | translate }}</span>
+              <input type="text" formControlName="web" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

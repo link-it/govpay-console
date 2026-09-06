@@ -9,50 +9,47 @@
  * the Free Software Foundation.
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, of } from 'rxjs';
+import { catchError, map, of, type Observable } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import {
   DataTableComponent,
+  DisplayConfigLoader,
   DetailSectionComponent,
   EmptyStateComponent,
-  InfiniteScrollDirective,
+  InfoGridComponent,
   LoadingComponent,
   ListStickyToolbarDirective,
-  InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
-  TabsComponent,
+  downloadBlob,
+  formatDate,
   formatDateTime,
   formatEuro,
-  formatMsTime,
-  truncate,
   type ColumnDef,
   type InfoGridItem,
-  type TabDef,
-} from '@shared';
-import { RicevuteApi } from './ricevute.api';
-import { STATO_RPP_COLOR, STATO_RPP_LABEL, type Ricevuta } from './ricevuta.model';
-import { GiornaleEventiApi } from '../giornale-eventi/giornale-eventi.api';
+} from '@linkit/shared-ui';
+import { problemDetail } from '@core/models';
+import { RicevuteConsoleApi } from './ricevute.console-api';
 import {
-  CATEGORIA_EVENTO_LABEL,
-  ESITO_EVENTO_COLOR,
-  ESITO_EVENTO_LABEL,
-  severitaToEsito,
-  type Evento,
-} from '../giornale-eventi/evento.model';
+  statoRtColor,
+  statoRtLabel,
+  type Ricevuta,
+  type RicevutaFormato,
+  type RptView,
+  type RtTransferView,
+  type RtView,
+} from './ricevuta.model';
+
+/** Tiene solo gli item valorizzati: le sezioni gated su `items().length` così si
+ *  nascondono automaticamente quando non hanno contenuto reale. */
+function compact(items: InfoGridItem[]): InfoGridItem[] {
+  return items.filter((i) => i.value != null && i.value !== '');
+}
 
 @Component({
   selector: 'lnk-ricevuta-detail',
@@ -67,171 +64,206 @@ import {
     StatusBadgeComponent,
     EmptyStateComponent,
     LoadingComponent,
-    TabsComponent,
-    DataTableComponent,
-    InfiniteScrollDirective,
     ListStickyToolbarDirective,
+    DataTableComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ricevuta-detail.component.html',
 })
 export class RicevutaDetailComponent implements OnInit {
-  private readonly api = inject(RicevuteApi);
-  private readonly eventiApi = inject(GiornaleEventiApi);
+  private readonly api = inject(RicevuteConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+  private readonly displayConfigLoader = inject(DisplayConfigLoader);
+
+  /**
+   * Visibilità delle sezioni del dettaglio da `ricevute-config.json`
+   * (`detail.sections`): `false` nasconde la sezione anche se i dati sono
+   * presenti; chiave assente = visibile (comportamento di default).
+   */
+  private readonly sectionsCfg = toSignal(
+    this.displayConfigLoader.load('assets/config/ricevute-config.json').pipe(
+      map((cfg) => (cfg as { detail?: { sections?: Record<string, boolean> } }).detail?.sections ?? {}),
+      catchError(() => of<Record<string, boolean>>({}))
+    ),
+    { initialValue: {} as Record<string, boolean> }
+  );
+
+  /** `true` se la sezione va mostrata (default) — `false` solo se disattivata in config. */
+  showSection(key: string): boolean {
+    return this.sectionsCfg()[key] !== false;
+  }
+
+  idDominio = '';
+  iuv = '';
+  idRicevuta = '';
 
   readonly ricevuta = signal<Ricevuta | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  /** Chiave del download in corso (es. `rt:pdf`), per disabilitare il bottone. */
+  readonly downloading = signal<string | null>(null);
 
-  // Tabs
-  readonly activeTab = signal<'dati' | 'eventi'>('dati');
-  readonly tabs = computed<TabDef[]>(() => [
-    { id: 'dati',   labelKey: 'Ricevute.Detail.TabDati' },
-    { id: 'eventi', labelKey: 'Ricevute.Detail.TabEventi',
-      badge: this.eventi() !== null ? this.eventiTotal() : null,
-      badgeLoading: this.eventiLoading() && this.eventi() === null },
-  ]);
-
-  // Eventi associati alla ricevuta. La prima fetch parte non appena la
-  // ricevuta è caricata (così il badge del tab mostra il totale reale,
-  // anche prima che l'utente apra il tab). `eventi === null` significa
-  // "non ancora caricati"; ulteriori pagine via infinite-scroll.
-  readonly eventi = signal<Evento[] | null>(null);
-  readonly eventiTotal = signal(0);
-  readonly eventiPage = signal(1);
-  readonly eventiLoading = signal(false);
-  private static readonly EVENTI_PAGE_SIZE = 25;
-  readonly eventiHasMore = computed(() => (this.eventi()?.length ?? 0) < this.eventiTotal());
-  readonly eventiCanLoadMore = computed(() => this.eventiHasMore() && !this.eventiLoading());
-  readonly eventiColumns = computed<ColumnDef<Evento>[]>(() => [
-    {
-      key: 'dataEvento',
-      header: 'GiornaleEventi.Columns.Data',
-      format: (r) => formatDateTime(r.dataEvento),
-      cellClass: 'font-mono text-xs',
-      width: '12rem',
-    },
-    {
-      key: 'categoriaEvento',
-      header: 'GiornaleEventi.Columns.Categoria',
-      format: (r) => (r.categoriaEvento ? CATEGORIA_EVENTO_LABEL[r.categoriaEvento] : '—'),
-      width: '8rem',
-    },
-    {
-      key: 'tipoEvento',
-      header: 'GiornaleEventi.Columns.Tipo',
-      format: (r) => truncate([r.tipoEvento, r.sottotipoEvento].filter(Boolean).join(' / ') || '—', 60),
-    },
-    {
-      key: 'durataEvento',
-      header: 'GiornaleEventi.Columns.Durata',
-      format: (r) => (r.durataEvento != null ? formatMsTime(r.durataEvento) : '—'),
-      align: 'right',
-      cellClass: 'font-mono text-xs',
-      width: '6rem',
-    },
-    {
-      key: 'esito',
-      header: 'GiornaleEventi.Columns.Esito',
-      cellType: 'badge',
-      cellTone: (r) => ESITO_EVENTO_COLOR[r.esito ?? severitaToEsito(r.severita)] ?? 'muted',
-      format: (r) => ESITO_EVENTO_LABEL[r.esito ?? severitaToEsito(r.severita)] ?? '—',
-      width: '7rem',
-    },
-  ]);
-
-  /** Effect: appena la ricevuta è caricata, fetch della prima pagina di
-   *  eventi (così il badge del tab è popolato anche se l'utente non apre
-   *  ancora il tab Eventi). */
-  private readonly _eventiLoader = effect(() => {
-    if (this.eventi() !== null) return;
-    if (this.eventiLoading()) return;
-    const r = this.ricevuta();
-    if (!r) return;
-    this.fetchEventi(r);
+  readonly statoTone = computed(() => statoRtColor(this.ricevuta()?.stato ?? ''));
+  readonly statoLabel = computed(() => statoRtLabel(this.ricevuta()?.stato ?? ''));
+  /** Importo formattato, messo in evidenza in testata (accanto allo stato). */
+  readonly importoFmt = computed(() => {
+    const i = this.ricevuta()?.importo;
+    return i != null ? formatEuro(i) : null;
   });
-
-  readonly iuvDisplay = computed(() => {
-    const r = this.ricevuta();
-    return r?.pendenza?.iuvPagamento || r?.pendenza?.iuvAvviso || '—';
-  });
-
-  readonly statoTone = computed(() => {
-    const s = this.ricevuta()?.stato;
-    return s ? STATO_RPP_COLOR[s] : 'muted';
-  });
-  readonly statoLabelKey = computed(() => {
-    const s = this.ricevuta()?.stato;
-    return s ? STATO_RPP_LABEL[s] : 'Ricevute.Stati.InCorso';
-  });
+  /** La RPT può mancare (RT acquisita in standin): disabilita i relativi download. */
+  readonly hasRpt = computed(() => this.ricevuta()?.rpt != null);
+  readonly pendenza = computed(() => this.ricevuta()?.pendenza ?? null);
 
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const r = this.ricevuta();
     if (!r) return [];
-    const dataPagamento = r.rt?.paymentDateTime || r.pendenza?.dataPagamento;
     return [
-      { labelKey: 'Ricevute.Detail.Iuv', value: this.iuvDisplay(), mono: true },
-      { labelKey: 'Ricevute.Detail.NumeroAvviso', value: r.pendenza?.numeroAvviso, mono: true, hide: !r.pendenza?.numeroAvviso },
-      { labelKey: 'Ricevute.Detail.DataRicevuta', value: dataPagamento ? formatDateTime(dataPagamento) : undefined, hide: !dataPagamento },
-      {
-        labelKey: 'Ricevute.Detail.Importo',
-        value: formatEuro(r.pendenza?.importoPagato ?? r.pendenza?.importo),
-      },
-      { labelKey: 'Ricevute.Detail.Causale', value: r.pendenza?.causale, wide: true, hide: !r.pendenza?.causale },
+      { labelKey: 'Ricevute.Detail.Iuv', value: r.iuv, mono: true },
+      { labelKey: 'Ricevute.Detail.IdRicevuta', value: r.idRicevuta, mono: true },
+      { labelKey: 'Ricevute.Detail.Dominio', value: r.idDominio, mono: true },
+      { labelKey: 'Ricevute.Detail.DataPagamento', value: formatDateTime(r.dataPagamento) },
+      { labelKey: 'Ricevute.Detail.Psp', value: r.codPsp, hide: !r.codPsp },
+      { labelKey: 'Ricevute.Detail.Versione', value: r.versione, hide: !r.versione },
+      { labelKey: 'Ricevute.Detail.DescrizioneStato', value: r.descrizioneStato, wide: true, hide: !r.descrizioneStato },
     ];
   });
 
-  readonly dominioItems = computed<InfoGridItem[]>(() => {
-    const dom = this.ricevuta()?.pendenza?.dominio;
-    if (!dom) return [];
+  readonly pendenzaItems = computed<InfoGridItem[]>(() => {
+    const p = this.pendenza();
+    if (!p) return [];
     return [
-      { labelKey: 'Ricevute.Detail.IdDominio', value: dom.idDominio, mono: true },
-      { labelKey: 'Ricevute.Detail.RagioneSociale', value: dom.ragioneSociale, hide: !dom.ragioneSociale },
+      { labelKey: 'Ricevute.Detail.IdA2A', value: p.idA2A, mono: true },
+      { labelKey: 'Ricevute.Detail.IdPendenza', value: p.idPendenza, mono: true },
+      { labelKey: 'Ricevute.Detail.CausaleBreve', value: p.causaleBreve, wide: true, hide: !p.causaleBreve },
     ];
   });
 
-  readonly pagatoreItems = computed<InfoGridItem[]>(() => {
-    const sp = this.ricevuta()?.pendenza?.soggettoPagatore;
-    if (!sp) return [];
-    return [
-      { labelKey: 'Ricevute.Detail.Anagrafica', value: sp.anagrafica, wide: true },
-      { labelKey: 'Ricevute.Detail.Identificativo', value: sp.identificativo, mono: true },
-      { labelKey: 'Ricevute.Detail.Email', value: sp.email, hide: !sp.email },
-    ];
+  /** Viste RT/RPT normalizzate al confine dell'API (vedi `RicevuteConsoleApi.get`). */
+  private readonly rtView = computed<RtView>(() => this.ricevuta()?.rtView ?? { transfers: [] });
+  private readonly rptView = computed<RptView>(() => this.ricevuta()?.rptView ?? {});
+
+  /** Esito pagamento (RT). */
+  readonly esitoRtItems = computed<InfoGridItem[]>(() => {
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.Esito', value: v.esito },
+      { labelKey: 'Ricevute.Detail.ImportoPagato', value: v.importoPagato != null ? formatEuro(v.importoPagato) : undefined },
+      { labelKey: 'Ricevute.Detail.Commissione', value: v.commissione != null ? formatEuro(v.commissione) : undefined },
+      { labelKey: 'Ricevute.Detail.MetodoPagamento', value: v.metodoPagamento },
+      { labelKey: 'Ricevute.Detail.DataOraPagamento', value: v.dataOraPagamento ? formatDateTime(v.dataOraPagamento) : undefined },
+      { labelKey: 'Ricevute.Detail.DataApplicazione', value: v.dataContabile ? formatDate(v.dataContabile) : undefined },
+      { labelKey: 'Ricevute.Detail.DataTrasferimento', value: v.dataTrasferimento ? formatDate(v.dataTrasferimento) : undefined },
+      { labelKey: 'Ricevute.Detail.ReceiptId', value: v.receiptId, mono: true },
+      { labelKey: 'Ricevute.Detail.NumeroAvviso', value: v.numeroAvviso, mono: true },
+    ]);
   });
+
+  /** Versante / debitore (RT). */
+  readonly versanteItems = computed<InfoGridItem[]>(() => {
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.Anagrafica', value: v.versanteNome },
+      { labelKey: 'Ricevute.Detail.TipoSoggetto', value: this.tipoSoggetto(v.versanteTipo) },
+      { labelKey: 'Ricevute.Detail.Identificativo', value: v.versanteId, mono: true },
+      { labelKey: 'Ricevute.Detail.Email', value: v.versanteEmail },
+    ]);
+  });
+
+  /** Prestatore servizi di pagamento (RT). */
+  readonly pspItems = computed<InfoGridItem[]>(() => {
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.PspDenominazione', value: v.pspNome },
+      { labelKey: 'Ricevute.Detail.PspId', value: v.pspId, mono: true },
+      { labelKey: 'Ricevute.Detail.PspFiscalCode', value: v.pspCf, mono: true },
+      { labelKey: 'Ricevute.Detail.Canale', value: v.canale },
+    ]);
+  });
+
+  /** Ente creditore (RT). */
+  readonly enteItems = computed<InfoGridItem[]>(() => {
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.EnteDenominazione', value: v.enteNome },
+      { labelKey: 'Ricevute.Detail.EnteFiscalCode', value: v.enteCf, mono: true },
+      { labelKey: 'Ricevute.Detail.CreditorReferenceId', value: v.iuv, mono: true },
+      { labelKey: 'Ricevute.Detail.Causale', value: v.causale, wide: true },
+    ]);
+  });
+
+  /** Richiesta di pagamento (RPT), quando disponibile. */
+  readonly rptItems = computed<InfoGridItem[]>(() => {
+    const v = this.rptView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.ImportoRichiesto', value: v.importoRichiesto != null ? formatEuro(v.importoRichiesto) : undefined },
+      { labelKey: 'Ricevute.Detail.Scadenza', value: v.scadenza ? formatDate(v.scadenza) : undefined },
+      { labelKey: 'Ricevute.Detail.DataEsecuzione', value: v.dataEsecuzione ? formatDate(v.dataEsecuzione) : undefined },
+      { labelKey: 'Ricevute.Detail.TipoVersamento', value: v.tipoVersamento },
+      { labelKey: 'Ricevute.Detail.UltimoPagamento', value: this.siNo(v.ultimoPagamento) },
+      { labelKey: 'Ricevute.Detail.CreditorReferenceId', value: v.iuv, mono: true },
+      { labelKey: 'Ricevute.Detail.Causale', value: v.causale, wide: true },
+    ]);
+  });
+
+  /** Trasferimenti normalizzati — usati per il gating della sezione. */
+  readonly transfers = computed<RtTransferView[]>(() => this.rtView().transfers);
+
+  /** Righe tabella: trasferimenti + riga di totale (= importo ricevuta). */
+  readonly transferRows = computed<RtTransferView[]>(() => {
+    const rows = this.transfers();
+    const importo = this.ricevuta()?.importo;
+    if (!rows.length || importo == null) return rows;
+    return [...rows, { causale: this.translate.instant('Ricevute.Detail.Transfer.Totale'), importo: String(importo) }];
+  });
+
+  /** Colonne: Causale in seconda posizione, Importo come ultima. */
+  readonly transferColumns: ColumnDef<RtTransferView>[] = [
+    { key: 'num', header: 'Ricevute.Detail.Transfer.Num', format: (t) => (t.num ?? '').toString(), align: 'center', width: '3.5rem' },
+    { key: 'causale', header: 'Ricevute.Detail.Transfer.Causale', format: (t) => t.causale ?? '' },
+    { key: 'iban', header: 'Ricevute.Detail.Transfer.Iban', format: (t) => t.iban ?? '', cellClass: 'font-mono text-xs', width: '16rem' },
+    { key: 'importo', header: 'Ricevute.Detail.Transfer.Importo', format: (t) => formatEuro(t.importo), align: 'right', cellClass: 'font-mono', width: '8rem' },
+  ];
+
+  private siNo(v: boolean | null | undefined): string | undefined {
+    if (v == null) return undefined;
+    return this.translate.instant(v ? 'Common.Yes' : 'Common.No');
+  }
+
+  private tipoSoggetto(t?: string): string | undefined {
+    if (!t) return undefined;
+    if (t === 'F') return this.translate.instant('Ricevute.Detail.PersonaFisica');
+    if (t === 'G') return this.translate.instant('Ricevute.Detail.PersonaGiuridica');
+    return t;
+  }
 
   ngOnInit(): void {
-    const params = this.route.snapshot.paramMap;
-    const idDominio = params.get('idDominio');
-    const iuv = params.get('iuv');
-    const ccp = params.get('ccp') ?? '';
-    if (!idDominio || !iuv) {
+    const p = this.route.snapshot.paramMap;
+    const idDominio = p.get('idDominio');
+    const iuv = p.get('iuv');
+    const idRicevuta = p.get('idRicevuta');
+    if (!idDominio || !iuv || !idRicevuta) {
       this.router.navigate(['/ricevute']);
       return;
     }
-    // `?tab=eventi` (es. dal back del dettaglio evento) → apri sul tab Eventi.
-    const tabParam = this.route.snapshot.queryParamMap.get('tab');
-    if (tabParam === 'eventi' || tabParam === 'dati') this.activeTab.set(tabParam);
-    this.system.setBreadcrumbs([
-      { label: 'Nav.Ricevute', url: '/ricevute' },
-      { label: iuv },
-    ]);
-    this.fetch(idDominio, iuv, ccp);
+    this.idDominio = idDominio;
+    this.iuv = iuv;
+    this.idRicevuta = idRicevuta;
+    this.system.setBreadcrumbs([{ label: 'Nav.Ricevute', url: '/ricevute' }, { label: iuv }]);
+    this.fetch();
   }
 
-  private fetch(idDominio: string, iuv: string, ccp: string): void {
+  private fetch(): void {
     this.loading.set(true);
     this.error.set(null);
     this.api
-      .get(idDominio, iuv, ccp)
+      .get(this.idDominio, this.iuv, this.idRicevuta)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
           return of(null);
@@ -243,62 +275,28 @@ export class RicevutaDetailComponent implements OnInit {
       });
   }
 
-  /** Prima fetch (pagina 1) degli eventi del giornale filtrati sulla ricevuta. */
-  private fetchEventi(r: Ricevuta): void {
-    this.eventiPage.set(1);
-    this.fetchEventiPage(r, false);
+  onDownloadRt(formato: RicevutaFormato): void {
+    this.download('rt', formato, this.api.getRtBlob(this.idDominio, this.iuv, this.idRicevuta, formato));
   }
 
-  loadMoreEventi(): void {
-    if (!this.eventiCanLoadMore()) return;
-    const r = this.ricevuta();
-    if (!r) return;
-    this.eventiPage.update((n) => n + 1);
-    this.fetchEventiPage(r, true);
+  onDownloadRpt(formato: Exclude<RicevutaFormato, 'pdf'>): void {
+    this.download('rpt', formato, this.api.getRptBlob(this.idDominio, this.iuv, this.idRicevuta, formato));
   }
 
-  private fetchEventiPage(r: Ricevuta, append: boolean): void {
-    this.eventiLoading.set(true);
-    const pageSize = RicevutaDetailComponent.EVENTI_PAGE_SIZE;
-    // Per le RPP usiamo iuv + idDominio come chiave principale; quando
-    // disponibili aggiungiamo anche codApplicazione + idPendenza per
-    // restringere ulteriormente al record specifico.
-    this.eventiApi
-      .list({
-        iuv: r.pendenza?.iuvPagamento || r.pendenza?.iuvAvviso,
-        idDominio: r.pendenza?.dominio?.idDominio,
-        codApplicazione: r.pendenza?.idA2A,
-        idPendenza: r.pendenza?.idPendenza,
-        pagina: this.eventiPage(),
-        risPerPagina: pageSize,
-      })
+  private download(risorsa: 'rt' | 'rpt', formato: RicevutaFormato, source: Observable<Blob>): void {
+    if (this.downloading()) return;
+    this.downloading.set(`${risorsa}:${formato}`);
+    source
       .pipe(
-        catchError(() => of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: pageSize })),
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Ricevute.Detail.DownloadErrore')));
+          return of(null);
+        })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
-        if (append) this.eventi.update((prev) => [...(prev ?? []), ...results]);
-        else this.eventi.set(results);
-        this.eventiTotal.set(page.numRisultati ?? 0);
-        this.eventiLoading.set(false);
+      .subscribe((blob) => {
+        this.downloading.set(null);
+        if (!blob) return;
+        downloadBlob(blob, `${risorsa}-${this.iuv}-${this.idRicevuta}.${formato}`);
       });
-  }
-
-  onEventClick(e: Evento): void {
-    if (e.id == null) return;
-    const params = this.route.snapshot.paramMap;
-    const idDominio = params.get('idDominio');
-    const iuv = params.get('iuv');
-    const ccp = params.get('ccp');
-    if (!idDominio || !iuv) {
-      this.router.navigate(['/giornale-eventi', e.id]);
-      return;
-    }
-    // Drilldown nested: il breadcrumb e il bottone "Indietro" del
-    // dettaglio evento riporteranno sul dettaglio della ricevuta.
-    const segments = ['/ricevute', idDominio, iuv];
-    if (ccp) segments.push(ccp);
-    segments.push('eventi', String(e.id));
-    this.router.navigate(segments);
   }
 }

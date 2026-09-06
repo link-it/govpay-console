@@ -1,0 +1,45 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Impostazioni.Aree.AppIoServer.Nome" subtitleKey="Impostazioni.Aree.AppIoServer.Desc">
+      <a routerLink="/impostazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" autocomplete="off" class="space-y-4">
+        <lnk-detail-section titleKey="Impostazioni.AppIoServer.Connettore">
+          <div class="space-y-5">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Impostazioni.AppIoServer.Abilitato' | translate }}</span>
+            </label>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label class="flex flex-col gap-1 sm:col-span-2">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.AppIoServer.Url' | translate }}</span>
+                <input type="text" formControlName="url" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.AppIoServer.Ttl' | translate }}</span>
+                <input type="number" formControlName="timeToLiveSecondi" min="0" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+              </label>
+            </div>
+
+            <lnk-connettore-auth-fields [authGroup]="form.controls.auth" [credenzialiGroup]="form.controls.credenziali" />
+          </div>
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+          <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

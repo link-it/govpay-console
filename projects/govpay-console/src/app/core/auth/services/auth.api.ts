@@ -12,7 +12,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, type Observable } from 'rxjs';
-import { ConfigService } from '@core/config';
+import { ConfigService } from '@linkit/shared-ui';
 import {
   mapProfileToUser,
   type AuthUser,

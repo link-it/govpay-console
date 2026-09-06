@@ -9,7 +9,7 @@
  * the Free Software Foundation.
  */
 
-import type { SoggettoPagatore } from '../pendenze/pendenza.model';
+import type { SoggettoPagatore } from '@core/models';
 
 /**
  * Stati Pagamento (RPP) del backend GovPay legacy

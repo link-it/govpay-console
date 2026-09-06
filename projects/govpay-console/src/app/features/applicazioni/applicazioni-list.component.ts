@@ -18,13 +18,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { ListStateService, SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { ConfigService, ListStateService, SnackbarService, SystemFacade, TweaksRegistry, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -34,35 +32,50 @@ import {
   ListStickyToolbarDirective,
   ItemListComponent,
   PageHeaderComponent,
-  SelectInputComponent,
+  SearchPillComponent,
+  ViewToggleComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
+  SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
+  formatOrdinamento,
+  initialSearchState,
+  truncate,
   type ColumnDef,
-  type SelectOption,
-} from '@shared';
-import { TweaksRegistry } from '@core/ui';
-import { ApplicazioniApi } from './applicazioni.api';
-import type { Applicazione, ApplicazioniListFilters } from './applicazione.model';
+  type SearchField,
+  type SearchPillLabels,
+  type SearchState,
+  type SortEvent,
+  type SortOption,
+} from '@linkit/shared-ui';
+import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { ApplicazioniConsoleApi } from './applicazioni.console-api';
+import type { ApplicazioniListFilters, ApplicazioneSummary } from './applicazione.model';
 
 const PAGE_SIZE = 25;
 
-interface ListFilters {
-  abilitato: '' | 'true' | 'false';
-}
+const F = {
+  idA2A: 'idA2A',
+  principal: 'principal',
+  abilitato: 'abilitato',
+} as const;
 
-const EMPTY_FILTERS: ListFilters = { abilitato: '' };
+/** Valori del filtro `abilitato` (segmented). `Tutti` = nessun filtro. */
+const ABIL = { tutti: 'Tutti', si: 'Abilitati', no: 'Disabilitati' } as const;
 
 @Component({
   selector: 'lnk-applicazioni-list',
   standalone: true,
   imports: [
+    RouterLink,
     TranslatePipe,
     PageHeaderComponent,
     DataTableComponent,
     ItemListComponent,
     EmptyStateComponent,
     InfiniteScrollDirective,
-    SelectInputComponent,
+    SearchPillComponent,
+    ViewToggleComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -70,18 +83,93 @@ const EMPTY_FILTERS: ListFilters = { abilitato: '' };
   templateUrl: './applicazioni-list.component.html',
 })
 export class ApplicazioniListComponent implements OnInit {
-  private readonly api = inject(ApplicazioniApi);
-  private readonly cfgSvc = inject(ConfigService);
+  private readonly api = inject(ApplicazioniConsoleApi);
+  private readonly config = inject(ConfigService);
+  private readonly system = inject(SystemFacade);
+  private readonly listState = inject(ListStateService);
+  private static readonly STATE_KEY = 'applicazioni';
+  private readonly snackbar = inject(SnackbarService);
+  private readonly translate = inject(TranslateService);
+  private readonly lang = inject(LanguageService);
+  private readonly router = inject(Router);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
-    const layout = this.cfgSvc.appConfig()?.Layout;
+    const layout = this.config.appConfig()?.Layout;
     return layout?.listViewByFeature?.['applicazioni'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+
+  private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
+  readonly searchPillVariant = computed<'pill' | 'square'>(
+    () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
+
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.config.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
+  readonly searchFields = computed<SearchField[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: F.idA2A, label: t('Applicazioni.Filters.IdA2A'), kind: 'text', placeholder: t('Applicazioni.Filters.IdA2APlaceholder') },
+      { id: F.principal, label: t('Applicazioni.Filters.Principal'), kind: 'text', placeholder: t('Applicazioni.Filters.PrincipalPlaceholder') },
+      {
+        id: F.abilitato,
+        label: t('Applicazioni.Filters.Stato'),
+        kind: 'select',
+        options: [ABIL.tutti, ABIL.si, ABIL.no],
+        optionLabels: {
+          [ABIL.tutti]: t('Applicazioni.Filters.StatoTutti'),
+          [ABIL.si]: t('Applicazioni.Filters.StatoAbilitati'),
+          [ABIL.no]: t('Applicazioni.Filters.StatoDisabilitati'),
+        },
+        default: ABIL.tutti,
+      },
+    ];
+  });
+
+  readonly searchPlaceholder = computed(() => {
+    this.lang.current();
+    return this.translate.instant('Applicazioni.Filters.Placeholder');
+  });
+
+  /** Campi di ordinamento supportati dall’API. */
+  readonly sortOptions = computed<SortOption[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: 'idA2A', label: t('Applicazioni.Columns.IdA2A') },
+      { id: 'principal', label: t('Applicazioni.Columns.Principal') },
+    ];
+  });
+
+  readonly pillLabels = computed<SearchPillLabels>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return {
+      filters: t('SearchPill.Filters'),
+      reset: t('SearchPill.Reset'),
+      close: t('SearchPill.Close'),
+      search: t('SearchPill.Search'),
+      activeSuffix: t('SearchPill.ActiveSuffix'),
+      resultsApproxPrefix: t('SearchPill.ResultsApproxPrefix'),
+      resultsSuffix: t('SearchPill.ResultsSuffix'),
+      noResults: t('SearchPill.NoResults'),
+      optionsFilter: t('SearchPill.OptionsFilter'),
+      none: t('SearchPill.None'),
+      noOptions: t('SearchPill.NoOptions'),
+      textPlaceholder: t('SearchPill.TextPlaceholder'),
+      selectPlaceholder: t('SearchPill.SelectPlaceholder'),
+      allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
+    };
+  });
 
   constructor() {
     const tweaks = inject(TweaksRegistry);
@@ -90,11 +178,36 @@ export class ApplicazioniListComponent implements OnInit {
         id: 'applicazioni',
         titleKey: 'Tweaks.Layout',
         rows: [
-          { type: 'segmented', labelKey: 'Tweaks.View', hintKey: 'Tweaks.ViewHint',
-            options: VIEW_OPTIONS, value: this.viewMode,
-            onChange: (v) => this.onViewModeChange(v) },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.View',
+            hintKey: 'Tweaks.ViewHint',
+            options: VIEW_OPTIONS,
+            value: this.viewMode,
+            onChange: (v) => this.onViewModeChange(v),
+          },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.SearchPill',
+            hintKey: 'Tweaks.SearchPillHint',
+            options: SEARCH_PILL_VARIANT_OPTIONS,
+            value: this.searchPillVariant,
+            onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
+          },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.Density',
+            hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS,
+            value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable'),
+          },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => {
+          this.viewModeOverride.set(null);
+          this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
+        },
       })
     );
   }
@@ -103,43 +216,39 @@ export class ApplicazioniListComponent implements OnInit {
     this.displayConfigLoader.load('assets/config/applicazioni-config.json').pipe(catchError(() => of(null))),
     { initialValue: null },
   );
-  private readonly system = inject(SystemFacade);
-  private readonly listState = inject(ListStateService);
-  private static readonly STATE_KEY = 'applicazioni';
-  private readonly snackbar = inject(SnackbarService);
-  private readonly translate = inject(TranslateService);
-  private readonly router = inject(Router);
 
   private readonly page = signal(1);
-  readonly rows = signal<Applicazione[]>([]);
-  readonly total = signal(0);
+  readonly sort = signal<SortEvent | null>({ key: 'idA2A', direction: 'asc' });
+  readonly rows = signal<ApplicazioneSummary[]>([]);
+  readonly hasMore = signal(false);
+  readonly total = signal<number | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  readonly filters = signal<ListFilters>(EMPTY_FILTERS);
-  readonly hasActiveFilters = computed(() => !!this.filters().abilitato);
+  readonly searchState = signal<SearchState>(initialSearchState([]));
+
+  readonly hasActiveFilters = computed(() => {
+    const f = this.searchState().filters;
+    return !!(f[F.idA2A] || f[F.principal] || (f[F.abilitato] && f[F.abilitato] !== ABIL.tutti));
+  });
+
+  readonly hasError = computed(() => this.error() !== null);
   readonly hasRows = computed(() => this.rows().length > 0);
-  readonly hasMore = computed(() => this.rows().length < this.total());
-  readonly showEmptyState = computed(() => !this.loading() && !this.error() && !this.hasRows());
+  readonly showEmptyState = computed(() => !this.loading() && !this.hasError() && !this.hasRows());
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly booleanOptions: SelectOption[] = [
-    { value: 'true', labelKey: 'Common.Yes' },
-    { value: 'false', labelKey: 'Common.No' },
-  ];
-
-  readonly columns = computed<ColumnDef<Applicazione>[]>(() => {
+  readonly columns = computed<ColumnDef<ApplicazioneSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<Applicazione>(tableCfg.columns);
+    if (tableCfg?.columns?.length) return columnsFromConfig<ApplicazioneSummary>(tableCfg.columns);
     return [
-      { key: 'idA2A', header: 'Applicazioni.Columns.IdA2A', cellClass: 'font-mono text-xs' },
-      { key: 'principal', header: 'Applicazioni.Columns.Principal', cellClass: 'font-mono text-xs' },
+      { key: 'idA2A', header: 'Applicazioni.Columns.IdA2A', cellClass: 'font-mono text-xs', width: '14rem' },
+      { key: 'principal', header: 'Applicazioni.Columns.Principal', cellClass: 'font-mono text-xs', format: (a) => truncate(a.principal) },
       {
         key: 'abilitato',
         header: 'Applicazioni.Columns.Abilitato',
         cellType: 'badge',
         cellTone: (a) => (a.abilitato ? 'success' : 'muted'),
-        format: (a) => (a.abilitato ? this.translate.instant('Common.Yes') : this.translate.instant('Common.No')),
+        format: (a) => this.translate.instant(a.abilitato ? 'Common.Yes' : 'Common.No'),
         width: '8rem',
       },
     ];
@@ -147,31 +256,59 @@ export class ApplicazioniListComponent implements OnInit {
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([{ label: 'Nav.Applicazioni' }]);
-    // Ripristina filtri dopo back da dettaglio.
-    const saved = this.listState.get<{ filters: ListFilters }>(ApplicazioniListComponent.STATE_KEY);
-    if (saved) this.filters.set(saved.filters);
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(ApplicazioniListComponent.STATE_KEY);
+    if (saved) {
+      if (saved.search) this.searchState.set(saved.search);
+      if (saved.sort) this.sort.set(saved.sort);
+    }
+    this.syncPillSort();
     this.reset();
   }
 
-  refresh(): void { this.reset(); }
-  onRowClick(a: Applicazione): void { this.router.navigate(['/applicazioni', a.idA2A]); }
+  /** Allinea sort/dir della search-pill al `sort` signal (dropdown ↔ tabella). */
+  private syncPillSort(): void {
+    const s = this.sort();
+    this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
+  }
+
+  onSortChange(s: SortEvent): void {
+    this.sort.set(s);
+    this.syncPillSort();
+    this.reset();
+  }
+
+  refresh(): void {
+    this.reset();
+  }
+
   loadMore(): void {
     if (!this.canLoadMore()) return;
     this.page.update((p) => p + 1);
     this.fetch(true);
   }
-  onAbilitatoChange(v: string): void { this.filters.update((f) => ({ ...f, abilitato: v as ListFilters['abilitato'] })); this.reset(); }
-  resetFilters(): void { this.filters.set(EMPTY_FILTERS); this.reset(); }
+
+  onSearch(state: SearchState): void {
+    this.searchState.set(state);
+    // La search-pill può cambiare campo/direzione di ordinamento: rifletti nel sort della tabella.
+    if (state.sort) this.sort.set({ key: state.sort, direction: state.dir });
+    this.reset();
+  }
+
+  resetFilters(): void {
+    this.searchState.set(initialSearchState(this.searchFields()));
+    this.reset();
+  }
 
   onViewModeChange(value: string): void {
     this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
   }
 
+  onRowClick(a: ApplicazioneSummary): void {
+    if (a.idA2A) this.router.navigate(['/applicazioni', a.idA2A]);
+  }
+
   private reset(): void {
-    // Persisti filtri/ordinamento per il ripristino al return dal detail.
-    this.listState.set(ApplicazioniListComponent.STATE_KEY, {
-      filters: this.filters(),
-    });
+    this.listState.set(ApplicazioniListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);
@@ -180,27 +317,36 @@ export class ApplicazioniListComponent implements OnInit {
   private fetch(append: boolean): void {
     this.loading.set(true);
     this.error.set(null);
-    const f = this.filters();
+
+    const f = this.searchState().filters;
+    const abil = f[F.abilitato];
     const filters: ApplicazioniListFilters = {
-      pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
-      abilitato: f.abilitato === '' ? undefined : f.abilitato === 'true',
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
+      total: append ? undefined : true,
+      idA2A: f[F.idA2A] || undefined,
+      principal: f[F.principal] || undefined,
+      abilitato: abil === ABIL.si ? true : abil === ABIL.no ? false : undefined,
     };
+
     this.api
       .list(filters)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of<Slice<ApplicazioneSummary>>({ results: [] });
         })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
+      .subscribe((slice) => {
+        const results = slice.results ?? [];
         if (append) this.rows.update((prev) => [...prev, ...results]);
         else this.rows.set(results);
-        this.total.set(page.numRisultati ?? 0);
+        const totalResults = slice.pagination?.totalResults;
+        if (totalResults != null) this.total.set(totalResults);
+        this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
   }

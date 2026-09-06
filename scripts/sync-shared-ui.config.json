@@ -1,0 +1,22 @@
+{
+  "_doc": [
+    "Configurazione per `sync-shared-ui.mjs`.",
+    "Tutti i path sono relativi al folder dello script (`scripts/`).",
+    "",
+    "`source`: cartella `projects/lnk-shared-ui/` della copia di riferimento",
+    "          (upstream canonico: [GOVPAY]/govpay-console, repo di lavoro Link.it).",
+    "",
+    "`targets[]`: la copia mirror locale di questo repo (govpay-console-v2-github).",
+    "  - `name`: identificativo breve usato dalla CLI (--target=name)",
+    "  - `path`: cartella `projects/lnk-shared-ui/` del target (destinazione del rsync)",
+    "  - `consumer`: root del workspace consumer (usata per git status + ng build)"
+  ],
+  "source": "../../[GOVPAY]/govpay-console/projects/lnk-shared-ui",
+  "targets": [
+    {
+      "name": "govpay-console-v2",
+      "path": "../projects/lnk-shared-ui",
+      "consumer": ".."
+    }
+  ]
+}

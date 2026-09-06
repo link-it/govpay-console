@@ -14,6 +14,38 @@ import { Routes } from '@angular/router';
 export const IMPOSTAZIONI_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () => import('./impostazioni.component').then((m) => m.ImpostazioniComponent),
+    loadComponent: () => import('./impostazioni-overview.component').then((m) => m.ImpostazioniOverviewComponent),
+  },
+  {
+    path: 'servizio-gde',
+    loadComponent: () => import('./servizio-gde-editor.component').then((m) => m.ServizioGdeEditorComponent),
+  },
+  {
+    path: 'app-io-server',
+    loadComponent: () => import('./app-io-server-editor.component').then((m) => m.AppIoServerEditorComponent),
+  },
+  {
+    path: 'hardening',
+    loadComponent: () => import('./hardening-editor.component').then((m) => m.HardeningEditorComponent),
+  },
+  {
+    path: 'mail-template',
+    loadComponent: () => import('./mail-template-editor.component').then((m) => m.MailTemplateEditorComponent),
+  },
+  {
+    path: 'app-io-template',
+    loadComponent: () => import('./app-io-template-editor.component').then((m) => m.AppIoTemplateEditorComponent),
+  },
+  {
+    path: 'tracciati-csv',
+    loadComponent: () => import('./tracciati-csv-editor.component').then((m) => m.TracciatiCsvEditorComponent),
+  },
+  {
+    path: 'mail-server',
+    loadComponent: () => import('./mail-server-editor.component').then((m) => m.MailServerEditorComponent),
+  },
+  {
+    path: 'giornale-eventi',
+    loadComponent: () => import('./giornale-eventi-editor.component').then((m) => m.GiornaleEventiEditorComponent),
   },
 ];

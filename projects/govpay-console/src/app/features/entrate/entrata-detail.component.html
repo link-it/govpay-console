@@ -1,0 +1,33 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+  <lnk-page-header [titleKey]="entrata()?.descrizione || entrata()?.idEntrata || '—'" subtitleKey="Entrate.Detail.Subtitle">
+    <div class="flex items-center gap-2">
+      @if (entrata(); as e) {
+        <a [routerLink]="['/entrate', e.idEntrata, 'modifica']" class="btn btn-primary btn-sm">
+          <ng-icon name="bootstrapPencil" size="1rem" />
+          <span>{{ 'Entrate.Form.Modifica' | translate }}</span>
+        </a>
+      }
+      <a routerLink="/entrate" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </div>
+  </lnk-page-header>
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
+      <a routerLink="/entrate" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !entrata()) {
+    <lnk-loading />
+  } @else if (entrata()) {
+    <lnk-detail-section titleKey="Entrate.Detail.Generali">
+      <lnk-info-grid [items]="generaliItems()" />
+    </lnk-detail-section>
+  }
+  </div>
+</section>

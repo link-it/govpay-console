@@ -10,7 +10,7 @@
  */
 
 export * from './rendicontazione.model';
-export * from './rendicontazioni.api';
+export * from './rendicontazioni.console-api';
 export * from './rendicontazioni.routes';
 export * from './rendicontazioni-list.component';
 export * from './rendicontazione-detail.component';

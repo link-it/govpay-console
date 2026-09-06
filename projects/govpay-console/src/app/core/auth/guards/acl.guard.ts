@@ -12,7 +12,7 @@
 import { inject } from '@angular/core';
 import { Router, type CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { SnackbarService } from '@core/ui/snackbar/snackbar.service';
+import { SnackbarService } from '@linkit/shared-ui';
 import type { AuthAcl } from '../models/auth.model';
 
 /**

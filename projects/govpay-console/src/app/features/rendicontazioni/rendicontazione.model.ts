@@ -10,112 +10,104 @@
  */
 
 /**
- * Stato flusso rendicontazione (OpenAPI `statoFlussoRendicontazione`).
- * I valori sono Capitalized lato API (NON in maiuscolo).
+ * Modelli **Flussi di rendicontazione — Console API V2**
+ * (`/flussi-rendicontazione`).
+ *
+ * Consultazione read-only. La quaterna `idDominio`, `idFlusso`, `idPsp`,
+ * `revisione` identifica univocamente un flusso. Il dettaglio è metadata-only
+ * (niente `rendicontazioni`/voci inline come in V1): l'XML originale pagoPA si
+ * ottiene sullo stesso path del dettaglio con `Accept: application/xml`.
  */
-export type StatoRendicontazione = 'Acquisito' | 'Anomalo' | 'Rifiutato';
+
+/** Hyperlink stile HAL (schema `Link`). */
+export interface Link {
+  href: string;
+  type?: string;
+}
 
 /**
- * Risposta `flussoRendicontazioneIndex` di `GET /flussiRendicontazione`.
+ * Stato del flusso (schema `StatoFlussoRendicontazione`). `OBSOLETO` prevale:
+ * marca una revisione superata (il PSP ha riemesso con `revisione` maggiore).
+ * NB: valori **MAIUSCOLI** (in V1 erano Capitalized).
  */
-export interface Rendicontazione {
-  /** Identificativo del flusso di rendicontazione. */
-  idFlusso: string;
-  /** ISO 8601 — data di emissione del flusso. */
-  dataFlusso: string;
-  /** ISO 8601 — data di pubblicazione (acquisizione lato GovPay). */
-  dataOraPubblicazione?: string;
-  /** Identificativo dell'operazione di riversamento assegnato dal PSP debitore. */
-  trn?: string;
-  /** ISO 8601 — data dell'operazione di riversamento fondi. */
-  dataRegolamento?: string;
-  importoTotale: number;
-  numeroPagamenti: number;
+export type StatoFlussoRendicontazione = 'ACQUISITO' | 'ANOMALO' | 'RIFIUTATO' | 'OBSOLETO';
+
+/**
+ * Proiezione leggera (metadata-only) di un flusso, usata nelle liste
+ * (schema `FlussoRendicontazioneSummary`).
+ */
+export interface FlussoRendicontazioneSummary {
+  /** Codice fiscale dell'ente creditore (11 cifre). */
   idDominio: string;
-  ragioneSocialeDominio?: string;
+  /** Identificativo del flusso assegnato dal PSP. */
+  idFlusso: string;
+  /** Identificativo del PSP mittente. */
   idPsp: string;
-  ragioneSocialePsp?: string;
-  stato?: StatoRendicontazione;
+  /** Numero di revisione (i PSP possono ri-emettere lo stesso idFlusso). */
+  revisione: number;
+  /** ISO 8601 — data di emissione dichiarata dal PSP. */
+  dataOraFlusso: string;
+  /** ISO 8601 — data in cui GovPay ha scaricato il flusso da pagoPA. */
+  dataAcquisizione: string;
+  /** Data valuta del bonifico SCT di regolamento (`YYYY-MM-DD`). */
+  dataRegolamento?: string;
+  /** Riferimento del bonifico SEPA Credit Transfer di regolamento. */
+  sctBonifico?: string;
+  stato: StatoFlussoRendicontazione;
+  /** Dettaglio human-readable dello stato. */
+  descrizioneStato?: string;
+  numeroPagamenti: number;
+  importoTotale: number;
 }
 
-export const STATO_RENDICONTAZIONE_LABEL: Record<StatoRendicontazione, string> = {
-  Acquisito: 'Rendicontazioni.Stati.Acquisito',
-  Anomalo: 'Rendicontazioni.Stati.Anomalo',
-  Rifiutato: 'Rendicontazioni.Stati.Rifiutato',
-};
-
-export const STATO_RENDICONTAZIONE_COLOR: Record<StatoRendicontazione, 'success' | 'warning' | 'danger'> = {
-  Acquisito: 'success',
-  Anomalo: 'warning',
-  Rifiutato: 'danger',
-};
-
-/**
- * Singola occorrenza rendicontata (detail) — `rendicontazione` schema OpenAPI:
- * base con `iuv`/`iur`/`indice`/`importo`/`esito`/`data` + eventuale
- * `riscossione` collegata.
- *
- * Codici `esito` (legacy):
- *   - 0  = pagamento eseguito
- *   - 3  = pagamento revocato
- *   - 4  = pagamento eseguito tramite standin
- *   - 8  = pagamento eseguito tramite standin in assenza di RPT
- *   - 9  = pagamento riconciliato
- */
-export interface RendicontazioneVoce {
-  iuv: string;
-  iur: string;
-  indice: number;
-  importo: number;
-  esito: number;
-  data: string;
-}
-
-/** Mappa `esito` numerico → chiave i18n. Codici dal legacy `util.service.ts`. */
-export const ESITO_VOCE_LABEL: Record<number, string> = {
-  0: 'Rendicontazioni.Esiti.Eseguito',
-  3: 'Rendicontazioni.Esiti.Revocato',
-  4: 'Rendicontazioni.Esiti.EseguitoStandin',
-  8: 'Rendicontazioni.Esiti.EseguitoStandinNoRPT',
-  9: 'Rendicontazioni.Esiti.Riconciliato',
-};
-
-/** Tone status badge per ciascun codice `esito`. */
-export const ESITO_VOCE_COLOR: Record<number, 'success' | 'warning' | 'danger' | 'info' | 'muted'> = {
-  0: 'success',
-  3: 'warning',
-  4: 'info',
-  8: 'info',
-  9: 'success',
-};
-
-/** Etichetta i18n di fallback per esiti sconosciuti. */
-export const ESITO_VOCE_LABEL_FALLBACK = 'Common.Unknown';
-
-export interface RendicontazioneSegnalazione {
-  codice: string;
-  descrizione: string;
+/** `_links` del dettaglio flusso (schema `FlussoRendicontazioneLinks`). */
+export interface FlussoRendicontazioneLinks {
+  dominio: Link;
+  [rel: string]: Link | undefined;
 }
 
 /**
- * Risposta `flussoRendicontazione` di
- * `GET /flussiRendicontazione/{idFlusso}` (e variante con dataOraFlusso).
- *
- * Estende `Rendicontazione` (= flussoRendicontazioneIndex) con eventuali
- * `segnalazioni` e l'elenco delle `rendicontazioni` (singoli pagamenti).
+ * Dettaglio canonico del flusso (schema `FlussoRendicontazione`): summary +
+ * finestra temporale coperta (`dataInizio`/`dataFine`, derivate da
+ * MIN/MAX delle date dei pagamenti rendicontati) + `_links`.
  */
-export interface RendicontazioneDetail extends Rendicontazione {
-  segnalazioni?: RendicontazioneSegnalazione[];
-  rendicontazioni?: RendicontazioneVoce[];
+export interface FlussoRendicontazione extends FlussoRendicontazioneSummary {
+  /** ISO 8601 — data del pagamento più vecchio rendicontato. */
+  dataInizio?: string;
+  /** ISO 8601 — data del pagamento più recente rendicontato. */
+  dataFine?: string;
+  _links: FlussoRendicontazioneLinks;
 }
 
-export interface RendicontazioniListFilters {
-  pagina?: number;
-  risPerPagina?: number;
-  ordinamento?: string;
-  stato?: StatoRendicontazione;
+export const STATO_FLUSSO_LABEL: Record<StatoFlussoRendicontazione, string> = {
+  ACQUISITO: 'Rendicontazioni.Stati.Acquisito',
+  ANOMALO: 'Rendicontazioni.Stati.Anomalo',
+  RIFIUTATO: 'Rendicontazioni.Stati.Rifiutato',
+  OBSOLETO: 'Rendicontazioni.Stati.Obsoleto',
+};
+
+export const STATO_FLUSSO_COLOR: Record<StatoFlussoRendicontazione, 'success' | 'warning' | 'danger' | 'muted'> = {
+  ACQUISITO: 'success',
+  ANOMALO: 'warning',
+  RIFIUTATO: 'danger',
+  OBSOLETO: 'muted',
+};
+
+/**
+ * Filtri di lista `/flussi-rendicontazione` (offset). `dataDa`/`dataA` sono
+ * sulla **data di acquisizione** in ISO 8601 completo (RFC 3339).
+ */
+export interface FlussiRendicontazioneListFilters {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  total?: boolean;
+  cursor?: string;
   idDominio?: string;
   idFlusso?: string;
+  idPsp?: string;
+  stato?: StatoFlussoRendicontazione;
+  incassato?: boolean;
   iuv?: string;
   dataDa?: string;
   dataA?: string;

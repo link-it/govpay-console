@@ -1,0 +1,77 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'Entrate.Form.ModificaTitolo' : 'Entrate.Form.NuovaTitolo'"
+      subtitleKey="Entrate.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-5">
+        <lnk-detail-section titleKey="Entrate.Detail.Generali">
+          <div class="space-y-5">
+        <!-- ID entrata (solo in creazione; in modifica è disabilitato) -->
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idEntrata">{{ 'Entrate.Detail.IdEntrata' | translate }}</span>
+          <input
+            type="text"
+            formControlName="idEntrata"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60"
+            [attr.aria-invalid]="form.controls.idEntrata.touched && form.controls.idEntrata.invalid"
+          />
+          @if (form.controls.idEntrata.touched && form.controls.idEntrata.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Entrate.Form.Obbligatorio' | translate }}</span>
+          }
+        </label>
+
+        <!-- Descrizione -->
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.descrizione">{{ 'Entrate.Detail.Descrizione' | translate }}</span>
+          <input
+            type="text"
+            formControlName="descrizione"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          />
+          @if (form.controls.descrizione.touched && form.controls.descrizione.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Entrate.Form.Obbligatorio' | translate }}</span>
+          }
+        </label>
+
+        <!-- Tipo contabilità -->
+        <label class="flex flex-col gap-1 max-w-xs">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.tipoContabilita">{{ 'Entrate.Detail.TipoContabilita' | translate }}</span>
+          <lnk-select formControlName="tipoContabilita" [options]="tipoContabilitaOptions()" [allowEmpty]="false" [ariaLabel]="'Entrate.Detail.TipoContabilita' | translate" />
+        </label>
+
+        <!-- Codice contabilità -->
+        <label class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.codiceContabilita">{{ 'Entrate.Detail.CodiceContabilita' | translate }}</span>
+          <input
+            type="text"
+            formControlName="codiceContabilita"
+            class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+          />
+          @if (form.controls.codiceContabilita.touched && form.controls.codiceContabilita.invalid) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Entrate.Form.Obbligatorio' | translate }}</span>
+          }
+        </label>
+          </div>
+        </lnk-detail-section>
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">
+            {{ 'Common.Save' | translate }}
+          </button>
+          <a [routerLink]="backLink()" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

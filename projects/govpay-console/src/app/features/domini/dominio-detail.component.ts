@@ -9,32 +9,35 @@
  * the Free Software Foundation.
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
+  InfoGridComponent,
   LoadingComponent,
   ListStickyToolbarDirective,
-  InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
+  TabsComponent,
   type InfoGridItem,
-} from '@shared';
-import { DominiApi } from './domini.api';
-import type { Dominio } from './dominio.model';
+  type TabDef,
+} from '@linkit/shared-ui';
+import { problemDetail } from '@core/models';
+import { DominiConsoleApi } from './domini.console-api';
+import { EntrateConsoleApi } from '@feature/entrate/entrate.console-api';
+import { TipiPendenzaConsoleApi } from '@feature/tipi-pendenza/tipi-pendenza.console-api';
+import { UnitaOperativaInlineComponent } from './unita-operativa-inline.component';
+import { ContoAccreditoInlineComponent } from './conto-accredito-inline.component';
+import { EntrataDominioInlineComponent } from './entrata-dominio-inline.component';
+import { TipoPendenzaDominioInlineComponent } from './tipo-pendenza-dominio-inline.component';
+import { ConnettoreDominioInlineComponent } from './connettore-dominio-inline.component';
+import { CONNETTORI_DOMINIO } from './connettore-dominio.model';
+import type { ContoAccreditoSummary, Dominio, EntrataDominioSummary, TipoPendenzaDominioSummary, UnitaOperativaSummary } from './dominio.model';
 
 @Component({
   selector: 'lnk-dominio-detail',
@@ -50,88 +53,184 @@ import type { Dominio } from './dominio.model';
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    TabsComponent,
+    UnitaOperativaInlineComponent,
+    ContoAccreditoInlineComponent,
+    EntrataDominioInlineComponent,
+    TipoPendenzaDominioInlineComponent,
+    ConnettoreDominioInlineComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dominio-detail.component.html',
 })
-export class DominioDetailComponent implements OnInit {
-  private readonly api = inject(DominiApi);
+export class DominioDetailComponent implements OnInit, OnDestroy {
+  private readonly api = inject(DominiConsoleApi);
+  private readonly entrateApi = inject(EntrateConsoleApi);
+  private readonly tipiApi = inject(TipiPendenzaConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
 
+  idDominio = '';
+
   readonly dominio = signal<Dominio | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  /** Object URL del logo (null se assente). */
+  readonly logoUrl = signal<string | null>(null);
+  readonly logoBusy = signal(false);
+
+  readonly connettori = CONNETTORI_DOMINIO;
+
+  readonly activeTab = signal<'dati' | 'unitaOperative' | 'contiAccredito' | 'entrate' | 'tipiPendenza' | 'connettori'>('dati');
+  readonly tabs = computed<TabDef[]>(() => [
+    { id: 'dati', labelKey: 'Domini.Detail.TabDati' },
+    {
+      id: 'unitaOperative',
+      labelKey: 'Domini.Detail.TabUnitaOperative',
+      badge: this.unitaOperative() !== null ? this.unitaOperative()!.length : null,
+      badgeLoading: this.uoLoading() && this.unitaOperative() === null,
+    },
+    {
+      id: 'contiAccredito',
+      labelKey: 'Domini.Detail.TabContiAccredito',
+      badge: this.contiAccredito() !== null ? this.contiAccredito()!.length : null,
+      badgeLoading: this.contiLoading() && this.contiAccredito() === null,
+    },
+    {
+      id: 'entrate',
+      labelKey: 'Domini.Detail.TabEntrate',
+      badge: this.entrate() !== null ? this.entrate()!.length : null,
+      badgeLoading: this.entrateLoading() && this.entrate() === null,
+    },
+    {
+      id: 'tipiPendenza',
+      labelKey: 'Domini.Detail.TabTipiPendenza',
+      badge: this.tipiPendenza() !== null ? this.tipiPendenza()!.length : null,
+      badgeLoading: this.tipiLoading() && this.tipiPendenza() === null,
+    },
+    { id: 'connettori', labelKey: 'Domini.Detail.TabConnettori' },
+  ]);
+
+  /* ---- Unità operative (lazy) + creazione inline ---- */
+  readonly unitaOperative = signal<UnitaOperativaSummary[] | null>(null);
+  readonly uoLoading = signal(false);
+  readonly showCreateUo = signal(false);
+
+  /* ---- Conti di accredito (lazy) + creazione inline ---- */
+  readonly contiAccredito = signal<ContoAccreditoSummary[] | null>(null);
+  readonly contiLoading = signal(false);
+  readonly showCreateConto = signal(false);
+
+  /* ---- Entrate del dominio (lazy) + creazione inline ---- */
+  readonly entrate = signal<EntrataDominioSummary[] | null>(null);
+  readonly entrateLoading = signal(false);
+  readonly showCreateEntrata = signal(false);
+  readonly entrateSuggestions = signal<{ id: string; label?: string }[]>([]);
+  readonly ibanSuggestions = signal<string[]>([]);
+
+  /* ---- Tipi pendenza del dominio (lazy) + creazione inline ---- */
+  readonly tipiPendenza = signal<TipoPendenzaDominioSummary[] | null>(null);
+  readonly tipiLoading = signal(false);
+  readonly showCreateTipo = signal(false);
+  readonly tipiSuggestions = signal<{ id: string; label?: string }[]>([]);
+
+  /** Carica lazily le sotto-risorse all'apertura del relativo tab. */
+  private readonly _tabLoader = effect(() => {
+    if (!this.dominio()) return;
+    if (this.activeTab() === 'unitaOperative' && this.unitaOperative() === null && !this.uoLoading()) {
+      this.fetchUnitaOperative();
+    }
+    if (this.activeTab() === 'contiAccredito' && this.contiAccredito() === null && !this.contiLoading()) {
+      this.fetchContiAccredito();
+    }
+    if (this.activeTab() === 'entrate' && this.entrate() === null && !this.entrateLoading()) {
+      this.fetchEntrate();
+      this.loadEntrateSuggestions();
+    }
+    if (this.activeTab() === 'tipiPendenza' && this.tipiPendenza() === null && !this.tipiLoading()) {
+      this.fetchTipiPendenza();
+      this.loadTipiSuggestions();
+    }
+  });
+
   readonly abilitatoTone = computed(() => (this.dominio()?.abilitato ? 'success' : 'muted'));
   readonly abilitatoLabelKey = computed(() => (this.dominio()?.abilitato ? 'Common.Yes' : 'Common.No'));
+
+  readonly generaliItems = computed<InfoGridItem[]>(() => {
+    const d = this.dominio();
+    if (!d) return [];
+    const items: InfoGridItem[] = [
+      { labelKey: 'Domini.Detail.IdDominio', value: d.idDominio, mono: true },
+      { labelKey: 'Domini.Detail.RagioneSociale', value: d.ragioneSociale, wide: true },
+      { labelKey: 'Domini.Detail.Gln', value: d.gln, mono: true, hide: !d.gln },
+      { labelKey: 'Domini.Detail.IdStazione', value: d.idStazione, mono: true, hide: !d.idStazione },
+      { labelKey: 'Domini.Detail.Intermediario', value: d.riferimentoIntermediario?.idIntermediario, mono: true, hide: !d.riferimentoIntermediario },
+      { labelKey: 'Domini.Detail.Intermediato', value: this.translate.instant(d.intermediato ? 'Common.Yes' : 'Common.No') },
+      { labelKey: 'Domini.Detail.ScaricaFr', value: this.translate.instant(d.scaricaFr ? 'Common.Yes' : 'Common.No') },
+      { labelKey: 'Domini.Detail.AuxDigit', value: d.auxDigit != null ? String(d.auxDigit) : undefined, hide: d.auxDigit == null },
+      { labelKey: 'Domini.Detail.SegregationCode', value: d.segregationCode != null ? String(d.segregationCode) : undefined, hide: d.segregationCode == null },
+    ];
+    return items;
+  });
 
   readonly anagraficaItems = computed<InfoGridItem[]>(() => {
     const d = this.dominio();
     if (!d) return [];
     return [
-      { labelKey: 'Domini.Detail.IdDominio', value: d.idDominio, mono: true },
-      { labelKey: 'Domini.Detail.RagioneSociale', value: d.ragioneSociale, wide: true },
+      { labelKey: 'Domini.Detail.Indirizzo', value: d.indirizzo, hide: !d.indirizzo },
+      { labelKey: 'Domini.Detail.Civico', value: d.civico, hide: !d.civico },
+      { labelKey: 'Domini.Detail.Cap', value: d.cap, hide: !d.cap },
+      { labelKey: 'Domini.Detail.Localita', value: d.localita, hide: !d.localita },
+      { labelKey: 'Domini.Detail.Provincia', value: d.provincia, hide: !d.provincia },
+      { labelKey: 'Domini.Detail.Nazione', value: d.nazione, hide: !d.nazione },
       { labelKey: 'Domini.Detail.Area', value: d.area, hide: !d.area },
-      { labelKey: 'Domini.Detail.Gln', value: d.gln, mono: true, hide: !d.gln },
-      { labelKey: 'Domini.Detail.Cbill', value: d.cbill, mono: true, hide: !d.cbill },
     ];
   });
 
   readonly contattiItems = computed<InfoGridItem[]>(() => {
     const d = this.dominio();
     if (!d) return [];
-    const indirizzo = [d.indirizzo, d.civico].filter(Boolean).join(' ');
-    const localita = [d.cap, d.localita, d.provincia ? `(${d.provincia})` : '', d.nazione]
-      .filter(Boolean)
-      .join(' ');
     return [
-      { labelKey: 'Domini.Detail.Indirizzo', value: indirizzo || undefined, hide: !indirizzo, wide: true },
-      { labelKey: 'Domini.Detail.Localita', value: localita || undefined, hide: !localita, wide: true },
       { labelKey: 'Domini.Detail.Email', value: d.email, hide: !d.email },
       { labelKey: 'Domini.Detail.Pec', value: d.pec, hide: !d.pec },
       { labelKey: 'Domini.Detail.Tel', value: d.tel, hide: !d.tel },
       { labelKey: 'Domini.Detail.Fax', value: d.fax, hide: !d.fax },
-      { labelKey: 'Domini.Detail.Web', value: d.web, hide: !d.web, wide: true },
+      { labelKey: 'Domini.Detail.Web', value: d.web, hide: !d.web },
     ];
   });
 
-  readonly pagopaItems = computed<InfoGridItem[]>(() => {
-    const d = this.dominio();
-    if (!d) return [];
-    return [
-      { labelKey: 'Domini.Detail.Stazione', value: d.stazione, mono: true, hide: !d.stazione },
-      { labelKey: 'Domini.Detail.AuxDigit', value: d.auxDigit, mono: true, hide: !d.auxDigit },
-      { labelKey: 'Domini.Detail.SegregationCode', value: d.segregationCode, mono: true, hide: !d.segregationCode },
-      { labelKey: 'Domini.Detail.IuvPrefix', value: d.iuvPrefix, mono: true, hide: !d.iuvPrefix },
-      { labelKey: 'Domini.Detail.AutStampa', value: d.autStampaPosteItaliane, hide: !d.autStampaPosteItaliane, wide: true },
-    ];
-  });
+  /** Le sezioni Anagrafica/Contatti si mostrano solo se hanno almeno un campo. */
+  readonly hasAnagrafica = computed(() => this.anagraficaItems().some((i) => !i.hide));
+  readonly hasContatti = computed(() => this.contattiItems().some((i) => !i.hide));
 
   ngOnInit(): void {
-    const idDominio = this.route.snapshot.paramMap.get('idDominio');
-    if (!idDominio) {
+    const id = this.route.snapshot.paramMap.get('idDominio');
+    if (!id) {
       this.router.navigate(['/domini']);
       return;
     }
-    this.system.setBreadcrumbs([
-      { label: 'Nav.Domini', url: '/domini' },
-      { label: idDominio },
-    ]);
-    this.fetch(idDominio);
+    this.idDominio = id;
+    this.system.setBreadcrumbs([{ label: 'Nav.Domini', url: '/domini' }, { label: id }]);
+    this.fetch();
+    this.loadLogo();
   }
 
-  private fetch(idDominio: string): void {
+  ngOnDestroy(): void {
+    this.revokeLogo();
+  }
+
+  private fetch(): void {
     this.loading.set(true);
     this.error.set(null);
     this.api
-      .get(idDominio)
+      .get(this.idDominio)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
           return of(null);
@@ -141,5 +240,162 @@ export class DominioDetailComponent implements OnInit {
         this.dominio.set(d);
         this.loading.set(false);
       });
+  }
+
+  private loadLogo(): void {
+    this.api
+      .getLogo(this.idDominio)
+      .pipe(catchError(() => of(null)))
+      .subscribe((blob) => {
+        this.revokeLogo();
+        this.logoUrl.set(blob && blob.size > 0 ? URL.createObjectURL(blob) : null);
+      });
+  }
+
+  private revokeLogo(): void {
+    const url = this.logoUrl();
+    if (url) URL.revokeObjectURL(url);
+  }
+
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    if (file.size > 256 * 1024) {
+      this.snackbar.error(this.translate.instant('Domini.Logo.TroppoGrande'));
+      return;
+    }
+    this.logoBusy.set(true);
+    this.api
+      .putLogo(this.idDominio, file)
+      .pipe(catchError((err) => {
+        this.snackbar.error(problemDetail(err, this.translate.instant('Domini.Logo.Errore')));
+        return of(null);
+      }))
+      .subscribe((res) => {
+        this.logoBusy.set(false);
+        if (res === null) return;
+        this.snackbar.success(this.translate.instant('Domini.Logo.Aggiornato'));
+        this.loadLogo();
+      });
+  }
+
+  removeLogo(): void {
+    this.logoBusy.set(true);
+    this.api
+      .deleteLogo(this.idDominio)
+      .pipe(catchError((err) => {
+        this.snackbar.error(problemDetail(err, this.translate.instant('Domini.Logo.Errore')));
+        return of(null);
+      }))
+      .subscribe((res) => {
+        this.logoBusy.set(false);
+        if (res === null) return;
+        this.snackbar.success(this.translate.instant('Domini.Logo.Rimosso'));
+        this.loadLogo();
+      });
+  }
+
+  /* ---- Unità operative ---- */
+
+  private fetchUnitaOperative(): void {
+    this.uoLoading.set(true);
+    this.api
+      .listUnitaOperative(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as UnitaOperativaSummary[] })))
+      .subscribe((slice) => {
+        this.unitaOperative.set(slice.results ?? []);
+        this.uoLoading.set(false);
+      });
+  }
+
+  onUnitaOperativaSaved(): void {
+    this.showCreateUo.set(false);
+    this.fetchUnitaOperative();
+  }
+
+  /* ---- Conti di accredito ---- */
+
+  private fetchContiAccredito(): void {
+    this.contiLoading.set(true);
+    this.api
+      .listContiAccredito(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as ContoAccreditoSummary[] })))
+      .subscribe((slice) => {
+        this.contiAccredito.set(slice.results ?? []);
+        this.contiLoading.set(false);
+      });
+  }
+
+  onContoAccreditoSaved(): void {
+    this.showCreateConto.set(false);
+    this.fetchContiAccredito();
+  }
+
+  /* ---- Entrate del dominio ---- */
+
+  private fetchEntrate(): void {
+    this.entrateLoading.set(true);
+    this.api
+      .listEntrate(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as EntrataDominioSummary[] })))
+      .subscribe((slice) => {
+        this.entrate.set(slice.results ?? []);
+        this.entrateLoading.set(false);
+      });
+  }
+
+  /** Suggerimenti per la creazione: entrate globali + IBAN dei conti del dominio. */
+  private loadEntrateSuggestions(): void {
+    if (this.entrateSuggestions().length === 0) {
+      this.entrateApi
+        .list({ limit: 200 })
+        .pipe(catchError(() => of({ results: [] })))
+        .subscribe((slice) => {
+          this.entrateSuggestions.set((slice.results ?? []).map((e) => ({ id: e.idEntrata, label: e.descrizione })));
+        });
+    }
+    if (this.ibanSuggestions().length === 0) {
+      this.api
+        .listContiAccredito(this.idDominio, { limit: 200 })
+        .pipe(catchError(() => of({ results: [] as ContoAccreditoSummary[] })))
+        .subscribe((slice) => {
+          this.ibanSuggestions.set((slice.results ?? []).map((c) => c.ibanAccredito));
+        });
+    }
+  }
+
+  onEntrataSaved(): void {
+    this.showCreateEntrata.set(false);
+    this.fetchEntrate();
+  }
+
+  /* ---- Tipi pendenza del dominio ---- */
+
+  private fetchTipiPendenza(): void {
+    this.tipiLoading.set(true);
+    this.api
+      .listTipiPendenza(this.idDominio, { limit: 200 })
+      .pipe(catchError(() => of({ results: [] as TipoPendenzaDominioSummary[] })))
+      .subscribe((slice) => {
+        this.tipiPendenza.set(slice.results ?? []);
+        this.tipiLoading.set(false);
+      });
+  }
+
+  private loadTipiSuggestions(): void {
+    if (this.tipiSuggestions().length > 0) return;
+    this.tipiApi
+      .list({ limit: 200 })
+      .pipe(catchError(() => of({ results: [] })))
+      .subscribe((slice) => {
+        this.tipiSuggestions.set((slice.results ?? []).map((t) => ({ id: t.idTipoPendenza, label: t.descrizione })));
+      });
+  }
+
+  onTipoPendenzaSaved(): void {
+    this.showCreateTipo.set(false);
+    this.fetchTipiPendenza();
   }
 }

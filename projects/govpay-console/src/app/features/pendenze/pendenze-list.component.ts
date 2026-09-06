@@ -22,12 +22,9 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { ListStateService, SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
-  DateInputComponent,
   DisplayConfigLoader,
   EmptyStateComponent,
   LoadingComponent,
@@ -35,51 +32,46 @@ import {
   ListStickyToolbarDirective,
   ItemListComponent,
   PageHeaderComponent,
-  SearchInputComponent,
-  SelectInputComponent,
-  DATE_RANGE_OPTIONS,
+  SearchPillComponent,
+  ViewToggleComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
+  SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
-  daysAgoIso,
   formatDate,
   formatEuro,
   formatOrdinamento,
-  matchDateRangePreset,
+  initialSearchState,
   truncate,
   type ColumnDef,
-  type SelectOption,
+  type SearchField,
+  type SearchPillLabels,
+  type SearchState,
   type SortEvent,
-} from '@shared';
-import { TweaksRegistry } from '@core/ui';
-import { PendenzeApi } from './pendenze.api';
+  type SortOption,
+} from '@linkit/shared-ui';
+import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { AuthService } from '@core/auth/services/auth.service';
+import { PendenzeConsoleApi } from './pendenze.console-api';
 import {
   STATO_PENDENZA_COLOR,
   STATO_PENDENZA_LABEL,
-  type Pendenza,
+  type PendenzaSummary,
   type PendenzeListFilters,
-  type StatoPendenza,
 } from './pendenza.model';
 
 const PAGE_SIZE = 25;
 
-interface ListFilters {
-  search: string;
-  stato: StatoPendenza | '';
-  dataDa: string;
-  dataA: string;
-}
-
-/**
- * Filtri di default applicati al primo caricamento e dopo "Azzera filtri":
- * `dataDa` impostata a 7 giorni fa (ultima settimana). Funzione (non costante)
- * per ricalcolare la data ad ogni invocazione.
- */
-const defaultFilters = (): ListFilters => ({
-  search: '',
-  stato: '',
-  dataDa: daysAgoIso(7),
-  dataA: '',
-});
+/** Chiavi filtro (= id dei `SearchField` della pill) allineate ai 4 filtri V2. */
+const F = {
+  idPendenza: 'idPendenza',
+  numeroAvviso: 'numeroAvviso',
+  idDominio: 'idDominio',
+  identificativoDebitore: 'identificativoDebitore',
+  // Range date: mostrati in anteprima, NON ancora inviati all'API V2.
+  dataInizio: 'dataInizio',
+  dataFine: 'dataFine',
+} as const;
 
 @Component({
   selector: 'lnk-pendenze-list',
@@ -91,9 +83,8 @@ const defaultFilters = (): ListFilters => ({
     ItemListComponent,
     EmptyStateComponent,
     InfiniteScrollDirective,
-    SearchInputComponent,
-    SelectInputComponent,
-    DateInputComponent,
+    SearchPillComponent,
+    ViewToggleComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -101,34 +92,124 @@ const defaultFilters = (): ListFilters => ({
   templateUrl: './pendenze-list.component.html',
 })
 export class PendenzeListComponent implements OnInit {
-  private readonly api = inject(PendenzeApi);
+  private readonly api = inject(PendenzeConsoleApi);
   private readonly config = inject(ConfigService);
   private readonly system = inject(SystemFacade);
   private readonly listState = inject(ListStateService);
   private static readonly STATE_KEY = 'pendenze';
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+  private readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
-  /** Default modalità lista da config: globale (`Layout.listView`) con
-   *  override per feature (`Layout.listViewByFeature.pendenze`). Default `'table'`. */
+  /** Default modalità lista da config: globale con override per feature. */
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
     const layout = this.config.appConfig()?.Layout;
     return layout?.listViewByFeature?.['pendenze'] ?? layout?.listView ?? 'table';
   });
-  /** Override locale del view mode (impostato dal pannello Tweaks). */
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  /** View mode effettivo: override locale prevale sul default da config. */
   readonly viewMode = computed<'table' | 'rows'>(
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
 
+  /** Override di sessione (tweaks) della variante search-pill. */
+  private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
+  /** Variante grafica della search-pill: override tweaks → app-config → `pill`. */
+  readonly searchPillVariant = computed<'pill' | 'square'>(
+    () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
+  );
+
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.config.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
+  /** Domini in scope dell'utente (escluso il placeholder `*`). */
+  private readonly domini = computed(() =>
+    (this.auth.user()?.domini ?? []).filter((d) => d.idDominio && d.idDominio !== '*')
+  );
+  /** Etichette dominio (ragioneSociale) usate come opzioni del select `idDominio`. */
+  private readonly dominiLabels = computed(() =>
+    this.domini().map((d) => d.ragioneSociale || d.idDominio)
+  );
+  /** Mappa ragioneSociale → idDominio per risolvere il valore del select verso l'API. */
+  private readonly dominioIdByLabel = computed(() => {
+    const map = new Map<string, string>();
+    for (const d of this.domini()) map.set(d.ragioneSociale || d.idDominio, d.idDominio);
+    return map;
+  });
+
   /**
-   * Sezione del pannello tweaks globale registrata in costruttore via
-   * `TweaksRegistry`. La cleanup è bound al `DestroyRef` del component:
-   * navigando via, le righe spariscono dal pannello automaticamente.
+   * Config dei filtri della search-pill: i 4 filtri supportati dalla API V2.
+   * `idDominio` è un select popolato dai domini del profilo (label = ragioneSociale).
+   * La ricerca libera della pill (query) è decorativa e non inviata all'API.
    */
+  readonly searchFields = computed<SearchField[]>(() => {
+    this.lang.current(); // dipendenza: ritraduce al cambio lingua
+    const f = this.searchState().filters;
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: F.idPendenza, label: t('Pendenze.Filters.IdPendenza'), kind: 'text', placeholder: t('Pendenze.Filters.IdPendenzaPlaceholder'), span: 2 },
+      { id: F.numeroAvviso, label: t('Pendenze.Filters.NumeroAvviso'), kind: 'text', placeholder: t('Pendenze.Filters.NumeroAvvisoPlaceholder') },
+      {
+        id: F.idDominio,
+        label: t('Pendenze.Filters.Dominio'),
+        kind: 'select',
+        icon: 'bootstrapBuilding',
+        options: ['', ...this.dominiLabels()],
+        placeholder: t('Pendenze.Filters.DominioPlaceholder'),
+        // Sempre dropdown (mai segmented) e ricercabile appena c'è almeno un ente.
+        segmentedMax: 0,
+        searchableFrom: 1,
+      },
+      { id: F.identificativoDebitore, label: t('Pendenze.Filters.IdentificativoDebitore'), kind: 'text', icon: 'bootstrapPerson', placeholder: t('Pendenze.Filters.IdentificativoDebitorePlaceholder'), span: 2 },
+      // Range date (anteprima): il "fino a" non può precedere il "da" e viceversa.
+      { id: F.dataInizio, label: t('Pendenze.Filters.DataInizio'), kind: 'date', icon: 'bootstrapCalendarEvent', max: f[F.dataFine] || undefined },
+      { id: F.dataFine, label: t('Pendenze.Filters.DataFine'), kind: 'date', icon: 'bootstrapCalendarEvent', min: f[F.dataInizio] || undefined },
+    ];
+  });
+
+  /** Placeholder della barra e label generiche della search-pill, tradotti. */
+  readonly searchPlaceholder = computed(() => {
+    this.lang.current();
+    return this.translate.instant('Pendenze.Filters.Placeholder');
+  });
+
+  /** Campi di ordinamento supportati dall’API. */
+  readonly sortOptions = computed<SortOption[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: 'dataUltimoAggiornamento', label: t('Pendenze.Columns.DataAggiornamento') },
+    ];
+  });
+
+  readonly pillLabels = computed<SearchPillLabels>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return {
+      filters: t('SearchPill.Filters'),
+      reset: t('SearchPill.Reset'),
+      close: t('SearchPill.Close'),
+      search: t('SearchPill.Search'),
+      activeSuffix: t('SearchPill.ActiveSuffix'),
+      resultsApproxPrefix: t('SearchPill.ResultsApproxPrefix'),
+      resultsSuffix: t('SearchPill.ResultsSuffix'),
+      noResults: t('SearchPill.NoResults'),
+      optionsFilter: t('SearchPill.OptionsFilter'),
+      none: t('SearchPill.None'),
+      noOptions: t('SearchPill.NoOptions'),
+      textPlaceholder: t('SearchPill.TextPlaceholder'),
+      selectPlaceholder: t('SearchPill.SelectPlaceholder'),
+      allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
+    };
+  });
+
   constructor() {
     const tweaks = inject(TweaksRegistry);
     inject(DestroyRef).onDestroy(
@@ -146,23 +227,31 @@ export class PendenzeListComponent implements OnInit {
           },
           {
             type: 'segmented',
-            labelKey: 'Tweaks.Range',
-            hintKey: 'Tweaks.RangeHint',
-            options: DATE_RANGE_OPTIONS,
-            value: computed(() => matchDateRangePreset(this.filters().dataDa)),
-            onChange: (v) => this.onDateRangeChange(v),
+            labelKey: 'Tweaks.SearchPill',
+            hintKey: 'Tweaks.SearchPillHint',
+            options: SEARCH_PILL_VARIANT_OPTIONS,
+            value: this.searchPillVariant,
+            onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
+          },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.Density',
+            hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS,
+            value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable'),
           },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => {
+          this.viewModeOverride.set(null);
+          this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
+        },
       })
     );
   }
 
-  /**
-   * Display config caricato da `assets/config/pendenze-config.json` via HTTP.
-   * Fino al fetch completato il signal vale `null` e il template mostra il
-   * data-table (fallback).
-   */
+  /** Display config da `assets/config/pendenze-config.json` (null fino al fetch). */
   readonly rowConfig = toSignal(
     this.displayConfigLoader.load('assets/config/pendenze-config.json').pipe(
       catchError(() => {
@@ -174,39 +263,40 @@ export class PendenzeListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'dataCaricamento', direction: 'desc' });
-  readonly rows = signal<Pendenza[]>([]);
-  readonly total = signal(0);
+  readonly sort = signal<SortEvent | null>({ key: 'dataUltimoAggiornamento', direction: 'desc' });
+  readonly rows = signal<PendenzaSummary[]>([]);
+  /** `hasNextPage` dello slice: pilota l'infinite scroll. */
+  readonly hasMore = signal(false);
+  /** Totale risultati: `null` finché non richiesto esplicitamente (COUNT on-demand). */
+  readonly total = signal<number | null>(null);
+  /** Conteggio totale on-demand in corso. */
+  readonly countLoading = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  readonly filters = signal<ListFilters>(defaultFilters());
+  /** Stato della search-pill (query + filters + sort/dir). Sort/dir non usati (sort da tabella). */
+  readonly searchState = signal<SearchState>(initialSearchState([]));
+
   readonly hasActiveFilters = computed(() => {
-    const f = this.filters();
-    const d = defaultFilters();
-    return f.search !== d.search || f.stato !== d.stato || f.dataDa !== d.dataDa || f.dataA !== d.dataA;
+    const f = this.searchState().filters;
+    return !!(f[F.idPendenza] || f[F.numeroAvviso] || f[F.idDominio] || f[F.identificativoDebitore]);
   });
 
   readonly hasError = computed(() => this.error() !== null);
   readonly hasRows = computed(() => this.rows().length > 0);
-  readonly hasMore = computed(() => this.rows().length < this.total());
   readonly showEmptyState = computed(
     () => !this.loading() && !this.hasError() && !this.hasRows()
   );
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly statoOptions: SelectOption[] = (
-    Object.keys(STATO_PENDENZA_LABEL) as StatoPendenza[]
-  ).map((s) => ({ value: s, labelKey: STATO_PENDENZA_LABEL[s] }));
-
-  readonly columns = computed<ColumnDef<Pendenza>[]>(() => {
+  readonly columns = computed<ColumnDef<PendenzaSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<Pendenza>(tableCfg.columns);
+    if (tableCfg?.columns?.length) return columnsFromConfig<PendenzaSummary>(tableCfg.columns);
     return [
       {
         key: 'numeroAvviso',
         header: 'Pendenze.Columns.Numero',
-        format: (r) => r.numeroAvviso || r.iuv || '—',
+        format: (r) => r.numeroAvviso || r.iuvAvviso || '—',
         cellClass: 'font-mono text-xs',
         width: '12rem',
       },
@@ -216,19 +306,14 @@ export class PendenzeListComponent implements OnInit {
         format: (r) => r.tipoPendenza?.descrizione ?? '',
       },
       {
-        key: 'soggettoPagatore',
-        header: 'Pendenze.Columns.Pagatore',
-        format: (r) => truncate(r.soggettoPagatore?.anagrafica),
-      },
-      {
         key: 'causale',
         header: 'Pendenze.Columns.Causale',
         format: (r) => truncate(r.causale, 80),
       },
       {
-        key: 'dataCaricamento',
-        header: 'Pendenze.Columns.DataCaricamento',
-        format: (r) => formatDate(r.dataCaricamento),
+        key: 'dataUltimoAggiornamento',
+        header: 'Pendenze.Columns.DataAggiornamento',
+        format: (r) => formatDate(r.dataUltimoAggiornamento),
         sortable: true,
         width: '8rem',
       },
@@ -238,7 +323,6 @@ export class PendenzeListComponent implements OnInit {
         format: (r) => formatEuro(r.importo),
         align: 'right',
         cellClass: 'font-mono',
-        sortable: true,
         width: '8rem',
       },
       {
@@ -254,17 +338,25 @@ export class PendenzeListComponent implements OnInit {
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([{ label: 'Nav.Pendenze' }]);
-    // Ripristina filtri e ordinamento dopo back da dettaglio.
-    const saved = this.listState.get<{ filters: ListFilters; sort: SortEvent | null }>(PendenzeListComponent.STATE_KEY);
+    // Ripristina stato ricerca e ordinamento dopo back da dettaglio.
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(PendenzeListComponent.STATE_KEY);
     if (saved) {
-      this.filters.set(saved.filters);
+      if (saved.search) this.searchState.set(saved.search);
       if (saved.sort) this.sort.set(saved.sort);
     }
+    this.syncPillSort();
     this.reset();
+  }
+
+  /** Allinea sort/dir della search-pill al `sort` signal (dropdown ↔ tabella). */
+  private syncPillSort(): void {
+    const s = this.sort();
+    this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
   }
 
   onSortChange(s: SortEvent): void {
     this.sort.set(s);
+    this.syncPillSort();
     this.reset();
   }
 
@@ -278,98 +370,108 @@ export class PendenzeListComponent implements OnInit {
     this.fetch(true);
   }
 
-  onSearchChange(value: string): void {
-    this.filters.update((f) => ({ ...f, search: value }));
-    this.reset();
-  }
-
-  onStatoChange(value: string): void {
-    this.filters.update((f) => ({ ...f, stato: value as StatoPendenza | '' }));
-    this.reset();
-  }
-
-  onDataDaChange(value: string): void {
-    this.filters.update((f) => ({ ...f, dataDa: value }));
-    this.reset();
-  }
-
-  onDataAChange(value: string): void {
-    this.filters.update((f) => ({ ...f, dataA: value }));
+  /** Emesso dalla search-pill (Invio o "Cerca"): riparte dalla pagina 1. */
+  onSearch(state: SearchState): void {
+    this.searchState.set(state);
+    if (state.sort) this.sort.set({ key: state.sort, direction: state.dir });
     this.reset();
   }
 
   resetFilters(): void {
-    this.filters.set(defaultFilters());
+    this.searchState.set(initialSearchState(this.searchFields()));
     this.reset();
   }
 
-  // ---- Tweaks panel handlers -----------------------------------------
   onViewModeChange(value: string): void {
     this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
   }
 
-  onDateRangeChange(value: string): void {
-    const days = Number(value);
-    if (!Number.isFinite(days) || days <= 0) return;
-    this.filters.update((f) => ({ ...f, dataDa: daysAgoIso(days), dataA: '' }));
-    this.reset();
-  }
-
-
-  onRowClick(p: Pendenza): void {
+  onRowClick(p: PendenzaSummary): void {
     if (!p.idA2A || !p.idPendenza) return;
     this.router.navigate(['/pendenze', p.idA2A, p.idPendenza]);
   }
 
   private reset(): void {
-    // Persisti filtri/ordinamento per il ripristino al return dal detail.
+    // Persisti stato ricerca/ordinamento per il ripristino al return dal detail.
     this.listState.set(PendenzeListComponent.STATE_KEY, {
-      filters: this.filters(),
+      search: this.searchState(),
       sort: this.sort(),
-    });
+    }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
+    // Il totale eventualmente mostrato non è più valido per i nuovi filtri.
+    this.total.set(null);
     this.fetch(false);
+  }
+
+  /** Filtri di ricerca senza paginazione, condivisi da lista e conteggio. */
+  private baseFilters(): PendenzeListFilters {
+    const f = this.searchState().filters;
+    // Il select dominio porta la ragioneSociale: risolvi verso l'idDominio API.
+    const idDominio = f[F.idDominio] ? this.dominioIdByLabel().get(f[F.idDominio]) : undefined;
+    return {
+      idPendenza: f[F.idPendenza] || undefined,
+      numeroAvviso: f[F.numeroAvviso] || undefined,
+      idDominio: idDominio || undefined,
+      identificativoDebitore: f[F.identificativoDebitore] || undefined,
+      // NB: F.dataInizio / F.dataFine sono in anteprima nella UI ma non ancora
+      // inviati: la API V2 non supporta (per ora) il filtro per range di date.
+    };
   }
 
   private fetch(append: boolean): void {
     this.loading.set(true);
     this.error.set(null);
 
-    const f = this.filters();
+    // Nessun `total`: la COUNT è costosa su questa risorsa → conteggio on-demand
+    // (vedi requestCount). L'infinite scroll usa `hasNextPage`, non il totale.
     const filters: PendenzeListFilters = {
-      pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
-      // ordinamento: formatOrdinamento(this.sort()),
-      stato: f.stato || undefined,
-      // Il backend GovPay riceve `iuv` o `numeroAvviso` per ricerca puntuale; qui
-      // mappiamo la search generica su entrambi (preferendo numeroAvviso). Una
-      // ricerca full-text richiederebbe un endpoint dedicato.
-      numeroAvviso: f.search || undefined,
-      dataDa: f.dataDa ? `${f.dataDa}T00:00` : undefined,
-      dataA: f.dataA ? `${f.dataA}T23:59` : undefined,
+      ...this.baseFilters(),
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
     };
 
     this.api
       .list(filters)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of<Slice<PendenzaSummary>>({ results: [] });
         })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
+      .subscribe((slice) => {
+        const results = slice.results ?? [];
         if (append) {
           this.rows.update((prev) => [...prev, ...results]);
         } else {
           this.rows.set(results);
         }
-        this.total.set(page.numRisultati ?? 0);
+        this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
   }
 
+  /** Conteggio totale **su richiesta**: stessa query (filtri correnti) con
+   *  `page/limit=1` e `total=true`, così la COUNT lato BE avviene solo se
+   *  l'utente la chiede esplicitamente. */
+  requestCount(): void {
+    if (this.countLoading()) return;
+    this.countLoading.set(true);
+    this.api
+      .list({ ...this.baseFilters(), page: 1, limit: 1, total: true })
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of<Slice<PendenzaSummary>>({ results: [] });
+        })
+      )
+      .subscribe((slice) => {
+        const t = slice.pagination?.totalResults;
+        if (t != null) this.total.set(t);
+        this.countLoading.set(false);
+      });
+  }
 }

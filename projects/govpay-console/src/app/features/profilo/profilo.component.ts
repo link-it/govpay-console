@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '@core/auth';
-import { SystemFacade } from '@core/system';
+import { SystemFacade } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
@@ -27,7 +27,7 @@ import {
   StatusBadgeComponent,
   type InfoGridItem,
   ListStickyToolbarDirective,
-} from '@shared';
+} from '@linkit/shared-ui';
 
 @Component({
   selector: 'lnk-profilo',

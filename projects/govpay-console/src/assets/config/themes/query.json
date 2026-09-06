@@ -1,0 +1,139 @@
+{
+  "logo": {
+    "full": "assets/images/logo/LINK_logo-Govpay.svg",
+    "compact": "assets/images/logo/LINK_GovPay-icon.svg",
+    "showTitle": true,
+    "fallbackText": "GP"
+  },
+  "primaryColor": "#ef4b3b",
+  "secondaryColor": "#1e1b18",
+  "theme": {
+    "topBar": {
+      "background": "#ffffff",
+      "text": "#1e1b18",
+      "border": "#fbd7d4",
+      "height": "3.5rem"
+    },
+    "header": {
+      "background": "#ffffff",
+      "text": "#1e1b18",
+      "border": "#fbd7d4",
+      "showShadow": false
+    },
+    "sidebar": {
+      "background": "#ffffff",
+      "border": "#fbd7d4",
+      "text": "#1e1b18",
+      "textSecondary": "#6f6a63",
+      "itemHover": "#fde6e480",
+      "itemActive": "#fcdbd8",
+      "itemActiveText": "#b4382c",
+      "footerBackground": "#ffffff",
+      "footerBorder": "#fbd7d4"
+    },
+    "content": {
+      "background": "#fef2f1",
+      "text": "#1e1b18",
+      "cardBackground": "#ffffff",
+      "cardBorder": "#fbd7d4",
+      "cardHover": "#fef2f1",
+      "muted": "#fde9e7",
+      "mutedForeground": "#6f6a63"
+    },
+    "buttons": {
+      "primaryBackground": "#ef4b3b",
+      "primaryText": "#000000",
+      "primaryHover": "#d24234",
+      "secondaryBackground": "#ffffff",
+      "secondaryText": "#1e1b18",
+      "secondaryBorder": "#fbd7d4",
+      "secondaryHover": "#fde6e480"
+    },
+    "tabs": {
+      "shared": {
+        "textActive": "#1e1b18",
+        "fontWeightActive": 600
+      },
+      "underline": {
+        "indicatorColor": "#ef4b3b",
+        "indicatorSize": "3px",
+        "trackBorder": "#fbd7d4"
+      },
+      "segmented": {
+        "trackBackground": "#fde9e7",
+        "trackRadius": "0.75rem",
+        "pillBackground": "#ef4b3b",
+        "pillText": "#000000",
+        "pillShadow": "0 1px 3px rgb(239 75 59 / 0.35)",
+        "badgeBackgroundActive": "#ffffff33",
+        "badgeTextActive": "#ffffff"
+      }
+    },
+    "fonts": {
+      "primary": {
+        "family": "Prompt"
+      }
+    },
+    "success": "#16a34a",
+    "warning": "#f59e0b",
+    "danger": "#dc2626",
+    "info": "#0071a9",
+    "dark": {
+      "topBar": {
+        "background": "#14120f",
+        "text": "#e8e6e3",
+        "border": "#2c2822"
+      },
+      "header": {
+        "background": "#14120f",
+        "text": "#e8e6e3",
+        "border": "#2c2822",
+        "showShadow": false
+      },
+      "sidebar": {
+        "background": "#14120f",
+        "border": "#2c2822",
+        "text": "#e8e6e3",
+        "textSecondary": "#a1998e",
+        "itemHover": "#2c2822",
+        "itemActive": "#2c2822",
+        "itemActiveText": "#f59389",
+        "footerBackground": "#14120f",
+        "footerBorder": "#2c2822"
+      },
+      "content": {
+        "background": "#0e0c0a",
+        "text": "#e8e6e3",
+        "cardBackground": "#1d1a16",
+        "cardBorder": "#2c2822",
+        "cardHover": "#2c2822",
+        "muted": "#2c2822",
+        "mutedForeground": "#a1998e"
+      },
+      "buttons": {
+        "primaryBackground": "#ef4b3b",
+        "primaryText": "#ffffff",
+        "primaryHover": "#d24234",
+        "secondaryBackground": "#2c2822",
+        "secondaryText": "#e8e6e3",
+        "secondaryBorder": "#3a352c",
+        "secondaryHover": "#3a352c"
+      },
+      "tabs": {
+        "shared": {
+          "textActive": "#e8e6e3"
+        },
+        "underline": {
+          "trackBorder": "#2c2822"
+        },
+        "segmented": {
+          "trackBackground": "#2c2822",
+          "pillBackground": "#ef4b3b",
+          "pillText": "#ffffff",
+          "pillShadow": "0 1px 3px rgb(239 75 59 / 0.45)"
+        }
+      },
+      "info": "#38bdf8"
+    }
+  }
+}

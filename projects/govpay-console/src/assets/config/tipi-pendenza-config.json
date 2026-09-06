@@ -25,7 +25,8 @@
         "cell": {
           "type": "text",
           "field": "idTipoPendenza"
-        }
+        },
+        "sortable": true
       },
       {
         "key": "descrizione",
@@ -33,31 +34,9 @@
         "sortable": true,
         "cell": {
           "type": "text",
-          "field": "descrizione",
-          "truncate": 30
+          "field": "descrizione"
         },
         "link": true
-      },
-      {
-        "key": "codificaIUV",
-        "header": "TipiPendenza.Columns.CodificaIUV",
-        "cellClass": "font-mono text-xs",
-        "width": "8rem",
-        "cell": {
-          "type": "text",
-          "field": "codificaIUV",
-          "default": "—"
-        }
-      },
-      {
-        "key": "pagaTerzi",
-        "header": "TipiPendenza.Columns.PagaTerzi",
-        "width": "8rem",
-        "cell": {
-          "type": "status",
-          "field": "pagaTerzi",
-          "options": "BOOLEANI"
-        }
       },
       {
         "key": "abilitato",
@@ -85,13 +64,6 @@
           "field": "idTipoPendenza",
           "class": "font-mono",
           "tooltip": "TipiPendenza.Detail.IdTipoPendenza"
-        },
-        {
-          "type": "text",
-          "field": "codificaIUV",
-          "class": "font-mono",
-          "hideEmpty": true,
-          "tooltip": "TipiPendenza.Detail.CodificaIUV"
         }
       ],
       "label": []
@@ -101,12 +73,6 @@
         "type": "status",
         "field": "abilitato",
         "options": "BOOLEANI"
-      },
-      {
-        "type": "label",
-        "field": "pagaTerzi",
-        "options": "BOOLEANI",
-        "class": "opacity-80"
       }
     ]
   }

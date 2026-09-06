@@ -3,12 +3,12 @@
     "BOOLEANI": {
       "values": {
         "true": {
-          "label": "Common.Yes",
+          "label": "Intermediari.Stato.Abilitato",
           "background": "var(--status-success-bg)",
           "color": "var(--status-success-text)"
         },
         "false": {
-          "label": "Common.No",
+          "label": "Intermediari.Stato.Disabilitato",
           "background": "var(--status-muted-bg)",
           "color": "var(--status-muted-text)"
         }
@@ -18,24 +18,25 @@
   "table": {
     "columns": [
       {
-        "key": "idIntermediario",
+        "key": "codIntermediario",
         "header": "Intermediari.Columns.IdIntermediario",
         "cellClass": "font-mono text-xs",
         "width": "12rem",
         "cell": {
           "type": "text",
           "field": "idIntermediario"
-        }
+        },
+        "sortable": true
       },
       {
         "key": "denominazione",
         "header": "Intermediari.Columns.Denominazione",
         "cell": {
           "type": "text",
-          "field": "denominazione",
-          "truncate": 30
+          "field": "denominazione"
         },
-        "link": true
+        "link": true,
+        "sortable": true
       },
       {
         "key": "abilitato",

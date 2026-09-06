@@ -1,0 +1,43 @@
+<section class="space-y-4 pb-6 lnk-list-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Nav.Impostazioni" subtitleKey="Impostazioni.Subtitle" [loading]="loading()" />
+  </div>
+
+  <div class="px-6">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      @for (card of cards(); track card.route) {
+        @if (card.built) {
+          <a [routerLink]="['/impostazioni', card.route]"
+             class="group flex flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 transition hover:border-[var(--primary)] hover:shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--muted)] text-[var(--primary)]">
+                <ng-icon [name]="card.icon" size="1.2rem" />
+              </span>
+              <span class="font-medium">{{ card.labelKey | translate }}</span>
+              @if (card.abilitata === true) {
+                <span class="ml-auto rounded-md bg-[var(--status-success-bg)] px-1.5 py-0.5 text-xs text-[var(--status-success-text)]">{{ 'Common.Yes' | translate }}</span>
+              } @else if (card.abilitata === false) {
+                <span class="ml-auto rounded-md bg-[var(--status-muted-bg)] px-1.5 py-0.5 text-xs text-[var(--status-muted-text)]">{{ 'Common.No' | translate }}</span>
+              }
+            </div>
+            <p class="text-sm text-[var(--muted-foreground)]">{{ card.descKey | translate }}</p>
+            @if (card.ultimaModifica) {
+              <p class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.UltimaModifica' | translate }}: {{ formatData(card.ultimaModifica) }}</p>
+            }
+          </a>
+        } @else {
+          <div class="flex flex-col gap-2 rounded-lg border border-dashed border-[var(--border)] bg-[var(--card-bg)]/50 p-4 opacity-60">
+            <div class="flex items-center gap-3">
+              <span class="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--muted)] text-[var(--muted-foreground)]">
+                <ng-icon [name]="card.icon" size="1.2rem" />
+              </span>
+              <span class="font-medium">{{ card.labelKey | translate }}</span>
+              <span class="ml-auto rounded-md bg-[var(--status-muted-bg)] px-1.5 py-0.5 text-xs text-[var(--status-muted-text)]">{{ 'Impostazioni.InArrivo' | translate }}</span>
+            </div>
+            <p class="text-sm text-[var(--muted-foreground)]">{{ card.descKey | translate }}</p>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>

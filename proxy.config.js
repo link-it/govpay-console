@@ -24,8 +24,8 @@
  *   GP_BACKEND=demo ng serve --proxy-config proxy.config.js
  *
  * Path inoltrati (riflettono i context path canonici GovPay):
- *   /govpay-console-api/*           → API console, riscritto su /govpay/console-api
- *                                     (Basic / SPID / IAM / OAuth2)
+ *   /govpay-console-api/*           → API console V2, riscritto su /govpay/console-api
+ *                                     (Basic / SPID / IAM / OAuth2; sessione + XSRF)
  *   /govpay/backend/api/backoffice/* → fallback per installazioni locali custom (legacy)
  */
 
@@ -34,6 +34,7 @@ const BACKENDS = {
   'local-alt': 'http://172.16.1.121:8082',
   'dev-cloud': 'https://dev.govcloud.it',
   demo: 'https://new-frontend.link.it',
+  'demo-v2': 'https://lab.link.it',
 };
 
 const presetName = process.env.GP_BACKEND || 'local';

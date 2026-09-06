@@ -21,42 +21,22 @@
         "key": "idDominio",
         "header": "Domini.Columns.IdDominio",
         "cellClass": "font-mono text-xs",
-        "width": "11rem",
+        "width": "12rem",
         "cell": {
           "type": "text",
           "field": "idDominio"
-        }
+        },
+        "sortable": true
       },
       {
         "key": "ragioneSociale",
         "header": "Domini.Columns.RagioneSociale",
-        "sortable": true,
         "cell": {
           "type": "text",
-          "field": "ragioneSociale",
-          "truncate": 30
+          "field": "ragioneSociale"
         },
-        "link": true
-      },
-      {
-        "key": "localita",
-        "header": "Domini.Columns.Localita",
-        "cell": {
-          "type": "text",
-          "field": "localita",
-          "truncate": 30
-        }
-      },
-      {
-        "key": "stazione",
-        "header": "Domini.Columns.Stazione",
-        "cellClass": "font-mono text-xs",
-        "width": "11rem",
-        "cell": {
-          "type": "text",
-          "field": "stazione",
-          "default": "—"
-        }
+        "link": true,
+        "sortable": true
       },
       {
         "key": "abilitato",
@@ -65,16 +45,6 @@
         "cell": {
           "type": "status",
           "field": "abilitato",
-          "options": "BOOLEANI"
-        }
-      },
-      {
-        "key": "intermediato",
-        "header": "Domini.Columns.Intermediato",
-        "width": "9rem",
-        "cell": {
-          "type": "status",
-          "field": "intermediato",
           "options": "BOOLEANI"
         }
       }
@@ -94,19 +64,6 @@
           "field": "idDominio",
           "class": "font-mono",
           "tooltip": "Domini.Detail.IdDominio"
-        },
-        {
-          "type": "text",
-          "field": "localita",
-          "hideEmpty": true,
-          "tooltip": "Domini.Detail.Localita"
-        },
-        {
-          "type": "text",
-          "field": "stazione",
-          "class": "font-mono",
-          "hideEmpty": true,
-          "tooltip": "Domini.Detail.Stazione"
         }
       ],
       "label": []

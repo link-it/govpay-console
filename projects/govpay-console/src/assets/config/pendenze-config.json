@@ -1,19 +1,20 @@
 {
+  "persistState": true,
   "options": {
     "STATI_PENDENZA": {
       "values": {
-        "NON_ESEGUITA": {
-          "label": "Pendenze.Stati.NonEseguita",
+        "NON_PAGATA": {
+          "label": "Pendenze.Stati.NonPagata",
           "background": "var(--status-info-bg)",
           "color": "var(--status-info-text)"
         },
-        "ESEGUITA": {
-          "label": "Pendenze.Stati.Eseguita",
+        "PAGATA": {
+          "label": "Pendenze.Stati.Pagata",
           "background": "var(--status-success-bg)",
           "color": "var(--status-success-text)"
         },
-        "ESEGUITA_PARZIALE": {
-          "label": "Pendenze.Stati.EseguitaParziale",
+        "PAGATA_PARZIALE": {
+          "label": "Pendenze.Stati.PagataParziale",
           "background": "var(--status-info-bg)",
           "color": "var(--status-info-text)"
         },
@@ -27,8 +28,8 @@
           "background": "var(--status-warning-bg)",
           "color": "var(--status-warning-text)"
         },
-        "INCASSATA": {
-          "label": "Pendenze.Stati.Incassata",
+        "RICONCILIATA": {
+          "label": "Pendenze.Stati.Riconciliata",
           "background": "var(--status-success-bg)",
           "color": "var(--status-success-text)"
         },
@@ -63,31 +64,21 @@
         }
       },
       {
-        "key": "soggettoPagatore",
-        "header": "Pendenze.Columns.Pagatore",
-        "cell": {
-          "type": "text",
-          "field": "soggettoPagatore.anagrafica",
-          "truncate": 30
-        }
-      },
-      {
         "key": "causale",
         "header": "Pendenze.Columns.Causale",
         "cell": {
           "type": "text",
-          "field": "causale",
-          "truncate": 80
+          "field": "causale"
         }
       },
       {
-        "key": "dataCaricamento",
-        "header": "Pendenze.Columns.DataCaricamento",
+        "key": "dataUltimoAggiornamento",
+        "header": "Pendenze.Columns.DataAggiornamento",
         "sortable": true,
         "width": "8rem",
         "cell": {
           "type": "date",
-          "field": "dataCaricamento"
+          "field": "dataUltimoAggiornamento"
         }
       },
       {
@@ -95,7 +86,6 @@
         "header": "Pendenze.Columns.Importo",
         "align": "right",
         "cellClass": "font-mono",
-        "sortable": true,
         "width": "8rem",
         "cell": {
           "type": "currency",
@@ -119,7 +109,6 @@
       {
         "type": "text",
         "field": "causale",
-        "truncate": 80,
         "class": "opacity-90"
       }
     ],
@@ -136,7 +125,7 @@
           "field": "numeroAvviso",
           "class": "font-mono text-sm",
           "hideEmpty": true,
-          "tooltip": "Pendenze.Detail.Iuv"
+          "tooltip": "Pendenze.Detail.NumeroAvviso"
         }
       ],
       "label": []
@@ -156,7 +145,7 @@
       },
       {
         "type": "date",
-        "field": "dataCaricamento"
+        "field": "dataUltimoAggiornamento"
       }
     ]
   }

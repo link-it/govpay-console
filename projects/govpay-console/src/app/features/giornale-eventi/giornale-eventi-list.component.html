@@ -1,40 +1,24 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
-  <lnk-page-header titleKey="Nav.GiornaleEventi" subtitleKey="GiornaleEventi.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
+  <lnk-page-header titleKey="Nav.GiornaleEventi" subtitleKey="GiornaleEventi.Subtitle" [loading]="loading() && rows().length === 0">
     <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
       {{ 'Common.Refresh' | translate }}
     </button>
   </lnk-page-header>
 
-  <div class="flex flex-wrap items-end gap-3">
-    <div class="flex-1 min-w-[12rem]">
-      <lnk-search-input
-        [value]="filters().search"
-        placeholderKey="GiornaleEventi.Filters.SearchPlaceholder"
-        (valueChange)="onSearchChange($event)"
-      />
-    </div>
-    <lnk-select-input
-      labelKey="GiornaleEventi.Filters.Esito"
-      placeholderKey="Common.All"
-      [value]="filters().esito"
-      [options]="esitoOptions"
-      (valueChange)="onEsitoChange($event)"
+  <!-- Barra di ricerca (search-pill @linkit/shared-ui). -->
+  <div class="flex items-stretch gap-2">
+    <lnk-search-pill class="flex-1 min-w-0"
+      [fields]="searchFields()"
+      [(value)]="searchState"
+      [showSort]="false"
+      [variant]="searchPillVariant()"
+      [density]="searchPillDensity()"
+      [labels]="pillLabels()"
+      [placeholder]="searchPlaceholder()"
+      (search)="onSearch($event)"
     />
-    <lnk-select-input
-      labelKey="GiornaleEventi.Filters.Categoria"
-      placeholderKey="Common.All"
-      [value]="filters().categoria"
-      [options]="categoriaOptions"
-      (valueChange)="onCategoriaChange($event)"
-    />
-    <lnk-date-input labelKey="Common.DateFrom" [value]="filters().dataDa" [max]="filters().dataA || undefined" (valueChange)="onDataDaChange($event)" />
-    <lnk-date-input labelKey="Common.DateTo" [value]="filters().dataA" [min]="filters().dataDa || undefined" (valueChange)="onDataAChange($event)" />
-    @if (hasActiveFilters()) {
-      <button type="button" class="btn btn-ghost btn-sm self-end" (click)="resetFilters()">
-        {{ 'Common.ResetFilters' | translate }}
-      </button>
-    }
+    <lnk-view-toggle [value]="viewMode()" (valueChange)="onViewModeChange($event)" [variant]="searchPillVariant()" />
   </div>
   </div>
 
@@ -60,10 +44,8 @@
         [columns]="columns()"
         [rows]="rows()"
         [loading]="loading() && rows().length === 0"
-        [sort]="sort()"
         [displayConfig]="rowConfig()"
         emptyKey="GiornaleEventi.Empty.Title"
-        (sortChange)="onSortChange($event)"
         (rowClick)="onRowClick($event)"
       />
     }
@@ -84,7 +66,7 @@
       </div>
     } @else if (rows().length > 0) {
       <p class="py-3 text-center text-xs text-[var(--muted-foreground)]">
-        {{ 'Pagination.AllLoaded' | translate: { total: total() } }}
+        {{ 'GiornaleEventi.AllLoaded' | translate }}
       </p>
     }
   }

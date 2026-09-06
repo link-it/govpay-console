@@ -1,0 +1,47 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header [titleKey]="'Tracciati.Operazioni.Detail.Titolo'" subtitleKey="Tracciati.Operazioni.Detail.Subtitle">
+      <a [routerLink]="backUrl()" [queryParams]="{ tab: 'operazioni' }" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+    @if (operazione()) {
+      <div class="flex items-center gap-2">
+        <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
+      </div>
+    }
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state
+      icon="bootstrapExclamationTriangle"
+      titleKey="Common.LoadError"
+      [descriptionKey]="error()!"
+    >
+      <a [routerLink]="backUrl()" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !operazione()) {
+    <lnk-loading />
+  } @else if (operazione()) {
+
+    <lnk-detail-section titleKey="Tracciati.Operazioni.Detail.Dati">
+      <lnk-info-grid [items]="datiItems()" />
+    </lnk-detail-section>
+
+    @if (richiestaJson()) {
+      <lnk-detail-section titleKey="Tracciati.Operazioni.Detail.Richiesta">
+        <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ richiestaJson() }}</pre>
+      </lnk-detail-section>
+    }
+
+    @if (rispostaJson()) {
+      <lnk-detail-section titleKey="Tracciati.Operazioni.Detail.Risposta">
+        <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ rispostaJson() }}</pre>
+      </lnk-detail-section>
+    }
+  }
+  </div>
+</section>

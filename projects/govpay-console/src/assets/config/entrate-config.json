@@ -1,0 +1,89 @@
+{
+  "options": {
+    "TIPO_CONTABILITA": {
+      "values": {
+        "CAPITOLO": {
+          "label": "Entrate.TipoContabilita.CAPITOLO",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "SPECIALE": {
+          "label": "Entrate.TipoContabilita.SPECIALE",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "SIOPE": {
+          "label": "Entrate.TipoContabilita.SIOPE",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "SRTP_ESCLUSA_RAVV_OPEROSO": {
+          "label": "Entrate.TipoContabilita.SRTP_ESCLUSA_RAVV_OPEROSO",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "SRTP_ESCLUSA_ALTRO_OPERATORE": {
+          "label": "Entrate.TipoContabilita.SRTP_ESCLUSA_ALTRO_OPERATORE",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "SRTP_ESCLUSA": {
+          "label": "Entrate.TipoContabilita.SRTP_ESCLUSA",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        },
+        "ALTRO": {
+          "label": "Entrate.TipoContabilita.ALTRO",
+          "background": "var(--status-muted-bg)",
+          "color": "var(--status-muted-text)"
+        }
+      }
+    }
+  },
+  "table": {
+    "columns": [
+      {
+        "key": "idEntrata",
+        "header": "Entrate.Columns.IdEntrata",
+        "cellClass": "font-mono text-xs",
+        "width": "16rem",
+        "cell": {
+          "type": "text",
+          "field": "idEntrata"
+        },
+        "sortable": true
+      },
+      {
+        "key": "descrizione",
+        "header": "Entrate.Columns.Descrizione",
+        "cell": {
+          "type": "text",
+          "field": "descrizione"
+        },
+        "link": true,
+        "sortable": true
+      }
+    ]
+  },
+  "itemRow": {
+    "primaryText": [
+      {
+        "type": "text",
+        "field": "descrizione"
+      }
+    ],
+    "metadata": {
+      "text": [
+        {
+          "type": "text",
+          "field": "idEntrata",
+          "class": "font-mono",
+          "hideEmpty": true,
+          "tooltip": "Entrate.Detail.IdEntrata"
+        }
+      ],
+      "label": []
+    },
+    "secondaryMetadata": []
+  }
+}

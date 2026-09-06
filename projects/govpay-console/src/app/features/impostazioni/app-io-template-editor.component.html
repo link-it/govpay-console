@@ -1,0 +1,82 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Impostazioni.Aree.AppIoTemplate.Nome" subtitleKey="Impostazioni.Aree.AppIoTemplate.Desc">
+      <a routerLink="/impostazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+        <lnk-detail-section titleKey="Impostazioni.Template.Avviso">
+          <div class="space-y-4">
+            <div class="flex flex-col gap-1 max-w-[16rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Tipo' | translate }}</span>
+              <lnk-select formControlName="avvisoTipo" [options]="tipoOptions" [placeholder]="'Impostazioni.Template.Nessuno' | translate" [ariaLabel]="'Impostazioni.Template.Tipo' | translate" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Titolo' | translate }}</span>
+              <lnk-code-field formControlName="avvisoOggetto" format="auto" [rows]="3" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Messaggio' | translate }}</span>
+              <lnk-code-field formControlName="avvisoMessaggio" format="auto" [rows]="6" />
+            </div>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Impostazioni.Template.Ricevuta">
+          <div class="space-y-4">
+            <div class="flex flex-col gap-1 max-w-[16rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Tipo' | translate }}</span>
+              <lnk-select formControlName="ricevutaTipo" [options]="tipoOptions" [placeholder]="'Impostazioni.Template.Nessuno' | translate" [ariaLabel]="'Impostazioni.Template.Tipo' | translate" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Titolo' | translate }}</span>
+              <lnk-code-field formControlName="ricevutaOggetto" format="auto" [rows]="3" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Messaggio' | translate }}</span>
+              <lnk-code-field formControlName="ricevutaMessaggio" format="auto" [rows]="6" />
+            </div>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" formControlName="ricevutaSoloEseguiti" class="h-4 w-4 accent-[var(--primary)]" />
+              <span class="text-sm">{{ 'Impostazioni.Template.SoloEseguiti' | translate }}</span>
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="Impostazioni.Template.Scadenza">
+          <div class="space-y-4">
+            <div class="flex flex-col gap-1 max-w-[16rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Tipo' | translate }}</span>
+              <lnk-select formControlName="scadenzaTipo" [options]="tipoOptions" [placeholder]="'Impostazioni.Template.Nessuno' | translate" [ariaLabel]="'Impostazioni.Template.Tipo' | translate" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Titolo' | translate }}</span>
+              <lnk-code-field formControlName="scadenzaOggetto" format="auto" [rows]="3" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Messaggio' | translate }}</span>
+              <lnk-code-field formControlName="scadenzaMessaggio" format="auto" [rows]="6" />
+            </div>
+            <label class="flex flex-col gap-1 max-w-[16rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Preavviso' | translate }}</span>
+              <input type="number" formControlName="scadenzaPreavviso" min="0" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+            </label>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+          <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

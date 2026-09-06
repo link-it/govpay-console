@@ -1,0 +1,66 @@
+@if (!ready()) {
+  <div class="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 text-sm text-[var(--muted-foreground)]">
+    {{ descriptor().labelKey | translate }} · {{ 'Common.Loading' | translate }}
+  </div>
+} @else {
+  <lnk-inline-edit-card [title]="descriptor().labelKey | translate" [(editing)]="editing" [saving]="saving()" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+    <div view><lnk-info-grid [items]="viewItems()" /></div>
+    <form edit [formGroup]="form" class="space-y-4">
+      @if (hasAbilitato()) {
+        <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Connettori.Abilitato' | translate }}</span></label>
+      }
+      <div class="grid grid-cols-2 gap-3">
+        @for (f of descriptor().fields; track f.key) {
+          @switch (f.kind) {
+            @case ('checkbox') {
+              <label class="flex items-center gap-2 mt-6"><input type="checkbox" [formControlName]="f.key" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ f.labelKey | translate }}</span></label>
+            }
+            @case ('select') {
+              <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ f.labelKey | translate }}</span>
+                <lnk-select [formControlName]="f.key" [options]="f.options ?? []" placeholder="—" [ariaLabel]="f.labelKey | translate" /></label>
+            }
+            @case ('number') {
+              <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ f.labelKey | translate }}</span>
+                <input type="number" [formControlName]="f.key" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            }
+            @case ('list') {
+              <label class="flex flex-col gap-1 col-span-2"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ f.labelKey | translate }}</span>
+                <textarea [formControlName]="f.key" rows="2" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"></textarea>
+                <span class="text-xs text-[var(--muted-foreground)]">{{ 'Domini.Connettori.ListHint' | translate }}</span></label>
+            }
+            @default {
+              <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ f.labelKey | translate }}</span>
+                <input type="text" [formControlName]="f.key" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            }
+          }
+        }
+      </div>
+    </form>
+
+    @if (descriptor().hasCredenziali) {
+      <div footer class="border-t border-[var(--border)] p-4">
+        @if (!showCredenziali()) {
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-sm text-[var(--muted-foreground)]">{{ 'Domini.Connettori.Cred.Titolo' | translate }}</span>
+            <button type="button" class="btn btn-ghost btn-sm" (click)="showCredenziali.set(true)">{{ 'Domini.Connettori.Cred.Gestisci' | translate }}</button>
+          </div>
+        } @else {
+          <form [formGroup]="credenzialiForm" autocomplete="off" class="space-y-3">
+            <div class="text-sm font-semibold">{{ 'Domini.Connettori.Cred.Titolo' | translate }}</div>
+            <p class="text-xs text-[var(--muted-foreground)]">{{ 'Domini.Connettori.Cred.Hint' | translate }}</p>
+            <div class="grid grid-cols-2 gap-3">
+              @for (c of credenzialiFields; track c.key) {
+                <div class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ c.labelKey | translate }}</span>
+                  <lnk-secret-input [formControlName]="c.key" [ariaLabel]="c.labelKey | translate" /></div>
+              }
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" class="btn btn-primary btn-sm" (click)="saveCredenziali()" [disabled]="savingCredenziali()">{{ 'Common.Save' | translate }}</button>
+              <button type="button" class="btn btn-ghost btn-sm" (click)="showCredenziali.set(false)" [disabled]="savingCredenziali()">{{ 'Common.Cancel' | translate }}</button>
+            </div>
+          </form>
+        }
+      </div>
+    }
+  </lnk-inline-edit-card>
+}

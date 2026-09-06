@@ -1,0 +1,46 @@
+@if (isCreate()) {
+  <form [formGroup]="form" class="lnk-inline-card--editing rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 space-y-4">
+    <div class="text-sm font-semibold">{{ 'Domini.EntrateDominio.Nuova' | translate }}</div>
+    <label class="flex flex-col gap-1 max-w-md"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idEntrata">{{ 'Domini.EntrateDominio.IdEntrata' | translate }}</span>
+      <input type="text" formControlName="idEntrata" list="lnk-entrate-sugg" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+      <datalist id="lnk-entrate-sugg">
+        @for (o of entrateSuggestions(); track o.id) { <option [value]="o.id">{{ o.label }}</option> }
+      </datalist></label>
+    <ng-container [ngTemplateOutlet]="config" />
+    <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.EntrateDominio.Abilitato' | translate }}</span></label>
+    <div class="flex items-center gap-2">
+      <button type="button" class="btn btn-primary btn-sm" (click)="save()" [disabled]="saving() || form.invalid">{{ 'Common.Save' | translate }}</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="cancelCreation()" [disabled]="saving()">{{ 'Common.Cancel' | translate }}</button>
+    </div>
+  </form>
+} @else {
+  <lnk-inline-edit-card [title]="entrata()!.idEntrata" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+    <div view><lnk-info-grid [items]="viewItems()" /></div>
+    <form edit [formGroup]="form" class="space-y-4">
+      @if (detail()?.tipoEntrata?.descrizione ?? entrata()?.descrizione; as descr) {
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.EntrateDominio.Descrizione' | translate }}</span>
+          <span class="text-sm">{{ descr }}</span>
+        </div>
+      }
+      <ng-container [ngTemplateOutlet]="config" />
+      <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.EntrateDominio.Abilitato' | translate }}</span></label>
+    </form>
+  </lnk-inline-edit-card>
+}
+
+<ng-template #config>
+  <div class="grid grid-cols-2 gap-3" [formGroup]="form">
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.EntrateDominio.IbanAccredito' | translate }}</span>
+      <input type="text" formControlName="ibanAccredito" list="lnk-iban-sugg" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.EntrateDominio.IbanAppoggio' | translate }}</span>
+      <input type="text" formControlName="ibanAppoggio" list="lnk-iban-sugg" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.EntrateDominio.TipoContabilita' | translate }}</span>
+      <lnk-select formControlName="tipoContabilita" [options]="tipoContabilitaOptions()" placeholder="—" [ariaLabel]="'Domini.EntrateDominio.TipoContabilita' | translate" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.EntrateDominio.CodiceContabilita' | translate }}</span>
+      <input type="text" formControlName="codiceContabilita" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+  </div>
+  <datalist id="lnk-iban-sugg">
+    @for (iban of ibanSuggestions(); track iban) { <option [value]="iban"></option> }
+  </datalist>
+</ng-template>

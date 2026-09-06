@@ -5,11 +5,30 @@
         <ng-icon name="bootstrapChevronLeft" size="1rem" />
         <span>{{ 'Common.Back' | translate }}</span>
       </a>
+      @if (hasRichiesta()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="onDownloadRichiesta()" [disabled]="!!downloading()">
+          <ng-icon name="bootstrapDownload" size="1rem" />
+          <span>{{ 'Tracciati.Detail.ScaricaRichiesta' | translate }}</span>
+        </button>
+      }
+      @if (hasEsito()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="onDownloadEsito()" [disabled]="!!downloading()">
+          <ng-icon name="bootstrapDownload" size="1rem" />
+          <span>{{ 'Tracciati.Detail.ScaricaEsito' | translate }}</span>
+        </button>
+      }
+      @if (hasStampe()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="onDownloadStampe()" [disabled]="!!downloading()">
+          <ng-icon name="bootstrapFileEarmarkZip" size="1rem" />
+          <span>{{ 'Tracciati.Detail.ScaricaStampe' | translate }}</span>
+        </button>
+      }
     </lnk-page-header>
     @if (tracciato()) {
       <div class="flex items-center gap-2">
         <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
       </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
     }
   </div>
 
@@ -26,17 +45,53 @@
   } @else if (loading() && !tracciato()) {
     <lnk-loading />
   } @else if (tracciato()) {
-    <lnk-detail-section titleKey="Tracciati.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
-    </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Tracciati.Detail.EnteCreditore">
-      <lnk-info-grid [items]="enteItems()" />
-    </lnk-detail-section>
+    @if (activeTab() === 'dati') {
+      <lnk-detail-section titleKey="Tracciati.Detail.Generali">
+        <lnk-info-grid [items]="generaliItems()" />
+      </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Tracciati.Detail.Contatori">
-      <lnk-info-grid [items]="contatoriItems()" />
-    </lnk-detail-section>
+      <lnk-detail-section titleKey="Tracciati.Detail.EnteCreditore">
+        <lnk-info-grid [items]="enteItems()" />
+      </lnk-detail-section>
+
+      <lnk-detail-section titleKey="Tracciati.Detail.Contatori">
+        <lnk-info-grid [items]="contatoriItems()" />
+      </lnk-detail-section>
+    }
+
+    @if (activeTab() === 'operazioni') {
+      @if (operazioniLoading() && operazioni() === null) {
+        <lnk-loading />
+      } @else if (operazioni(); as ops) {
+        @if (ops.length === 0) {
+          <lnk-empty-state icon="bootstrapInboxes" titleKey="Tracciati.Operazioni.Empty" />
+        } @else {
+          <lnk-data-table
+            [columns]="operazioniColumns()"
+            [rows]="ops"
+            [clickable]="true"
+            emptyKey="Tracciati.Operazioni.Empty"
+            (rowClick)="onOperazioneClick($event)"
+          />
+          @if (operazioniHasMore() || operazioniLoading()) {
+            <div
+              class="py-4 flex items-center justify-center text-sm text-[var(--muted-foreground)]"
+              lnkInfiniteScroll
+              [enabled]="operazioniCanLoadMore()"
+              rootMargin="400px"
+              (scrolled)="loadMoreOperazioni()"
+            >
+              @if (operazioniLoading()) {
+                <lnk-loading [inline]="true" size="md" [labelKey]="null" />
+              } @else {
+                <span>{{ 'Pagination.LoadMoreHint' | translate }}</span>
+              }
+            </div>
+          }
+        }
+      }
+    }
   }
   </div>
 </section>

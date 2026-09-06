@@ -9,20 +9,12 @@
  * the Free Software Foundation.
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import {
   DetailSectionComponent,
   EmptyStateComponent,
@@ -31,10 +23,24 @@ import {
   InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
+  TabsComponent,
   type InfoGridItem,
-} from '@shared';
-import { TipiPendenzaApi } from './tipi-pendenza.api';
-import type { TipoPendenza } from './tipo-pendenza.model';
+  type TabDef,
+} from '@linkit/shared-ui';
+import { problemDetail } from '@core/models';
+import { ConfigFieldViewComponent } from '@core/ui/config-field-view/config-field-view.component';
+import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
+import type { TipoPendenza, TipoPendenzaAvvisatura, TipoPendenzaPortale, TipoPendenzaPromemoria } from './tipo-pendenza.model';
+
+/** Descrittore di un promemoria per il rendering strutturato. */
+interface PromemoriaView {
+  titleKey: string;
+  /** Dati del promemoria; assente se non configurato. */
+  p?: TipoPendenzaPromemoria;
+  allegaPdf: boolean;
+  soloEseguiti: boolean;
+  preavviso: boolean;
+}
 
 @Component({
   selector: 'lnk-tipo-pendenza-detail',
@@ -50,24 +56,42 @@ import type { TipoPendenza } from './tipo-pendenza.model';
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    TabsComponent,
+    ConfigFieldViewComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tipo-pendenza-detail.component.html',
 })
 export class TipoPendenzaDetailComponent implements OnInit {
-  private readonly api = inject(TipiPendenzaApi);
+  private readonly api = inject(TipiPendenzaConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
 
+  idTipoPendenza = '';
+
   readonly tipo = signal<TipoPendenza | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  readonly activeTab = signal<'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre'>('dati');
+  readonly tabs = computed<TabDef[]>(() => [
+    { id: 'dati', labelKey: 'TipiPendenza.Form.TabDati' },
+    { id: 'backoffice', labelKey: 'TipiPendenza.Form.TabPortaleBackoffice' },
+    { id: 'pagamento', labelKey: 'TipiPendenza.Form.TabPortalePagamento' },
+    { id: 'avvMail', labelKey: 'TipiPendenza.Form.TabAvvisaturaMail' },
+    { id: 'avvAppIO', labelKey: 'TipiPendenza.Form.TabAvvisaturaAppIO' },
+    { id: 'altre', labelKey: 'TipiPendenza.Form.TabAltre' },
+  ]);
+
   readonly abilitatoTone = computed(() => (this.tipo()?.abilitato ? 'success' : 'muted'));
   readonly abilitatoLabelKey = computed(() => (this.tipo()?.abilitato ? 'Common.Yes' : 'Common.No'));
+
+  private yn(b: boolean | undefined): string {
+    return this.translate.instant(b ? 'Common.Yes' : 'Common.No');
+  }
 
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const t = this.tipo();
@@ -76,8 +100,55 @@ export class TipoPendenzaDetailComponent implements OnInit {
       { labelKey: 'TipiPendenza.Detail.IdTipoPendenza', value: t.idTipoPendenza, mono: true },
       { labelKey: 'TipiPendenza.Detail.Descrizione', value: t.descrizione, wide: true },
       { labelKey: 'TipiPendenza.Detail.CodificaIUV', value: t.codificaIUV, mono: true, hide: !t.codificaIUV },
+      { labelKey: 'TipiPendenza.Detail.PagaTerzi', value: this.yn(t.pagaTerzi) },
     ];
   });
+
+  private portaleItems(p: TipoPendenzaPortale | undefined): InfoGridItem[] {
+    if (!p) return [];
+    return [
+      { labelKey: 'TipiPendenza.Config.Abilitato', value: this.yn(p.abilitato) },
+      { labelKey: 'TipiPendenza.Config.TipoLayout', value: p.form?.tipo, hide: !p.form?.tipo, mono: true },
+      { labelKey: 'TipiPendenza.Config.TipoTemplate', value: p.trasformazione?.tipo, hide: !p.trasformazione?.tipo },
+      { labelKey: 'TipiPendenza.Config.Inoltro', value: p.inoltro, hide: !p.inoltro, mono: true },
+    ];
+  }
+
+  readonly backofficeItems = computed(() => this.portaleItems(this.tipo()?.portaleBackoffice));
+  readonly pagamentoItems = computed(() => this.portaleItems(this.tipo()?.portalePagamento));
+
+  readonly tracciatoItems = computed<InfoGridItem[]>(() => {
+    const tc = this.tipo()?.tracciatoCsv;
+    if (!tc) return [];
+    return [
+      { labelKey: 'TipiPendenza.Config.TipoTemplate', value: tc.tipo, hide: !tc.tipo },
+      { labelKey: 'TipiPendenza.Config.Intestazione', value: tc.intestazione, wide: true, hide: !tc.intestazione },
+    ];
+  });
+
+  readonly mailPromemoria = computed(() => this.promemoriaList(this.tipo()?.avvisaturaMail, true));
+  readonly appIoPromemoria = computed(() => this.promemoriaList(this.tipo()?.avvisaturaAppIO, false));
+
+  /** Tutti e tre i promemoria del canale, sempre presenti (assenti → `p` undefined). */
+  private promemoriaList(a: TipoPendenzaAvvisatura | undefined, mail: boolean): PromemoriaView[] {
+    return [
+      { titleKey: 'TipiPendenza.Config.PromemoriaAvviso', p: a?.promemoriaAvviso, allegaPdf: mail, soloEseguiti: false, preavviso: false },
+      { titleKey: 'TipiPendenza.Config.PromemoriaScadenza', p: a?.promemoriaScadenza, allegaPdf: false, soloEseguiti: false, preavviso: true },
+      { titleKey: 'TipiPendenza.Config.PromemoriaRicevuta', p: a?.promemoriaRicevuta, allegaPdf: mail, soloEseguiti: true, preavviso: false },
+    ];
+  }
+
+  /** Righe info-grid per un promemoria (vuote se non configurato). */
+  promemoriaItems(pr: PromemoriaView): InfoGridItem[] {
+    const p = pr.p;
+    if (!p) return [];
+    const items: InfoGridItem[] = [{ labelKey: 'TipiPendenza.Config.Abilitato', value: this.yn(p.abilitato) }];
+    if (pr.preavviso) items.push({ labelKey: 'TipiPendenza.Config.Preavviso', value: p.preavviso != null ? String(p.preavviso) : undefined, hide: p.preavviso == null });
+    items.push({ labelKey: 'TipiPendenza.Config.TipoTemplate', value: p.tipo, hide: !p.tipo });
+    if (pr.allegaPdf) items.push({ labelKey: 'TipiPendenza.Config.AllegaPdf', value: this.yn(p.allegaPdf) });
+    if (pr.soloEseguiti) items.push({ labelKey: 'TipiPendenza.Config.SoloEseguiti', value: this.yn(p.soloEseguiti) });
+    return items;
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('idTipoPendenza');
@@ -85,26 +156,23 @@ export class TipoPendenzaDetailComponent implements OnInit {
       this.router.navigate(['/tipi-pendenza']);
       return;
     }
-    this.system.setBreadcrumbs([
-      { label: 'Nav.TipiPendenza', url: '/tipi-pendenza' },
-      { label: id },
-    ]);
-    this.fetch(id);
+    this.idTipoPendenza = id;
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    if (tab && (['dati', 'backoffice', 'pagamento', 'avvMail', 'avvAppIO', 'altre'] as string[]).includes(tab)) {
+      this.activeTab.set(tab as 'dati' | 'backoffice' | 'pagamento' | 'avvMail' | 'avvAppIO' | 'altre');
+    }
+    this.system.setBreadcrumbs([{ label: 'Nav.TipiPendenza', url: '/tipi-pendenza' }, { label: id }]);
+    this.fetch();
   }
 
-  formatJson(payload: Record<string, unknown> | undefined): string {
-    if (!payload) return '';
-    return JSON.stringify(payload, null, 2);
-  }
-
-  private fetch(id: string): void {
+  private fetch(): void {
     this.loading.set(true);
     this.error.set(null);
     this.api
-      .get(id)
+      .get(this.idTipoPendenza)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
           return of(null);

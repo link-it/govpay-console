@@ -1,35 +1,50 @@
 <section class="space-y-4 pb-6 lnk-list-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
-  <lnk-page-header titleKey="Nav.Tracciati" subtitleKey="Tracciati.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
-      {{ 'Common.Refresh' | translate }}
-    </button>
-  </lnk-page-header>
-
-  <div class="flex flex-wrap items-end gap-3">
-    <lnk-select-input
-      labelKey="Tracciati.Filters.Stato"
-      placeholderKey="Common.All"
-      [value]="filters().stato"
-      [options]="statoOptions"
-      (valueChange)="onStatoChange($event)"
-    />
-    @if (hasActiveFilters()) {
-      <button type="button" class="btn btn-ghost btn-sm self-end" (click)="resetFilters()">
-        {{ 'Common.ResetFilters' | translate }}
+    <lnk-page-header titleKey="Nav.Tracciati" subtitleKey="Tracciati.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0"
+      [countOnRequest]="true" [countLoading]="countLoading()" (requestCount)="requestCount()">
+      <button type="button" class="btn btn-primary btn-sm" (click)="toggleUpload()">
+        {{ 'Tracciati.Upload.Nuovo' | translate }}
       </button>
-    }
-  </div>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
+        {{ 'Common.Refresh' | translate }}
+      </button>
+    </lnk-page-header>
+
+    <div class="flex items-stretch gap-2">
+      <lnk-search-pill class="flex-1 min-w-0"
+        [fields]="searchFields()"
+        [(value)]="searchState"
+        [resultCount]="total()"
+        [showSort]="true"
+        [sortOptions]="sortOptions()"
+        [variant]="searchPillVariant()"
+        [density]="searchPillDensity()"
+        [labels]="pillLabels()"
+        [placeholder]="searchPlaceholder()"
+        (search)="onSearch($event)"
+      />
+      <lnk-view-toggle [value]="viewMode()" (valueChange)="onViewModeChange($event)" [variant]="searchPillVariant()" />
+    </div>
   </div>
 
   <div class="px-6 space-y-4">
+
+  @if (showUpload()) {
+    <lnk-tracciato-upload (uploaded)="onUploaded($event)" (cancel)="toggleUpload()" />
+  }
 
   @if (showEmptyState()) {
     <lnk-empty-state
       icon="bootstrapInboxes"
       titleKey="Tracciati.Empty.Title"
       [descriptionKey]="hasActiveFilters() ? 'Common.NoResultsForFilters' : 'Tracciati.Empty.Description'"
-    />
+    >
+      @if (hasActiveFilters()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="resetFilters()">
+          {{ 'Common.ResetFilters' | translate }}
+        </button>
+      }
+    </lnk-empty-state>
   } @else {
     @if (viewMode() === 'rows' && rowConfig(); as cfg) {
       <lnk-item-list
@@ -44,8 +59,11 @@
         [columns]="columns()"
         [rows]="rows()"
         [loading]="loading() && rows().length === 0"
+        [sort]="sort()"
+        [clickable]="true"
         [displayConfig]="rowConfig()"
         emptyKey="Tracciati.Empty.Title"
+        (sortChange)="onSortChange($event)"
         (rowClick)="onRowClick($event)"
       />
     }

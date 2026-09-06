@@ -1,0 +1,65 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header [titleKey]="operazione()?.nome || operazione()?.id || '—'" subtitleKey="Operazioni.Detail.Subtitle">
+      <a routerLink="/operazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+      @if (operazione()) {
+        <button type="button" class="btn btn-primary btn-sm" (click)="avvia(false)" [disabled]="avviando() || !operazione()?.abilitata">
+          <ng-icon name="bootstrapPlayFill" size="1rem" />
+          <span>{{ 'Operazioni.Detail.Avvia' | translate }}</span>
+        </button>
+      }
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6 space-y-4">
+
+  @if (error()) {
+    <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
+      <a routerLink="/operazioni" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+    </lnk-empty-state>
+  } @else if (loading() && !operazione()) {
+    <lnk-loading />
+  } @else {
+
+    @if (operazione()) {
+      <lnk-detail-section titleKey="Operazioni.Detail.Generali">
+        <lnk-info-grid [items]="metaItems()" />
+      </lnk-detail-section>
+    }
+
+    <lnk-detail-section titleKey="Operazioni.Detail.Esecuzioni">
+      @if (esecuzioniLoading() && esecuzioni().length === 0) {
+        <lnk-loading />
+      } @else if (esecuzioni().length === 0) {
+        <lnk-empty-state icon="bootstrapInboxes" titleKey="Operazioni.Esecuzioni.Empty" />
+      } @else {
+        <lnk-data-table
+          [columns]="esecuzioniColumns()"
+          [rows]="esecuzioni()"
+          [clickable]="true"
+          emptyKey="Operazioni.Esecuzioni.Empty"
+          (rowClick)="onEsecuzioneClick($event)"
+        />
+        @if (esecuzioniHasMore() || esecuzioniLoading()) {
+          <div
+            class="py-4 flex items-center justify-center text-sm text-[var(--muted-foreground)]"
+            lnkInfiniteScroll
+            [enabled]="esecuzioniCanLoadMore()"
+            rootMargin="400px"
+            (scrolled)="loadMoreEsecuzioni()"
+          >
+            @if (esecuzioniLoading()) {
+              <lnk-loading [inline]="true" size="md" [labelKey]="null" />
+            } @else {
+              <span>{{ 'Pagination.LoadMoreHint' | translate }}</span>
+            }
+          </div>
+        }
+      }
+    </lnk-detail-section>
+  }
+  </div>
+</section>

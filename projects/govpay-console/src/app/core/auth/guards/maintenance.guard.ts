@@ -11,7 +11,7 @@
 
 import { inject } from '@angular/core';
 import { Router, type CanActivateFn } from '@angular/router';
-import { ConfigService } from '@core/config';
+import { ConfigService } from '@linkit/shared-ui';
 
 /**
  * Guard che reindirizza a `/maintenance` se `AppConfig.Maintenance.enabled` è true.

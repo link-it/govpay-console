@@ -18,8 +18,20 @@ export const INTERMEDIARI_ROUTES: Routes = [
       import('./intermediari-list.component').then((m) => m.IntermediariListComponent),
   },
   {
+    // `nuovo` prima di `:idIntermediario` per non essere catturato dal wildcard param.
+    path: 'nuovo',
+    loadComponent: () =>
+      import('./intermediario-form.component').then((m) => m.IntermediarioFormComponent),
+  },
+  {
     path: ':idIntermediario',
     loadComponent: () =>
       import('./intermediario-detail.component').then((m) => m.IntermediarioDetailComponent),
   },
+  {
+    path: ':idIntermediario/modifica',
+    loadComponent: () =>
+      import('./intermediario-form.component').then((m) => m.IntermediarioFormComponent),
+  },
+  // Stazioni e connettori si modificano inline nel dettaglio (nessuna rotta dedicata).
 ];

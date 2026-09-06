@@ -22,12 +22,9 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { ListStateService, SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
-  DateInputComponent,
   DisplayConfigLoader,
   EmptyStateComponent,
   LoadingComponent,
@@ -35,54 +32,53 @@ import {
   ListStickyToolbarDirective,
   ItemListComponent,
   PageHeaderComponent,
-  SearchInputComponent,
-  SelectInputComponent,
-  DATE_RANGE_OPTIONS,
-  VIEW_OPTIONS,
+  SearchPillComponent,
+  ViewToggleComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
+  SEARCH_PILL_VARIANT_OPTIONS,
   columnsFromConfig,
   daysAgoIso,
   formatDateTime,
-  formatOrdinamento,
-  matchDateRangePreset,
+  initialSearchState,
   truncate,
   type ColumnDef,
-  type SelectOption,
-  type SortEvent,
-} from '@shared';
-import { TweaksRegistry } from '@core/ui';
-import { GiornaleEventiApi } from './giornale-eventi.api';
+  type SearchField,
+  type SearchPillLabels,
+  type SearchState,
+} from '@linkit/shared-ui';
+import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { dayToIso } from '@core/utils/date';
+import { GiornaleEventiConsoleApi } from './giornale-eventi.console-api';
 import {
   CATEGORIA_EVENTO_LABEL,
   ESITO_EVENTO_COLOR,
   ESITO_EVENTO_LABEL,
-  severitaToEsito,
   type CategoriaEvento,
   type EsitoEvento,
-  type Evento,
-  type GiornaleEventiListFilters,
+  type EventoListFilters,
+  type EventoSummary,
 } from './evento.model';
 
 const PAGE_SIZE = 25;
 
-interface ListFilters {
-  search: string;
-  esito: EsitoEvento | '';
-  categoria: CategoriaEvento | '';
-  dataDa: string;
-  dataA: string;
-}
+/** Chiavi filtro (= id dei `SearchField` della search-pill). */
+const F = {
+  iuv: 'iuv',
+  idDominio: 'idDominio',
+  esito: 'esito',
+  categoria: 'categoria',
+  dataDa: 'dataDa',
+  dataA: 'dataA',
+} as const;
 
 /**
- * Filtri di default: `dataDa` a 1 giorno fa (ultime 24 ore con
- * granularità giornaliera del `<lnk-date-input>`).
+ * Stato di ricerca di default: `dataDa` a 1 giorno fa (ultime 24 ore con
+ * granularità giornaliera del filtro date della pill).
  */
-const defaultFilters = (): ListFilters => ({
-  search: '',
-  esito: '',
-  categoria: '',
-  dataDa: daysAgoIso(1),
-  dataA: '',
-});
+function defaultSearchState(): SearchState {
+  const s = initialSearchState([]);
+  return { ...s, filters: { ...s.filters, [F.dataDa]: daysAgoIso(1) } };
+}
 
 @Component({
   selector: 'lnk-giornale-eventi-list',
@@ -94,9 +90,8 @@ const defaultFilters = (): ListFilters => ({
     ItemListComponent,
     EmptyStateComponent,
     InfiniteScrollDirective,
-    SearchInputComponent,
-    SelectInputComponent,
-    DateInputComponent,
+    SearchPillComponent,
+    ViewToggleComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -104,8 +99,9 @@ const defaultFilters = (): ListFilters => ({
   templateUrl: './giornale-eventi-list.component.html',
 })
 export class GiornaleEventiListComponent implements OnInit {
-  private readonly api = inject(GiornaleEventiApi);
+  private readonly api = inject(GiornaleEventiConsoleApi);
   private readonly cfgSvc = inject(ConfigService);
+  private readonly lang = inject(LanguageService);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
@@ -117,6 +113,16 @@ export class GiornaleEventiListComponent implements OnInit {
     () => this.viewModeOverride() ?? this.viewModeDefault()
   );
 
+  /** Variante grafica della search-pill: override tweaks → app-config → `pill`. */
+  private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
+  readonly searchPillVariant = computed<'pill' | 'square'>(
+    () => this.searchPillVariantOverride() ?? this.cfgSvc.appConfig()?.Layout.searchPillVariant ?? 'pill'
+  );
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.cfgSvc.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
   constructor() {
     const tweaks = inject(TweaksRegistry);
     inject(DestroyRef).onDestroy(
@@ -124,15 +130,18 @@ export class GiornaleEventiListComponent implements OnInit {
         id: 'giornale-eventi',
         titleKey: 'Tweaks.Layout',
         rows: [
-          { type: 'segmented', labelKey: 'Tweaks.View', hintKey: 'Tweaks.ViewHint',
-            options: VIEW_OPTIONS, value: this.viewMode,
-            onChange: (v) => this.onViewModeChange(v) },
-          { type: 'segmented', labelKey: 'Tweaks.Range', hintKey: 'Tweaks.RangeHint',
-            options: DATE_RANGE_OPTIONS,
-            value: computed(() => matchDateRangePreset(this.filters().dataDa)),
-            onChange: (v) => this.onDateRangeChange(v) },
+          { type: 'segmented', labelKey: 'Tweaks.SearchPill', hintKey: 'Tweaks.SearchPillHint',
+            options: SEARCH_PILL_VARIANT_OPTIONS, value: this.searchPillVariant,
+            onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill') },
+          { type: 'segmented', labelKey: 'Tweaks.Density', hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS, value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable') },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => {
+          this.viewModeOverride.set(null);
+          this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
+        },
       })
     );
   }
@@ -148,36 +157,88 @@ export class GiornaleEventiListComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
 
-  private readonly page = signal(1);
-  /** `/eventi` non supporta `ordinamento`: il default lato server è data desc. */
-  readonly sort = signal<SortEvent | null>(null);
-  readonly rows = signal<Evento[]>([]);
-  readonly total = signal(0);
+  /** Cursore per la pagina successiva (paginazione cursor `/eventi`). */
+  private readonly cursor = signal<string | undefined>(undefined);
+  readonly rows = signal<EventoSummary[]>([]);
+  readonly hasMore = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  readonly filters = signal<ListFilters>(defaultFilters());
+  /** Stato della search-pill (query + filters). Sort non usato: ordine fisso lato BE. */
+  readonly searchState = signal<SearchState>(defaultSearchState());
+
+  /** Label → enum per i select localizzati (la pill memorizza la label). */
+  private readonly esitoByLabel = computed(() => {
+    this.lang.current();
+    const map = new Map<string, EsitoEvento>();
+    (Object.keys(ESITO_EVENTO_LABEL) as EsitoEvento[]).forEach((e) =>
+      map.set(this.translate.instant(ESITO_EVENTO_LABEL[e]), e)
+    );
+    return map;
+  });
+  private readonly categoriaByLabel = computed(() => {
+    this.lang.current();
+    const map = new Map<string, CategoriaEvento>();
+    (Object.keys(CATEGORIA_EVENTO_LABEL) as CategoriaEvento[]).forEach((c) =>
+      map.set(this.translate.instant(CATEGORIA_EVENTO_LABEL[c]), c)
+    );
+    return map;
+  });
+
+  readonly searchFields = computed<SearchField[]>(() => {
+    this.lang.current(); // dipendenza: ritraduce al cambio lingua
+    const f = this.searchState().filters;
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: F.iuv, label: t('GiornaleEventi.Filters.Iuv'), kind: 'text', placeholder: t('GiornaleEventi.Filters.IuvPlaceholder') },
+      { id: F.idDominio, label: t('GiornaleEventi.Filters.IdDominio'), kind: 'text', icon: 'bootstrapBuilding', placeholder: t('GiornaleEventi.Filters.IdDominioPlaceholder') },
+      { id: F.esito, label: t('GiornaleEventi.Filters.Esito'), kind: 'select', options: ['', ...this.esitoByLabel().keys()], placeholder: t('Common.All') },
+      { id: F.categoria, label: t('GiornaleEventi.Filters.Categoria'), kind: 'select', options: ['', ...this.categoriaByLabel().keys()], placeholder: t('Common.All') },
+      { id: F.dataDa, label: t('Common.DateFrom'), kind: 'date', icon: 'bootstrapCalendarEvent', max: f[F.dataA] || undefined },
+      { id: F.dataA, label: t('Common.DateTo'), kind: 'date', icon: 'bootstrapCalendarEvent', min: f[F.dataDa] || undefined },
+    ];
+  });
+
+  readonly searchPlaceholder = computed(() => {
+    this.lang.current();
+    return this.translate.instant('GiornaleEventi.Filters.Placeholder');
+  });
+
+  readonly pillLabels = computed<SearchPillLabels>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return {
+      filters: t('SearchPill.Filters'),
+      reset: t('SearchPill.Reset'),
+      close: t('SearchPill.Close'),
+      search: t('SearchPill.Search'),
+      activeSuffix: t('SearchPill.ActiveSuffix'),
+      resultsApproxPrefix: t('SearchPill.ResultsApproxPrefix'),
+      resultsSuffix: t('SearchPill.ResultsSuffix'),
+      noResults: t('SearchPill.NoResults'),
+      optionsFilter: t('SearchPill.OptionsFilter'),
+      none: t('SearchPill.None'),
+      noOptions: t('SearchPill.NoOptions'),
+      textPlaceholder: t('SearchPill.TextPlaceholder'),
+      selectPlaceholder: t('SearchPill.SelectPlaceholder'),
+      allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
+    };
+  });
+
   readonly hasActiveFilters = computed(() => {
-    const f = this.filters();
-    const d = defaultFilters();
-    return f.search !== d.search || f.esito !== d.esito || f.categoria !== d.categoria || f.dataDa !== d.dataDa || f.dataA !== d.dataA;
+    const f = this.searchState().filters;
+    return !!(f[F.iuv] || f[F.idDominio] || f[F.esito] || f[F.categoria] || f[F.dataA]) || f[F.dataDa] !== daysAgoIso(1);
   });
   readonly hasRows = computed(() => this.rows().length > 0);
-  readonly hasMore = computed(() => this.rows().length < this.total());
   readonly showEmptyState = computed(() => !this.loading() && !this.error() && !this.hasRows());
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly esitoOptions: SelectOption[] = (
-    Object.keys(ESITO_EVENTO_LABEL) as EsitoEvento[]
-  ).map((s) => ({ value: s, labelKey: ESITO_EVENTO_LABEL[s] }));
-
-  readonly categoriaOptions: SelectOption[] = (
-    Object.keys(CATEGORIA_EVENTO_LABEL) as CategoriaEvento[]
-  ).map((s) => ({ value: s, labelKey: CATEGORIA_EVENTO_LABEL[s] }));
-
-  readonly columns = computed<ColumnDef<Evento>[]>(() => {
+  readonly columns = computed<ColumnDef<EventoSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<Evento>(tableCfg.columns);
+    if (tableCfg?.columns?.length) return columnsFromConfig<EventoSummary>(tableCfg.columns);
     return [
     {
       key: 'dataEvento',
@@ -210,9 +271,9 @@ export class GiornaleEventiListComponent implements OnInit {
       width: '11rem',
     },
     {
-      key: 'durataEvento',
+      key: 'durataEventoMs',
       header: 'GiornaleEventi.Columns.Durata',
-      format: (r) => (r.durataEvento != null ? `${r.durataEvento} ms` : '—'),
+      format: (r) => (r.durataEventoMs != null ? `${r.durataEventoMs} ms` : '—'),
       align: 'right',
       cellClass: 'font-mono text-xs',
       width: '6rem',
@@ -221,8 +282,8 @@ export class GiornaleEventiListComponent implements OnInit {
       key: 'esito',
       header: 'GiornaleEventi.Columns.Esito',
       cellType: 'badge',
-      cellTone: (r) => ESITO_EVENTO_COLOR[r.esito ?? severitaToEsito(r.severita)] ?? 'muted',
-      format: (r) => ESITO_EVENTO_LABEL[r.esito ?? severitaToEsito(r.severita)] ?? '—',
+      cellTone: (r) => ESITO_EVENTO_COLOR[r.esito] ?? 'muted',
+      format: (r) => ESITO_EVENTO_LABEL[r.esito] ?? '—',
       width: '7rem',
     },
     ];
@@ -230,85 +291,85 @@ export class GiornaleEventiListComponent implements OnInit {
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([{ label: 'Nav.GiornaleEventi' }]);
-    // Ripristina filtri e ordinamento dopo back da dettaglio.
-    const saved = this.listState.get<{ filters: ListFilters; sort: SortEvent | null }>(GiornaleEventiListComponent.STATE_KEY);
-    if (saved) {
-      this.filters.set(saved.filters);
-      if (saved.sort) this.sort.set(saved.sort);
-    }
+    // Ripristina stato ricerca dopo back da dettaglio.
+    const saved = this.listState.get<{ search: SearchState }>(GiornaleEventiListComponent.STATE_KEY);
+    if (saved?.search) this.searchState.set(saved.search);
     this.reset();
   }
 
-  onSortChange(s: SortEvent): void { this.sort.set(s); this.reset(); }
   refresh(): void { this.reset(); }
-  onRowClick(e: Evento): void {
+  onRowClick(e: EventoSummary): void {
     if (e.id != null) this.router.navigate(['/giornale-eventi', e.id]);
   }
   loadMore(): void {
     if (!this.canLoadMore()) return;
-    this.page.update((p) => p + 1);
     this.fetch(true);
   }
-  onSearchChange(v: string): void { this.filters.update((f) => ({ ...f, search: v })); this.reset(); }
-  onEsitoChange(v: string): void { this.filters.update((f) => ({ ...f, esito: v as EsitoEvento | '' })); this.reset(); }
-  onCategoriaChange(v: string): void { this.filters.update((f) => ({ ...f, categoria: v as CategoriaEvento | '' })); this.reset(); }
-  onDataDaChange(v: string): void { this.filters.update((f) => ({ ...f, dataDa: v })); this.reset(); }
-  onDataAChange(v: string): void { this.filters.update((f) => ({ ...f, dataA: v })); this.reset(); }
-  resetFilters(): void { this.filters.set(defaultFilters()); this.reset(); }
 
-  // ---- Tweaks panel handlers -----------------------------------------
+  /** Emesso dalla search-pill (Invio o "Cerca"): riparte dalla prima pagina. */
+  onSearch(state: SearchState): void {
+    this.searchState.set(state);
+    this.reset();
+  }
+  resetFilters(): void {
+    this.searchState.set(defaultSearchState());
+    this.reset();
+  }
   onViewModeChange(value: string): void {
     this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
   }
-  onDateRangeChange(value: string): void {
-    const days = Number(value);
-    if (!Number.isFinite(days) || days <= 0) return;
-    this.filters.update((f) => ({ ...f, dataDa: daysAgoIso(days), dataA: '' }));
-    this.reset();
-  }
 
   private reset(): void {
-    // Persisti filtri/ordinamento per il ripristino al return dal detail.
+    // Persisti stato ricerca per il ripristino al return dal detail.
     this.listState.set(GiornaleEventiListComponent.STATE_KEY, {
-      filters: this.filters(),
-      sort: this.sort(),
-    });
-    this.page.set(1);
+      search: this.searchState(),
+    }, this.rowConfig()?.persistState ?? false);
+    this.cursor.set(undefined);
     this.rows.set([]);
+    this.hasMore.set(false);
     this.fetch(false);
+  }
+
+  /** Filtri di ricerca senza paginazione. */
+  private baseFilters(): EventoListFilters {
+    const f = this.searchState().filters;
+    return {
+      iuv: f[F.iuv] || undefined,
+      idDominio: f[F.idDominio] || undefined,
+      esito: f[F.esito] ? this.esitoByLabel().get(f[F.esito]) : undefined,
+      categoriaEvento: f[F.categoria] ? this.categoriaByLabel().get(f[F.categoria]) : undefined,
+      // `/eventi` richiede ISO 8601 date-time completo (RFC 3339), non il
+      // troncato `YYYY-MM-DDTHH:MM` delle liste V1.
+      dataDa: dayToIso(f[F.dataDa], false),
+      dataA: dayToIso(f[F.dataA], true),
+    };
   }
 
   private fetch(append: boolean): void {
     this.loading.set(true);
     this.error.set(null);
-    const f = this.filters();
-    const filters: GiornaleEventiListFilters = {
-      pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
-      // ordinamento: formatOrdinamento(this.sort()),
-      esito: f.esito || undefined,
-      categoriaEvento: f.categoria || undefined,
-      iuv: f.search || undefined,
-      dataDa: f.dataDa ? `${f.dataDa}T00:00` : undefined,
-      dataA: f.dataA ? `${f.dataA}T23:59` : undefined,
-    };
+    // Cursor mode: prima pagina con soli filtri+limit; pagine successive con
+    // il solo `cursor` (che incapsula filtri e posizione). Niente page/sort/total.
+    const filters: EventoListFilters = append
+      ? { cursor: this.cursor(), limit: PAGE_SIZE }
+      : { ...this.baseFilters(), limit: PAGE_SIZE };
     this.api
       .list(filters)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of<Slice<EventoSummary>>({ results: [] });
         })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
+      .subscribe((slice) => {
+        const results = slice.results ?? [];
         if (append) this.rows.update((prev) => [...prev, ...results]);
         else this.rows.set(results);
-        this.total.set(page.numRisultati ?? 0);
+        this.cursor.set(slice.nextCursor);
+        this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
   }
-
 }

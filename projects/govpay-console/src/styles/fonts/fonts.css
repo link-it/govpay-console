@@ -1,0 +1,13 @@
+/*
+ * Aggregatore dei font self-hosted dell'app. Aggiungere un font:
+ *   1. mettere i woff2 + la sua CSS in styles/fonts/<font>/<font>.css
+ *      (per i Google Fonts: `node scripts/fetch-fonts.mjs`);
+ *   2. aggiungere un @import qui sotto;
+ *   3. usarlo in un tema via `fonts.primary.family` (assets/config/themes/*.json).
+ *
+ * I .woff2 vengono scaricati dal browser solo quando la family è effettivamente
+ * applicata, quindi elencarli qui non pesa sul caricamento iniziale.
+ */
+@import './prompt/prompt.css';
+@import './inter/inter.css';
+@import './roboto/roboto.css';

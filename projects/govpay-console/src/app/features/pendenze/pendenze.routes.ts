@@ -22,12 +22,4 @@ export const PENDENZE_ROUTES: Routes = [
     loadComponent: () =>
       import('./pendenza-detail.component').then((m) => m.PendenzaDetailComponent),
   },
-  {
-    // Drilldown su evento dal tab Eventi del dettaglio pendenza.
-    // Il breadcrumb e il "Indietro" sono ricostruiti da
-    // EventoDetailComponent usando i params del path.
-    path: ':idA2A/:idPendenza/eventi/:id',
-    loadComponent: () =>
-      import('../giornale-eventi/evento-detail.component').then((m) => m.EventoDetailComponent),
-  },
 ];

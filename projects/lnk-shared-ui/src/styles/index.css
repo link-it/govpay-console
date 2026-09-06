@@ -1,0 +1,369 @@
+/*
+ * Copyright (c) 2014-2026 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as
+ * published by the Free Software Foundation.
+ *
+ * -----------------------------------------------------------------------
+ * Foglio CSS della libreria `@linkit/shared-ui`. Include:
+ *
+ *  1. CSS variables del tema con i default branding Link.it
+ *     (palette `--primary`, `--card-*`, `--status-*`, ecc.).
+ *  2. Override scoped ai selettori `lnk-*` per le variabili che in
+ *     un'app shadcn-based vivono come tuple HSL space-separated
+ *     in `:root` (es. govaudit `base.scss`). L'override evita il
+ *     conflitto: i componenti lib leggono valori colore "diretti"
+ *     (hex), il resto dell'app usa le HSL parts.
+ *  3. Utility classes "vive" referenziate dai template/directive
+ *     interni dei componenti: `.lnk-sep`, `.lnk-toolbar-stuck`,
+ *     `.lnk-row-hover`, `.lnk-link-hover`, `.lnk-list-page`,
+ *     `.lnk-detail-page`, `.lnk-header--scrolled`.
+ *
+ * Il consumer importa il file in modalità CSS cascade — può
+ * sovrascrivere qualsiasi variabile DOPO l'import per applicare il
+ * proprio branding:
+ *
+ *   @import "../../lnk-shared-ui/src/styles/index.css";
+ *   :root {
+ *     --primary: #my-brand;
+ *   }
+ * -----------------------------------------------------------------------
+ */
+
+/* ==========================================================================
+   CSS VARIABLES — default branding Link.it. Coprono le var richieste
+   dagli arbitrary Tailwind utilities della lib (`bg-[var(--card-bg)]`,
+   `text-[var(--muted-foreground)]`, ecc.) e dai box-shadow / palette
+   delle utility classes definite più sotto.
+   ========================================================================== */
+:root {
+  --card-bg: #ffffff;
+  --card-border: #cce3ed;
+  --card-hover: #f4f8fa;
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  /* Sticky offset variabili usate dal <lnk-data-table> per posizionare
+     il proprio <thead> sticky. I valori di default sono 0: nei layout
+     dove lo scroll è isolato in un container (es. govaudit
+     `<lnk-controls-area>` con overflow-y-auto interno) l'app-header
+     globale NON entra nel flow sticky e non va sommato. App con
+     window-scroll devono overridarli con l'altezza reale del proprio
+     header (e --lnk-list-toolbar-h se montano `ListStickyToolbarDirective`). */
+  --header-height: 0px;
+  --lnk-list-toolbar-h: 0px;
+
+  --item-row-hover: #ff4050;
+
+  /* Tono stati (color-mix) — usati da `<lnk-item-type type="status|tag">`
+     e `<lnk-status-badge>`. */
+  --status-success-bg: color-mix(in srgb, #16a34a 18%, transparent);
+  --status-success-text: #166534;
+  --status-info-bg:    color-mix(in srgb, #2563eb 18%, transparent);
+  --status-info-text:    #1d4ed8;
+  --status-warning-bg: color-mix(in srgb, #f59e0b 18%, transparent);
+  --status-warning-text: #92400e;
+  --status-danger-bg:  color-mix(in srgb, #ef4444 18%, transparent);
+  --status-danger-text:  #991b1b;
+  --status-muted-bg:   color-mix(in srgb, #6a8da5 18%, transparent);
+  --status-muted-text:   #6a8da5;
+
+  /* Buttons — usate dalle utility `.btn-primary` / `.btn-secondary`
+     / `.btn-ghost` definite più sotto. Coerenti con la palette Link.it
+     (CTA coral su denim).
+
+     NB: prefisso `--lnk-btn-*` (e non `--btn-*` come in govpay-console)
+     per evitare collisioni con i sistemi theming Bootstrap-style del
+     consumer che possono già definire `--btn-secondary`,
+     `--btn-secondary-hover`, ecc. con semantica diversa (es. il
+     `ConfigService` di govaudit applica `--btn-secondary-hover: #4E555b`
+     a `:root` dal `app-config.json`). */
+  --lnk-btn-primary-bg:      #ff4050;
+  --lnk-btn-primary-text:    #ffffff;
+  --lnk-btn-primary-hover:   #e6394a;
+  --lnk-btn-secondary-bg:    #ffffff;
+  --lnk-btn-secondary-text:  #213349;
+  --lnk-btn-secondary-border:#cce3ed;
+  --lnk-btn-secondary-hover: #cce3ed80;
+}
+
+/* ==========================================================================
+   SCOPE OVERRIDE — i componenti della lib usano `var(--primary)`,
+   `var(--muted)`, ecc. via arbitrary Tailwind utilities che si
+   aspettano valori COLORE diretti (hex). Le app shadcn-based (govaudit
+   incluso) hanno invece quelle stesse variabili in `:root` come tuple
+   HSL space-separated (`222.2 47.4% 11.2%`), wrappate in `hsl(...)`
+   dal `tailwind.config.js`.
+   Per non rompere il theming shadcn del consumer, le 8 variabili
+   conflittuali sono ridefinite SOLO dentro i selettori `lnk-*`:
+   l'ereditarietà delle CSS variables limita l'override ai soli
+   componenti della lib (e ai loro figli).
+   ========================================================================== */
+lnk-data-table,
+lnk-item-list,
+lnk-item-row,
+lnk-item-type,
+lnk-empty-state,
+lnk-loading,
+lnk-status-badge,
+lnk-detail-section,
+lnk-detail-group,
+lnk-info-grid,
+lnk-tabs,
+lnk-page-header,
+lnk-search-input,
+lnk-select-input,
+lnk-date-input,
+lnk-pagination,
+lnk-back-button,
+lnk-list-refresh-banner {
+  --primary:            #ff4050;
+  --primary-foreground: #ffffff;
+  --foreground:         #213349;
+  --background:         #f4f8fa;
+  --muted:              #f4f8fa;
+  --muted-foreground:   #6a8da5;
+  --border:             #cce3ed;
+  --ring:               #ff4050;
+}
+
+/* Default text color del contenuto lib. Applicato SOLO ai container
+   "alto livello": serve a battere il `body { color: var(--link-color) }`
+   del consumer (es. govaudit `#212121`) senza inserirsi nel
+   sub-tree dei componenti figli (`<lnk-item-type>`, ecc.) che
+   altrimenti bloccherebbero l'inheritance del color hover Tailwind
+   (`hover:text-[var(--item-row-hover)]`) applicato dai button intermedi.
+   I figli senza regola element ereditano normalmente dal parent. */
+lnk-data-table,
+lnk-item-list,
+lnk-item-row,
+lnk-empty-state,
+lnk-loading,
+lnk-detail-section,
+lnk-detail-group,
+lnk-info-grid,
+lnk-tabs,
+lnk-page-header,
+lnk-search-input,
+lnk-select-input,
+lnk-date-input,
+lnk-pagination,
+lnk-back-button {
+  color: var(--foreground);
+}
+
+/* ==========================================================================
+   ITEM ROW SEPARATOR — separatore visivo "·" tra figli diretti della
+   stessa sezione metadata di `<lnk-item-row>` / `<lnk-item-type>`.
+   Override `.lnk-no-sep` (`ItemTypeElement.noSeparator: true`) sopprime
+   il puntino davanti al singolo item.
+   ========================================================================== */
+.lnk-sep > * + *::before {
+  content: '·';
+  display: inline-block;
+  margin: 0 0.3rem;
+  opacity: 0.5;
+}
+
+.lnk-sep > .lnk-no-sep::before {
+  content: '';
+  margin: 0 0.15rem;
+}
+
+/* ==========================================================================
+   PAGE CONTAINERS — larghezza max centrata, configurabile via
+   `Layout.listMaxWidth` / `Layout.detailMaxWidth` (lette dai tweaks
+   panel della lib). Default `none` (full-width).
+   ========================================================================== */
+.lnk-list-page {
+  max-width: var(--lnk-list-max-w, none);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lnk-detail-page {
+  max-width: var(--lnk-detail-max-w, none);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ==========================================================================
+   LINK HOVER — colore primary in hover/focus per link breadcrumb,
+   celle link del data-table e altre azioni testuali "secondarie".
+   Override esplicito per battere `text-[var(--muted-foreground)]` sui
+   link che partono in stato muted.
+   ========================================================================== */
+.lnk-link-hover {
+  transition: color 0.15s;
+}
+
+.lnk-link-hover:hover,
+.lnk-link-hover:focus-visible {
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   ROW HOVER — sfondo dell'hover row riusato da `<lnk-data-table>` e
+   `<lnk-item-row>`. Definito qui per evitare il quoting-hell di
+   `[class.hover:bg-\[var\(--card-hover\)\]]` nei template Angular.
+   ========================================================================== */
+.lnk-row-hover:hover {
+  background-color: var(--card-hover);
+}
+
+/* ==========================================================================
+   LIST STICKY TOOLBAR — ombra tenue applicata solo durante lo scroll
+   (`ListStickyToolbarDirective` aggancia la classe `.lnk-toolbar-stuck`).
+   Offset Y positivo + spread negativo (= blur) per limitare l'ombra al
+   solo bordo inferiore (no bleed laterale).
+   ========================================================================== */
+.lnk-toolbar-stuck {
+  box-shadow: 0 6px 8px -6px rgb(0 0 0 / 0.12);
+}
+
+.dark .lnk-toolbar-stuck {
+  box-shadow: 0 6px 8px -6px rgb(0 0 0 / 0.4);
+}
+
+/* ==========================================================================
+   HEADER SCROLLED — stato visuale dell'header globale quando l'utente
+   ha scrollato oltre soglia. La classe è aggiunta dal consumer
+   (govaudit gestisce `scrolled` lato `MainHeader`); definita qui per
+   uniformità del set utility lib.
+   ========================================================================== */
+.lnk-header--scrolled {
+  background-color: var(--header-bg-scrolled, rgba(255, 255, 255, 0.85));
+  backdrop-filter: var(--header-blur-scrolled, saturate(180%) blur(8px));
+  -webkit-backdrop-filter: var(--header-blur-scrolled, saturate(180%) blur(8px));
+}
+
+/* ==========================================================================
+   BUTTONS — utility usabili indistintamente su `<button>` e `<a>`.
+   Centralizzano colore, padding, focus ring, disabled. Consumano le
+   CSS variables `--btn-*` definite nel `:root` sopra: il consumer può
+   override-arle DOPO l'import per applicare un branding diverso.
+
+   NB: NON avvolte in `@layer components` perché questo file viene
+   incluso come CSS esterno (via `@import` nel consumer), fuori dalla
+   pipeline PostCSS-Tailwind. Per dare comunque priorità alle utility
+   Tailwind responsive (`hidden`, `lg:block`, `w-full`, ecc.) basta
+   l'ordine di import in `styles.scss`: l'import della lib precede
+   `@tailwind utilities;`, quindi le utility hanno specificità maggiore
+   nella cascade.
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  cursor: pointer;
+  transition-property: background-color, border-color, color, opacity;
+  transition-duration: 150ms;
+  text-decoration: none;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'],
+.btn.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* primary — sfondo CTA pieno */
+.btn-primary {
+  background-color: var(--lnk-btn-primary-bg);
+  color: var(--lnk-btn-primary-text) !important;
+  border-color: var(--lnk-btn-primary-bg);
+}
+
+.btn-primary:hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--lnk-btn-primary-hover);
+  border-color: var(--lnk-btn-primary-hover);
+  color: var(--lnk-btn-primary-text);
+}
+
+/* secondary — bordo + testo denim, sfondo bianco */
+.btn-secondary {
+  background-color: var(--lnk-btn-secondary-bg);
+  color: var(--lnk-btn-secondary-text);
+  border-color: var(--lnk-btn-secondary-border);
+}
+
+.btn-secondary:hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--lnk-btn-secondary-hover);
+  color: var(--lnk-btn-secondary-text);
+}
+
+/* ghost — testuale, hover con background tenue */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--foreground);
+  border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--muted);
+}
+
+/* varianti dimensione */
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+/* solo icona — square 36px */
+.btn-icon {
+  padding: 0.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+/* full width */
+.btn-block {
+  width: 100%;
+}
+
+/* ==========================================================================
+   CAMPO OBBLIGATORIO — asterisco danger sul label. Applicato dalla direttiva
+   `[lnkRequiredLabel]` quando il control ha `Validators.required`.
+   ========================================================================== */
+.lnk-required::after {
+  content: " *";
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   SCROLLBAR sottile — riusabile su qualsiasi container `.scrollbar-thin`.
+   ========================================================================== */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}

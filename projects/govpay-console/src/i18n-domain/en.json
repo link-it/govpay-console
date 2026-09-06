@@ -1,0 +1,1582 @@
+{
+  "Common": {
+    "Copy": "Copy",
+    "Copied": "Copied",
+    "Edit": "Edit",
+    "Required": "Required field"
+  },
+  "Layout": {
+    "Home": "Go to home"
+  },
+  "Auth": {
+    "ShowPassword": "Show password",
+    "HidePassword": "Hide password"
+  },
+  "Password": {
+    "Imposta": "Set password",
+    "Nuova": "New password",
+    "Conferma": "Confirm password",
+    "PolicyHint": "At least 8 characters with a lowercase, an uppercase and a digit, no spaces.",
+    "PolicyErrore": "The password does not meet the requirements.",
+    "NonCoincidono": "The passwords do not match.",
+    "Aggiornata": "Password updated.",
+    "Errore": "Password update failed.",
+    "SenzaDiritti": "You do not have the rights to set the password."
+  },
+  "Ricevute": {
+    "Subtitle": "Electronic receipts for payments.",
+    "Filters": {
+      "Placeholder": "Search receipt…",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "Exact IUV…",
+      "IdRicevuta": "Receipt ID",
+      "IdRicevutaPlaceholder": "Exact receipt ID…",
+      "Dominio": "Creditor",
+      "DominioPlaceholder": "Fiscal code (11 digits)…",
+      "DataDa": "Paid from",
+      "DataA": "Paid to"
+    },
+    "Empty": {
+      "Title": "No receipts",
+      "Description": "There are no receipts matching the current filters."
+    },
+    "Columns": {
+      "Iuv": "IUV",
+      "IdRicevuta": "Receipt ID",
+      "Dominio": "Creditor",
+      "Psp": "PSP",
+      "DataPagamento": "Payment date",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "InCorso": "In progress",
+      "Eseguito": "Paid",
+      "RtRifiutata": "Receipt rejected",
+      "Sconosciuto": "Unknown outcome",
+      "Fallito": "Failed",
+      "Annullato": "Cancelled",
+      "Scaduto": "Expired"
+    },
+    "Detail": {
+      "Subtitle": "Electronic receipt details.",
+      "Generali": "General",
+      "Iuv": "IUV",
+      "IdRicevuta": "Receipt ID",
+      "Dominio": "Creditor",
+      "DataPagamento": "Payment date",
+      "Importo": "Amount",
+      "Psp": "PSP",
+      "Versione": "Version",
+      "DescrizioneStato": "Status detail",
+      "PendenzaCollegata": "Linked debt position",
+      "IdA2A": "Application (idA2A)",
+      "IdPendenza": "Debt position ID",
+      "CausaleBreve": "Reason",
+      "VaiPendenza": "Go to debt position",
+      "Download": "Download",
+      "Rt": "RT",
+      "Rpt": "RPT",
+      "RptNonDisponibile": "RPT not available for this receipt.",
+      "Segnalazioni": "Notices",
+      "DownloadErrore": "Download failed.",
+      "EsitoPagamento": "Payment outcome",
+      "Esito": "Outcome",
+      "ImportoPagato": "Paid amount",
+      "Commissione": "PSP fee",
+      "MetodoPagamento": "Payment method",
+      "DataOraPagamento": "Payment date and time",
+      "DataApplicazione": "Accounting date",
+      "DataTrasferimento": "Transfer date",
+      "ReceiptId": "Receipt id",
+      "NumeroAvviso": "Notice number",
+      "Versante": "Payer",
+      "Anagrafica": "Name",
+      "TipoSoggetto": "Subject type",
+      "Identificativo": "Identifier",
+      "Email": "Email",
+      "PersonaFisica": "Natural person",
+      "PersonaGiuridica": "Legal entity",
+      "SezionePsp": "Payment service provider (PSP)",
+      "PspDenominazione": "Name",
+      "PspId": "PSP id",
+      "PspFiscalCode": "PSP fiscal code",
+      "Canale": "Channel",
+      "EnteCreditore": "Creditor institution",
+      "EnteDenominazione": "Name",
+      "EnteFiscalCode": "Fiscal code",
+      "CreditorReferenceId": "Collection identifier (IUV)",
+      "Causale": "Description",
+      "Trasferimenti": "Transfers",
+      "RichiestaPagamento": "Payment request (RPT)",
+      "ImportoRichiesto": "Requested amount",
+      "Scadenza": "Due date",
+      "DataEsecuzione": "Execution date",
+      "TipoVersamento": "Payment type",
+      "UltimoPagamento": "Last payment",
+      "Transfer": {
+        "Num": "#",
+        "Importo": "Amount",
+        "CfBeneficiario": "Beneficiary FC",
+        "Iban": "IBAN",
+        "Categoria": "Category",
+        "Causale": "Remittance",
+        "Totale": "Total"
+      }
+    }
+  },
+  "Pagamenti": {
+    "Subtitle": "Payment requests and flows.",
+    "Filters": {
+      "SearchPlaceholder": "Search by payer ID…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No payments",
+      "Description": "There are no payments matching the current filters."
+    },
+    "Columns": {
+      "Id": "ID",
+      "Versante": "Payer",
+      "NumPendenze": "# items",
+      "DataRichiesta": "Request date",
+      "Importo": "Amount",
+      "ImportoPagato": "Paid amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "InCorso": "In progress",
+      "Eseguito": "Executed",
+      "EseguitoParziale": "Partial",
+      "NonEseguito": "Not executed",
+      "Annullato": "Cancelled",
+      "Fallito": "Failed",
+      "Decorrenza": "Timeout",
+      "DecorrenzaParziale": "Partial timeout"
+    },
+    "Detail": {
+      "Subtitle": "Payment details.",
+      "Generali": "General",
+      "SoggettoVersante": "Payer",
+      "Id": "Identifier",
+      "DataRichiesta": "Request date",
+      "Importo": "Amount",
+      "ImportoPagato": "Paid amount",
+      "NumeroPendenze": "Items count",
+      "Nodo": "Node",
+      "Anagrafica": "Full name",
+      "Identificativo": "Identifier",
+      "Email": "Email",
+      "Versante": "Payer"
+    }
+  },
+  "Pendenze": {
+    "Subtitle": "List of items uploaded to the portal.",
+    "Filters": {
+      "IdPendenza": "Item ID",
+      "IdPendenzaPlaceholder": "Search by item ID…",
+      "NumeroAvviso": "Notice number",
+      "NumeroAvvisoPlaceholder": "18 digits",
+      "Dominio": "Creditor",
+      "IdentificativoDebitore": "Debtor identifier",
+      "IdentificativoDebitorePlaceholder": "Tax code / VAT no.",
+      "DominioPlaceholder": "All",
+      "DataInizio": "Date from",
+      "DataFine": "Date to",
+      "Placeholder": "Search debt position…",
+      "DebitoreHint": "Searching by debtor identifier is logged for audit purposes (GDPR)."
+    },
+    "Empty": {
+      "Title": "No items",
+      "Description": "There are no items matching the current filters."
+    },
+    "Columns": {
+      "Numero": "Notice number",
+      "Tipo": "Type",
+      "Causale": "Reason",
+      "DataAggiornamento": "Updated",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "NonPagata": "To pay",
+      "Pagata": "Paid",
+      "PagataParziale": "Partially paid",
+      "Annullata": "Cancelled",
+      "Scaduta": "Expired",
+      "Riconciliata": "Reconciled",
+      "Anomala": "Anomalous"
+    },
+    "Detail": {
+      "Subtitle": "Item details.",
+      "Breadcrumb": "Item",
+      "Generali": "General",
+      "EnteCreditore": "Creditor",
+      "Voci": "Line items",
+      "VociEmpty": "No line items.",
+      "SoggettoPagatore": "Payer",
+      "RicevuteAssociate": "Linked receipts",
+      "NumeroAvviso": "Notice number",
+      "IuvAvviso": "Notice IUV",
+      "IdPendenza": "Item ID",
+      "IdA2A": "Application ID (A2A)",
+      "Tipo": "Type",
+      "Importo": "Amount",
+      "DataAggiornamento": "Last update",
+      "DataValidita": "Valid until",
+      "DataScadenza": "Due date",
+      "Descrizione": "Description",
+      "Causale": "Reason",
+      "IdDominio": "Domain ID",
+      "RagioneSociale": "Name",
+      "UnitaOperativa": "Office",
+      "Anagrafica": "Full name",
+      "Identificativo": "Identifier",
+      "TipoSoggetto": "Subject type",
+      "Indirizzo": "Address",
+      "Localita": "City",
+      "Nazione": "Country",
+      "Email": "Email",
+      "Cellulare": "Mobile",
+      "Dominio": "Domain",
+      "StampaAvviso": "Print notice",
+      "AvvisoErrore": "Unable to generate the PDF notice.",
+      "MostraDebitore": "Show debtor information",
+      "DebitoreProtetto": "The debtor's personal data is protected: viewing it is logged for audit purposes (GDPR).",
+      "DebitoreConsensoTitolo": "View the debtor's data?",
+      "DebitoreConsensoTesto": "You are about to view the debtor's personal data and contacts. This action is logged for audit purposes (GDPR).",
+      "DebitoreConsensoConferma": "View"
+    },
+    "Voci": {
+      "Indice": "#",
+      "Descrizione": "Description",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "StatiVoce": {
+      "NonPagata": "To pay",
+      "Pagata": "Paid",
+      "Anomala": "Anomalous"
+    },
+    "StatiAvviso": {
+      "Pagato": "Paid",
+      "NonPagato": "Unpaid",
+      "Scaduto": "Expired",
+      "Annullato": "Cancelled"
+    }
+  },
+  "Riscossioni": {
+    "Subtitle": "Collections acquired from the payment node.",
+    "Filters": {
+      "SearchPlaceholder": "Search by IUR…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No collections",
+      "Description": "No collections match the current filters."
+    },
+    "Columns": {
+      "Iur": "IUR",
+      "Iuv": "IUV",
+      "Dominio": "Creditor",
+      "Pagatore": "Payer",
+      "DataRiscossione": "Collection date",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "Riscossa": "Collected",
+      "Incassata": "Reconciled"
+    },
+    "Detail": {
+      "Subtitle": "Collection detail.",
+      "Generali": "General",
+      "VocePendenza": "Pending item line",
+      "Riferimenti": "References",
+      "Iur": "IUR",
+      "Iuv": "IUV",
+      "IdDominio": "Domain ID",
+      "Indice": "Line index",
+      "Tipo": "Collection type",
+      "Data": "Collection date",
+      "Importo": "Amount",
+      "Commissioni": "Fees",
+      "IdVocePendenza": "Line ID",
+      "Descrizione": "Description",
+      "ImportoVoce": "Line amount",
+      "CodiceContabilita": "Accounting code",
+      "TipoContabilita": "Accounting type",
+      "IbanAccredito": "Credit IBAN",
+      "PendenzaUrl": "Pending item",
+      "RppUrl": "Payment request",
+      "IncassoRef": "Credit"
+    }
+  },
+  "Rendicontazioni": {
+    "Subtitle": "Reconciliation flows received from PSPs.",
+    "Filters": {
+      "Placeholder": "Search flows…",
+      "IdFlusso": "Flow identifier",
+      "IdFlussoPlaceholder": "Flow ID",
+      "Dominio": "Creditor entity",
+      "DominioPlaceholder": "Entity tax code",
+      "Psp": "PSP",
+      "PspPlaceholder": "PSP ID",
+      "Stato": "Status",
+      "DataDa": "Acquired from",
+      "DataA": "Acquired to"
+    },
+    "Empty": {
+      "Title": "No reconciliation flows",
+      "Description": "No reconciliation flows match the current filters."
+    },
+    "Columns": {
+      "IdFlusso": "Flow identifier",
+      "Dominio": "Creditor entity",
+      "Psp": "PSP",
+      "Revisione": "Rev.",
+      "DataAcquisizione": "Acquisition date",
+      "DataFlusso": "Flow date",
+      "DataRegolamento": "Settlement date",
+      "NumPagamenti": "Payments",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "Acquisito": "Acquired",
+      "Anomalo": "Anomalous",
+      "Rifiutato": "Rejected",
+      "Obsoleto": "Obsolete"
+    },
+    "Detail": {
+      "Subtitle": "Reconciliation flow detail.",
+      "Generali": "General",
+      "EnteCreditore": "Creditor entity",
+      "Psp": "PSP",
+      "ScaricaXml": "Download XML",
+      "DownloadErrore": "Flow download failed.",
+      "IdFlusso": "Flow identifier",
+      "Revisione": "Revision",
+      "DescrizioneStato": "Status detail",
+      "DataFlusso": "Flow date",
+      "DataAcquisizione": "Acquisition date",
+      "DataRegolamento": "Settlement date",
+      "SctBonifico": "SCT transfer",
+      "Importo": "Total amount",
+      "NumeroPagamenti": "Number of payments",
+      "DataInizio": "First payment",
+      "DataFine": "Last payment",
+      "IdDominio": "Domain ID",
+      "IdPsp": "PSP ID"
+    }
+  },
+  "Incassi": {
+    "Subtitle": "Treasury credits reconciled to GovPay.",
+    "Filters": {
+      "SearchPlaceholder": "Search by credit ID…",
+      "Stato": "Status"
+    },
+    "Empty": {
+      "Title": "No credits",
+      "Description": "No credits match the current filters."
+    },
+    "Columns": {
+      "IdIncasso": "Credit ID",
+      "Trn": "TRN / SCT",
+      "Dominio": "Creditor",
+      "Causale": "Reason",
+      "DataIncasso": "Credit date",
+      "Importo": "Amount",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "Acquisito": "Acquired",
+      "InElaborazione": "Processing",
+      "Errore": "Error"
+    },
+    "Detail": {
+      "Subtitle": "Credit detail.",
+      "Generali": "General",
+      "EnteCreditore": "Creditor",
+      "RiscossioniRiconciliate": "Reconciled collections",
+      "IdIncasso": "Credit ID",
+      "Causale": "Reason",
+      "Importo": "Amount",
+      "Data": "Credit date",
+      "DataValuta": "Value date",
+      "DataContabile": "Accounting date",
+      "IbanAccredito": "Credit IBAN",
+      "Sct": "SCT",
+      "Iuv": "Reference IUV",
+      "IdFlusso": "Reference flow",
+      "DescrizioneStato": "Status description",
+      "IdDominio": "Domain ID",
+      "RagioneSociale": "Name",
+      "Iur": "IUR",
+      "DataRisc": "Collection date",
+      "ImportoRisc": "Amount",
+      "Dominio": "Domain"
+    }
+  },
+  "GiornaleEventi": {
+    "Subtitle": "System events log.",
+    "Filters": {
+      "Placeholder": "Search events…",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "e.g. RF...",
+      "IdDominio": "Domain",
+      "IdDominioPlaceholder": "Domain ID",
+      "Esito": "Outcome",
+      "Categoria": "Category"
+    },
+    "Empty": {
+      "Title": "No events",
+      "Description": "No events match the current filters."
+    },
+    "Columns": {
+      "Data": "Date",
+      "Categoria": "Category",
+      "Tipo": "Type",
+      "Componente": "Component",
+      "Iuv": "IUV",
+      "Durata": "Duration",
+      "Esito": "Outcome"
+    },
+    "Esiti": {
+      "Ok": "OK",
+      "Ko": "KO",
+      "Fail": "Failed"
+    },
+    "Categorie": {
+      "Interfaccia": "Interface",
+      "Interno": "Internal",
+      "Utente": "User"
+    },
+    "Componenti": {
+      "API_ENTE": "Entity API",
+      "API_PAGAMENTO": "Payment API",
+      "API_RAGIONERIA": "Treasury API",
+      "API_BACKOFFICE": "Backoffice API",
+      "API_PAGOPA": "PagoPA API",
+      "API_PENDENZE": "Receivables API",
+      "API_BACKEND_IO": "AppIO API",
+      "API_GOVPAY": "GovPay API",
+      "API_HYPERSIC_APK": "HyperSIC APK API",
+      "API_MAGGIOLI_JPPA": "Maggioli API",
+      "API_MYPIVOT": "MyPivot API",
+      "API_SECIM": "Secim API",
+      "GOVPAY": "GovPay Core",
+      "API_USER": "User API",
+      "API_LEGACY": "Legacy API"
+    },
+    "Detail": {
+      "Subtitle": "Event detail.",
+      "Generali": "General",
+      "Riferimenti": "References",
+      "DataEvento": "Date and time",
+      "Categoria": "Category",
+      "Componente": "Component",
+      "Tipo": "Event type",
+      "Sottotipo": "Subtype",
+      "Ruolo": "Role",
+      "Durata": "Duration",
+      "IdDominio": "Domain ID",
+      "Iuv": "IUV",
+      "Ccp": "CCP",
+      "IdA2A": "Application ID",
+      "IdPendenza": "Pending item ID",
+      "Tabs": {
+        "Dati": "Data",
+        "Richiesta": "Request",
+        "Risposta": "Response"
+      },
+      "SottotipoEsito": "Outcome code",
+      "DettaglioEsito": "Outcome detail",
+      "IdPagamento": "Payment ID",
+      "TransactionId": "Transaction ID",
+      "ClusterId": "Node",
+      "Headers": "HTTP headers",
+      "Payload": "Payload",
+      "NoHeaders": "No headers recorded.",
+      "NoPayload": "No payload recorded."
+    },
+    "AllLoaded": "All results loaded."
+  },
+  "Tracciati": {
+    "Subtitle": "Bulk payment-notice upload flows.",
+    "Filters": {
+      "Placeholder": "Search flows…",
+      "Dominio": "Creditor entity",
+      "DominioPlaceholder": "Entity tax code",
+      "Stato": "Status",
+      "Formato": "Format",
+      "Operatore": "Operator",
+      "OperatorePlaceholder": "Sender operator",
+      "DataDa": "Uploaded from",
+      "DataA": "Uploaded to"
+    },
+    "Empty": {
+      "Title": "No flows",
+      "Description": "No flows match the current filters."
+    },
+    "Columns": {
+      "NomeFile": "File name",
+      "Dominio": "Creditor entity",
+      "Formato": "Format",
+      "DataCaricamento": "Uploaded",
+      "DataAggiornamento": "Updated",
+      "Esito": "OK / Tot",
+      "Operatore": "Operator",
+      "Stato": "Status"
+    },
+    "Stati": {
+      "InAttesa": "Pending",
+      "InElaborazione": "Processing",
+      "Eseguito": "Completed",
+      "EseguitoConErrori": "Completed with errors",
+      "Scartato": "Rejected",
+      "ElaborazioneStampa": "Printing"
+    },
+    "Upload": {
+      "Nuovo": "New flow",
+      "Titolo": "Upload a flow",
+      "File": "File (JSON or CSV)",
+      "Dominio": "Creditor entity",
+      "DominioPlaceholder": "Select an entity…",
+      "DominioCsvHint": "For CSV files the creditor entity is required.",
+      "Carica": "Upload",
+      "InCorso": "Uploading…",
+      "Successo": "Flow uploaded successfully.",
+      "Errore": "Flow upload failed."
+    },
+    "Detail": {
+      "Subtitle": "Flow detail.",
+      "Tabs": {
+        "Dati": "Data",
+        "Operazioni": "Operations"
+      },
+      "Generali": "General",
+      "EnteCreditore": "Creditor entity",
+      "Contatori": "Operations",
+      "ScaricaRichiesta": "Download request",
+      "ScaricaEsito": "Download outcome",
+      "ScaricaStampe": "Download notices (ZIP)",
+      "DownloadErrore": "Download failed.",
+      "NomeFile": "File name",
+      "Formato": "Format",
+      "DataCaricamento": "Upload date",
+      "DataAggiornamento": "Last update",
+      "Operatore": "Operator",
+      "DescrizioneStato": "Status detail",
+      "IdDominio": "Domain ID",
+      "RagioneSociale": "Legal name",
+      "OperazioniTotali": "Total operations",
+      "OperazioniEseguite": "Successful operations",
+      "OperazioniFallite": "Failed operations",
+      "AvvisiTotali": "Total notices",
+      "AvvisiStampati": "Printed notices",
+      "AvvisiFalliti": "Failed notices"
+    },
+    "Operazioni": {
+      "Empty": "No operations",
+      "Columns": {
+        "Numero": "No.",
+        "Tipo": "Type",
+        "Pendenza": "Debt position",
+        "Avviso": "Notice",
+        "Stato": "Status"
+      },
+      "Stati": {
+        "Eseguito": "Completed",
+        "Scartato": "Rejected",
+        "NonValido": "Invalid"
+      },
+      "Tipi": {
+        "Add": "Insert",
+        "Del": "Cancellation",
+        "NonValida": "Invalid"
+      },
+      "Detail": {
+        "Titolo": "Operation",
+        "Subtitle": "Flow row detail.",
+        "Dati": "Operation data",
+        "Richiesta": "Request",
+        "Risposta": "Response",
+        "Numero": "Sequence",
+        "Tipo": "Operation type",
+        "DescrizioneStato": "Status detail",
+        "Pendenza": "Debt position ID",
+        "Avviso": "Notice number",
+        "Applicazione": "Application",
+        "EnteCreditore": "Creditor entity",
+        "SoggettoPagatore": "Payer"
+      }
+    }
+  },
+  "Domini": {
+    "Subtitle": "Creditor entities registered on the platform.",
+    "Filters": {
+      "SearchPlaceholder": "Search by name…",
+      "IdDominio": "Tax code",
+      "IdDominioPlaceholder": "Search by code…",
+      "RagioneSociale": "Name",
+      "RagioneSocialePlaceholder": "Search by name…",
+      "Placeholder": "Search creditor…",
+      "Abilitato": "Enabled",
+      "Intermediato": "Brokered",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled"
+    },
+    "Logo": {
+      "Carica": "Upload logo",
+      "Rimuovi": "Remove",
+      "Hint": "PNG or JPEG, max 256KB.",
+      "Aggiornato": "Logo updated.",
+      "Rimosso": "Logo removed.",
+      "TroppoGrande": "File exceeds 256KB.",
+      "Errore": "Logo operation failed."
+    },
+    "Form": {
+      "Nuovo": "New creditor",
+      "Modifica": "Edit",
+      "NuovoTitolo": "New creditor",
+      "ModificaTitolo": "Edit creditor",
+      "Subtitle": "Creditor registry and PagoPA configuration.",
+      "SezionePagoPA": "PagoPA configuration",
+      "SezioneAnagrafica": "Registry",
+      "Obbligatorio": "Required field",
+      "IdNonValido": "The creditor code must be 11 digits.",
+      "IntermediatoHint": "For brokered creditors GLN and Station are required.",
+      "Salvato": "Creditor created.",
+      "Aggiornato": "Creditor updated.",
+      "SalvaErrore": "Save failed.",
+      "Invalido": "Invalid data: check constraints (e.g. GLN/Station for brokered creditors).",
+      "ConflittoId": "A creditor with this code already exists.",
+      "ConflittoConcorrenza": "The creditor was modified by another user. Reload and retry."
+    },
+    "Empty": {
+      "Title": "No creditors",
+      "Description": "No creditors match the current filters."
+    },
+    "Columns": {
+      "IdDominio": "Fiscal code",
+      "RagioneSociale": "Name",
+      "Localita": "Location",
+      "Stazione": "Station",
+      "Abilitato": "Enabled",
+      "Intermediato": "Brokered"
+    },
+    "Detail": {
+      "Subtitle": "Creditor entity detail.",
+      "TabDati": "Data",
+      "TabUnitaOperative": "Operating units",
+      "TabContiAccredito": "Credit accounts",
+      "TabEntrate": "Revenues",
+      "TabTipiPendenza": "Pending types",
+      "TabConnettori": "Connectors",
+      "Generali": "General information",
+      "Logo": "Logo",
+      "Abilitato": "Enabled",
+      "IdStazione": "Station",
+      "Intermediario": "Intermediary",
+      "Civico": "Number",
+      "Cap": "ZIP",
+      "Provincia": "Province",
+      "Nazione": "Country",
+      "Anagrafica": "Identity",
+      "Contatti": "Contacts",
+      "PagoPA": "PagoPA configuration",
+      "SubResources": "Linked resources",
+      "Intermediato": "Brokered",
+      "ScaricaFr": "Downloads flows",
+      "IdDominio": "Fiscal code",
+      "RagioneSociale": "Name",
+      "Area": "Area",
+      "Gln": "GLN",
+      "Cbill": "CBILL code",
+      "Indirizzo": "Address",
+      "Localita": "Location",
+      "Email": "Email",
+      "Pec": "PEC",
+      "Tel": "Phone",
+      "Fax": "Fax",
+      "Web": "Website",
+      "Stazione": "Station",
+      "AuxDigit": "Aux digit",
+      "SegregationCode": "Segregation code",
+      "IuvPrefix": "IUV prefix",
+      "AutStampa": "Poste print authorization",
+      "UnitaOperative": "Operating units",
+      "ContiAccredito": "Credit accounts",
+      "Entrate": "Revenues",
+      "TipiPendenza": "Pending types"
+    },
+    "UnitaOperative": {
+      "Id": "Code",
+      "RagioneSociale": "Name",
+      "Abilitato": "Enabled",
+      "Nuova": "New operating unit",
+      "EmptyTitle": "No operating units",
+      "EmptyDescription": "There are no operating units for this domain.",
+      "Creata": "Operating unit created.",
+      "Aggiornata": "Operating unit updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An operating unit with this code already exists."
+    },
+    "ContiAccredito": {
+      "Iban": "Credit IBAN",
+      "Descrizione": "Description",
+      "Intestatario": "Account holder",
+      "Bic": "BIC",
+      "AutStampaPosteItaliane": "Poste Italiane print authorization",
+      "Postale": "Postal account",
+      "Abilitato": "Enabled",
+      "Nuovo": "New credit account",
+      "EmptyTitle": "No credit accounts",
+      "EmptyDescription": "There are no credit accounts for this domain.",
+      "Creato": "Credit account created.",
+      "Aggiornato": "Credit account updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An account with this IBAN already exists."
+    },
+    "TipoContabilita": {
+      "CAPITOLO": "Chapter",
+      "SPECIALE": "Special",
+      "SIOPE": "SIOPE",
+      "SRTP_ESCLUSA_RAVV_OPEROSO": "SRTP excluded (voluntary settlement)",
+      "SRTP_ESCLUSA_ALTRO_OPERATORE": "SRTP excluded (other operator)",
+      "SRTP_ESCLUSA": "SRTP excluded",
+      "ALTRO": "Other"
+    },
+    "EntrateDominio": {
+      "IdEntrata": "Revenue code",
+      "Descrizione": "Description",
+      "Abilitato": "Enabled",
+      "IbanAccredito": "Credit IBAN",
+      "IbanAppoggio": "Support IBAN",
+      "TipoContabilita": "Accounting type",
+      "CodiceContabilita": "Accounting code",
+      "Nuova": "New revenue",
+      "EmptyTitle": "No revenues",
+      "EmptyDescription": "There are no revenues configured for this domain.",
+      "Creata": "Revenue created.",
+      "Aggiornata": "Revenue updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A revenue with this code already exists.",
+      "Invalido": "Invalid data: check the revenue code and the IBANs (must belong to the domain)."
+    },
+    "TipiPendenzaDominio": {
+      "IdTipoPendenza": "Pending type code",
+      "Descrizione": "Description",
+      "Abilitato": "Enabled",
+      "CodificaIUV": "IUV encoding",
+      "PagaTerzi": "Third-party payment",
+      "Nuovo": "New pending type",
+      "ConfigHint": "The advanced configuration (portals, notifications, display, CSV template) is preserved unchanged on save.",
+      "EmptyTitle": "No pending types",
+      "EmptyDescription": "There are no pending types configured for this domain.",
+      "Creato": "Pending type created.",
+      "Aggiornato": "Pending type updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A pending type with this code already exists.",
+      "Invalido": "Invalid data: check the pending type code."
+    },
+    "Connettori": {
+      "Mypivot": "MyPivot",
+      "Secim": "SECIM",
+      "Govpay": "GovPay",
+      "HypersicApk": "HyperSIC APKappa",
+      "MaggioliJppa": "Maggioli JPPA",
+      "Abilitato": "Enabled",
+      "CodiceIPA": "IPA code",
+      "CodiceCliente": "Customer code",
+      "CodiceIstituto": "Institute code",
+      "TipoConnettore": "Delivery mode",
+      "VersioneCsv": "CSV version",
+      "VersioneZip": "ZIP version",
+      "VersioneApi": "API version",
+      "TipiPendenza": "Pending types",
+      "Intervallo": "Creation interval (hours)",
+      "InviaTracciatoEsito": "Send outcome file",
+      "Url": "REST service URL",
+      "EmailIndirizzi": "Email addresses",
+      "EmailSubject": "Email subject",
+      "EmailAllegato": "Send as attachment",
+      "DownloadBaseUrl": "Download base URL",
+      "FileSystemPath": "Filesystem path",
+      "ListHint": "One value per line (or comma-separated).",
+      "Aggiornato": "Connector updated.",
+      "SalvaErrore": "Connector save failed.",
+      "Cred": {
+        "Gestisci": "Manage credentials",
+        "Titolo": "Credentials (write-only)",
+        "Hint": "Credentials are never shown. Fill in only the fields you want to update.",
+        "SubscriptionKey": "Subscription key",
+        "Password": "Password",
+        "ApiKey": "Api key",
+        "ClientSecret": "Client secret",
+        "HeaderValue": "Header value",
+        "Aggiornate": "Credentials updated.",
+        "Errore": "Credentials update failed."
+      },
+      "Send": "SEND (notifications)",
+      "AbilitaGDE": "Enable GDE event sending",
+      "Configurato": "Configured",
+      "NonConfigurato": "Not configured"
+    }
+  },
+  "TipiPendenza": {
+    "Subtitle": "Registered pending types.",
+    "Filters": {
+      "SearchPlaceholder": "Search by description…",
+      "IdTipoPendenza": "Type ID",
+      "IdTipoPendenzaPlaceholder": "Search by ID…",
+      "Descrizione": "Description",
+      "DescrizionePlaceholder": "Search by description…",
+      "Placeholder": "Search pending type…",
+      "Abilitato": "Enabled",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled"
+    },
+    "Empty": {
+      "Title": "No types",
+      "Description": "No pending types match the current filters."
+    },
+    "Columns": {
+      "IdTipoPendenza": "Type ID",
+      "Descrizione": "Description",
+      "CodificaIUV": "IUV code",
+      "PagaTerzi": "Third-party",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Pending type detail.",
+      "Generali": "General",
+      "PortaleBackoffice": "Backoffice portal",
+      "PortalePagamento": "Payment portal",
+      "Visualizzazione": "Display",
+      "PagaTerzi": "Third-party payable",
+      "Abilitato": "Enabled",
+      "IdTipoPendenza": "Type ID",
+      "Descrizione": "Description",
+      "CodificaIUV": "IUV code"
+    },
+    "Form": {
+      "Nuovo": "New pending type",
+      "Modifica": "Edit",
+      "NuovoTitolo": "New pending type",
+      "ModificaTitolo": "Edit pending type",
+      "Subtitle": "Core data of the pending type.",
+      "Obbligatorio": "Required field",
+      "CodificaIUVPlaceholder": "1-3 digits",
+      "CodificaIUVNonValida": "Enter 1 to 3 digits.",
+      "ConfigPreservata": "Advanced configuration (portals, notifications, tracking, display) is preserved.",
+      "Salvato": "Pending type created.",
+      "Aggiornato": "Pending type updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A pending type with this ID already exists.",
+      "ConflittoConcorrenza": "The pending type was modified by another user. Reload and retry.",
+      "TabDati": "Data",
+      "TabPortaleBackoffice": "Backoffice portal",
+      "TabPortalePagamento": "Payment portal",
+      "VerificaCampi": "Check the fields: some contain invalid JSON.",
+      "Invalido": "Invalid data: check the configuration fields.",
+      "TabAvvisaturaMail": "Email notifications",
+      "TabAvvisaturaAppIO": "App IO notifications",
+      "TabAltre": "Other functions"
+    },
+    "Config": {
+      "Abilitato": "Enabled",
+      "FormInserimento": "Data entry form",
+      "FormInserimentoHint": "Describes the fields filled in by the citizen",
+      "TipoLayout": "Layout type",
+      "Nessuno": "None",
+      "Configurato": "Configured",
+      "NonConfigurato": "Not configured",
+      "Definizione": "Definition",
+      "Impaginazione": "Layout",
+      "Validazione": "Validation (JSON Schema)",
+      "Trasformazione": "Data transformation",
+      "TipoTemplate": "Template type",
+      "TemplateDefinizione": "Template",
+      "Inoltro": "Forward (application)",
+      "Oggetto": "Subject template",
+      "Messaggio": "Message template",
+      "Preavviso": "Days in advance",
+      "AllegaPdf": "Attach PDF",
+      "SoloEseguiti": "Executed payments only",
+      "PromemoriaAvviso": "Payment notice",
+      "PromemoriaScadenza": "Payment due reminder",
+      "PromemoriaRicevuta": "Payment receipt",
+      "TracciatoCsv": "CSV tracks parser",
+      "TracciatoCsvHint": "Processes bulk-upload CSV files (Freemarker)",
+      "Intestazione": "Outcome header line",
+      "Richiesta": "Request template",
+      "Risposta": "Response template",
+      "Visualizzazione": "Item detail customization",
+      "VisualizzazioneHint": "Item detail visualization template (JSON)."
+    },
+    "Template": {
+      "Tipo": "Type",
+      "Vuoto": "Choose a type to configure the template."
+    },
+    "Fmt": {
+      "Json": "JSON",
+      "Freemarker": "Freemarker"
+    }
+  },
+  "Applicazioni": {
+    "Subtitle": "Registered A2A applications.",
+    "Filters": {
+      "Abilitato": "Enabled",
+      "IdA2A": "Application ID",
+      "IdA2APlaceholder": "Search by ID…",
+      "Principal": "Principal",
+      "PrincipalPlaceholder": "Search by principal…",
+      "Placeholder": "Search application…",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled"
+    },
+    "Empty": {
+      "Title": "No applications",
+      "Description": "No applications match the current filters."
+    },
+    "Columns": {
+      "IdA2A": "Application ID",
+      "Principal": "Principal",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Application detail.",
+      "TabDati": "Data",
+      "TabConnettore": "Integration connector",
+      "Generali": "General",
+      "CodificaAvvisi": "Notice coding",
+      "CodificaIuv": "IUV code",
+      "RegExpIuv": "IUV regexp",
+      "GenerazioneIuvInterna": "Internal IUV generation",
+      "Domini": "Authorized creditors",
+      "TipiPendenza": "Pending types",
+      "Ruoli": "Roles",
+      "Acl": "Services and authorizations",
+      "Password": "Password",
+      "ConnettoreIntegrazione": "Integration connector",
+      "IdA2A": "Application ID",
+      "Principal": "Principal",
+      "Abilitato": "Enabled"
+    },
+    "Connettore": {
+      "Stato": "Enabled",
+      "Url": "URL",
+      "Versione": "Version",
+      "TipoAuth": "Authentication type",
+      "ConnectTimeout": "Connect timeout (ms)",
+      "ReadTimeout": "Read timeout (ms)",
+      "NonConfigurato": "Not configured",
+      "Salvato": "Integration connector updated.",
+      "SalvaErrore": "Connector save failed."
+    },
+    "Form": {
+      "Nuova": "New application",
+      "Modifica": "Edit",
+      "NuovaTitolo": "New application",
+      "ModificaTitolo": "Edit application",
+      "Subtitle": "Application data, associations and authorizations.",
+      "Obbligatorio": "Required field",
+      "IdNonValido": "Allowed: letters, digits, hyphen and underscore (max 35).",
+      "CodificaIuvPlaceholder": "1-3 digits",
+      "CodificaIuvNonValida": "Enter 1 to 3 digits.",
+      "DominioPlaceholder": "idDominio or * or autodeterminazione",
+      "TipoPendenzaPlaceholder": "idTipoPendenza",
+      "RuoloPlaceholder": "idRuolo",
+      "Salvata": "Application created.",
+      "Aggiornata": "Application updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An application with this ID already exists.",
+      "ConflittoConcorrenza": "The application was modified by another user. Reload and retry."
+    }
+  },
+  "RefSelect": {
+    "All": "All",
+    "Add": "Add",
+    "Remove": "Remove",
+    "Placeholder": "Add…"
+  },
+  "Operatori": {
+    "Subtitle": "Console operators.",
+    "Filters": {
+      "Abilitato": "Enabled",
+      "Principal": "Principal",
+      "PrincipalPlaceholder": "Search by principal…",
+      "Nome": "Name",
+      "NomePlaceholder": "Search by name…",
+      "Placeholder": "Search operator…",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled"
+    },
+    "Empty": {
+      "Title": "No operators",
+      "Description": "No operators match the current filters."
+    },
+    "Columns": {
+      "Principal": "Principal",
+      "RagioneSociale": "Operator name",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Operator detail.",
+      "Generali": "General",
+      "Domini": "Authorized creditors",
+      "TipiPendenza": "Pending types",
+      "Ruoli": "Roles",
+      "Acl": "Services and authorizations",
+      "Password": "Password",
+      "Principal": "Principal",
+      "RagioneSociale": "Full name",
+      "Abilitato": "Enabled"
+    },
+    "Form": {
+      "Nuovo": "New operator",
+      "Modifica": "Edit",
+      "NuovoTitolo": "New operator",
+      "ModificaTitolo": "Edit operator",
+      "Subtitle": "Operator data, associations and authorizations.",
+      "Obbligatorio": "Required field",
+      "DominioPlaceholder": "idDominio (e.g. 12345678901)",
+      "TipoPendenzaPlaceholder": "idTipoPendenza",
+      "RuoloPlaceholder": "idRuolo",
+      "Salvato": "Operator created.",
+      "Aggiornato": "Operator updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "An operator with this principal already exists.",
+      "ConflittoConcorrenza": "The operator was modified by another user. Reload and retry."
+    }
+  },
+  "Entrate": {
+    "Subtitle": "Revenue types registered globally.",
+    "Filters": {
+      "IdEntrata": "Revenue code",
+      "IdEntrataPlaceholder": "Search by code…",
+      "Descrizione": "Description",
+      "DescrizionePlaceholder": "Search by description…",
+      "Placeholder": "Search revenue…"
+    },
+    "Columns": {
+      "IdEntrata": "Code",
+      "Descrizione": "Description"
+    },
+    "Detail": {
+      "Subtitle": "Revenue type detail.",
+      "Generali": "General data",
+      "IdEntrata": "Revenue code",
+      "Descrizione": "Description",
+      "TipoContabilita": "Accounting type",
+      "CodiceContabilita": "Accounting code"
+    },
+    "TipoContabilita": {
+      "CAPITOLO": "Chapter",
+      "SPECIALE": "Special",
+      "SIOPE": "SIOPE",
+      "SRTP_ESCLUSA_RAVV_OPEROSO": "SRTP excluded (voluntary correction)",
+      "SRTP_ESCLUSA_ALTRO_OPERATORE": "SRTP excluded (other operator)",
+      "SRTP_ESCLUSA": "SRTP excluded",
+      "ALTRO": "Other"
+    },
+    "Form": {
+      "Nuova": "New revenue",
+      "Modifica": "Edit",
+      "NuovaTitolo": "New revenue",
+      "ModificaTitolo": "Edit revenue",
+      "Subtitle": "Fill in the revenue type data.",
+      "Obbligatorio": "Required field",
+      "Salvata": "Revenue created.",
+      "Aggiornata": "Revenue updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A revenue with this code already exists.",
+      "ConflittoConcorrenza": "The revenue was modified by another user. Reload and retry."
+    },
+    "Empty": {
+      "Title": "No revenues",
+      "Description": "No revenue types found."
+    }
+  },
+  "Intermediari": {
+    "Subtitle": "Registered PagoPA brokers.",
+    "Filters": {
+      "CodIntermediario": "Intermediary code",
+      "CodIntermediarioPlaceholder": "Search by code…",
+      "Denominazione": "Name",
+      "DenominazionePlaceholder": "Search by name…",
+      "Stato": "Status",
+      "StatoTutti": "All",
+      "StatoAbilitati": "Enabled",
+      "StatoDisabilitati": "Disabled",
+      "Placeholder": "Search intermediary…"
+    },
+    "Stato": {
+      "Abilitato": "Enabled",
+      "Disabilitato": "Disabled"
+    },
+    "Empty": {
+      "Title": "No brokers",
+      "Description": "No brokers registered."
+    },
+    "Columns": {
+      "IdIntermediario": "Broker ID",
+      "Denominazione": "Name",
+      "Abilitato": "Enabled"
+    },
+    "Detail": {
+      "Subtitle": "Broker detail.",
+      "Generali": "General",
+      "ServizioPagoPa": "PagoPA service",
+      "ServizioFtp": "FTP service",
+      "IdIntermediario": "Broker ID",
+      "Denominazione": "Name",
+      "PrincipalPagoPa": "PagoPA principal",
+      "Abilitato": "Enabled",
+      "TabDati": "Data",
+      "TabStazioni": "Stations",
+      "TabConnettori": "Connectors"
+    },
+    "Form": {
+      "NuovoTitolo": "New broker",
+      "ModificaTitolo": "Edit broker",
+      "Subtitle": "PagoPA broker registry data.",
+      "Nuovo": "New broker",
+      "Modifica": "Edit",
+      "Salvato": "Broker created.",
+      "Aggiornato": "Broker updated.",
+      "Obbligatorio": "Required field.",
+      "IdPattern": "Allowed: letters, digits, '-' and '_' (max 35 chars).",
+      "ConflittoId": "A broker with this identifier already exists.",
+      "ConflittoConcorrenza": "The broker was modified by someone else: reload and retry.",
+      "SalvaErrore": "Save failed."
+    },
+    "Stazioni": {
+      "IdStazione": "Station ID",
+      "Versione": "Version",
+      "Abilitato": "Enabled",
+      "Domini": "Linked domains",
+      "EmptyTitle": "No stations",
+      "EmptyDescription": "This broker has no configured stations.",
+      "Form": {
+        "NuovaTitolo": "New station",
+        "ModificaTitolo": "Edit station",
+        "Subtitle": "Broker's pagoPA station.",
+        "Nuova": "New station",
+        "Creata": "Station created.",
+        "Aggiornata": "Station updated.",
+        "IdPlaceholder": "e.g. BROKER_01",
+        "IdHint": "Format: {brokerId}_{code}, with code between 1 and 99.",
+        "IdNonValido": "Invalid station id (format or code out of range 1–99)."
+      }
+    },
+    "Connettori": {
+      "Stato": "Enabled",
+      "TipoAuth": "Authentication type",
+      "Url": "URL",
+      "NonConfigurato": "Not configured",
+      "Form": {
+        "Subtitle": "pagoPA connector configuration.",
+        "Auth": "Authentication",
+        "Credenziali": "Credentials",
+        "CredenzialiHint": "Credentials are never shown: fill only the fields you want to update.",
+        "AbilitaGDE": "Enable Event Journal (GDE)",
+        "Salvato": "Connector updated.",
+        "UrlRpt": "URL RPT",
+        "Username": "Username",
+        "HeaderName": "Header name",
+        "ApiId": "API id",
+        "ClientId": "Client id",
+        "Scope": "Scope",
+        "UrlTokenEndpoint": "URL token endpoint",
+        "Ssl": "SSL",
+        "KeystoreLocation": "Keystore location",
+        "KeystoreType": "Keystore type",
+        "TruststoreLocation": "Truststore location",
+        "TruststoreType": "Truststore type",
+        "SubscriptionKey": "Subscription key",
+        "Password": "Password",
+        "HeaderValue": "Header value",
+        "ApiKey": "API key",
+        "ClientSecret": "Client secret",
+        "KeystorePassword": "Keystore password",
+        "TruststorePassword": "Truststore password",
+        "KeyPassword": "Key password"
+      },
+      "Tipi": {
+        "Pagopa": "pagoPA connector (PDD)",
+        "PagopaAca": "pagoPA ACA connector",
+        "PagopaGpd": "pagoPA GPD connector",
+        "PagopaFr": "pagoPA FR connector",
+        "PagopaBackofficeEc": "pagoPA Backoffice EC connector",
+        "PagopaRecuperoRt": "pagoPA Recovery RT connector"
+      }
+    }
+  },
+  "Acl": {
+    "Servizio": "Service",
+    "R": "R",
+    "W": "W"
+  },
+  "Ruoli": {
+    "Subtitle": "Roles and ACLs.",
+    "Filters": {
+      "IdRuolo": "Role ID",
+      "IdRuoloPlaceholder": "Search by ID…",
+      "Placeholder": "Search role…"
+    },
+    "Empty": {
+      "Title": "No roles",
+      "Description": "No roles registered."
+    },
+    "Columns": {
+      "Id": "Role ID"
+    },
+    "Detail": {
+      "Subtitle": "Permissions for the role.",
+      "Generali": "General data",
+      "Id": "Role ID",
+      "Acl": "Services and authorizations",
+      "NoAcl": "No ACL assigned."
+    },
+    "Form": {
+      "Nuovo": "New role",
+      "Modifica": "Edit",
+      "NuovoTitolo": "New role",
+      "ModificaTitolo": "Edit role",
+      "Subtitle": "Define the role ID and its authorizations.",
+      "Obbligatorio": "Required field",
+      "AclObbligatoria": "Select at least one authorization.",
+      "Salvato": "Role created.",
+      "Aggiornato": "Role updated.",
+      "SalvaErrore": "Save failed.",
+      "ConflittoId": "A role with this ID already exists.",
+      "ConflittoConcorrenza": "The role was modified by another user. Reload and retry."
+    }
+  },
+  "Impostazioni": {
+    "Subtitle": "System configuration, split by area.",
+    "UltimaModifica": "Last modified",
+    "InArrivo": "Coming soon",
+    "Salvato": "Settings saved.",
+    "SalvaErrore": "Save failed.",
+    "ConflittoConcorrenza": "The configuration was changed by another user. Reload and try again.",
+    "Invalido": "Invalid data.",
+    "Aree": {
+      "ServizioGde": {
+        "Nome": "GDE service",
+        "Desc": "Connector to the Events Journal."
+      },
+      "GiornaleEventi": {
+        "Nome": "Events journal",
+        "Desc": "Logging policy per API interface."
+      },
+      "MailServer": {
+        "Nome": "Mail server",
+        "Desc": "SMTP server for reminders."
+      },
+      "MailTemplate": {
+        "Nome": "Mail templates",
+        "Desc": "Email reminder templates."
+      },
+      "AppIoServer": {
+        "Nome": "App IO server",
+        "Desc": "Connector to App IO for push notifications."
+      },
+      "AppIoTemplate": {
+        "Nome": "App IO templates",
+        "Desc": "Push reminder templates."
+      },
+      "TracciatiCsv": {
+        "Nome": "CSV flows",
+        "Desc": "FreeMarker templates for CSV flows."
+      },
+      "Hardening": {
+        "Nome": "Hardening",
+        "Desc": "Google reCAPTCHA to harden login."
+      }
+    },
+    "ServizioGde": {
+      "Connettore": "Connector",
+      "Abilitato": "Enabled",
+      "Url": "GDE service URL"
+    },
+    "AppIoServer": {
+      "Connettore": "Connector",
+      "Abilitato": "Enabled",
+      "Url": "App IO service URL",
+      "Ttl": "Time to live (seconds)"
+    },
+    "Hardening": {
+      "ReCaptcha": "Google reCAPTCHA",
+      "Abilitato": "Enabled",
+      "ServerUrl": "Verification URL",
+      "SiteKey": "Site key",
+      "Soglia": "Threshold (0.1–1.0)",
+      "Parametro": "Parameter name",
+      "ConnTimeout": "Connection timeout (ms)",
+      "ReadTimeout": "Read timeout (ms)",
+      "DenyOnFail": "Deny if the verification server is unreachable",
+      "SecretKey": "Secret key"
+    },
+    "Template": {
+      "Avviso": "Notice reminder",
+      "Ricevuta": "Receipt reminder",
+      "Scadenza": "Due-date reminder",
+      "Oggetto": "Subject",
+      "Titolo": "Title",
+      "Messaggio": "Message",
+      "AllegaPdf": "Attach the PDF",
+      "SoloEseguiti": "Executed payments only",
+      "Preavviso": "Days of notice",
+      "Tipo": "Template type",
+      "Nessuno": "None"
+    },
+    "TracciatiCsv": {
+      "Template": "FreeMarker template",
+      "Intestazione": "CSV header",
+      "Richiesta": "Request template (CSV → JSON)",
+      "RichiestaHint": "Transforms a record from CSV to JSON.",
+      "Risposta": "Response template (JSON → CSV)",
+      "RispostaHint": "Transforms a record from JSON to CSV."
+    },
+    "MailServer": {
+      "Server": "SMTP server",
+      "Abilitato": "Enabled",
+      "Host": "Host",
+      "Port": "Port",
+      "Username": "Username",
+      "From": "Sender",
+      "ConnTimeout": "Connection timeout (ms)",
+      "ReadTimeout": "Read timeout (ms)",
+      "StartTls": "STARTTLS",
+      "Ssl": "SSL/TLS",
+      "SslAbilitato": "SSL enabled",
+      "HostnameVerifier": "Verify hostname",
+      "SslTipo": "SSLContext type (e.g. TLS)",
+      "TrustStore": "TrustStore",
+      "KeyStore": "KeyStore",
+      "Location": "File path",
+      "StoreTipo": "Type (JKS, PKCS12…)",
+      "Algorithm": "Algorithm",
+      "Password": "Password",
+      "PasswordImpostata": "An SMTP password is already configured. Fill the fields to replace it.",
+      "PasswordNonImpostata": "No SMTP password configured.",
+      "NuovaPassword": "SMTP password",
+      "KsPassword": "KeyStore password",
+      "TsPassword": "TrustStore password",
+      "SalvaPassword": "Save password",
+      "PasswordSalvata": "Password updated."
+    },
+    "GiornaleEventi": {
+      "Politica": "Logging policy",
+      "Interfaccia": "Interface",
+      "LettureLog": "Reads · log",
+      "LettureDump": "Reads · dump",
+      "ScrittureLog": "Writes · log",
+      "ScrittureDump": "Writes · dump",
+      "Politiche": {
+        "SEMPRE": "Always",
+        "MAI": "Never",
+        "SOLO_ERRORE": "On error only"
+      },
+      "Interfacce": {
+        "apiEnte": "Entity API",
+        "apiPagamento": "Payment API",
+        "apiRagioneria": "Treasury API",
+        "apiBackoffice": "Backoffice API",
+        "apiPagoPA": "pagoPA API",
+        "apiPendenze": "Receivables API",
+        "apiBackendIO": "App IO API",
+        "apiMaggioliJPPA": "Maggioli JPPA API"
+      }
+    }
+  },
+  "Profilo": {
+    "Subtitle": "Connected user data, scope and ACLs.",
+    "NotAuthenticated": {
+      "Title": "Not authenticated",
+      "Description": "Sign in to view the profile."
+    },
+    "Detail": {
+      "Anagrafica": "Identity",
+      "Domini": "Creditors in scope",
+      "TipiPendenza": "Pending types in scope",
+      "Acl": "Permissions (ACL)",
+      "Servizio": "Service",
+      "Lettura": "Read",
+      "Scrittura": "Write",
+      "Nome": "Name",
+      "Username": "Username",
+      "Email": "Email",
+      "Autenticazione": "Authentication mode",
+      "NoDomini": "No creditors in scope.",
+      "NoTipiPendenza": "No pending types in scope.",
+      "NoAcl": "No ACL assigned."
+    }
+  },
+  "Dashboard": {
+    "Title": "Dashboard",
+    "Welcome": "Welcome back. From here you can access summary statistics, recent items, reconciliation flows and the main backoffice KPIs.",
+    "Cards": {
+      "PendenzeAttive": "Active items",
+      "PendenzeAttiveHint": "Items in NON_ESEGUITA state",
+      "RiscossioniMese": "Collections this month",
+      "RiscossioniMeseHint": "From the first day of the current month",
+      "TracciatiInLavorazione": "Batches in progress",
+      "TracciatiInLavorazioneHint": "Pending batches being processed",
+      "WaitingApi": "Available once connected to the API",
+      "EmptyHint": "—"
+    }
+  },
+  "Nav": {
+    "Dashboard": "Dashboard",
+    "Pagamenti": "Payments",
+    "Pendenze": "Items",
+    "Ricevute": "Receipts",
+    "Riconciliazioni": "Reconciliation",
+    "Riscossioni": "Collections",
+    "Rendicontazioni": "Reporting",
+    "Incassi": "Cash-ins",
+    "Monitoraggio": "Monitoring",
+    "Manutenzione": "Maintenance",
+    "GiornaleEventi": "Event log",
+    "Tracciati": "Streams",
+    "Anagrafiche": "Master data",
+    "Domini": "Creditor entities",
+    "TipiPendenza": "Item types",
+    "Entrate": "Revenues",
+    "Applicazioni": "Applications",
+    "Intermediari": "Intermediaries",
+    "Sicurezza": "Security",
+    "Operatori": "Operators",
+    "Ruoli": "Roles",
+    "Impostazioni": "Settings",
+    "Profilo": "Profile",
+    "Operazioni": "Operations"
+  },
+  "CodeField": {
+    "Carica": "Load from file",
+    "Reset": "Reset",
+    "Mostra": "Show",
+    "Nascondi": "Hide",
+    "Vuoto": "No content — load a file or drop it here",
+    "Presente": "Content present",
+    "Caratteri": "characters",
+    "Drop": "Drop the file to load it",
+    "NonValido": "Invalid JSON"
+  },
+  "Operazioni": {
+    "Subtitle": "Scheduled or manually-triggered batch operations.",
+    "Empty": {
+      "Title": "No operations",
+      "Description": "The operations catalog is empty."
+    },
+    "Columns": {
+      "Id": "Code",
+      "Nome": "Name",
+      "Descrizione": "Description",
+      "Frequenza": "Frequency",
+      "UltimaEsecuzione": "Last run",
+      "ProssimaEsecuzione": "Next run",
+      "Abilitata": "Enabled"
+    },
+    "Stati": {
+      "InCoda": "Queued",
+      "InCorso": "Running",
+      "Completata": "Completed",
+      "Fallita": "Failed",
+      "Annullata": "Cancelled"
+    },
+    "Detail": {
+      "Subtitle": "Operation detail and its executions.",
+      "Generali": "General",
+      "Esecuzioni": "Executions",
+      "Avvia": "Run now",
+      "AvviaErrore": "Failed to start the operation.",
+      "AvviaSuccesso": "Execution started.",
+      "Id": "Code",
+      "Nome": "Name",
+      "Descrizione": "Description",
+      "Frequenza": "Scheduled frequency",
+      "ProssimaEsecuzione": "Next run",
+      "Abilitata": "Enabled",
+      "LockAttivo": "Running"
+    },
+    "Esecuzioni": {
+      "Empty": "No executions",
+      "Columns": {
+        "Id": "Execution ID",
+        "Inizio": "Start",
+        "Fine": "End",
+        "Stato": "Status"
+      },
+      "Detail": {
+        "Titolo": "Execution",
+        "Subtitle": "Execution detail.",
+        "Dati": "Execution data",
+        "Esito": "Outcome",
+        "Dettaglio": "Detail",
+        "Id": "Execution ID",
+        "Percentuale": "Progress",
+        "Inizio": "Start",
+        "Fine": "End",
+        "Forzata": "Manual start",
+        "Descrizione": "Description",
+        "Successo": "Completed successfully",
+        "Fallimento": "Finished with errors",
+        "Annulla": "Cancel",
+        "AnnullaErrore": "Cancellation failed.",
+        "AnnullaSuccesso": "Cancellation request sent.",
+        "Aggiornamento": "Live updating…"
+      }
+    }
+  },
+  "PagoPA": {
+    "EnteCreditore": {
+      "Cerca": "Search on pagoPA",
+      "Placeholder": "Company name or tax code…",
+      "NessunRisultato": "No creditor entity found on pagoPA.",
+      "FormHint": "Search the entity on pagoPA to pre-fill the domain fields.",
+      "Precompilato": "Fields pre-filled from the pagoPA registry."
+    },
+    "Iban": {
+      "Suggerimenti": "{{count}} IBANs enabled on pagoPA"
+    }
+  },
+  "ConnettoreAuth": {
+    "Auth": "Authentication",
+    "TipoAuth": "Authentication type",
+    "Credenziali": "Credentials",
+    "CredenzialiHint": "Credentials are write-only: never shown. Fill the fields only to set or replace them.",
+    "Username": "Username",
+    "HeaderName": "Header name",
+    "ApiId": "API ID",
+    "ClientId": "Client ID",
+    "Scope": "Scope",
+    "UrlTokenEndpoint": "Token endpoint URL",
+    "Ssl": "SSL mode",
+    "KeystoreLocation": "Keystore · path",
+    "KeystoreType": "Keystore · type",
+    "TruststoreLocation": "Truststore · path",
+    "TruststoreType": "Truststore · type",
+    "SubscriptionKey": "Subscription key",
+    "Password": "Password",
+    "HeaderValue": "Header value",
+    "ApiKey": "API key",
+    "ClientSecret": "Client secret",
+    "KeystorePassword": "Keystore · password",
+    "TruststorePassword": "Truststore · password",
+    "KeyPassword": "Private key · password"
+  }
+}

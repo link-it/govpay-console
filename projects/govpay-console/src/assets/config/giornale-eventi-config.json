@@ -70,8 +70,7 @@
           "type": "text",
           "field": "tipoEvento",
           "i18nPrefix": "GiornaleEventi.Tipi",
-          "i18nPrefixField": "componente",
-          "truncate": 60
+          "i18nPrefixField": "componente"
         }
       },
       {
@@ -80,19 +79,18 @@
         "cell": {
           "type": "text",
           "field": "componente",
-          "i18nPrefix": "GiornaleEventi.Componenti",
-          "truncate": 30
+          "i18nPrefix": "GiornaleEventi.Componenti"
         }
       },
       {
-        "key": "durataEvento",
+        "key": "durataEventoMs",
         "header": "GiornaleEventi.Columns.Durata",
         "align": "right",
         "cellClass": "font-mono text-xs",
         "width": "6rem",
         "cell": {
           "type": "mstime",
-          "field": "durataEvento",
+          "field": "durataEventoMs",
           "default": "—"
         }
       },
@@ -145,7 +143,7 @@
     "secondaryText": [
       {
         "type": "mstime",
-        "field": "durataEvento",
+        "field": "durataEventoMs",
         "hideEmpty": true,
         "tooltip": "GiornaleEventi.Detail.Durata"
       }

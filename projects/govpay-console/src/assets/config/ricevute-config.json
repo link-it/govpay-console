@@ -1,6 +1,20 @@
 {
+  "detail": {
+    "sections": {
+      "generali": true,
+      "esitoPagamento": true,
+      "versante": true,
+      "enteCreditore": true,
+      "trasferimenti": true,
+      "psp": true,
+      "richiestaPagamento": true,
+      "pendenza": true,
+      "download": true,
+      "segnalazioni": true
+    }
+  },
   "options": {
-    "STATI_RPP": {
+    "STATI_RT": {
       "values": {
         "RT_ACCETTATA_PA": {
           "label": "Ricevute.Stati.Eseguito",
@@ -66,49 +80,52 @@
         "key": "iuv",
         "header": "Ricevute.Columns.Iuv",
         "cellClass": "font-mono text-xs",
-        "width": "12rem",
+        "width": "14rem",
         "cell": {
           "type": "text",
-          "field": "pendenza.iuvPagamento",
+          "field": "iuv",
           "default": "—"
         },
         "link": true
       },
       {
-        "key": "dominio",
+        "key": "idRicevuta",
+        "header": "Ricevute.Columns.IdRicevuta",
+        "cellClass": "font-mono text-xs",
+        "width": "12rem",
+        "cell": {
+          "type": "text",
+          "field": "idRicevuta",
+          "truncate": 24
+        }
+      },
+      {
+        "key": "idDominio",
         "header": "Ricevute.Columns.Dominio",
+        "cellClass": "font-mono text-xs",
         "cell": {
           "type": "text",
-          "field": "pendenza.dominio.ragioneSociale",
-          "truncate": 30
+          "field": "idDominio"
         }
       },
       {
-        "key": "soggettoPagatore",
-        "header": "Ricevute.Columns.Pagatore",
+        "key": "codPsp",
+        "header": "Ricevute.Columns.Psp",
         "cell": {
           "type": "text",
-          "field": "pendenza.soggettoPagatore.anagrafica",
-          "truncate": 30
-        }
-      },
-      {
-        "key": "causale",
-        "header": "Ricevute.Columns.Causale",
-        "cell": {
-          "type": "text",
-          "field": "pendenza.causale",
-          "truncate": 80
+          "field": "codPsp",
+          "default": "—"
         }
       },
       {
         "key": "dataPagamento",
-        "header": "Ricevute.Columns.DataRicevuta",
+        "header": "Ricevute.Columns.DataPagamento",
         "width": "11rem",
         "cell": {
           "type": "datetime",
-          "field": "rt.paymentDateTime"
-        }
+          "field": "dataPagamento"
+        },
+        "sortable": true
       },
       {
         "key": "importo",
@@ -118,18 +135,17 @@
         "width": "8rem",
         "cell": {
           "type": "currency",
-          "field": "pendenza.importoPagato"
+          "field": "importo"
         }
       },
       {
         "key": "stato",
         "header": "Ricevute.Columns.Stato",
-        "sortable": true,
         "width": "10rem",
         "cell": {
           "type": "status",
           "field": "stato",
-          "options": "STATI_RPP"
+          "options": "STATI_RT"
         }
       }
     ]
@@ -138,31 +154,31 @@
     "primaryText": [
       {
         "type": "text",
-        "field": "pendenza.causale",
-        "truncate": 80,
-        "class": "opacity-90"
+        "field": "iuv",
+        "class": "font-mono"
       }
     ],
     "metadata": {
       "text": [
         {
           "type": "text",
-          "field": "pendenza.dominio.ragioneSociale",
+          "field": "idDominio",
+          "class": "font-mono text-sm",
           "hideEmpty": true,
           "tooltip": "Ricevute.Detail.Dominio"
         },
         {
           "type": "text",
-          "field": "pendenza.iuvPagamento",
+          "field": "idRicevuta",
           "class": "font-mono text-sm",
           "hideEmpty": true,
-          "tooltip": "Ricevute.Detail.Iuv"
+          "tooltip": "Ricevute.Detail.IdRicevuta"
         },
         {
           "type": "text",
-          "field": "pendenza.soggettoPagatore.anagrafica",
+          "field": "codPsp",
           "hideEmpty": true,
-          "tooltip": "Ricevute.Detail.Pagatore"
+          "tooltip": "Ricevute.Detail.Psp"
         }
       ],
       "label": []
@@ -170,7 +186,7 @@
     "secondaryText": [
       {
         "type": "currency",
-        "field": "pendenza.importoPagato",
+        "field": "importo",
         "class": "font-semibold"
       }
     ],
@@ -178,11 +194,11 @@
       {
         "type": "status",
         "field": "stato",
-        "options": "STATI_RPP"
+        "options": "STATI_RT"
       },
       {
         "type": "datetime",
-        "field": "rt.paymentDateTime",
+        "field": "dataPagamento",
         "hideEmpty": true
       }
     ]

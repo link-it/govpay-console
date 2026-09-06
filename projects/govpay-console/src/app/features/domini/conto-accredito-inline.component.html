@@ -1,0 +1,44 @@
+@if (isCreate()) {
+  <form [formGroup]="form" class="lnk-inline-card--editing rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 space-y-4">
+    <div class="text-sm font-semibold">{{ 'Domini.ContiAccredito.Nuovo' | translate }}</div>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.ibanAccredito">{{ 'Domini.ContiAccredito.Iban' | translate }}</span>
+      <input type="text" formControlName="ibanAccredito" list="pagopa-iban-suggeriti" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+      @if (ibanSuggeriti().length) {
+        <datalist id="pagopa-iban-suggeriti">
+          @for (iban of ibanSuggeriti(); track iban) {
+            <option [value]="iban"></option>
+          }
+        </datalist>
+        <span class="text-xs text-[var(--muted-foreground)]">{{ 'PagoPA.Iban.Suggerimenti' | translate: { count: ibanSuggeriti().length } }}</span>
+      }
+    </label>
+    <ng-container [ngTemplateOutlet]="anagrafica" />
+    <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.ContiAccredito.Abilitato' | translate }}</span></label>
+    <div class="flex items-center gap-2">
+      <button type="button" class="btn btn-primary btn-sm" (click)="save()" [disabled]="saving() || form.invalid">{{ 'Common.Save' | translate }}</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="cancelCreation()" [disabled]="saving()">{{ 'Common.Cancel' | translate }}</button>
+    </div>
+  </form>
+} @else {
+  <lnk-inline-edit-card [title]="conto()!.ibanAccredito" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+    <div view><lnk-info-grid [items]="viewItems()" /></div>
+    <form edit [formGroup]="form" class="space-y-4">
+      <ng-container [ngTemplateOutlet]="anagrafica" />
+      <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.ContiAccredito.Abilitato' | translate }}</span></label>
+    </form>
+  </lnk-inline-edit-card>
+}
+
+<ng-template #anagrafica>
+  <div class="grid grid-cols-2 gap-3" [formGroup]="form">
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.ContiAccredito.Descrizione' | translate }}</span>
+      <input type="text" formControlName="descrizione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.ContiAccredito.Intestatario' | translate }}</span>
+      <input type="text" formControlName="intestatario" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.ContiAccredito.Bic' | translate }}</span>
+      <input type="text" formControlName="bic" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.ContiAccredito.AutStampaPosteItaliane' | translate }}</span>
+      <input type="text" formControlName="autStampaPosteItaliane" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex items-center gap-2 mt-6"><input type="checkbox" formControlName="postale" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.ContiAccredito.Postale' | translate }}</span></label>
+  </div>
+</ng-template>

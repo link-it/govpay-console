@@ -10,7 +10,10 @@
  */
 
 export * from './intermediario.model';
-export * from './intermediari.api';
+export * from './intermediari.console-api';
 export * from './intermediari.routes';
 export * from './intermediari-list.component';
 export * from './intermediario-detail.component';
+export * from './intermediario-form.component';
+export * from './stazione-inline.component';
+export * from './connettore-inline.component';

@@ -2,24 +2,26 @@
   <a
     routerLink="/profilo"
     (click)="close()"
-    class="flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
+    class="lnk-focus-ring flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
   >
     <ng-icon name="bootstrapPerson" size="1.125rem" />
     <span class="truncate">{{ 'Profile.Title' | translate }}</span>
   </a>
-  <a
-    routerLink="/impostazioni"
-    (click)="close()"
-    class="flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
-  >
-    <ng-icon name="bootstrapGear" size="1.125rem" />
-    <span class="truncate">{{ 'Profile.Settings' | translate }}</span>
-  </a>
+  @if (showSettings()) {
+    <a
+      routerLink="/impostazioni"
+      (click)="close()"
+      class="lnk-focus-ring flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
+    >
+      <ng-icon name="bootstrapGear" size="1.125rem" />
+      <span class="truncate">{{ 'Profile.Settings' | translate }}</span>
+    </a>
+  }
   @if (showAbout()) {
     <a
       routerLink="/about"
       (click)="close()"
-      class="flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
+      class="lnk-focus-ring flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
     >
       <ng-icon name="bootstrapInfoCircle" size="1.125rem" />
       <span class="truncate">{{ 'Profile.About' | translate }}</span>
@@ -32,7 +34,7 @@
         [target]="item.target ?? '_blank'"
         rel="noopener noreferrer"
         (click)="close()"
-        class="flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
+        class="lnk-focus-ring flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
       >
         @if (item.icon; as i) { <ng-icon [name]="i" size="1.125rem" /> }
         <span class="truncate">{{ item.labelKey | translate }}</span>
@@ -42,7 +44,7 @@
         [routerLink]="item.link"
         [attr.target]="item.target ?? null"
         (click)="close()"
-        class="flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
+        class="lnk-focus-ring flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--sidebar-text)] hover:bg-[var(--sidebar-item-hover)]"
       >
         @if (item.icon; as i) { <ng-icon [name]="i" size="1.125rem" /> }
         <span class="truncate">{{ item.labelKey | translate }}</span>
@@ -53,7 +55,7 @@
   <button
     type="button"
     (click)="logout()"
-    class="w-full flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--danger)] hover:bg-[var(--sidebar-item-hover)]"
+    class="lnk-focus-ring w-full flex items-center gap-2 px-3 py-2 rounded text-sm text-[var(--danger)] hover:bg-[var(--sidebar-item-hover)]"
   >
     <ng-icon name="bootstrapBoxArrowRight" size="1.125rem" />
     <span class="truncate">{{ 'Auth.Logout' | translate }}</span>
@@ -85,7 +87,7 @@
       [attr.aria-expanded]="isOpen()"
       [attr.aria-label]="'Profile.MenuLabel' | translate: { name: user()?.displayName || user()?.username || '' }"
       aria-haspopup="true"
-      class="flex items-center gap-3 rounded-md transition-colors w-full hover:bg-[var(--sidebar-item-hover)]"
+      class="lnk-focus-ring flex items-center gap-3 rounded-md transition-colors w-full hover:bg-[var(--sidebar-item-hover)]"
       [class.justify-center]="collapsed()"
       [class.h-10]="collapsed()"
       [class.p-2]="!collapsed()"

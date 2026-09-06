@@ -19,3 +19,19 @@
 
 import '@angular/compiler';
 import '@analogjs/vite-plugin-angular/setup-vitest';
+
+import { getTestBed } from '@angular/core/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
+
+// Il setup viene eseguito una volta per file di test, ma se piu` file
+// caricano questa configurazione nello stesso worker (con `isolate:
+// false` o tra hot reloads), `initTestEnvironment` esplode con
+// "Cannot set base providers because it has already been called".
+// Idempotente:
+const testBed = getTestBed();
+if (!testBed.platform) {
+  testBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+}

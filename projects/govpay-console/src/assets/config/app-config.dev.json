@@ -11,7 +11,12 @@
       "GOVHUB": ""
     },
     "Auth": {
-      "Modes": ["Basic", "Spid", "Iam", "OAuth2"],
+      "Modes": [
+        "Basic",
+        "Spid",
+        "Iam",
+        "OAuth2"
+      ],
       "Default": "Basic",
       "Endpoints": {
         "login": "/login",
@@ -27,9 +32,125 @@
       "profileMenuPosition": "sidebar",
       "darkModeTogglePosition": "sidebar",
       "languageSelectorPosition": "sidebar",
+      "settingsMenuPosition": "sidebar",
+      "themeUrl": "assets/config/themes/govpay-a11y.json",
+      "themes": [
+        {
+          "id": "govpay-a11y",
+          "label": "GovPay (AA)",
+          "url": "assets/config/themes/govpay-a11y.json",
+          "color": "#d32637"
+        },
+        {
+          "id": "govpay",
+          "label": "GovPay",
+          "url": "assets/config/themes/govpay.json",
+          "color": "#ff4050"
+        },
+        {
+          "id": "gold",
+          "label": "Gold",
+          "url": "assets/config/themes/gold.json",
+          "color": "#f5c518"
+        },
+        {
+          "id": "caramel",
+          "label": "Caramel",
+          "url": "assets/config/themes/caramel.json",
+          "color": "#a86b3c"
+        },
+        {
+          "id": "dark-sidebar",
+          "label": "Sidebar scura",
+          "url": "assets/config/themes/dark-sidebar.json",
+          "color": "#0f172a"
+        },
+        {
+          "id": "start",
+          "label": "Start (teal)",
+          "url": "assets/config/themes/start.json",
+          "color": "#12b8a6"
+        },
+        {
+          "id": "router",
+          "label": "Router (verde)",
+          "url": "assets/config/themes/router.json",
+          "color": "#37a93c"
+        },
+        {
+          "id": "query",
+          "label": "Query (corallo)",
+          "url": "assets/config/themes/query.json",
+          "color": "#ef4b3b"
+        },
+        {
+          "id": "db",
+          "label": "DB (arancio)",
+          "url": "assets/config/themes/db.json",
+          "color": "#f6821f"
+        },
+        {
+          "id": "ai",
+          "label": "AI (magenta)",
+          "url": "assets/config/themes/ai.json",
+          "color": "#e5399a"
+        },
+        {
+          "id": "table",
+          "label": "Table (blu)",
+          "url": "assets/config/themes/table.json",
+          "color": "#3b82f6"
+        },
+        {
+          "id": "hotkeys",
+          "label": "Hotkeys (rosa)",
+          "url": "assets/config/themes/hotkeys.json",
+          "color": "#f43f5e"
+        },
+        {
+          "id": "virtual",
+          "label": "Virtual (viola)",
+          "url": "assets/config/themes/virtual.json",
+          "color": "#8b5cf6"
+        },
+        {
+          "id": "pacer",
+          "label": "Pacer (lime)",
+          "url": "assets/config/themes/pacer.json",
+          "color": "#84cc16"
+        },
+        {
+          "id": "config",
+          "label": "Config (slate)",
+          "url": "assets/config/themes/config.json",
+          "color": "#475569"
+        },
+        {
+          "id": "cli",
+          "label": "CLI (indaco)",
+          "url": "assets/config/themes/cli.json",
+          "color": "#6366f1"
+        },
+        {
+          "id": "intent",
+          "label": "Intent (azzurro)",
+          "url": "assets/config/themes/intent.json",
+          "color": "#0ea5e9"
+        }
+      ],
       "languages": [
-        { "code": "it", "label": "Italiano", "short": "IT", "flag": "🇮🇹" },
-        { "code": "en", "label": "English", "short": "EN", "flag": "🇬🇧" }
+        {
+          "code": "it",
+          "label": "Italiano",
+          "short": "IT",
+          "flag": "🇮🇹"
+        },
+        {
+          "code": "en",
+          "label": "English",
+          "short": "EN",
+          "flag": "🇬🇧"
+        }
       ],
       "defaultLanguage": "it",
       "showAbout": true,
@@ -51,8 +172,10 @@
         "giornale-eventi": "table",
         "applicazioni": "rows",
         "tracciati": "rows",
-        "rendicontazioni": "rows"
+        "rendicontazioni": "rows",
+        "intermediari": "rows"
       },
+      "searchPillVariant": "square",
       "gotoTopButton": true,
       "helpButton": true,
       "tweaksPanel": true,
@@ -61,8 +184,29 @@
     },
     "Features": {
       "GESTIONE_PAGAMENTI": true,
+      "MENU_PENDENZE": true,
+      "MENU_RICEVUTE": true,
+      "MENU_PAGAMENTI": false,
       "GESTIONE_RISCOSSIONI": true,
-      "MANUTENZIONE": false
+      "MENU_RISCOSSIONI": false,
+      "MENU_RENDICONTAZIONI": true,
+      "MENU_INCASSI": false,
+      "GESTIONE_MONITORAGGIO": true,
+      "MENU_GIORNALE_EVENTI": true,
+      "MENU_TRACCIATI": true,
+      "GESTIONE_ANAGRAFICHE": true,
+      "MENU_DOMINI": true,
+      "MENU_TIPI_PENDENZA": true,
+      "MENU_ENTRATE": true,
+      "MENU_APPLICAZIONI": true,
+      "MENU_INTERMEDIARI": true,
+      "GESTIONE_SICUREZZA": true,
+      "MENU_OPERATORI": true,
+      "MENU_RUOLI": true,
+      "GESTIONE_MANUTENZIONE": true,
+      "MENU_OPERAZIONI": true,
+      "GESTIONE_IMPOSTAZIONI": true,
+      "MENU_IMPOSTAZIONI": true
     },
     "Preferences": {
       "TIMEOUT": 30000,

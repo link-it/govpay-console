@@ -18,13 +18,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { SystemFacade } from '@core/system';
-import { SnackbarService } from '@core/ui';
+import { ConfigService, ListStateService, SnackbarService, SystemFacade, TweaksRegistry, LanguageService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DisplayConfigLoader,
@@ -34,26 +32,42 @@ import {
   ListStickyToolbarDirective,
   ItemListComponent,
   PageHeaderComponent,
+  SearchPillComponent,
+  ViewToggleComponent,
+  SEARCH_PILL_DENSITY_OPTIONS,
+  SEARCH_PILL_VARIANT_OPTIONS,
   VIEW_OPTIONS,
   columnsFromConfig,
+  formatOrdinamento,
+  initialSearchState,
   type ColumnDef,
-} from '@shared';
-import { TweaksRegistry } from '@core/ui';
-import { RuoliApi } from './ruoli.api';
-import type { Ruolo, RuoliListFilters } from './ruolo.model';
+  type SearchField,
+  type SearchPillLabels,
+  type SearchState,
+  type SortEvent,
+  type SortOption,
+} from '@linkit/shared-ui';
+import { problemDetail, sliceHasMore, type Slice } from '@core/models';
+import { RuoliConsoleApi } from './ruoli.console-api';
+import type { RuoliListFilters, RuoloSummary } from './ruolo.model';
 
 const PAGE_SIZE = 25;
+
+const F = { idRuolo: 'idRuolo' } as const;
 
 @Component({
   selector: 'lnk-ruoli-list',
   standalone: true,
   imports: [
+    RouterLink,
     TranslatePipe,
     PageHeaderComponent,
     DataTableComponent,
     ItemListComponent,
     EmptyStateComponent,
     InfiniteScrollDirective,
+    SearchPillComponent,
+    ViewToggleComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
   ],
@@ -61,18 +75,79 @@ const PAGE_SIZE = 25;
   templateUrl: './ruoli-list.component.html',
 })
 export class RuoliListComponent implements OnInit {
-  private readonly api = inject(RuoliApi);
-  private readonly cfgSvc = inject(ConfigService);
+  private readonly api = inject(RuoliConsoleApi);
+  private readonly config = inject(ConfigService);
+  private readonly system = inject(SystemFacade);
+  private readonly listState = inject(ListStateService);
+  private static readonly STATE_KEY = 'ruoli';
+  private readonly snackbar = inject(SnackbarService);
+  private readonly translate = inject(TranslateService);
+  private readonly lang = inject(LanguageService);
+  private readonly router = inject(Router);
   private readonly displayConfigLoader = inject(DisplayConfigLoader);
 
   private readonly viewModeDefault = computed<'table' | 'rows'>(() => {
-    const layout = this.cfgSvc.appConfig()?.Layout;
+    const layout = this.config.appConfig()?.Layout;
     return layout?.listViewByFeature?.['ruoli'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+
+  private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
+  readonly searchPillVariant = computed<'pill' | 'square'>(
+    () => this.searchPillVariantOverride() ?? this.config.appConfig()?.Layout.searchPillVariant ?? 'pill'
   );
+
+  private readonly searchPillDensityOverride = signal<'compact' | 'regular' | 'comfortable' | null>(null);
+  readonly searchPillDensity = computed<'compact' | 'regular' | 'comfortable'>(
+    () => this.searchPillDensityOverride() ?? this.config.appConfig()?.Layout.searchPillDensity ?? 'compact'
+  );
+
+  readonly searchFields = computed<SearchField[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: F.idRuolo, label: t('Ruoli.Filters.IdRuolo'), kind: 'text', placeholder: t('Ruoli.Filters.IdRuoloPlaceholder'), span: 2 },
+    ];
+  });
+
+  readonly searchPlaceholder = computed(() => {
+    this.lang.current();
+    return this.translate.instant('Ruoli.Filters.Placeholder');
+  });
+
+  /** Campi di ordinamento supportati dall’API. */
+  readonly sortOptions = computed<SortOption[]>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return [
+      { id: 'idRuolo', label: t('Ruoli.Columns.Id') },
+    ];
+  });
+
+  readonly pillLabels = computed<SearchPillLabels>(() => {
+    this.lang.current();
+    const t = (k: string) => this.translate.instant(k);
+    return {
+      filters: t('SearchPill.Filters'),
+      reset: t('SearchPill.Reset'),
+      close: t('SearchPill.Close'),
+      search: t('SearchPill.Search'),
+      activeSuffix: t('SearchPill.ActiveSuffix'),
+      resultsApproxPrefix: t('SearchPill.ResultsApproxPrefix'),
+      resultsSuffix: t('SearchPill.ResultsSuffix'),
+      noResults: t('SearchPill.NoResults'),
+      optionsFilter: t('SearchPill.OptionsFilter'),
+      none: t('SearchPill.None'),
+      noOptions: t('SearchPill.NoOptions'),
+      textPlaceholder: t('SearchPill.TextPlaceholder'),
+      selectPlaceholder: t('SearchPill.SelectPlaceholder'),
+      allFieldsHint: t('SearchPill.AllFieldsHint'),
+      sortBy: t('SearchPill.SortBy'),
+      sortAsc: t('SearchPill.SortAsc'),
+      sortDesc: t('SearchPill.SortDesc'),
+    };
+  });
 
   constructor() {
     const tweaks = inject(TweaksRegistry);
@@ -81,11 +156,36 @@ export class RuoliListComponent implements OnInit {
         id: 'ruoli',
         titleKey: 'Tweaks.Layout',
         rows: [
-          { type: 'segmented', labelKey: 'Tweaks.View', hintKey: 'Tweaks.ViewHint',
-            options: VIEW_OPTIONS, value: this.viewMode,
-            onChange: (v) => this.onViewModeChange(v) },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.View',
+            hintKey: 'Tweaks.ViewHint',
+            options: VIEW_OPTIONS,
+            value: this.viewMode,
+            onChange: (v) => this.onViewModeChange(v),
+          },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.SearchPill',
+            hintKey: 'Tweaks.SearchPillHint',
+            options: SEARCH_PILL_VARIANT_OPTIONS,
+            value: this.searchPillVariant,
+            onChange: (v) => this.searchPillVariantOverride.set(v === 'square' ? 'square' : 'pill'),
+          },
+          {
+            type: 'segmented',
+            labelKey: 'Tweaks.Density',
+            hintKey: 'Tweaks.DensityHint',
+            options: SEARCH_PILL_DENSITY_OPTIONS,
+            value: this.searchPillDensity,
+            onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable'),
+          },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => {
+          this.viewModeOverride.set(null);
+          this.searchPillVariantOverride.set(null);
+          this.searchPillDensityOverride.set(null);
+        },
       })
     );
   }
@@ -94,48 +194,84 @@ export class RuoliListComponent implements OnInit {
     this.displayConfigLoader.load('assets/config/ruoli-config.json').pipe(catchError(() => of(null))),
     { initialValue: null },
   );
-  private readonly system = inject(SystemFacade);
-  private readonly snackbar = inject(SnackbarService);
-  private readonly translate = inject(TranslateService);
-  private readonly router = inject(Router);
 
   private readonly page = signal(1);
-  readonly rows = signal<Ruolo[]>([]);
-  readonly total = signal(0);
+  readonly sort = signal<SortEvent | null>({ key: 'idRuolo', direction: 'asc' });
+  readonly rows = signal<RuoloSummary[]>([]);
+  readonly hasMore = signal(false);
+  readonly total = signal<number | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  readonly searchState = signal<SearchState>(initialSearchState([]));
+
+  readonly hasActiveFilters = computed(() => !!this.searchState().filters[F.idRuolo]);
+  readonly hasError = computed(() => this.error() !== null);
   readonly hasRows = computed(() => this.rows().length > 0);
-  readonly hasMore = computed(() => this.rows().length < this.total());
-  readonly showEmptyState = computed(() => !this.loading() && !this.error() && !this.hasRows());
+  readonly showEmptyState = computed(() => !this.loading() && !this.hasError() && !this.hasRows());
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
-  readonly columns = computed<ColumnDef<Ruolo>[]>(() => {
+  readonly columns = computed<ColumnDef<RuoloSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
-    if (tableCfg?.columns?.length) return columnsFromConfig<Ruolo>(tableCfg.columns);
-    return [
-      { key: 'id', header: 'Ruoli.Columns.Id' },
-    ];
+    if (tableCfg?.columns?.length) return columnsFromConfig<RuoloSummary>(tableCfg.columns);
+    return [{ key: 'idRuolo', header: 'Ruoli.Columns.Id', cellClass: 'font-mono text-xs' }];
   });
 
   ngOnInit(): void {
     this.system.setBreadcrumbs([{ label: 'Nav.Ruoli' }]);
+    const saved = this.listState.get<{ search: SearchState; sort: SortEvent | null }>(RuoliListComponent.STATE_KEY);
+    if (saved) {
+      if (saved.search) this.searchState.set(saved.search);
+      if (saved.sort) this.sort.set(saved.sort);
+    }
+    this.syncPillSort();
     this.reset();
   }
 
-  refresh(): void { this.reset(); }
-  onRowClick(r: Ruolo): void { this.router.navigate(['/ruoli', r.id]); }
-
-  onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+  /** Allinea sort/dir della search-pill al `sort` signal (dropdown ↔ tabella). */
+  private syncPillSort(): void {
+    const s = this.sort();
+    this.searchState.update((v) => ({ ...v, sort: s?.key ?? '', dir: s?.direction ?? 'desc' }));
   }
+
+  onSortChange(s: SortEvent): void {
+    this.sort.set(s);
+    this.syncPillSort();
+    this.reset();
+  }
+
+  refresh(): void {
+    this.reset();
+  }
+
   loadMore(): void {
     if (!this.canLoadMore()) return;
     this.page.update((p) => p + 1);
     this.fetch(true);
   }
 
+  onSearch(state: SearchState): void {
+    this.searchState.set(state);
+    // La search-pill può cambiare campo/direzione di ordinamento: rifletti nel sort della tabella.
+    if (state.sort) this.sort.set({ key: state.sort, direction: state.dir });
+    this.reset();
+  }
+
+  resetFilters(): void {
+    this.searchState.set(initialSearchState(this.searchFields()));
+    this.reset();
+  }
+
+  onViewModeChange(value: string): void {
+    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+  }
+
+  onRowClick(r: RuoloSummary): void {
+    if (r.idRuolo) this.router.navigate(['/ruoli', r.idRuolo]);
+  }
+
   private reset(): void {
+    this.listState.set(RuoliListComponent.STATE_KEY, { search: this.searchState(), sort: this.sort() }, this.rowConfig()?.persistState ?? false);
     this.page.set(1);
     this.rows.set([]);
     this.fetch(false);
@@ -144,25 +280,33 @@ export class RuoliListComponent implements OnInit {
   private fetch(append: boolean): void {
     this.loading.set(true);
     this.error.set(null);
+
+    const f = this.searchState().filters;
     const filters: RuoliListFilters = {
-      pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
+      page: this.page(),
+      limit: PAGE_SIZE,
+      sort: formatOrdinamento(this.sort()),
+      total: append ? undefined : true,
+      idRuolo: f[F.idRuolo] || undefined,
     };
+
     this.api
       .list(filters)
       .pipe(
         catchError((err) => {
-          const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
+          const msg = problemDetail(err, this.translate.instant('Common.LoadError'));
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of<Slice<RuoloSummary>>({ results: [] });
         })
       )
-      .subscribe((page) => {
-        const results = page.risultati ?? [];
+      .subscribe((slice) => {
+        const results = slice.results ?? [];
         if (append) this.rows.update((prev) => [...prev, ...results]);
         else this.rows.set(results);
-        this.total.set(page.numRisultati ?? 0);
+        const totalResults = slice.pagination?.totalResults;
+        if (totalResults != null) this.total.set(totalResults);
+        this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
   }

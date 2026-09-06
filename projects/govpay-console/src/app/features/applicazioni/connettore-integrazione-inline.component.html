@@ -1,0 +1,143 @@
+<lnk-inline-edit-card
+  [title]="'Applicazioni.Detail.ConnettoreIntegrazione' | translate"
+  [(editing)]="editing"
+  [saving]="saving()"
+  [canEdit]="!loading()"
+  [saveDisabled]="missingRequired()"
+  [statusTone]="statusTone()"
+  [statusLabel]="statusLabel()"
+  (save)="save()"
+  (cancel)="onCancel()"
+>
+  <div view>
+    @if (loading()) {
+      <lnk-loading [inline]="true" size="sm" labelKey="Common.Loading" />
+    } @else {
+      <lnk-info-grid [items]="viewItems()" />
+    }
+  </div>
+
+  <form edit [formGroup]="form" class="space-y-4">
+    <label class="flex items-center gap-2">
+      <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+      <span class="text-sm">{{ 'Applicazioni.Connettore.Stato' | translate }}</span>
+    </label>
+
+    <label class="flex flex-col gap-1">
+      <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.Url' | translate }}</span>
+      <input type="text" formControlName="url" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+    </label>
+
+    <div class="grid grid-cols-2 gap-3">
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">{{ 'Applicazioni.Connettore.Versione' | translate }}</span>
+        <lnk-select formControlName="versione" [options]="versioni" [allowEmpty]="true" placeholder="—" [ariaLabel]="'Applicazioni.Connettore.Versione' | translate" />
+        @if (form.controls.versione.invalid && form.controls.versione.touched) {
+          <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+        }</label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">{{ 'Applicazioni.Connettore.TipoAuth' | translate }}</span>
+        <lnk-select formControlName="tipoAutenticazione" [options]="tipiAuth" [allowEmpty]="true" placeholder="—" [ariaLabel]="'Applicazioni.Connettore.TipoAuth' | translate" />
+        @if (form.controls.tipoAutenticazione.invalid && form.controls.tipoAutenticazione.touched) {
+          <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+        }</label>
+    </div>
+
+    @if (authType() === 'HTTPBASIC') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Username</span>
+        <input type="text" formControlName="username" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+        @if (form.controls.username.invalid && form.controls.username.touched) {
+          <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+        }</label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Password</span>
+        <lnk-secret-input [formControl]="form.controls.credenziali.controls.password" />
+        @if (form.controls.credenziali.controls.password.invalid && form.controls.credenziali.controls.password.touched) {
+          <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+        }</label>
+    }
+
+    @if (authType() === 'SSL') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">SSL mode (client/server)</span>
+        <lnk-select formControlName="sslTipo" [options]="sslTipi" [allowEmpty]="false" [ariaLabel]="'SSL mode'" /></label>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl() && sslIsClient()">Keystore location</span>
+          <input type="text" formControlName="ksLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+          @if (form.controls.ksLocation.invalid && form.controls.ksLocation.touched) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+          }</label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl() && sslIsClient()">Keystore type</span>
+          <input type="text" formControlName="ksType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+          @if (form.controls.ksType.invalid && form.controls.ksType.touched) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+          }</label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Truststore location</span>
+          <input type="text" formControlName="tsLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+          @if (form.controls.tsLocation.invalid && form.controls.tsLocation.touched) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+          }</label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Truststore type</span>
+          <input type="text" formControlName="tsType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+          @if (form.controls.tsType.invalid && form.controls.tsType.touched) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+          }</label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">SSL type</span>
+          <input type="text" formControlName="sslType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+          @if (form.controls.sslType.invalid && form.controls.sslType.touched) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+          }</label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Keystore password</span>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.ksPassword" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Truststore password</span>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.tsPassword" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Key password</span>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.ksPKeyPasswd" /></label>
+      </div>
+    }
+
+    @if (authType() === 'HEADER') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Header name</span>
+        <input type="text" formControlName="headerName" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+        @if (form.controls.headerName.invalid && form.controls.headerName.touched) {
+          <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+        }</label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Header value</span>
+        <lnk-secret-input [formControl]="form.controls.credenziali.controls.headerValue" /></label>
+    }
+
+    @if (authType() === 'APIKEY') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">API id</span>
+        <input type="text" formControlName="apiId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+        @if (form.controls.apiId.invalid && form.controls.apiId.touched) {
+          <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+        }</label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">API key</span>
+        <lnk-secret-input [formControl]="form.controls.credenziali.controls.apiKey" /></label>
+    }
+
+    @if (authType() === 'OAUTH2') {
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Client id</span>
+          <input type="text" formControlName="clientId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+          @if (form.controls.clientId.invalid && form.controls.clientId.touched) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+          }</label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Client secret</span>
+          <lnk-secret-input [formControl]="form.controls.credenziali.controls.clientSecret" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">Scope</span>
+          <input type="text" formControlName="scope" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [class.lnk-required]="hasUrl()">Token endpoint URL</span>
+          <input type="text" formControlName="urlTokenEndpoint" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+          @if (form.controls.urlTokenEndpoint.invalid && form.controls.urlTokenEndpoint.touched) {
+            <span class="text-xs text-[var(--danger)]">{{ 'Common.Required' | translate }}</span>
+          }</label>
+      </div>
+    }
+
+    @if (authType()) {
+      <div class="grid grid-cols-2 gap-3 max-w-md">
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.ConnectTimeout' | translate }}</span>
+          <input type="number" formControlName="connectTimeoutMs" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Applicazioni.Connettore.ReadTimeout' | translate }}</span>
+          <input type="number" formControlName="readTimeoutMs" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      </div>
+    }
+  </form>
+</lnk-inline-edit-card>

@@ -25,7 +25,8 @@
           "type": "text",
           "field": "idA2A"
         },
-        "link": true
+        "link": true,
+        "sortable": true
       },
       {
         "key": "principal",
@@ -34,7 +35,8 @@
         "cell": {
           "type": "text",
           "field": "principal"
-        }
+        },
+        "sortable": true
       },
       {
         "key": "abilitato",

@@ -11,7 +11,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { type NavItem, filterNav, flattenMobile, NAV_ITEMS } from './nav';
-import type { AppConfig } from '@core/config';
+import type { AppConfig } from '@linkit/shared-ui';
 
 const cfg = (features: Record<string, boolean> = {}): AppConfig =>
   ({
@@ -60,6 +60,29 @@ describe('filterNav', () => {
 
   it('senza utente loggato mostra tutto (i guard proteggeranno)', () => {
     const items: NavItem[] = [{ label: 'X', icon: 'i', route: '/x', acl: ['hasConfig'] }];
+    expect(filterNav(items, cfg(), null).length).toBe(1);
+  });
+
+  it('un feature flag su una foglia disabilita il singolo menu (ricorsivo)', () => {
+    const items: NavItem[] = [
+      {
+        label: 'Gruppo',
+        icon: 'i',
+        children: [
+          { label: 'A', icon: 'i', route: '/a', feature: 'MENU_A' },
+          { label: 'B', icon: 'i', route: '/b' },
+        ],
+      },
+    ];
+    const out = filterNav(items, cfg({ MENU_A: false }), null);
+    const gruppo = out.find((i) => i.label === 'Gruppo');
+    expect(gruppo).toBeDefined();
+    expect(gruppo!.children?.find((c) => c.route === '/a')).toBeUndefined();
+    expect(gruppo!.children?.find((c) => c.route === '/b')).toBeDefined();
+  });
+
+  it('feature flag assente ⇒ foglia visibile (default)', () => {
+    const items: NavItem[] = [{ label: 'A', icon: 'i', route: '/a', feature: 'MENU_A' }];
     expect(filterNav(items, cfg(), null).length).toBe(1);
   });
 });

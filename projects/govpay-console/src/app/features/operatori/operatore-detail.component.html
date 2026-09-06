@@ -1,10 +1,18 @@
 <section class="space-y-4 pb-6 lnk-detail-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
-  <lnk-page-header [titleKey]="operatore()?.ragioneSociale || operatore()?.principal || '—'" subtitleKey="Operatori.Detail.Subtitle">
-    <a routerLink="/operatori" class="btn btn-secondary btn-sm">
-      <ng-icon name="bootstrapChevronLeft" size="1rem" />
-      <span>{{ 'Common.Back' | translate }}</span>
-    </a>
+  <lnk-page-header [titleKey]="operatore()?.nome || operatore()?.principal || '—'" subtitleKey="Operatori.Detail.Subtitle">
+    <div class="flex items-center gap-2">
+      @if (operatore(); as o) {
+        <a [routerLink]="['/operatori', o.principal, 'modifica']" class="btn btn-primary btn-sm">
+          <ng-icon name="bootstrapPencil" size="1rem" />
+          <span>{{ 'Operatori.Form.Modifica' | translate }}</span>
+        </a>
+      }
+      <a routerLink="/operatori" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </div>
   </lnk-page-header>
     @if (operatore()) {
       <div class="flex items-center gap-2">
@@ -16,11 +24,7 @@
   <div class="px-6 space-y-4">
 
   @if (error()) {
-    <lnk-empty-state
-      icon="bootstrapExclamationTriangle"
-      titleKey="Common.LoadError"
-      [descriptionKey]="error()!"
-    >
+    <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
       <a routerLink="/operatori" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
     </lnk-empty-state>
   } @else if (loading() && !operatore()) {
@@ -41,25 +45,35 @@
       </lnk-detail-section>
     }
 
-    @if (o.tipiPendenza && o.tipiPendenza.length > 0) {
+    @if (tipiPendenzaList().length > 0) {
       <lnk-detail-section titleKey="Operatori.Detail.TipiPendenza">
         <ul class="flex flex-wrap gap-2 text-sm">
-          @for (t of o.tipiPendenza; track t) {
+          @for (t of tipiPendenzaList(); track t) {
             <li class="rounded border border-[var(--border)] px-2 py-1 font-mono text-xs">{{ t }}</li>
           }
         </ul>
       </lnk-detail-section>
     }
 
-    @if (o.ruoli && o.ruoli.length > 0) {
+    @if (ruoliList().length > 0) {
       <lnk-detail-section titleKey="Operatori.Detail.Ruoli">
         <ul class="flex flex-wrap gap-2 text-sm">
-          @for (r of o.ruoli; track r) {
+          @for (r of ruoliList(); track r) {
             <li class="rounded border border-[var(--border)] px-2 py-1 text-xs">{{ r }}</li>
           }
         </ul>
       </lnk-detail-section>
     }
+
+    @if (o.acl && o.acl.length > 0) {
+      <lnk-detail-section titleKey="Operatori.Detail.Acl">
+        <lnk-acl-editor [acl]="o.acl" [disabled]="true" />
+      </lnk-detail-section>
+    }
+
+    <lnk-detail-section titleKey="Operatori.Detail.Password">
+      <lnk-set-password-card [submit]="setPassword" />
+    </lnk-detail-section>
   }
   </div>
 </section>

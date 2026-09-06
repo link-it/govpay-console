@@ -10,7 +10,7 @@
  */
 
 import type { AuthAcl } from '@core/auth';
-import type { AppConfig } from '@core/config';
+import type { AppConfig } from '@linkit/shared-ui';
 
 /**
  * Voce di navigazione della sidebar.
@@ -29,7 +29,14 @@ export interface NavItem {
   route?: string;
   /** Voci figlie: trasformano la voce in accordion (espanso) o flyout (collassato). */
   children?: NavItem[];
-  /** Nome del flag in `AppConfig.Features` che ne determina la visibilità. */
+  /**
+   * Nome del flag in `AppConfig.Features` che ne determina la visibilità.
+   *
+   * È il meccanismo config-driven di visibilità: applicato **ricorsivamente**
+   * da {@link filterNav} sia ai gruppi sia alle foglie, consente di
+   * abilitare/disabilitare **anche il singolo menu** assegnandogli un flag
+   * (nome-capability) e valorizzandolo in `AppConfig.Features` (mappa aperta).
+   */
   feature?: string;
   /** Permesso `AuthAcl` richiesto (almeno uno tra quelli elencati). */
   acl?: (keyof AuthAcl)[];
@@ -54,9 +61,9 @@ export const NAV_ITEMS: NavItem[] = [
     feature: 'GESTIONE_PAGAMENTI',
     mobile: true,
     children: [
-      { label: 'Nav.Pendenze', icon: 'bootstrapReceipt', route: '/pendenze', acl: ['hasPendenze', 'hasPagamentiePendenze'] },
-      { label: 'Nav.Ricevute', icon: 'bootstrapFileEarmarkText', route: '/ricevute' },
-      { label: 'Nav.Pagamenti', icon: 'bootstrapCreditCard2Front', route: '/pagamenti', acl: ['hasPagamenti', 'hasPagamentiePendenze'] },
+      { label: 'Nav.Pendenze', icon: 'bootstrapReceipt', route: '/pendenze', acl: ['hasPendenze', 'hasPagamentiePendenze'], feature: 'MENU_PENDENZE' },
+      { label: 'Nav.Ricevute', icon: 'bootstrapFileEarmarkText', route: '/ricevute', acl: ['hasPagamenti', 'hasPagamentiePendenze'], feature: 'MENU_RICEVUTE' },
+      { label: 'Nav.Pagamenti', icon: 'bootstrapCreditCard2Front', route: '/pagamenti', acl: ['hasPagamenti', 'hasPagamentiePendenze'], feature: 'MENU_PAGAMENTI' },
     ],
   },
   {
@@ -64,40 +71,53 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'bootstrapBank',
     feature: 'GESTIONE_RISCOSSIONI',
     children: [
-      { label: 'Nav.Riscossioni', icon: 'bootstrapBank', route: '/riscossioni', acl: ['hasRendiIncassi'] },
-      { label: 'Nav.Rendicontazioni', icon: 'bootstrapList', route: '/rendicontazioni', acl: ['hasRendiIncassi'] },
-      { label: 'Nav.Incassi', icon: 'bootstrapArchive', route: '/incassi', acl: ['hasRendiIncassi'] },
+      { label: 'Nav.Riscossioni', icon: 'bootstrapBank', route: '/riscossioni', acl: ['hasRendiIncassi'], feature: 'MENU_RISCOSSIONI' },
+      { label: 'Nav.Rendicontazioni', icon: 'bootstrapList', route: '/rendicontazioni', acl: ['hasRendiIncassi'], feature: 'MENU_RENDICONTAZIONI' },
+      { label: 'Nav.Incassi', icon: 'bootstrapArchive', route: '/incassi', acl: ['hasRendiIncassi'], feature: 'MENU_INCASSI' },
     ],
   },
   {
     label: 'Nav.Monitoraggio',
     icon: 'bootstrapClockHistory',
+    feature: 'GESTIONE_MONITORAGGIO',
     children: [
-      { label: 'Nav.GiornaleEventi', icon: 'bootstrapClockHistory', route: '/giornale-eventi', acl: ['hasGdE'] },
-      { label: 'Nav.Tracciati', icon: 'bootstrapFolder', route: '/tracciati' },
+      { label: 'Nav.GiornaleEventi', icon: 'bootstrapClockHistory', route: '/giornale-eventi', acl: ['hasGdE'], feature: 'MENU_GIORNALE_EVENTI' },
+      { label: 'Nav.Tracciati', icon: 'bootstrapFolder', route: '/tracciati', feature: 'MENU_TRACCIATI' },
     ],
   },
   {
     label: 'Nav.Anagrafiche',
     icon: 'bootstrapCollection',
+    feature: 'GESTIONE_ANAGRAFICHE',
     children: [
-      { label: 'Nav.Domini', icon: 'bootstrapBuilding', route: '/domini', acl: ['hasConfig'] },
-      { label: 'Nav.TipiPendenza', icon: 'bootstrapCollection', route: '/tipi-pendenza', acl: ['hasConfig'] },
-      { label: 'Nav.Applicazioni', icon: 'bootstrapShieldCheck', route: '/applicazioni', acl: ['hasApplicazioni'] },
-      { label: 'Nav.RegistroIntermediari', icon: 'bootstrapBank', route: '/registro-intermediari' },
+      { label: 'Nav.Intermediari', icon: 'bootstrapBank', route: '/intermediari', feature: 'MENU_INTERMEDIARI' },
+      { label: 'Nav.Domini', icon: 'bootstrapBuilding', route: '/domini', acl: ['hasConfig'], feature: 'MENU_DOMINI' },
+      { label: 'Nav.TipiPendenza', icon: 'bootstrapCollection', route: '/tipi-pendenza', acl: ['hasConfig'], feature: 'MENU_TIPI_PENDENZA' },
+      { label: 'Nav.Applicazioni', icon: 'bootstrapShieldCheck', route: '/applicazioni', acl: ['hasApplicazioni'], feature: 'MENU_APPLICAZIONI' },
+      { label: 'Nav.Entrate', icon: 'bootstrapArchive', route: '/entrate', acl: ['hasConfig'], feature: 'MENU_ENTRATE' },
     ],
   },
   {
     label: 'Nav.Sicurezza',
     icon: 'bootstrapPersonLock',
+    feature: 'GESTIONE_SICUREZZA',
     children: [
-      { label: 'Nav.Operatori', icon: 'bootstrapPerson', route: '/operatori', acl: ['hasConfig'] },
-      { label: 'Nav.Ruoli', icon: 'bootstrapPersonLock', route: '/ruoli', acl: ['hasRuoli'] },
+      { label: 'Nav.Operatori', icon: 'bootstrapPerson', route: '/operatori', acl: ['hasConfig'], feature: 'MENU_OPERATORI' },
+      { label: 'Nav.Ruoli', icon: 'bootstrapPersonLock', route: '/ruoli', acl: ['hasRuoli'], feature: 'MENU_RUOLI' },
+    ],
+  },
+  {
+    label: 'Nav.Manutenzione',
+    icon: 'bootstrapTools',
+    feature: 'GESTIONE_MANUTENZIONE',
+    children: [
+      { label: 'Nav.Operazioni', icon: 'bootstrapArrowRepeat', route: '/operazioni', feature: 'MENU_OPERAZIONI' },
     ],
   },
   {
     label: 'Nav.Impostazioni',
     icon: 'bootstrapGear',
+    feature: 'MENU_IMPOSTAZIONI',
     route: '/impostazioni',
     acl: ['hasSetting'],
     mobile: true,
@@ -105,10 +125,29 @@ export const NAV_ITEMS: NavItem[] = [
 ];
 
 /**
+ * `true` se la voce va nascosta a prescindere dai figli: feature flag disattivo
+ * (`AppConfig.Features`) o nessun permesso ACL concesso tra quelli richiesti.
+ */
+function isNavItemHidden(
+  item: NavItem,
+  appConfig: AppConfig | null,
+  acl: AuthAcl | null | undefined
+): boolean {
+  if (item.feature && appConfig?.Features?.[item.feature] === false) return true;
+  // La voce Impostazioni vive nel menu profilo per default: appare in sidebar
+  // solo con `Layout.settingsMenuPosition === 'sidebar'`.
+  if (item.route === '/impostazioni' && appConfig?.Layout?.settingsMenuPosition !== 'sidebar') return true;
+  if (item.acl && acl) return !item.acl.some((flag) => acl[flag] === true);
+  return false;
+}
+
+/**
  * Filtra l'albero di navigazione in base a feature flag (config tenant) e ACL utente.
  * Pure function, testabile.
  *
- * - Se una voce ha `feature` e il flag è `false`, viene rimossa (e con essa i figli).
+ * - Se una voce ha `feature` e il flag in `AppConfig.Features` è `false`, viene
+ *   rimossa (e con essa i figli). Il check è applicato **ricorsivamente**, quindi
+ *   vale sia per i gruppi sia per il **singolo menu** foglia che dichiara un `feature`.
  * - Se una voce ha `acl` e l'utente è loggato, almeno uno dei permessi deve essere `true`;
  *   se l'utente non è loggato (acl null), la voce resta visibile (la rotta è comunque protetta dal guard).
  * - Un nodo accordion senza route resta visibile solo se ha almeno un figlio visibile.
@@ -120,11 +159,7 @@ export function filterNav(
 ): NavItem[] {
   const out: NavItem[] = [];
   for (const item of items) {
-    if (item.feature && appConfig?.Features?.[item.feature] === false) continue;
-    if (item.acl && acl) {
-      const allowed = item.acl.some((flag) => acl[flag] === true);
-      if (!allowed) continue;
-    }
+    if (isNavItemHidden(item, appConfig, acl)) continue;
     let children: NavItem[] | undefined = undefined;
     if (item.children?.length) {
       children = filterNav(item.children, appConfig, acl);

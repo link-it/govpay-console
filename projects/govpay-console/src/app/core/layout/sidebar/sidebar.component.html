@@ -12,14 +12,15 @@
     [class.justify-center]="collapsed()"
   >
     @if (!collapsed()) {
-      <a [routerLink]="['/']" class="flex items-center gap-2 min-w-0">
+      <a [routerLink]="['/']" class="lnk-focus-ring flex items-center gap-2 min-w-0 rounded"
+        [attr.aria-label]="'Layout.Home' | translate" [title]="'Layout.Home' | translate">
         @if (logoFull()) {
           <img [src]="logoFull()" alt="" class="h-8 w-auto flex-shrink-0" />
         }
       </a>
       <button
         type="button"
-        class="ml-auto p-2 rounded hover:bg-[var(--sidebar-item-hover)]"
+        class="lnk-focus-ring ml-auto p-2 rounded hover:bg-[var(--sidebar-item-hover)]"
         (click)="toggle()"
         [attr.aria-label]="'Layout.CollapseSidebar' | translate"
         [title]="'Layout.CollapseSidebar' | translate"
@@ -29,7 +30,7 @@
     } @else {
       <button
         type="button"
-        class="p-2 rounded hover:bg-[var(--sidebar-item-hover)]"
+        class="lnk-focus-ring p-2 rounded hover:bg-[var(--sidebar-item-hover)]"
         (click)="toggle()"
         [attr.aria-label]="'Layout.ExpandSidebar' | translate"
         [title]="'Layout.ExpandSidebar' | translate"
@@ -119,7 +120,7 @@
 
     @if (showVersion() && !collapsed()) {
       <div class="px-1 pb-2 text-[10px] uppercase tracking-wide text-[var(--sidebar-text-secondary)]">
-        v{{ version }}@if (showBuild()) { <span class="opacity-70">· {{ gitHash }}</span> }
+        v{{ version }}@if (showBuild()) { <span>· {{ gitHash }}</span> }
       </div>
     }
   </div>

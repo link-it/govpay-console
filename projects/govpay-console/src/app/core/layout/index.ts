@@ -14,6 +14,4 @@ export * from './sidebar/sidebar.component';
 export * from './sidebar-mobile/sidebar-mobile.component';
 export * from './header-bar/header-bar.component';
 export * from './mobile-bottom-nav/mobile-bottom-nav.component';
-export * from './maintenance/maintenance.component';
-export * from './help-sidebar/help-sidebar.component';
 export * from './icons.config';

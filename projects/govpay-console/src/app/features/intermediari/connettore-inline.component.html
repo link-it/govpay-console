@@ -1,0 +1,145 @@
+<lnk-inline-edit-card
+  [title]="title()"
+  [(editing)]="editing"
+  [saving]="saving()"
+  [saveDisabled]="form.invalid"
+  [canEdit]="!loading()"
+  [statusTone]="statusTone()"
+  [statusLabel]="statusLabel()"
+  (save)="save()"
+  (cancel)="onCancel()"
+>
+  <!-- Vista -->
+  <div view>
+    @if (loading()) {
+      <lnk-loading [inline]="true" size="sm" labelKey="Common.Loading" />
+    } @else {
+      <lnk-info-grid [items]="viewItems()" />
+    }
+  </div>
+
+  <!-- Modifica -->
+  <form edit [formGroup]="form" autocomplete="off" class="space-y-4">
+    <!--
+      Campi civetta: Chrome riconosce la coppia utenza+segreto come form di
+      accesso e precompila i campi credenziali. Questi due input nascosti (resi
+      invisibili ma non con display none, altrimenti Chrome li ignora)
+      intercettano l'autofill al posto dei campi reali che seguono.
+    -->
+    <input
+      type="text"
+      name="lnk-decoy-username"
+      tabindex="-1"
+      aria-hidden="true"
+      autocomplete="username"
+      class="absolute h-0 w-0 opacity-0 pointer-events-none"
+    />
+    <input
+      type="password"
+      name="lnk-decoy-password"
+      tabindex="-1"
+      aria-hidden="true"
+      autocomplete="current-password"
+      class="absolute h-0 w-0 opacity-0 pointer-events-none"
+    />
+    <label class="flex items-center gap-2">
+      <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+      <span class="text-sm">{{ 'Intermediari.Connettori.Stato' | translate }}</span>
+    </label>
+
+    @if (isPagopa()) {
+      <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.UrlRpt' | translate }}</span>
+        <input type="text" formControlName="urlRPT" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+      </label>
+    } @else {
+      <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Url' | translate }}</span>
+        <input type="text" formControlName="url" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="checkbox" formControlName="abilitaGDE" class="h-4 w-4 accent-[var(--primary)]" />
+        <span class="text-sm">{{ 'Intermediari.Connettori.Form.AbilitaGDE' | translate }}</span>
+      </label>
+    }
+
+    <div formGroupName="auth" class="space-y-4 rounded-lg border border-[var(--border)] p-4">
+      <div class="text-sm font-semibold">{{ 'Intermediari.Connettori.Form.Auth' | translate }}</div>
+      <label class="flex flex-col gap-1 max-w-xs">
+        <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.TipoAuth' | translate }}</span>
+        <lnk-select formControlName="tipoAutenticazione" [options]="tipiAuth" [allowEmpty]="false" [ariaLabel]="'Intermediari.Connettori.TipoAuth' | translate" />
+      </label>
+
+      @if (authType() === 'HTTPBASIC') {
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Username' | translate }}</span>
+          <input type="text" formControlName="username" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      }
+      @if (authType() === 'HEADER') {
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.HeaderName' | translate }}</span>
+          <input type="text" formControlName="headerName" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      }
+      @if (authType() === 'APIKEY') {
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ApiId' | translate }}</span>
+          <input type="text" formControlName="apiId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      }
+      @if (authType() === 'OAUTH2') {
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ClientId' | translate }}</span>
+          <input type="text" formControlName="clientId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Scope' | translate }}</span>
+          <input type="text" formControlName="scope" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.UrlTokenEndpoint' | translate }}</span>
+          <input type="text" formControlName="urlTokenEndpoint" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      }
+      @if (authType() === 'SSL') {
+        <label class="flex flex-col gap-1 max-w-xs"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Ssl' | translate }}</span>
+          <lnk-select formControlName="sslTipo" [options]="sslTipi" [allowEmpty]="false" [ariaLabel]="'Intermediari.Connettori.Form.Ssl' | translate" /></label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeystoreLocation' | translate }}</span>
+            <input type="text" formControlName="ksLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeystoreType' | translate }}</span>
+            <input type="text" formControlName="ksType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.TruststoreLocation' | translate }}</span>
+            <input type="text" formControlName="tsLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.TruststoreType' | translate }}</span>
+            <input type="text" formControlName="tsType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+        </div>
+      }
+    </div>
+
+    @if (authType() !== 'NONE') {
+      <div formGroupName="credenziali" class="space-y-4 rounded-lg border border-[var(--border)] p-4">
+        <div class="text-sm font-semibold">{{ 'Intermediari.Connettori.Form.Credenziali' | translate }}</div>
+        <p class="text-xs text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.CredenzialiHint' | translate }}</p>
+
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.SubscriptionKey' | translate }}</span>
+          <lnk-secret-input formControlName="subscriptionKey" [ariaLabel]="'Intermediari.Connettori.Form.SubscriptionKey' | translate" /></label>
+        @if (authType() === 'HTTPBASIC') {
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.Password' | translate }}</span>
+            <lnk-secret-input formControlName="password" [ariaLabel]="'Intermediari.Connettori.Form.Password' | translate" /></label>
+        }
+        @if (authType() === 'HEADER') {
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.HeaderValue' | translate }}</span>
+            <lnk-secret-input formControlName="headerValue" [ariaLabel]="'Intermediari.Connettori.Form.HeaderValue' | translate" /></label>
+        }
+        @if (authType() === 'APIKEY') {
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ApiKey' | translate }}</span>
+            <lnk-secret-input formControlName="apiKey" [ariaLabel]="'Intermediari.Connettori.Form.ApiKey' | translate" /></label>
+        }
+        @if (authType() === 'OAUTH2') {
+          <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.ClientSecret' | translate }}</span>
+            <lnk-secret-input formControlName="clientSecret" [ariaLabel]="'Intermediari.Connettori.Form.ClientSecret' | translate" /></label>
+        }
+        @if (authType() === 'SSL') {
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeystorePassword' | translate }}</span>
+              <lnk-secret-input formControlName="ksPassword" [ariaLabel]="'Intermediari.Connettori.Form.KeystorePassword' | translate" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.TruststorePassword' | translate }}</span>
+              <lnk-secret-input formControlName="tsPassword" [ariaLabel]="'Intermediari.Connettori.Form.TruststorePassword' | translate" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Intermediari.Connettori.Form.KeyPassword' | translate }}</span>
+              <lnk-secret-input formControlName="ksPKeyPasswd" [ariaLabel]="'Intermediari.Connettori.Form.KeyPassword' | translate" /></label>
+          </div>
+        }
+      </div>
+    }
+  </form>
+</lnk-inline-edit-card>

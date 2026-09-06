@@ -18,25 +18,16 @@ export const RICEVUTE_ROUTES: Routes = [
       import('./ricevute-list.component').then((m) => m.RicevuteListComponent),
   },
   {
-    // CCP opzionale: GovPay accetta IUV-only quando il CCP non è disponibile.
-    path: ':idDominio/:iuv/:ccp',
+    // V2: la RT è identificata dalla tupla (idDominio, iuv, idRicevuta).
+    path: ':idDominio/:iuv/:idRicevuta',
     loadComponent: () =>
       import('./ricevuta-detail.component').then((m) => m.RicevutaDetailComponent),
   },
   {
-    path: ':idDominio/:iuv',
+    // Drilldown annidato alla pendenza collegata: il detail pendenza rileva il
+    // padre dal `router.url` e imposta back + breadcrumb verso la ricevuta.
+    path: ':idDominio/:iuv/:idRicevuta/pendenza/:idA2A/:idPendenza',
     loadComponent: () =>
-      import('./ricevuta-detail.component').then((m) => m.RicevutaDetailComponent),
-  },
-  {
-    // Drilldown su evento dal tab Eventi del dettaglio ricevuta.
-    path: ':idDominio/:iuv/:ccp/eventi/:id',
-    loadComponent: () =>
-      import('../giornale-eventi/evento-detail.component').then((m) => m.EventoDetailComponent),
-  },
-  {
-    path: ':idDominio/:iuv/eventi/:id',
-    loadComponent: () =>
-      import('../giornale-eventi/evento-detail.component').then((m) => m.EventoDetailComponent),
+      import('../pendenze/pendenza-detail.component').then((m) => m.PendenzaDetailComponent),
   },
 ];

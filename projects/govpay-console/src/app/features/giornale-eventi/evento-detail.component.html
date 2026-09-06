@@ -6,10 +6,11 @@
       <span>{{ backLabelKey() | translate }}</span>
     </a>
   </lnk-page-header>
-    @if (evento()) {
+    @if (evento(); as e) {
       <div class="flex items-center gap-2">
         <lnk-status-badge [tone]="esitoTone()" [labelKey]="esitoLabelKey()" />
       </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
     }
   </div>
 
@@ -27,24 +28,80 @@
     <lnk-loading />
   } @else if (evento(); as e) {
 
-    <lnk-detail-section titleKey="GiornaleEventi.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
-    </lnk-detail-section>
+    @if (activeTab() === 'dati') {
+      <lnk-detail-section titleKey="GiornaleEventi.Detail.Generali">
+        <lnk-info-grid [items]="generaliItems()" />
+      </lnk-detail-section>
 
-    <lnk-detail-section titleKey="GiornaleEventi.Detail.Riferimenti">
-      <lnk-info-grid [items]="riferimentiItems()" />
-    </lnk-detail-section>
-
-    @if (e.parametriRichiesta) {
-      <lnk-detail-section titleKey="GiornaleEventi.Detail.ParametriRichiesta">
-        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRichiesta) }}</pre>
+      <lnk-detail-section titleKey="GiornaleEventi.Detail.Riferimenti">
+        <lnk-info-grid [items]="riferimentiItems()" />
       </lnk-detail-section>
     }
 
-    @if (e.parametriRisposta) {
-      <lnk-detail-section titleKey="GiornaleEventi.Detail.ParametriRisposta">
-        <pre class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ formatJson(e.parametriRisposta) }}</pre>
-      </lnk-detail-section>
+    @if (activeTab() === 'richiesta') {
+      @if (richiestaLoading() && !richiesta()) {
+        <lnk-loading />
+      } @else if (richiesta(); as req) {
+        <lnk-detail-section titleKey="GiornaleEventi.Detail.Headers">
+          @if (req.headers.length) {
+            <div class="overflow-x-auto rounded border border-[var(--border)]" lnkScrollableRegionFocusable>
+              <table class="w-full text-xs">
+                <tbody>
+                  @for (h of req.headers; track h.nome) {
+                    <tr class="border-b border-[var(--border)] last:border-0">
+                      <td class="px-3 py-1.5 font-mono font-medium align-top whitespace-nowrap">{{ h.nome }}</td>
+                      <td class="px-3 py-1.5 font-mono break-all" [class.italic]="h.redatto">{{ h.valore }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="text-sm text-[var(--muted-foreground)]">{{ 'GiornaleEventi.Detail.NoHeaders' | translate }}</p>
+          }
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="GiornaleEventi.Detail.Payload">
+          @if (req.payload) {
+            <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ req.payload }}</pre>
+          } @else {
+            <p class="text-sm text-[var(--muted-foreground)]">{{ 'GiornaleEventi.Detail.NoPayload' | translate }}</p>
+          }
+        </lnk-detail-section>
+      }
+    }
+
+    @if (activeTab() === 'risposta') {
+      @if (rispostaLoading() && !risposta()) {
+        <lnk-loading />
+      } @else if (risposta(); as res) {
+        <lnk-detail-section titleKey="GiornaleEventi.Detail.Headers">
+          @if (res.headers.length) {
+            <div class="overflow-x-auto rounded border border-[var(--border)]" lnkScrollableRegionFocusable>
+              <table class="w-full text-xs">
+                <tbody>
+                  @for (h of res.headers; track h.nome) {
+                    <tr class="border-b border-[var(--border)] last:border-0">
+                      <td class="px-3 py-1.5 font-mono font-medium align-top whitespace-nowrap">{{ h.nome }}</td>
+                      <td class="px-3 py-1.5 font-mono break-all" [class.italic]="h.redatto">{{ h.valore }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="text-sm text-[var(--muted-foreground)]">{{ 'GiornaleEventi.Detail.NoHeaders' | translate }}</p>
+          }
+        </lnk-detail-section>
+
+        <lnk-detail-section titleKey="GiornaleEventi.Detail.Payload">
+          @if (res.payload) {
+            <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ res.payload }}</pre>
+          } @else {
+            <p class="text-sm text-[var(--muted-foreground)]">{{ 'GiornaleEventi.Detail.NoPayload' | translate }}</p>
+          }
+        </lnk-detail-section>
+      }
     }
   }
   </div>

@@ -19,8 +19,8 @@ import {
   type AuthUser,
   type ProfiloResponse,
 } from '../models/auth.model';
-import type { AuthMode } from '../../config/app-config.model';
-import { ConfigService } from '@core/config';
+import type { AuthMode } from '@linkit/shared-ui';
+import { ConfigService } from '@linkit/shared-ui';
 import { AuthApi } from './auth.api';
 
 const AUTH_STORAGE_KEY = 'lnk-auth';
@@ -82,6 +82,38 @@ export class AuthService {
       this.rehydrating = this.tryRehydrate();
     }
     return this.rehydrating;
+  }
+
+  /** In-flight singleton della ri-validazione post-401 (anti-loop/anti-race). */
+  private revalidating: Promise<boolean> | null = null;
+
+  /**
+   * Ri-verifica la sessione dopo un 401 su una richiesta di feature. `/profilo`
+   * gira sulla **stessa sessione cookie** delle feature, quindi è l'arbitro:
+   * - 200 → sessione ancora valida: riallinea `user` e resta autenticato (`true`).
+   *   Evita il falso "Accedi" quando il 401 era transitorio (es. XSRF/endpoint).
+   * - 401/errore → sessione davvero scaduta: `clear()` e ritorna `false` (il
+   *   chiamante redirige a login).
+   *
+   * NB: non esiste un refresh-token lato BE, quindi qui si ri-valida, non si
+   * rinnova. Le chiamate concorrenti sono deduplicate.
+   */
+  async revalidate(): Promise<boolean> {
+    if (this.revalidating) return this.revalidating;
+    this.revalidating = (async () => {
+      try {
+        const user = await firstValueFrom(this.api.getProfile());
+        this._state.update((s) => ({ ...s, user, error: null }));
+        this._rehydrated.set(true);
+        return true;
+      } catch {
+        this.clear();
+        return false;
+      } finally {
+        this.revalidating = null;
+      }
+    })();
+    return this.revalidating;
   }
 
   private async tryRehydrate(): Promise<boolean> {

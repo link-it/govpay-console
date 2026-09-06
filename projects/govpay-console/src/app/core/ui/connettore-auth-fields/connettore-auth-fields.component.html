@@ -1,0 +1,78 @@
+<div [formGroup]="authGroup()" class="space-y-4 rounded-lg border border-[var(--border)] p-4">
+  <div class="text-sm font-semibold">{{ 'ConnettoreAuth.Auth' | translate }}</div>
+  <label class="flex flex-col gap-1 max-w-xs">
+    <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.TipoAuth' | translate }}</span>
+    <lnk-select formControlName="tipoAutenticazione" [options]="tipiAuth" [allowEmpty]="false" [ariaLabel]="'ConnettoreAuth.TipoAuth' | translate" />
+  </label>
+
+  @if (authType() === 'HTTPBASIC') {
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.Username' | translate }}</span>
+      <input type="text" formControlName="username" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+  }
+  @if (authType() === 'HEADER') {
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.HeaderName' | translate }}</span>
+      <input type="text" formControlName="headerName" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+  }
+  @if (authType() === 'APIKEY') {
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.ApiId' | translate }}</span>
+      <input type="text" formControlName="apiId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+  }
+  @if (authType() === 'OAUTH2') {
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.ClientId' | translate }}</span>
+      <input type="text" formControlName="clientId" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.Scope' | translate }}</span>
+      <input type="text" formControlName="scope" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.UrlTokenEndpoint' | translate }}</span>
+      <input type="text" formControlName="urlTokenEndpoint" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+  }
+  @if (authType() === 'SSL') {
+    <label class="flex flex-col gap-1 max-w-xs"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.Ssl' | translate }}</span>
+      <lnk-select formControlName="sslTipo" [options]="sslTipi" [allowEmpty]="false" [ariaLabel]="'ConnettoreAuth.Ssl' | translate" /></label>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.KeystoreLocation' | translate }}</span>
+        <input type="text" formControlName="ksLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.KeystoreType' | translate }}</span>
+        <input type="text" formControlName="ksType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.TruststoreLocation' | translate }}</span>
+        <input type="text" formControlName="tsLocation" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.TruststoreType' | translate }}</span>
+        <input type="text" formControlName="tsType" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+    </div>
+  }
+</div>
+
+@if (authType() !== 'NONE') {
+  <div [formGroup]="credenzialiGroup()" autocomplete="off" class="mt-4 space-y-4 rounded-lg border border-[var(--border)] p-4">
+    <div class="text-sm font-semibold">{{ 'ConnettoreAuth.Credenziali' | translate }}</div>
+    <p class="text-xs text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.CredenzialiHint' | translate }}</p>
+
+    <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.SubscriptionKey' | translate }}</span>
+      <lnk-secret-input formControlName="subscriptionKey" [ariaLabel]="'ConnettoreAuth.SubscriptionKey' | translate" /></label>
+    @if (authType() === 'HTTPBASIC') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.Password' | translate }}</span>
+        <lnk-secret-input formControlName="password" [ariaLabel]="'ConnettoreAuth.Password' | translate" /></label>
+    }
+    @if (authType() === 'HEADER') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.HeaderValue' | translate }}</span>
+        <lnk-secret-input formControlName="headerValue" [ariaLabel]="'ConnettoreAuth.HeaderValue' | translate" /></label>
+    }
+    @if (authType() === 'APIKEY') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.ApiKey' | translate }}</span>
+        <lnk-secret-input formControlName="apiKey" [ariaLabel]="'ConnettoreAuth.ApiKey' | translate" /></label>
+    }
+    @if (authType() === 'OAUTH2') {
+      <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.ClientSecret' | translate }}</span>
+        <lnk-secret-input formControlName="clientSecret" [ariaLabel]="'ConnettoreAuth.ClientSecret' | translate" /></label>
+    }
+    @if (authType() === 'SSL') {
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.KeystorePassword' | translate }}</span>
+          <lnk-secret-input formControlName="ksPassword" [ariaLabel]="'ConnettoreAuth.KeystorePassword' | translate" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.TruststorePassword' | translate }}</span>
+          <lnk-secret-input formControlName="tsPassword" [ariaLabel]="'ConnettoreAuth.TruststorePassword' | translate" /></label>
+        <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'ConnettoreAuth.KeyPassword' | translate }}</span>
+          <lnk-secret-input formControlName="ksPKeyPasswd" [ariaLabel]="'ConnettoreAuth.KeyPassword' | translate" /></label>
+      </div>
+    }
+  </div>
+}

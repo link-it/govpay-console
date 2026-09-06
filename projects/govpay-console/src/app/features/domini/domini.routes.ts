@@ -17,7 +17,16 @@ export const DOMINI_ROUTES: Routes = [
     loadComponent: () => import('./domini-list.component').then((m) => m.DominiListComponent),
   },
   {
+    // `nuovo` prima di `:idDominio` per non essere catturato dal wildcard param.
+    path: 'nuovo',
+    loadComponent: () => import('./dominio-form.component').then((m) => m.DominioFormComponent),
+  },
+  {
     path: ':idDominio',
     loadComponent: () => import('./dominio-detail.component').then((m) => m.DominioDetailComponent),
+  },
+  {
+    path: ':idDominio/modifica',
+    loadComponent: () => import('./dominio-form.component').then((m) => m.DominioFormComponent),
   },
 ];

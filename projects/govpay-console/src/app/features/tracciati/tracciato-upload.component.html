@@ -1,0 +1,47 @@
+<div class="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-4 space-y-3">
+  <div class="flex items-center justify-between">
+    <h3 class="text-sm font-semibold">{{ 'Tracciati.Upload.Titolo' | translate }}</h3>
+    <button type="button" class="btn btn-ghost btn-icon btn-sm" (click)="onCancel()" [attr.aria-label]="'Common.Close' | translate">
+      <ng-icon name="bootstrapX" size="1.1rem" />
+    </button>
+  </div>
+
+  <div class="flex flex-wrap items-end gap-3">
+    <label class="flex flex-col gap-1 text-sm">
+      <span class="text-[var(--muted-foreground)]">{{ 'Tracciati.Upload.File' | translate }}</span>
+      <input type="file" accept=".json,.csv" (change)="onFileChange($event)"
+        class="text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[var(--muted)] file:px-3 file:py-1.5 file:text-sm" />
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm">
+      <span class="text-[var(--muted-foreground)]">
+        {{ 'Tracciati.Upload.Dominio' | translate }}
+        @if (dominioRequired()) { <span class="text-[var(--danger)]">*</span> }
+      </span>
+      <lnk-select
+        class="block min-w-[14rem]"
+        [ngModel]="idDominio()"
+        (ngModelChange)="idDominio.set($event)"
+        [options]="dominioOptions()"
+        [placeholder]="'Tracciati.Upload.DominioPlaceholder' | translate"
+        [ariaLabel]="'Tracciati.Upload.Dominio' | translate"
+      />
+    </label>
+
+    @if (formato(); as f) {
+      <span class="rounded-md bg-[var(--muted)] px-2 py-1 text-xs font-mono self-center">{{ f }}</span>
+    }
+  </div>
+
+  @if (dominioRequired() && !idDominio()) {
+    <p class="text-xs text-[var(--muted-foreground)]">{{ 'Tracciati.Upload.DominioCsvHint' | translate }}</p>
+  }
+
+  <div class="flex items-center gap-2">
+    <button type="button" class="btn btn-primary btn-sm" (click)="submit()" [disabled]="!canSubmit()">
+      <ng-icon name="bootstrapUpload" size="1rem" />
+      <span>{{ (submitting() ? 'Tracciati.Upload.InCorso' : 'Tracciati.Upload.Carica') | translate }}</span>
+    </button>
+    <button type="button" class="btn btn-ghost btn-sm" (click)="onCancel()">{{ 'Common.Cancel' | translate }}</button>
+  </div>
+</div>

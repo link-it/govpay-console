@@ -331,6 +331,19 @@ a {
   }
 }
 
+/* Marca il label di un campo obbligatorio con un asterisco danger. */
+.lnk-required::after {
+  content: " *";
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Evidenzia una card inline (lnk-inline-edit-card) mentre è in modifica. */
+.lnk-inline-card--editing {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
 /* Scrollbar sottile riusabile */
 .scrollbar-thin {
   scrollbar-width: thin;
@@ -421,6 +434,11 @@ a {
   margin-right: auto;
 }
 
+/* Unità tipo→template della maschera tipi pendenza (lnk-template-unit). */
+.lnk-tu--off {
+  background: var(--muted);
+}
+
 /* ==========================================================================
    LINK HOVER — colore primary in hover/focus per link breadcrumb,
    celle link del data-table e altre azioni testuali "secondarie".
@@ -433,6 +451,16 @@ a {
 .lnk-link-hover:hover,
 .lnk-link-hover:focus-visible {
   color: var(--primary);
+}
+
+/* ==========================================================================
+   FOCUS RING — anello di focus tematico (segue `--ring`) per elementi
+   interattivi senza stile `.btn` (voci sidebar, item del menu profilo, ...).
+   Inset per non essere clippato dai container con overflow.
+   ========================================================================== */
+.lnk-focus-ring:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
 }
 
 /* ==========================================================================

@@ -13,14 +13,11 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from '@core/layout';
 import { aclGuard, authGuard, maintenanceGuard } from '@core/auth';
 
-const placeholder = () =>
-  import('@core/ui/placeholder/placeholder.component').then((m) => m.PlaceholderComponent);
-
 export const routes: Routes = [
   {
     path: 'maintenance',
     loadComponent: () =>
-      import('@core/layout/maintenance/maintenance.component').then((m) => m.MaintenanceComponent),
+      import('@linkit/shared-ui').then((m) => m.MaintenanceComponent),
   },
   {
     path: '',
@@ -74,6 +71,11 @@ export const routes: Routes = [
         loadChildren: () => import('@feature/tracciati').then((m) => m.TRACCIATI_ROUTES),
       },
       {
+        path: 'operazioni',
+        canActivate: [authGuard],
+        loadChildren: () => import('@feature/operazioni').then((m) => m.OPERAZIONI_ROUTES),
+      },
+      {
         path: 'domini',
         canActivate: [aclGuard('hasConfig')],
         loadChildren: () => import('@feature/domini').then((m) => m.DOMINI_ROUTES),
@@ -83,7 +85,11 @@ export const routes: Routes = [
         canActivate: [aclGuard('hasConfig')],
         loadChildren: () => import('@feature/tipi-pendenza').then((m) => m.TIPI_PENDENZA_ROUTES),
       },
-      // Sezioni placeholder (label è chiave i18n, vedi `placeholder.component.ts`)
+      {
+        path: 'entrate',
+        canActivate: [aclGuard('hasConfig')],
+        loadChildren: () => import('@feature/entrate').then((m) => m.ENTRATE_ROUTES),
+      },
       {
         path: 'applicazioni',
         canActivate: [aclGuard('hasApplicazioni')],
@@ -100,8 +106,8 @@ export const routes: Routes = [
         loadChildren: () => import('@feature/ruoli').then((m) => m.RUOLI_ROUTES),
       },
       {
-        path: 'registro-intermediari',
-        canActivate: [authGuard],
+        path: 'intermediari',
+        canActivate: [aclGuard('hasPagoPA')],
         loadChildren: () => import('@feature/intermediari').then((m) => m.INTERMEDIARI_ROUTES),
       },
       {

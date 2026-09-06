@@ -13,8 +13,8 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ConfigService } from '@core/config';
-import { SystemFacade } from '@core/system';
+import { ConfigService } from '@linkit/shared-ui';
+import { SystemFacade } from '@linkit/shared-ui';
 import { AuthService } from '@core/auth';
 import { NAV_ITEMS, filterNav } from '../nav';
 import { SidebarItemComponent } from '../sidebar/sidebar-item.component';

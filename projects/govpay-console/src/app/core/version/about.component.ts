@@ -22,21 +22,21 @@ import { VERSION, getFullVersion } from '@environments';
     <section class="p-6 max-w-2xl">
       <h2 class="text-xl font-semibold mb-4">{{ 'About.Title' | translate }}</h2>
       <dl class="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
-        <dt class="font-medium opacity-70">{{ 'About.Version' | translate }}</dt>
+        <dt class="font-medium text-[var(--muted-foreground)]">{{ 'About.Version' | translate }}</dt>
         <dd>{{ fullVersion }}</dd>
-        <dt class="font-medium opacity-70">{{ 'About.Build' | translate }}</dt>
+        <dt class="font-medium text-[var(--muted-foreground)]">{{ 'About.Build' | translate }}</dt>
         <dd>{{ version.buildDate }}</dd>
-        <dt class="font-medium opacity-70">{{ 'About.Branch' | translate }}</dt>
+        <dt class="font-medium text-[var(--muted-foreground)]">{{ 'About.Branch' | translate }}</dt>
         <dd>{{ version.gitBranch }}</dd>
-        <dt class="font-medium opacity-70">{{ 'About.Commit' | translate }}</dt>
+        <dt class="font-medium text-[var(--muted-foreground)]">{{ 'About.Commit' | translate }}</dt>
         <dd class="font-mono">{{ version.gitHashFull }}</dd>
         @if (version.gitTag) {
-          <dt class="font-medium opacity-70">{{ 'About.Tag' | translate }}</dt>
+          <dt class="font-medium text-[var(--muted-foreground)]">{{ 'About.Tag' | translate }}</dt>
           <dd>{{ version.gitTag }}</dd>
         }
         @if (version.gitDirty) {
-          <dt class="font-medium opacity-70">{{ 'About.Status' | translate }}</dt>
-          <dd class="text-[var(--warning)]">{{ 'About.Dirty' | translate }}</dd>
+          <dt class="font-medium text-[var(--muted-foreground)]">{{ 'About.Status' | translate }}</dt>
+          <dd class="text-[var(--status-warning-text)]">{{ 'About.Dirty' | translate }}</dd>
         }
       </dl>
     </section>

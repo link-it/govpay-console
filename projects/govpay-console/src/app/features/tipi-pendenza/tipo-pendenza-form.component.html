@@ -1,0 +1,240 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header
+      [titleKey]="isEdit() ? 'TipiPendenza.Form.ModificaTitolo' : 'TipiPendenza.Form.NuovoTitolo'"
+      subtitleKey="TipiPendenza.Form.Subtitle"
+    >
+      <a [routerLink]="backLink()" [queryParams]="isEdit() ? { tab: activeTab() } : null" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Cancel' | translate }}</span>
+      </a>
+    </lnk-page-header>
+    @if (!loading()) {
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" variant="segmented" />
+    }
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-5">
+
+        <!-- ── Dati ─────────────────────────────────────────────── -->
+        <div [hidden]="activeTab() !== 'dati'">
+          <lnk-detail-section titleKey="TipiPendenza.Detail.Generali">
+            <div class="space-y-5">
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idTipoPendenza">{{ 'TipiPendenza.Detail.IdTipoPendenza' | translate }}</span>
+                <input type="text" formControlName="idTipoPendenza" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60" />
+                @if (form.controls.idTipoPendenza.touched && form.controls.idTipoPendenza.invalid) {
+                  <span class="text-xs text-[var(--danger)]">{{ 'TipiPendenza.Form.Obbligatorio' | translate }}</span>
+                }
+              </label>
+              <label class="flex flex-col gap-1">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.descrizione">{{ 'TipiPendenza.Detail.Descrizione' | translate }}</span>
+                <input type="text" formControlName="descrizione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                @if (form.controls.descrizione.touched && form.controls.descrizione.invalid) {
+                  <span class="text-xs text-[var(--danger)]">{{ 'TipiPendenza.Form.Obbligatorio' | translate }}</span>
+                }
+              </label>
+              <label class="flex flex-col gap-1 max-w-xs">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Detail.CodificaIUV' | translate }}</span>
+                <input type="text" formControlName="codificaIUV" placeholder="{{ 'TipiPendenza.Form.CodificaIUVPlaceholder' | translate }}" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                @if (form.controls.codificaIUV.touched && form.controls.codificaIUV.invalid) {
+                  <span class="text-xs text-[var(--danger)]">{{ 'TipiPendenza.Form.CodificaIUVNonValida' | translate }}</span>
+                }
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="pagaTerzi" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'TipiPendenza.Detail.PagaTerzi' | translate }}</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'TipiPendenza.Detail.Abilitato' | translate }}</span>
+              </label>
+            </div>
+          </lnk-detail-section>
+        </div>
+
+        <!-- ── Portale backoffice (unità tipo→template) ─────────── -->
+        <div [hidden]="activeTab() !== 'backoffice'" formGroupName="portaleBackoffice">
+          @let bkc = form.controls.portaleBackoffice.controls;
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabPortaleBackoffice">
+            <div class="space-y-5">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'TipiPendenza.Config.Abilitato' | translate }}</span>
+              </label>
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.FormInserimento"
+                purposeKey="TipiPendenza.Config.FormInserimentoHint"
+                icon="bootstrapFileEarmarkCode"
+                [tipo]="bkc.formTipo"
+                [tipoOptions]="formTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoLayout"
+                [content]="bkc.formDefinizione"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Validazione"
+                icon="bootstrapShieldCheck"
+                [content]="bkc.validazione"
+                fixedFormat="json"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Trasformazione"
+                icon="bootstrapArrowRight"
+                [tipo]="bkc.trasformazioneTipo"
+                [tipoOptions]="trasformazioneTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoTemplate"
+                [content]="bkc.trasformazioneDefinizione"
+                codeFormat="auto"
+              />
+
+              <div class="flex flex-col gap-1 max-w-xs">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Inoltro' | translate }}</span>
+                <lnk-select
+                  formControlName="inoltro"
+                  [options]="applicazioniOptions()"
+                  [placeholder]="'TipiPendenza.Config.Nessuno' | translate"
+                  [ariaLabel]="'TipiPendenza.Config.Inoltro' | translate"
+                  searchable
+                />
+              </div>
+            </div>
+          </lnk-detail-section>
+        </div>
+
+        <!-- ── Portale pagamento (pilota: unità tipo→template) ───── -->
+        <div [hidden]="activeTab() !== 'pagamento'" formGroupName="portalePagamento">
+          @let pgc = form.controls.portalePagamento.controls;
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabPortalePagamento">
+            <div class="space-y-5">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
+                <span class="text-sm">{{ 'TipiPendenza.Config.Abilitato' | translate }}</span>
+              </label>
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.FormInserimento"
+                purposeKey="TipiPendenza.Config.FormInserimentoHint"
+                icon="bootstrapFileEarmarkCode"
+                [tipo]="pgc.formTipo"
+                [tipoOptions]="formTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoLayout"
+                [content]="pgc.formDefinizione"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Impaginazione"
+                icon="bootstrapFileEarmarkCode"
+                [content]="pgc.formImpaginazione!"
+                fixedFormat="json"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Validazione"
+                icon="bootstrapShieldCheck"
+                [content]="pgc.validazione"
+                fixedFormat="json"
+                codeFormat="json"              />
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Trasformazione"
+                icon="bootstrapArrowRight"
+                [tipo]="pgc.trasformazioneTipo"
+                [tipoOptions]="trasformazioneTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoTemplate"
+                [content]="pgc.trasformazioneDefinizione"
+                codeFormat="auto"
+              />
+
+              <div class="flex flex-col gap-1 max-w-xs">
+                <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Inoltro' | translate }}</span>
+                <lnk-select
+                  formControlName="inoltro"
+                  [options]="applicazioniOptions()"
+                  [placeholder]="'TipiPendenza.Config.Nessuno' | translate"
+                  [ariaLabel]="'TipiPendenza.Config.Inoltro' | translate"
+                  searchable
+                />
+              </div>
+            </div>
+          </lnk-detail-section>
+        </div>
+
+        <!-- ── Avvisatura email ─────────────────────────────────── -->
+        <div [hidden]="activeTab() !== 'avvMail'">
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabAvvisaturaMail">
+            <div class="space-y-6">
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaAvviso" titleKey="TipiPendenza.Config.PromemoriaAvviso" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaScadenza" titleKey="TipiPendenza.Config.PromemoriaScadenza" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaRicevuta" titleKey="TipiPendenza.Config.PromemoriaRicevuta" />
+            </div>
+          </lnk-detail-section>
+        </div>
+
+        <!-- ── Avvisatura App IO ────────────────────────────────── -->
+        <div [hidden]="activeTab() !== 'avvAppIO'">
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabAvvisaturaAppIO">
+            <div class="space-y-6">
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaAvviso" titleKey="TipiPendenza.Config.PromemoriaAvviso" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaScadenza" titleKey="TipiPendenza.Config.PromemoriaScadenza" />
+              <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaRicevuta" titleKey="TipiPendenza.Config.PromemoriaRicevuta" />
+            </div>
+          </lnk-detail-section>
+        </div>
+
+        <!-- ── Altre funzioni (unità tipo→template) ─────────────── -->
+        <div [hidden]="activeTab() !== 'altre'">
+          @let tcc = form.controls.tracciatoCsv.controls;
+          <lnk-detail-section titleKey="TipiPendenza.Form.TabAltre">
+            <div class="space-y-5">
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.TracciatoCsv"
+                purposeKey="TipiPendenza.Config.TracciatoCsvHint"
+                icon="bootstrapFileEarmarkText"
+                [tipo]="tcc.tipo"
+                [tipoOptions]="trasformazioneTipoUnitOptions"
+                tipoLabelKey="TipiPendenza.Config.TipoTemplate"
+              >
+                <label class="flex flex-col gap-1">
+                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Intestazione' | translate }}</span>
+                  <input type="text" [formControl]="tcc.intestazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+                </label>
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Richiesta' | translate }}</span>
+                  <lnk-code-field [formControl]="tcc.richiesta" format="auto" [rows]="6" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'TipiPendenza.Config.Risposta' | translate }}</span>
+                  <lnk-code-field [formControl]="tcc.risposta" format="auto" [rows]="6" />
+                </div>
+              </lnk-template-unit>
+
+              <lnk-template-unit
+                titleKey="TipiPendenza.Config.Visualizzazione"
+                purposeKey="TipiPendenza.Config.VisualizzazioneHint"
+                icon="bootstrapFileEarmarkCode"
+                [content]="form.controls.visualizzazione"
+                fixedFormat="json"
+                codeFormat="json"
+              />
+            </div>
+          </lnk-detail-section>
+        </div>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving() || form.invalid">{{ 'Common.Save' | translate }}</button>
+          <a [routerLink]="backLink()" [queryParams]="isEdit() ? { tab: activeTab() } : null" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+          @if (form.invalid && form.touched) {
+            <span class="ml-2 text-xs text-[var(--status-danger-text)]">{{ 'TipiPendenza.Form.VerificaCampi' | translate }}</span>
+          }
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>

@@ -1,0 +1,46 @@
+<section class="space-y-4 pb-6 lnk-detail-page">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
+    <lnk-page-header titleKey="Impostazioni.Aree.TracciatiCsv.Nome" subtitleKey="Impostazioni.Aree.TracciatiCsv.Desc">
+      <a routerLink="/impostazioni" class="btn btn-secondary btn-sm">
+        <ng-icon name="bootstrapChevronLeft" size="1rem" />
+        <span>{{ 'Common.Back' | translate }}</span>
+      </a>
+    </lnk-page-header>
+  </div>
+
+  <div class="px-6">
+    @if (loading()) {
+      <lnk-loading />
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+        <lnk-detail-section titleKey="Impostazioni.TracciatiCsv.Template">
+          <div class="space-y-4">
+            <div class="flex flex-col gap-1 max-w-[16rem]">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Tipo' | translate }}</span>
+              <lnk-select formControlName="tipo" [options]="tipoOptions" [placeholder]="'Impostazioni.Template.Nessuno' | translate" [ariaLabel]="'Impostazioni.Template.Tipo' | translate" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Intestazione' | translate }}</span>
+              <lnk-code-field formControlName="intestazione" format="auto" [rows]="3" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Richiesta' | translate }}</span>
+              <lnk-code-field formControlName="richiesta" format="auto" [rows]="10" />
+              <span class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.RichiestaHint' | translate }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.Risposta' | translate }}</span>
+              <lnk-code-field formControlName="risposta" format="auto" [rows]="10" />
+              <span class="text-xs text-[var(--muted-foreground)]">{{ 'Impostazioni.TracciatiCsv.RispostaHint' | translate }}</span>
+            </div>
+          </div>
+        </lnk-detail-section>
+
+        <lnk-form-action-bar>
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">{{ 'Common.Save' | translate }}</button>
+          <a routerLink="/impostazioni" class="btn btn-ghost btn-sm">{{ 'Common.Cancel' | translate }}</a>
+        </lnk-form-action-bar>
+      </form>
+    }
+  </div>
+</section>
