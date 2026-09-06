@@ -169,8 +169,9 @@ docker compose up --build
 | Variabile | Default | Descrizione |
 |-----------|---------|-------------|
 | `SERVER_PORT` | `8080` | Porta su cui ascolta nginx nel container |
-| `GOVPAY_API_BACKEND` | _(vuota)_ | Se valorizzata, nginx fa da reverse proxy per `/govpay-api-backoffice` verso questo backend, evitando problemi di CORS |
-| `GOVPAY_API_BACKEND_PATH` | `/govpay-api-backoffice` | Path upstream sul backend a cui mappare `/govpay-api-backoffice/*`. Usare `/` se il backend serve gli endpoint alla radice (`/rs/form/v1/...`): il prefisso `/govpay-api-backoffice` viene rimosso prima dell'inoltro |
+| `GOVPAY_CONSOLE_BASE_PATH` | `/` | Base path da cui è servita la console, es. `/govpay-console` per un'installazione su `https://host/govpay-console/`. Viene scritto nel tag `<base href>` di `index.html` |
+| `GOVPAY_API_BACKEND` | _(vuota)_ | Se valorizzata, nginx fa da reverse proxy per `/govpay-console-api` verso questo backend, evitando problemi di CORS |
+| `GOVPAY_API_BACKEND_PATH` | `/govpay/console-api` | Path upstream sul backend a cui mappare `/govpay-console-api/*`, come dichiarato in `openapi.yaml` di `govpay-console-api`. Usare `/` se il backend serve gli endpoint alla radice: il prefisso viene rimosso prima dell'inoltro |
 
 Esempio con proxy verso un backend GovPay reale:
 
@@ -189,6 +190,32 @@ docker run --rm -p 8080:8080 \
   -e GOVPAY_API_BACKEND_PATH=/ \
   govpay-console:local
 ```
+
+Esempio di installazione servita su un base path diverso dalla radice:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e GOVPAY_CONSOLE_BASE_PATH=/govpay-console \
+  govpay-console:local
+```
+
+#### Nota sul base path
+
+`GOVPAY_CONSOLE_BASE_PATH` agisce **solo** sul tag `<base href>` di
+`index.html`. È sufficiente perché tutti gli URL prodotti dalla build sono
+relativi: asset, file di configurazione, traduzioni e rotte Angular si
+allineano di conseguenza, senza ricompilare l'immagine.
+
+Il container serve l'applicazione sia dalla radice sia dal prefisso, quindi
+funziona in entrambi gli scenari di reverse proxy: sia che il proxy davanti
+rimuova il prefisso prima di inoltrare, sia che lo inoltri così com'è.
+
+Il proxy delle API resta invece **alla radice**
+(`/govpay-console-api/`), perché `GOVAPI.GOVPAY` in `app-config.json` è un
+path assoluto e non segue il `<base href>`. Se il reverse proxy davanti
+instrada al container solo `/<base-path>/*`, va instradato esplicitamente anche
+`/govpay-console-api/*`, oppure va valorizzato `GOVAPI.GOVPAY` con il path
+completo.
 
 > La configurazione dell'app (titoli, endpoint, temi, ecc.) resta in
 > `assets/config/app-config.json` ed è servita staticamente: può essere

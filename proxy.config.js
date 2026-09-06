@@ -24,9 +24,9 @@
  *   GP_BACKEND=demo ng serve --proxy-config proxy.config.js
  *
  * Path inoltrati (riflettono i context path canonici GovPay):
- *   /govpay-api-backoffice/*        → API backoffice V1 (Basic / SPID / IAM / OAuth2)
+ *   /govpay-console-api/*           → API console V2, riscritto su /govpay/console-api
+ *                                     (Basic / SPID / IAM / OAuth2; sessione + XSRF)
  *   /govpay/backend/api/backoffice/* → fallback per installazioni locali custom (legacy)
- *   /govpay-console-api/*           → GovPay Console API V2 (sessione + XSRF; ConsoleApiService)
  */
 
 const BACKENDS = {
@@ -72,9 +72,14 @@ const baseOptions = {
 };
 
 const paths = {
-  '/govpay-api-backoffice': { ...baseOptions },
+  // Il client chiama /govpay-console-api/*, il backend espone /govpay/console-api/*
+  // (openapi.yaml, servers.url). Il rewrite replica qui in dev quello che nel
+  // container fa nginx con GOVPAY_API_BACKEND_PATH.
+  '/govpay-console-api': {
+    ...baseOptions,
+    pathRewrite: { '^/govpay-console-api': '/govpay/console-api' },
+  },
   '/govpay/backend/api/backoffice': { ...baseOptions },
-  '/govpay-console-api': { ...baseOptions },
 };
 
 console.log(`[proxy] pattern attivi: ${Object.keys(paths).join(', ')}`);

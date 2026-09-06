@@ -11,12 +11,12 @@
 #   commenta il blocco "build:" e decommenta la riga "image: linkitaly/...".
 #
 # --- Collegare il backend dei servizi (API GovPay) ---
-# La console chiama /govpay-api-backoffice. Due modi per puntarlo al backend:
+# La console chiama /govpay-console-api. Due modi per puntarlo al backend:
 #
 #   1) Reverse proxy nginx (consigliato, niente CORS) -> GOVPAY_API_BACKEND:
-#      nginx inoltra /govpay-api-backoffice verso
-#      ${GOVPAY_API_BACKEND}/govpay-api-backoffice. Lascia GOVAPI.GOVPAY uguale
-#      a "/govpay-api-backoffice/rs/form/v1" in app-config.json.
+#      nginx inoltra /govpay-console-api verso
+#      ${GOVPAY_API_BACKEND}/govpay/console-api. Lascia GOVAPI.GOVPAY uguale
+#      a "/govpay-console-api" in app-config.json.
 #
 #   2) Override della configurazione runtime -> volume su app-config.json:
 #      monta un file personalizzato per cambiare GOVAPI.GOVPAY (o altri
@@ -37,7 +37,10 @@ services:
       - "10012:8080"           # host:container -> http://localhost:10012
     environment:
       SERVER_PORT: 8080
-      # Backend dei servizi: nginx fa da reverse proxy per /govpay-api-backoffice.
+      # Base path da cui e' servita la console. Scommenta per esporla sotto un
+      # prefisso invece che alla radice, es. http://localhost:10012/govpay-console/
+      # GOVPAY_CONSOLE_BASE_PATH: /govpay-console
+      # Backend dei servizi: nginx fa da reverse proxy per /govpay-console-api.
       # Sostituisci con l'URL del tuo backend GovPay.
       GOVPAY_API_BACKEND: https://lab.link.it
     # Override della configurazione runtime della console (opzionale).
