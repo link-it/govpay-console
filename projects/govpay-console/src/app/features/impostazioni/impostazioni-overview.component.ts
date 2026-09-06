@@ -21,7 +21,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade, SnackbarService, LoadingComponent, PageHeaderComponent, ListStickyToolbarDirective, formatDateTime } from '@linkit/shared-ui';
+import { SystemFacade, SnackbarService, PageHeaderComponent, ListStickyToolbarDirective, formatDateTime } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { ImpostazioniConsoleApi } from './impostazioni.console-api';
 import { AREE_IMPOSTAZIONI, type AreaImpostazioniDef } from './impostazioni.aree';
@@ -35,7 +35,7 @@ interface AreaCard extends AreaImpostazioniDef {
 @Component({
   selector: 'lnk-impostazioni-overview',
   standalone: true,
-  imports: [RouterLink, NgIcon, TranslatePipe, PageHeaderComponent, LoadingComponent, ListStickyToolbarDirective],
+  imports: [RouterLink, NgIcon, TranslatePipe, PageHeaderComponent, ListStickyToolbarDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './impostazioni-overview.component.html',
 })
