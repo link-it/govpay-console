@@ -45,7 +45,7 @@
       "IdRicevuta": "ID ricevuta",
       "Dominio": "Ente creditore",
       "Psp": "PSP",
-      "DataPagamento": "Data pagamento",
+      "DataRicevuta": "Data ricevuta",
       "Importo": "Importo",
       "Stato": "Stato"
     },
@@ -64,7 +64,7 @@
       "Iuv": "IUV",
       "IdRicevuta": "ID ricevuta",
       "Dominio": "Ente creditore",
-      "DataPagamento": "Data pagamento",
+      "DataRicevuta": "Data ricevuta",
       "Importo": "Importo",
       "Psp": "PSP",
       "Versione": "Versione",

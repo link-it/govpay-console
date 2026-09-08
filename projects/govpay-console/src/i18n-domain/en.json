@@ -45,7 +45,7 @@
       "IdRicevuta": "Receipt ID",
       "Dominio": "Creditor",
       "Psp": "PSP",
-      "DataPagamento": "Payment date",
+      "DataRicevuta": "Receipt date",
       "Importo": "Amount",
       "Stato": "Status"
     },
@@ -64,7 +64,7 @@
       "Iuv": "IUV",
       "IdRicevuta": "Receipt ID",
       "Dominio": "Creditor",
-      "DataPagamento": "Payment date",
+      "DataRicevuta": "Receipt date",
       "Importo": "Amount",
       "Psp": "PSP",
       "Versione": "Version",

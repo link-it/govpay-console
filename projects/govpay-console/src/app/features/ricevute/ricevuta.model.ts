@@ -48,7 +48,7 @@ export interface RicevutaSummary {
   idDominio: string;
   iuv: string;
   idRicevuta: string;
-  dataPagamento: string;
+  dataRicevuta: string;
   codPsp?: string;
   versione?: string;
   stato: string;

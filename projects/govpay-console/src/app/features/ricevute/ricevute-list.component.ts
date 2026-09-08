@@ -140,7 +140,7 @@ export class RicevuteListComponent implements OnInit {
   readonly sortOptions = computed<SortOption[]>(() => {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
-    return [{ id: 'dataPagamento', label: t('Ricevute.Columns.DataPagamento') }];
+    return [{ id: 'dataRicevuta', label: t('Ricevute.Columns.DataRicevuta') }];
   });
 
   readonly pillLabels = computed<SearchPillLabels>(() => {
@@ -220,7 +220,7 @@ export class RicevuteListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'dataPagamento', direction: 'desc' });
+  readonly sort = signal<SortEvent | null>({ key: 'dataRicevuta', direction: 'desc' });
   readonly rows = signal<RicevutaSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);
@@ -248,7 +248,7 @@ export class RicevuteListComponent implements OnInit {
       { key: 'iuv', header: 'Ricevute.Columns.Iuv', format: (r) => r.iuv, cellClass: 'font-mono text-xs', width: '14rem' },
       { key: 'idRicevuta', header: 'Ricevute.Columns.IdRicevuta', format: (r) => r.idRicevuta, cellClass: 'font-mono text-xs' },
       { key: 'idDominio', header: 'Ricevute.Columns.Dominio', format: (r) => r.idDominio, cellClass: 'font-mono text-xs' },
-      { key: 'dataPagamento', header: 'Ricevute.Columns.DataPagamento', format: (r) => formatDateTime(r.dataPagamento), width: '11rem' },
+      { key: 'dataRicevuta', header: 'Ricevute.Columns.DataRicevuta', format: (r) => formatDateTime(r.dataRicevuta), width: '11rem' },
       { key: 'importo', header: 'Ricevute.Columns.Importo', format: (r) => formatEuro(r.importo), align: 'right', cellClass: 'font-mono', width: '8rem' },
       {
         key: 'stato',
