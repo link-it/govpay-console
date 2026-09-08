@@ -14,3 +14,5 @@ export * from './ricevute.console-api';
 export * from './ricevute.routes';
 export * from './ricevute-list.component';
 export * from './ricevuta-detail.component';
+export * from './ricevuta-upload.component';
+export * from './ricevuta-recupero.component';

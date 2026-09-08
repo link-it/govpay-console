@@ -48,7 +48,7 @@ export interface RicevutaSummary {
   idDominio: string;
   iuv: string;
   idRicevuta: string;
-  dataPagamento: string;
+  dataRicevuta: string;
   codPsp?: string;
   versione?: string;
   stato: string;
@@ -408,6 +408,27 @@ export interface RicevuteListFilters extends PaginationParams {
   /** Intervallo (incluso) sulla data di pagamento — `YYYY-MM-DDTHH:MM`. */
   dataDa?: string;
   dataA?: string;
+}
+
+/**
+ * Body di `POST /ricevute/recuperi` — recupero puntuale di una RT mancante.
+ * La tripla identifica il pagamento e la ricevuta attesa (nessun file caricato).
+ */
+export interface RecuperoRicevutaRequest {
+  /** Codice fiscale dell'ente creditore (11 cifre). */
+  idDominio: string;
+  /** Identificativo Univoco Versamento del pagamento. */
+  iuv: string;
+  /** Identificativo della ricevuta attesa (= `iur`/`receiptId` pagoPA). */
+  idRicevuta: string;
+}
+
+/** Esito del recupero RT: sincrono (201, `ricevuta`) o accodato (202). */
+export interface RecuperoRicevutaEsito {
+  /** `true` se il recupero è stato accodato (HTTP 202): RT non ancora disponibile. */
+  accodato: boolean;
+  /** Dettaglio RT se recuperata in modo sincrono (HTTP 201), altrimenti `null`. */
+  ricevuta: Ricevuta | null;
 }
 
 /** Label i18n per gli stati RT noti. */

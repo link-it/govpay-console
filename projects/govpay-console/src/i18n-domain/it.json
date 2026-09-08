@@ -45,7 +45,7 @@
       "IdRicevuta": "ID ricevuta",
       "Dominio": "Ente creditore",
       "Psp": "PSP",
-      "DataPagamento": "Data pagamento",
+      "DataRicevuta": "Data ricevuta",
       "Importo": "Importo",
       "Stato": "Stato"
     },
@@ -64,7 +64,7 @@
       "Iuv": "IUV",
       "IdRicevuta": "ID ricevuta",
       "Dominio": "Ente creditore",
-      "DataPagamento": "Data pagamento",
+      "DataRicevuta": "Data ricevuta",
       "Importo": "Importo",
       "Psp": "PSP",
       "Versione": "Versione",
@@ -123,6 +123,33 @@
         "Causale": "Causale",
         "Totale": "Totale"
       }
+    },
+    "Upload": {
+      "Carica": "Carica RT",
+      "Titolo": "Carica una ricevuta (RT)",
+      "File": "File RT (XML o JSON pagoPA)",
+      "Hint": "Il formato è riconosciuto dal contenuto del file, non dall'estensione. Sono supportate le RT XML (paSendRTV2Request / paSendRTReq) e JSON (BizEvents).",
+      "Invia": "Carica",
+      "InCorso": "Caricamento…",
+      "Successo": "Ricevuta caricata.",
+      "Errore": "Caricamento della ricevuta non riuscito."
+    },
+    "Recupero": {
+      "Azione": "Recupera RT",
+      "Titolo": "Recupera una ricevuta mancante",
+      "IdDominio": "Ente creditore",
+      "IdDominioPlaceholder": "11 cifre",
+      "IdDominioNonValido": "Il codice dell'ente creditore deve essere di 11 cifre.",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "Identificativo Univoco Versamento",
+      "IdRicevuta": "ID ricevuta",
+      "IdRicevutaPlaceholder": "Identificativo ricevuta attesa",
+      "Hint": "Nessun file: la tripla (ente, IUV, ID ricevuta) innesca il recupero della RT da pagoPA lato batch.",
+      "Invia": "Recupera",
+      "InCorso": "Recupero…",
+      "Successo": "Ricevuta recuperata.",
+      "Accodato": "Recupero accodato: la ricevuta sarà disponibile a breve.",
+      "Errore": "Recupero della ricevuta non riuscito."
     }
   },
   "Pagamenti": {

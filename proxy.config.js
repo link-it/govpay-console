@@ -72,13 +72,7 @@ const baseOptions = {
 };
 
 const paths = {
-  // Il client chiama /govpay-console-api/*, il backend espone /govpay/console-api/*
-  // (openapi.yaml, servers.url). Il rewrite replica qui in dev quello che nel
-  // container fa nginx con GOVPAY_API_BACKEND_PATH.
-  '/govpay-console-api': {
-    ...baseOptions,
-    pathRewrite: { '^/govpay-console-api': '/govpay/console-api' },
-  },
+  '/govpay-console-api': { ...baseOptions },
   '/govpay/backend/api/backoffice': { ...baseOptions },
 };
 

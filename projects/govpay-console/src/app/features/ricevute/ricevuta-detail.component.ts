@@ -125,7 +125,7 @@ export class RicevutaDetailComponent implements OnInit {
       { labelKey: 'Ricevute.Detail.Iuv', value: r.iuv, mono: true },
       { labelKey: 'Ricevute.Detail.IdRicevuta', value: r.idRicevuta, mono: true },
       { labelKey: 'Ricevute.Detail.Dominio', value: r.idDominio, mono: true },
-      { labelKey: 'Ricevute.Detail.DataPagamento', value: formatDateTime(r.dataPagamento) },
+      { labelKey: 'Ricevute.Detail.DataRicevuta', value: formatDateTime(r.dataRicevuta) },
       { labelKey: 'Ricevute.Detail.Psp', value: r.codPsp, hide: !r.codPsp },
       { labelKey: 'Ricevute.Detail.Versione', value: r.versione, hide: !r.versione },
       { labelKey: 'Ricevute.Detail.DescrizioneStato', value: r.descrizioneStato, wide: true, hide: !r.descrizioneStato },

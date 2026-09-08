@@ -12,11 +12,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
+  effect,
   inject,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
@@ -25,6 +28,8 @@ import { SnackbarService, SelectComponent, type LnkSelectOption } from '@linkit/
 import { AuthService } from '@core/auth/services/auth.service';
 import { problemDetail } from '@core/models';
 import { TracciatiConsoleApi } from './tracciati.console-api';
+import { DominiConsoleApi } from '../domini/domini.console-api';
+import type { DominioSummary } from '../domini/dominio.model';
 import type { FormatoTracciato } from './tracciato.model';
 
 /**
@@ -41,9 +46,11 @@ import type { FormatoTracciato } from './tracciato.model';
 })
 export class TracciatoUploadComponent {
   private readonly api = inject(TracciatiConsoleApi);
+  private readonly dominiApi = inject(DominiConsoleApi);
   private readonly auth = inject(AuthService);
   private readonly snackbar = inject(SnackbarService);
   private readonly translate = inject(TranslateService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly uploaded = output<number>();
   readonly cancel = output<void>();
@@ -52,14 +59,40 @@ export class TracciatoUploadComponent {
   readonly idDominio = signal<string>('');
   readonly submitting = signal(false);
 
-  /** Domini in scope dell'utente (escluso il placeholder `*`). */
-  readonly domini = computed(() =>
+  /** Domini enumerati nel profilo (utente a scope ristretto), esclusa la wildcard `*`. */
+  private readonly dominiProfilo = computed(() =>
     (this.auth.user()?.domini ?? []).filter((d) => d.idDominio && d.idDominio !== '*')
   );
+
+  /** Utente con scope su tutti i domini (`*`): il profilo non li enumera, vanno caricati. */
+  private readonly hasTuttiDomini = computed(() => !!this.auth.user()?.acl?.hasTuttiDomini);
+
+  /** Domini caricati via console-api quando l'utente ha scope pieno. */
+  private readonly dominiCaricati = signal<DominioSummary[]>([]);
+  private caricamentoAvviato = false;
+
   /** Opzioni del select dominio (value = idDominio, label = ragioneSociale). */
-  readonly dominioOptions = computed<LnkSelectOption[]>(() =>
-    this.domini().map((d) => ({ value: d.idDominio, label: d.ragioneSociale || d.idDominio }))
-  );
+  readonly dominioOptions = computed<LnkSelectOption[]>(() => {
+    const profilo = this.dominiProfilo();
+    if (profilo.length) return profilo.map((d) => ({ value: d.idDominio, label: d.ragioneSociale || d.idDominio }));
+    return this.dominiCaricati().map((d) => ({ value: d.idDominio, label: d.ragioneSociale || d.idDominio }));
+  });
+
+  constructor() {
+    // Utente `*`-scope: `GET /profilo` non elenca i domini (solo la wildcard),
+    // quindi la lista per il select va caricata dalla console-api.
+    effect(() => {
+      if (this.caricamentoAvviato || !this.hasTuttiDomini() || this.dominiProfilo().length) return;
+      this.caricamentoAvviato = true;
+      this.dominiApi
+        .list({ limit: 200 })
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          catchError(() => of({ results: [] as DominioSummary[] }))
+        )
+        .subscribe((slice) => this.dominiCaricati.set(slice.results ?? []));
+    });
+  }
 
   /** Formato desunto dall'estensione del file selezionato. */
   readonly formato = computed<FormatoTracciato | null>(() => {

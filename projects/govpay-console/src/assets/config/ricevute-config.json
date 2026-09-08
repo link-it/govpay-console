@@ -118,12 +118,12 @@
         }
       },
       {
-        "key": "dataPagamento",
-        "header": "Ricevute.Columns.DataPagamento",
+        "key": "dataRicevuta",
+        "header": "Ricevute.Columns.DataRicevuta",
         "width": "11rem",
         "cell": {
           "type": "datetime",
-          "field": "dataPagamento"
+          "field": "dataRicevuta"
         },
         "sortable": true
       },
@@ -198,7 +198,7 @@
       },
       {
         "type": "datetime",
-        "field": "dataPagamento",
+        "field": "dataRicevuta",
         "hideEmpty": true
       }
     ]

@@ -23,6 +23,7 @@
         [ngModel]="idDominio()"
         (ngModelChange)="idDominio.set($event)"
         [options]="dominioOptions()"
+        searchable
         [placeholder]="'Tracciati.Upload.DominioPlaceholder' | translate"
         [ariaLabel]="'Tracciati.Upload.Dominio' | translate"
       />

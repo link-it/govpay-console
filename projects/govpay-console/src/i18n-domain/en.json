@@ -45,7 +45,7 @@
       "IdRicevuta": "Receipt ID",
       "Dominio": "Creditor",
       "Psp": "PSP",
-      "DataPagamento": "Payment date",
+      "DataRicevuta": "Receipt date",
       "Importo": "Amount",
       "Stato": "Status"
     },
@@ -64,7 +64,7 @@
       "Iuv": "IUV",
       "IdRicevuta": "Receipt ID",
       "Dominio": "Creditor",
-      "DataPagamento": "Payment date",
+      "DataRicevuta": "Receipt date",
       "Importo": "Amount",
       "Psp": "PSP",
       "Versione": "Version",
@@ -123,6 +123,33 @@
         "Causale": "Remittance",
         "Totale": "Total"
       }
+    },
+    "Upload": {
+      "Carica": "Upload RT",
+      "Titolo": "Upload a receipt (RT)",
+      "File": "RT file (pagoPA XML or JSON)",
+      "Hint": "The format is detected from the file content, not the extension. XML (paSendRTV2Request / paSendRTReq) and JSON (BizEvents) RTs are supported.",
+      "Invia": "Upload",
+      "InCorso": "Uploading…",
+      "Successo": "Receipt uploaded.",
+      "Errore": "Receipt upload failed."
+    },
+    "Recupero": {
+      "Azione": "Recover RT",
+      "Titolo": "Recover a missing receipt",
+      "IdDominio": "Creditor entity",
+      "IdDominioPlaceholder": "11 digits",
+      "IdDominioNonValido": "The creditor entity code must be 11 digits.",
+      "Iuv": "IUV",
+      "IuvPlaceholder": "Unique Payment Identifier",
+      "IdRicevuta": "Receipt ID",
+      "IdRicevutaPlaceholder": "Expected receipt identifier",
+      "Hint": "No file: the triple (entity, IUV, receipt ID) triggers RT recovery from pagoPA on the batch side.",
+      "Invia": "Recover",
+      "InCorso": "Recovering…",
+      "Successo": "Receipt recovered.",
+      "Accodato": "Recovery queued: the receipt will be available shortly.",
+      "Errore": "Receipt recovery failed."
     }
   },
   "Pagamenti": {

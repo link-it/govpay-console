@@ -21,6 +21,7 @@ import {
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
+import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService, LanguageService } from '@linkit/shared-ui';
 import {
@@ -51,7 +52,9 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { RicevuteConsoleApi } from './ricevute.console-api';
-import { statoRtColor, statoRtLabel, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
+import { RicevutaUploadComponent } from './ricevuta-upload.component';
+import { RicevutaRecuperoComponent } from './ricevuta-recupero.component';
+import { statoRtColor, statoRtLabel, type Ricevuta, type RecuperoRicevutaEsito, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
 
 const PAGE_SIZE = 25;
 
@@ -69,6 +72,7 @@ const F = {
   standalone: true,
   imports: [
     TranslatePipe,
+    NgIcon,
     PageHeaderComponent,
     DataTableComponent,
     ItemListComponent,
@@ -78,6 +82,8 @@ const F = {
     ViewToggleComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    RicevutaUploadComponent,
+    RicevutaRecuperoComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ricevute-list.component.html',
@@ -140,7 +146,7 @@ export class RicevuteListComponent implements OnInit {
   readonly sortOptions = computed<SortOption[]>(() => {
     this.lang.current();
     const t = (k: string) => this.translate.instant(k);
-    return [{ id: 'dataPagamento', label: t('Ricevute.Columns.DataPagamento') }];
+    return [{ id: 'dataRicevuta', label: t('Ricevute.Columns.DataRicevuta') }];
   });
 
   readonly pillLabels = computed<SearchPillLabels>(() => {
@@ -220,7 +226,7 @@ export class RicevuteListComponent implements OnInit {
   );
 
   private readonly page = signal(1);
-  readonly sort = signal<SortEvent | null>({ key: 'dataPagamento', direction: 'desc' });
+  readonly sort = signal<SortEvent | null>({ key: 'dataRicevuta', direction: 'desc' });
   readonly rows = signal<RicevutaSummary[]>([]);
   readonly hasMore = signal(false);
   readonly total = signal<number | null>(null);
@@ -228,6 +234,10 @@ export class RicevuteListComponent implements OnInit {
   readonly countLoading = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+
+  /** Card inline di caricamento/recupero RT (mutuamente esclusive). */
+  readonly showUpload = signal(false);
+  readonly showRecupero = signal(false);
 
   readonly searchState = signal<SearchState>(initialSearchState([]));
 
@@ -248,7 +258,7 @@ export class RicevuteListComponent implements OnInit {
       { key: 'iuv', header: 'Ricevute.Columns.Iuv', format: (r) => r.iuv, cellClass: 'font-mono text-xs', width: '14rem' },
       { key: 'idRicevuta', header: 'Ricevute.Columns.IdRicevuta', format: (r) => r.idRicevuta, cellClass: 'font-mono text-xs' },
       { key: 'idDominio', header: 'Ricevute.Columns.Dominio', format: (r) => r.idDominio, cellClass: 'font-mono text-xs' },
-      { key: 'dataPagamento', header: 'Ricevute.Columns.DataPagamento', format: (r) => formatDateTime(r.dataPagamento), width: '11rem' },
+      { key: 'dataRicevuta', header: 'Ricevute.Columns.DataRicevuta', format: (r) => formatDateTime(r.dataRicevuta), width: '11rem' },
       { key: 'importo', header: 'Ricevute.Columns.Importo', format: (r) => formatEuro(r.importo), align: 'right', cellClass: 'font-mono', width: '8rem' },
       {
         key: 'stato',
@@ -310,6 +320,43 @@ export class RicevuteListComponent implements OnInit {
   onRowClick(r: RicevutaSummary): void {
     if (!r.idDominio || !r.iuv || !r.idRicevuta) return;
     this.router.navigate(['/ricevute', r.idDominio, r.iuv, r.idRicevuta]);
+  }
+
+  /* ── Caricamento / recupero RT ─────────────────────────────────────── */
+
+  toggleUpload(): void {
+    this.showUpload.update((v) => !v);
+    if (this.showUpload()) this.showRecupero.set(false);
+  }
+
+  toggleRecupero(): void {
+    this.showRecupero.update((v) => !v);
+    if (this.showRecupero()) this.showUpload.set(false);
+  }
+
+  /** RT caricata (201): chiude la card e apre il dettaglio appena acquisito. */
+  onUploaded(r: Ricevuta): void {
+    this.showUpload.set(false);
+    this.goToRicevuta(r.idDominio, r.iuv, r.idRicevuta);
+  }
+
+  /**
+   * Recupero concluso: se sincrono (201) apre il dettaglio, se accodato (202)
+   * ricarica la lista (la RT comparirà quando il batch avrà completato).
+   */
+  onRecuperata(esito: RecuperoRicevutaEsito): void {
+    this.showRecupero.set(false);
+    const r = esito.ricevuta;
+    if (r) this.goToRicevuta(r.idDominio, r.iuv, r.idRicevuta);
+    else this.reset();
+  }
+
+  private goToRicevuta(idDominio?: string, iuv?: string, idRicevuta?: string): void {
+    if (!idDominio || !iuv || !idRicevuta) {
+      this.reset();
+      return;
+    }
+    this.router.navigate(['/ricevute', idDominio, iuv, idRicevuta]);
   }
 
   private reset(): void {

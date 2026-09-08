@@ -20,9 +20,13 @@ interface RecordedCall {
   path: string;
   params?: unknown;
   accept?: string;
+  body?: unknown;
+  hasFile?: boolean;
 }
 
-function makeApi(): { svc: RicevuteConsoleApi; calls: RecordedCall[] } {
+const SAMPLE_RT = { idDominio: '12345678901', iuv: 'IUV1', idRicevuta: 'RIC1' };
+
+function makeApi(postStatus = 201): { svc: RicevuteConsoleApi; calls: RecordedCall[] } {
   const calls: RecordedCall[] = [];
   const fake = {
     list: (path: string, params: unknown) => {
@@ -36,6 +40,14 @@ function makeApi(): { svc: RicevuteConsoleApi; calls: RecordedCall[] } {
     getBlob: (path: string, accept: string) => {
       calls.push({ method: 'getBlob', path, accept });
       return of(new Blob());
+    },
+    postMultipart: (path: string, form: FormData) => {
+      calls.push({ method: 'postMultipart', path, hasFile: form.has('file') });
+      return of({ status: 201, body: SAMPLE_RT });
+    },
+    post: (path: string, body: unknown) => {
+      calls.push({ method: 'post', path, body });
+      return of({ status: postStatus, body: postStatus === 201 ? SAMPLE_RT : null });
     },
   } as unknown as ConsoleApiService;
 
@@ -72,5 +84,32 @@ describe('RicevuteConsoleApi', () => {
     svc.getRtBlob('12345678901', 'IUV1', 'RIC1', 'pdf');
     expect(calls[0]).toEqual({ method: 'getBlob', path: 'ricevute/12345678901/IUV1/RIC1/rpt', accept: 'application/xml' });
     expect(calls[1]).toEqual({ method: 'getBlob', path: 'ricevute/12345678901/IUV1/RIC1/rt', accept: 'application/pdf' });
+  });
+
+  it('upload() invia multipart su "ricevute" col campo file e ritorna il body', () => {
+    const { svc, calls } = makeApi();
+    let result: unknown;
+    svc.upload(new File(['<xml/>'], 'rt.xml')).subscribe((r) => (result = r));
+    expect(calls[0]).toEqual({ method: 'postMultipart', path: 'ricevute', hasFile: true });
+    expect(result).toEqual(SAMPLE_RT);
+  });
+
+  it('recupera() mappa 201 in esito sincrono con ricevuta valorizzata', () => {
+    const { svc, calls } = makeApi(201);
+    let esito: { accodato: boolean; ricevuta: unknown } | undefined;
+    svc.recupera({ idDominio: '12345678901', iuv: 'IUV1', idRicevuta: 'RIC1' }).subscribe((e) => (esito = e));
+    expect(calls[0]).toEqual({
+      method: 'post',
+      path: 'ricevute/recuperi',
+      body: { idDominio: '12345678901', iuv: 'IUV1', idRicevuta: 'RIC1' },
+    });
+    expect(esito).toEqual({ accodato: false, ricevuta: SAMPLE_RT });
+  });
+
+  it('recupera() mappa 202 in esito accodato senza ricevuta', () => {
+    const { svc } = makeApi(202);
+    let esito: { accodato: boolean; ricevuta: unknown } | undefined;
+    svc.recupera({ idDominio: '12345678901', iuv: 'IUV1', idRicevuta: 'RIC1' }).subscribe((e) => (esito = e));
+    expect(esito).toEqual({ accodato: true, ricevuta: null });
   });
 });
