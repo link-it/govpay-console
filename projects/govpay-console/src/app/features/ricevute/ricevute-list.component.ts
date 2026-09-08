@@ -21,6 +21,7 @@ import {
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
+import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TweaksRegistry, ConfigService, ListStateService, SystemFacade, SnackbarService, LanguageService } from '@linkit/shared-ui';
 import {
@@ -51,7 +52,9 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { RicevuteConsoleApi } from './ricevute.console-api';
-import { statoRtColor, statoRtLabel, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
+import { RicevutaUploadComponent } from './ricevuta-upload.component';
+import { RicevutaRecuperoComponent } from './ricevuta-recupero.component';
+import { statoRtColor, statoRtLabel, type Ricevuta, type RecuperoRicevutaEsito, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
 
 const PAGE_SIZE = 25;
 
@@ -69,6 +72,7 @@ const F = {
   standalone: true,
   imports: [
     TranslatePipe,
+    NgIcon,
     PageHeaderComponent,
     DataTableComponent,
     ItemListComponent,
@@ -78,6 +82,8 @@ const F = {
     ViewToggleComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
+    RicevutaUploadComponent,
+    RicevutaRecuperoComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ricevute-list.component.html',
@@ -229,6 +235,10 @@ export class RicevuteListComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  /** Card inline di caricamento/recupero RT (mutuamente esclusive). */
+  readonly showUpload = signal(false);
+  readonly showRecupero = signal(false);
+
   readonly searchState = signal<SearchState>(initialSearchState([]));
 
   readonly hasActiveFilters = computed(() => {
@@ -310,6 +320,43 @@ export class RicevuteListComponent implements OnInit {
   onRowClick(r: RicevutaSummary): void {
     if (!r.idDominio || !r.iuv || !r.idRicevuta) return;
     this.router.navigate(['/ricevute', r.idDominio, r.iuv, r.idRicevuta]);
+  }
+
+  /* ── Caricamento / recupero RT ─────────────────────────────────────── */
+
+  toggleUpload(): void {
+    this.showUpload.update((v) => !v);
+    if (this.showUpload()) this.showRecupero.set(false);
+  }
+
+  toggleRecupero(): void {
+    this.showRecupero.update((v) => !v);
+    if (this.showRecupero()) this.showUpload.set(false);
+  }
+
+  /** RT caricata (201): chiude la card e apre il dettaglio appena acquisito. */
+  onUploaded(r: Ricevuta): void {
+    this.showUpload.set(false);
+    this.goToRicevuta(r.idDominio, r.iuv, r.idRicevuta);
+  }
+
+  /**
+   * Recupero concluso: se sincrono (201) apre il dettaglio, se accodato (202)
+   * ricarica la lista (la RT comparirà quando il batch avrà completato).
+   */
+  onRecuperata(esito: RecuperoRicevutaEsito): void {
+    this.showRecupero.set(false);
+    const r = esito.ricevuta;
+    if (r) this.goToRicevuta(r.idDominio, r.iuv, r.idRicevuta);
+    else this.reset();
+  }
+
+  private goToRicevuta(idDominio?: string, iuv?: string, idRicevuta?: string): void {
+    if (!idDominio || !iuv || !idRicevuta) {
+      this.reset();
+      return;
+    }
+    this.router.navigate(['/ricevute', idDominio, iuv, idRicevuta]);
   }
 
   private reset(): void {

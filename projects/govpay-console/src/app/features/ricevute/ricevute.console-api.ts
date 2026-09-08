@@ -11,9 +11,19 @@
 
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
 import { ConsoleApiService, type ParamValue } from '@core/services';
 import type { Slice } from '@core/models';
-import { normalizeRpt, normalizeRt, type Ricevuta, type RicevutaFormato, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
+import {
+  normalizeRpt,
+  normalizeRt,
+  type Ricevuta,
+  type RicevutaFormato,
+  type RicevutaSummary,
+  type RicevuteListFilters,
+  type RecuperoRicevutaRequest,
+  type RecuperoRicevutaEsito,
+} from './ricevuta.model';
 
 const ACCEPT_BY_FORMATO: Record<RicevutaFormato, string> = {
   json: 'application/json',
@@ -60,5 +70,32 @@ export class RicevuteConsoleApi {
   /** `GET …/rt` — RT come Blob nel formato richiesto (json|xml|pdf). */
   getRtBlob(idDominio: string, iuv: string, idRicevuta: string, formato: RicevutaFormato): Observable<Blob> {
     return this.api.getBlob(this.path(idDominio, iuv, idRicevuta, 'rt'), ACCEPT_BY_FORMATO[formato]);
+  }
+
+  /**
+   * `POST /ricevute` — carica una RT (XML o JSON pagoPA) come `multipart/form-data`
+   * (campo `file`). Il formato è riconosciuto dal contenuto, non dall'estensione.
+   * Risposta `201` con il dettaglio `Ricevuta` acquisito (tupla per il drilldown).
+   */
+  upload(file: File): Observable<Ricevuta> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.api
+      .postMultipart<Ricevuta>('ricevute', form)
+      .pipe(map((res: HttpResponse<Ricevuta>) => res.body as Ricevuta));
+  }
+
+  /**
+   * `POST /ricevute/recuperi` — recupero puntuale di una RT mancante. Risposta
+   * `201` (recupero sincrono → `ricevuta` valorizzata) oppure `202` (accodato
+   * lato batch → `accodato: true`, `ricevuta` null).
+   */
+  recupera(req: RecuperoRicevutaRequest): Observable<RecuperoRicevutaEsito> {
+    return this.api.post<Ricevuta>('ricevute/recuperi', req).pipe(
+      map((res: HttpResponse<Ricevuta>) => ({
+        accodato: res.status === 202,
+        ricevuta: res.status === 201 ? (res.body ?? null) : null,
+      }))
+    );
   }
 }

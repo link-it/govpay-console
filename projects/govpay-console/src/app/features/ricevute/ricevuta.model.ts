@@ -410,6 +410,27 @@ export interface RicevuteListFilters extends PaginationParams {
   dataA?: string;
 }
 
+/**
+ * Body di `POST /ricevute/recuperi` — recupero puntuale di una RT mancante.
+ * La tripla identifica il pagamento e la ricevuta attesa (nessun file caricato).
+ */
+export interface RecuperoRicevutaRequest {
+  /** Codice fiscale dell'ente creditore (11 cifre). */
+  idDominio: string;
+  /** Identificativo Univoco Versamento del pagamento. */
+  iuv: string;
+  /** Identificativo della ricevuta attesa (= `iur`/`receiptId` pagoPA). */
+  idRicevuta: string;
+}
+
+/** Esito del recupero RT: sincrono (201, `ricevuta`) o accodato (202). */
+export interface RecuperoRicevutaEsito {
+  /** `true` se il recupero è stato accodato (HTTP 202): RT non ancora disponibile. */
+  accodato: boolean;
+  /** Dettaglio RT se recuperata in modo sincrono (HTTP 201), altrimenti `null`. */
+  ricevuta: Ricevuta | null;
+}
+
 /** Label i18n per gli stati RT noti. */
 export const STATO_RT_LABEL: Record<StatoRt, string> = {
   RT_ACCETTATA_PA: 'Ricevute.Stati.Eseguito',

@@ -2,6 +2,14 @@
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-4">
     <lnk-page-header titleKey="Nav.Ricevute" subtitleKey="Ricevute.Subtitle" [total]="total()" [loading]="loading() && rows().length === 0"
       [countOnRequest]="true" [countLoading]="countLoading()" (requestCount)="requestCount()">
+      <button type="button" class="btn btn-sm" [class.btn-primary]="showUpload()" [class.btn-secondary]="!showUpload()" (click)="toggleUpload()">
+        <ng-icon name="bootstrapUpload" size="1rem" />
+        <span>{{ 'Ricevute.Upload.Carica' | translate }}</span>
+      </button>
+      <button type="button" class="btn btn-sm" [class.btn-primary]="showRecupero()" [class.btn-secondary]="!showRecupero()" (click)="toggleRecupero()">
+        <ng-icon name="bootstrapArrowClockwise" size="1rem" />
+        <span>{{ 'Ricevute.Recupero.Azione' | translate }}</span>
+      </button>
       <button type="button" class="btn btn-secondary btn-sm" (click)="refresh()" [disabled]="loading()">
         {{ 'Common.Refresh' | translate }}
       </button>
@@ -25,6 +33,13 @@
   </div>
 
   <div class="px-6 space-y-4">
+
+  @if (showUpload()) {
+    <lnk-ricevuta-upload class="block" (uploaded)="onUploaded($event)" (cancel)="showUpload.set(false)" />
+  }
+  @if (showRecupero()) {
+    <lnk-ricevuta-recupero class="block" (recuperata)="onRecuperata($event)" (cancel)="showRecupero.set(false)" />
+  }
 
   @if (showEmptyState()) {
     <lnk-empty-state

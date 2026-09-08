@@ -30,7 +30,7 @@
   <div class="px-6 space-y-4">
 
   @if (showUpload()) {
-    <lnk-tracciato-upload (uploaded)="onUploaded($event)" (cancel)="toggleUpload()" />
+    <lnk-tracciato-upload class="block" (uploaded)="onUploaded($event)" (cancel)="toggleUpload()" />
   }
 
   @if (showEmptyState()) {
