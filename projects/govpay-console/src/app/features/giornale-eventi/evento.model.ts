@@ -156,8 +156,12 @@ export interface EventoRisposta {
  * `page`/`sort`/`total` (ordinamento fisso `dataEvento DESC, id DESC`).
  */
 export interface EventoListFilters {
+  /** Pagina 1-based (modalità offset). Mutuamente esclusivo con `cursor`. */
+  page?: number;
   limit?: number;
   cursor?: string;
+  /** Se `true` include `totalResults`/`totalPages` (COUNT, solo finestra ≤ 24h). */
+  total?: boolean;
   dataDa?: string;
   dataA?: string;
   idDominio?: string;

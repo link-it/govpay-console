@@ -61,6 +61,9 @@ import {
 
 const PAGE_SIZE = 25;
 
+/** Ampiezza massima della finestra per cui il BE ammette `total=true` (24h). */
+const COUNT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 /** Chiavi filtro (= id dei `SearchField` della search-pill). */
 const F = {
   iuv: 'iuv',
@@ -157,12 +160,16 @@ export class GiornaleEventiListComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
 
-  /** Cursore per la pagina successiva (paginazione cursor `/eventi`). */
-  private readonly cursor = signal<string | undefined>(undefined);
+  /** Pagina corrente (paginazione offset `/eventi`, 1-based). */
+  private readonly page = signal(1);
   readonly rows = signal<EventoSummary[]>([]);
   readonly hasMore = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  /** Totale (conteggio on-demand); `null` finché non richiesto. */
+  readonly total = signal<number | null>(null);
+  /** Conteggio totale on-demand in corso. */
+  readonly countLoading = signal(false);
 
   /** Stato della search-pill (query + filters). Sort non usato: ordine fisso lato BE. */
   readonly searchState = signal<SearchState>(defaultSearchState());
@@ -236,6 +243,23 @@ export class GiornaleEventiListComponent implements OnInit {
   readonly showEmptyState = computed(() => !this.loading() && !this.error() && !this.hasRows());
   readonly canLoadMore = computed(() => this.hasMore() && !this.loading());
 
+  /**
+   * Il conteggio (`total=true`) è l'operazione più costosa sulla tabella eventi:
+   * il BE lo ammette solo con una finestra temporale ≤ 24h (altrimenti 400).
+   * Calcoliamo la finestra effettiva `[dataDa 00:00, dataA 23:59 | ora]` con la
+   * stessa conversione della query e mostriamo il link "mostra totale" solo se
+   * rientra nel limite; fuori dal limite il link resta nascosto.
+   */
+  readonly canShowCount = computed(() => {
+    const f = this.searchState().filters;
+    const startIso = dayToIso(f[F.dataDa], false);
+    const endIso = dayToIso(f[F.dataA], true);
+    const end = endIso ? new Date(endIso).getTime() : Date.now();
+    // dataDa assente: il BE assume le ultime 24h → finestra al limite, ammessa.
+    const start = startIso ? new Date(startIso).getTime() : end - COUNT_WINDOW_MS;
+    return end - start <= COUNT_WINDOW_MS;
+  });
+
   readonly columns = computed<ColumnDef<EventoSummary>[]>(() => {
     const tableCfg = this.rowConfig()?.table;
     if (tableCfg?.columns?.length) return columnsFromConfig<EventoSummary>(tableCfg.columns);
@@ -298,11 +322,35 @@ export class GiornaleEventiListComponent implements OnInit {
   }
 
   refresh(): void { this.reset(); }
+
+  /**
+   * Conteggio totale **su richiesta**: stessa query (filtri correnti) con
+   * `page/limit=1` e `total=true`. Esposto solo quando {@link canShowCount} è
+   * vero, quindi la finestra è già ≤ 24h (vincolo del BE).
+   */
+  requestCount(): void {
+    if (this.countLoading()) return;
+    this.countLoading.set(true);
+    this.api
+      .list({ ...this.baseFilters(), page: 1, limit: 1, total: true })
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));
+          return of<Slice<EventoSummary>>({ results: [] });
+        })
+      )
+      .subscribe((slice) => {
+        const t = slice.pagination?.totalResults;
+        if (t != null) this.total.set(t);
+        this.countLoading.set(false);
+      });
+  }
   onRowClick(e: EventoSummary): void {
     if (e.id != null) this.router.navigate(['/giornale-eventi', e.id]);
   }
   loadMore(): void {
     if (!this.canLoadMore()) return;
+    this.page.update((p) => p + 1);
     this.fetch(true);
   }
 
@@ -324,9 +372,11 @@ export class GiornaleEventiListComponent implements OnInit {
     this.listState.set(GiornaleEventiListComponent.STATE_KEY, {
       search: this.searchState(),
     }, this.rowConfig()?.persistState ?? false);
-    this.cursor.set(undefined);
+    this.page.set(1);
     this.rows.set([]);
     this.hasMore.set(false);
+    // Il totale eventualmente mostrato non è più valido per i nuovi filtri.
+    this.total.set(null);
     this.fetch(false);
   }
 
@@ -348,11 +398,13 @@ export class GiornaleEventiListComponent implements OnInit {
   private fetch(append: boolean): void {
     this.loading.set(true);
     this.error.set(null);
-    // Cursor mode: prima pagina con soli filtri+limit; pagine successive con
-    // il solo `cursor` (che incapsula filtri e posizione). Niente page/sort/total.
-    const filters: EventoListFilters = append
-      ? { cursor: this.cursor(), limit: PAGE_SIZE }
-      : { ...this.baseFilters(), limit: PAGE_SIZE };
+    // Paginazione **offset**: ogni pagina ripete i filtri (incluso il range
+    // date, richiesto dal GDE) e avanza `page`. La modalità cursor non è
+    // utilizzabile qui perché la prima pagina — senza `?cursor=` — risponde
+    // sempre in offset (con `pagination`, senza `nextCursor`): affidarsi al
+    // cursore degradava la pagina successiva a un `?limit=25` senza `dataDa`,
+    // rifiutato dal GDE con 502.
+    const filters: EventoListFilters = { ...this.baseFilters(), page: this.page(), limit: PAGE_SIZE };
     this.api
       .list(filters)
       .pipe(
@@ -367,7 +419,6 @@ export class GiornaleEventiListComponent implements OnInit {
         const results = slice.results ?? [];
         if (append) this.rows.update((prev) => [...prev, ...results]);
         else this.rows.set(results);
-        this.cursor.set(slice.nextCursor);
         this.hasMore.set(sliceHasMore(slice));
         this.loading.set(false);
       });
