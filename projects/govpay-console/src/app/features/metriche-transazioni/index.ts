@@ -9,8 +9,7 @@
  * the Free Software Foundation.
  */
 
-// Strato neutro dei grafici: modello di dominio, NESSUN import da echarts.
-// La guardia `npm run charts:check` verifica che qui non entri codice di libreria.
-export * from './chart-theme';
-export * from './gauge.spec';
-export * from './time-series.spec';
+export * from './transazioni.model';
+export * from './transazioni.adapter';
+export * from './metriche-transazioni.service';
+export * from './transazioni-andamento.component';

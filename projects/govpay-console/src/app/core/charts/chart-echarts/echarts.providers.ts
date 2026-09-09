@@ -11,8 +11,14 @@
 
 import type { Provider } from '@angular/core';
 import * as echarts from 'echarts/core';
-import { GaugeChart } from 'echarts/charts';
-import { TitleComponent, TooltipComponent } from 'echarts/components';
+import { GaugeChart, LineChart } from 'echarts/charts';
+import {
+  DataZoomComponent,
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent,
+} from 'echarts/components';
 import { CanvasRenderer, SVGRenderer } from 'echarts/renderers';
 import { provideEchartsCore } from 'ngx-echarts';
 
@@ -25,7 +31,17 @@ import { provideEchartsCore } from 'ngx-echarts';
 // (input `renderer` sui componenti): Canvas per le serie dense/realtime, SVG per
 // nitidezza in stampa/PDF e grafici leggeri (gauge/KPI). Vedi CanvasRenderer vs
 // SVGRenderer nel documento di contesto.
-echarts.use([GaugeChart, TitleComponent, TooltipComponent, CanvasRenderer, SVGRenderer]);
+echarts.use([
+  GaugeChart,
+  LineChart,
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+  DataZoomComponent,
+  CanvasRenderer,
+  SVGRenderer,
+]);
 
 /** Renderer selezionabile per singolo grafico. */
 export type ChartRenderer = 'canvas' | 'svg';

@@ -15,3 +15,5 @@ export * from './echarts.providers';
 export * from './chart-theme';
 export * from './gauge.mapper';
 export * from './gauge-chart.component';
+export * from './time-series.mapper';
+export * from './time-series-chart.component';

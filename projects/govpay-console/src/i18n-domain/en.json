@@ -1477,6 +1477,13 @@
       "KO": "Out of threshold"
     }
   },
+  "Transazioni": {
+    "Title": "Transactions trend",
+    "Subtitle": "pagoPA transactions per day, paid and failed.",
+    "Periodo": "Period {{da}} – {{a}}",
+    "Pagate": "Paid",
+    "Fallite": "Failed"
+  },
   "Nav": {
     "Dashboard": "Dashboard",
     "Pagamenti": "Payments",

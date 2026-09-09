@@ -45,6 +45,7 @@ interface SlaGaugeItem {
   selector: 'lnk-sla-metriche',
   standalone: true,
   imports: [TranslatePipe, LoadingComponent, GaugeChartComponent],
+  host: { class: 'block' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sla-metriche.component.html',
 })

@@ -1697,6 +1697,13 @@
       "KO": "Fuori soglia"
     }
   },
+  "Transazioni": {
+    "Title": "Andamento transazioni",
+    "Subtitle": "Transazioni pagoPA per giorno, pagate e fallite.",
+    "Periodo": "Periodo {{da}} – {{a}}",
+    "Pagate": "Pagate",
+    "Fallite": "Fallite"
+  },
   "Nav": {
     "Dashboard": "Dashboard",
     "Pagamenti": "Pagamenti",

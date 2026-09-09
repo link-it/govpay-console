@@ -1,0 +1,19 @@
+<section class="space-y-4">
+  <div class="flex items-baseline justify-between gap-2">
+    <div>
+      <h2 class="text-lg font-semibold">{{ 'Transazioni.Title' | translate }}</h2>
+      <p class="text-sm text-[var(--muted-foreground)]">{{ 'Transazioni.Subtitle' | translate }}</p>
+    </div>
+    @if (periodo(); as p) {
+      <span class="shrink-0 text-xs text-[var(--muted-foreground)]">{{ 'Transazioni.Periodo' | translate: { da: p.da, a: p.a } }}</span>
+    }
+  </div>
+
+  @if (loading()) {
+    <lnk-loading />
+  } @else if (spec(); as s) {
+    <div class="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3">
+      <lnk-time-series-chart [spec]="s" [height]="300" />
+    </div>
+  }
+</section>
