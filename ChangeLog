@@ -1,3 +1,34 @@
+2026-09-08  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(console-api-v2): allineamento allo spec openapi-20260908 e
+    fix delle liste V2 (Ricevute, Tracciati, Giornale Eventi).
+    - **Ricevute**: campo `dataPagamento` rinominato in `dataRicevuta` (nuova
+      semantica: data di ricezione della RT), allineato a `RicevutaSummary`
+      dello spec — model, lista, dettaglio, display-config e chiavi i18n
+      (Data ricevuta / Receipt date).
+    - **Ricevute** (nuovo): caricamento e recupero puntuale di una RT da
+      cruscotto. `POST /ricevute` (multipart) per caricare una RT XML o JSON
+      pagoPA; `POST /ricevute/recuperi` per il recupero tramite la tripla
+      (idDominio, iuv, idRicevuta), con esito sincrono (201 → dettaglio) o
+      accodato (202). Pannelli inline mutuamente esclusivi con trigger attivo
+      evidenziato.
+    - **Tracciati**: il select "ente creditore" del pannello di upload restava
+      vuoto per gli utenti con scope su tutti i domini (il profilo non li
+      enumera, espone solo la wildcard `*`). Ora, in quel caso, la lista viene
+      caricata dalla console-api (DominiConsoleApi.list); select con ricerca.
+    - **Giornale Eventi**: corretta la paginazione. La lista girava in modalità
+      cursor in append, ma la prima pagina di `/eventi` risponde in offset
+      (senza `nextCursor`): l'infinite-scroll degradava la pagina successiva a
+      un `GET /eventi?limit=25` senza `dataDa`, rifiutato dal GDE con 502. Ora
+      la lista usa la paginazione offset (filtri ripetuti su ogni pagina).
+    - **Giornale Eventi**: aggiunto il link "mostra totale" on-demand. Il
+      conteggio è ammesso dal BE solo con finestra temporale ≤ 24h: il link è
+      visibile solo quando la finestra selezionata rientra nel limite,
+      nascosto altrimenti (evita il 400).
+    - **Dev**: rimosso dal proxy di sviluppo il `pathRewrite` di
+      `/govpay-console-api` (il backend espone ora la console-api direttamente
+      su quel path).
+
 2026-09-03  Giuliano Pintori <giuliano.pintori@link.it>
 
   * [Build] Aggiunto alla pipeline il caricamento dell'SBOM su Dependency-Track.
