@@ -1466,6 +1466,17 @@
       "EmptyHint": "—"
     }
   },
+  "Sla": {
+    "Title": "SLA compliance",
+    "Subtitle": "Share of responses within threshold across the 4 pagoPA PA methods.",
+    "Periodo": "Period {{da}} – {{a}}",
+    "Totale": "{{n}} invocations",
+    "Stato": {
+      "OK": "OK",
+      "WARNING": "Warning",
+      "KO": "Out of threshold"
+    }
+  },
   "Nav": {
     "Dashboard": "Dashboard",
     "Pagamenti": "Payments",

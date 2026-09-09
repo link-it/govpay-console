@@ -23,6 +23,7 @@ import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConsoleApiService } from '@core/services/console-api.service';
 import { SystemFacade } from '@linkit/shared-ui';
+import { SlaMetricheComponent } from '@feature/metriche-sla';
 import type { Slice } from '@core/models';
 
 interface KpiCard {
@@ -43,7 +44,7 @@ interface KpiCard {
 @Component({
   selector: 'lnk-dashboard',
   standalone: true,
-  imports: [NgIcon, TranslatePipe],
+  imports: [NgIcon, TranslatePipe, SlaMetricheComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.component.html',
 })

@@ -1,0 +1,39 @@
+<section class="space-y-4">
+  <div class="flex items-baseline justify-between gap-2">
+    <div>
+      <h2 class="text-lg font-semibold">{{ 'Sla.Title' | translate }}</h2>
+      <p class="text-sm text-[var(--muted-foreground)]">{{ 'Sla.Subtitle' | translate }}</p>
+    </div>
+    @if (periodo(); as p) {
+      <span class="shrink-0 text-xs text-[var(--muted-foreground)]">{{ 'Sla.Periodo' | translate: { da: p.da, a: p.a } }}</span>
+    }
+  </div>
+
+  @if (loading()) {
+    <lnk-loading />
+  } @else {
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      @for (it of items(); track it.codice) {
+        <div class="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3 space-y-1">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-sm font-semibold">{{ it.codice }}</p>
+              <p class="truncate text-xs text-[var(--muted-foreground)]" [title]="it.metodo">{{ it.metodo }}</p>
+            </div>
+            <span
+              class="shrink-0 rounded-md px-1.5 py-0.5 text-xs/5"
+              [style.color]="'var(--status-' + it.tone + '-text)'"
+              [style.background]="'var(--status-' + it.tone + '-bg)'"
+            >
+              {{ it.statoKey | translate }}
+            </span>
+          </div>
+          <lnk-gauge-chart [spec]="it.spec" [height]="180" renderer="svg" />
+          <p class="text-center text-xs text-[var(--muted-foreground)]">
+            {{ 'Sla.Totale' | translate: { n: it.totale } }}
+          </p>
+        </div>
+      }
+    </div>
+  }
+</section>

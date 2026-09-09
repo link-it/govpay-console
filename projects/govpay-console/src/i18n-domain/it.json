@@ -1686,6 +1686,17 @@
       "EmptyHint": "—"
     }
   },
+  "Sla": {
+    "Title": "Conformità SLA",
+    "Subtitle": "Percentuale di risposte entro soglia sui 4 metodi PA pagoPA.",
+    "Periodo": "Periodo {{da}} – {{a}}",
+    "Totale": "{{n}} invocazioni",
+    "Stato": {
+      "OK": "OK",
+      "WARNING": "Attenzione",
+      "KO": "Fuori soglia"
+    }
+  },
   "Nav": {
     "Dashboard": "Dashboard",
     "Pagamenti": "Pagamenti",
