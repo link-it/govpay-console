@@ -23,6 +23,7 @@ import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConsoleApiService } from '@core/services/console-api.service';
+import { PreferencesService } from '@core/preferences';
 import { SystemFacade, TweaksRegistry } from '@linkit/shared-ui';
 import { SlaMetricheComponent } from '@feature/metriche-sla';
 import { TransazioniAndamentoComponent } from '@feature/metriche-transazioni';
@@ -54,9 +55,15 @@ export class DashboardComponent implements OnInit {
   private readonly system = inject(SystemFacade);
   private readonly api = inject(ConsoleApiService);
   private readonly router = inject(Router);
+  private readonly prefs = inject(PreferencesService);
 
-  /** Visibilità del grafico dimostrativo (mock), nascosto di default. */
-  readonly showMock = signal(false);
+  /**
+   * Override di sessione del toggle mock: risposta immediata per tutti; se
+   * assente vale la preferenza server (`dashboardMock`, persistita per gli
+   * operatori). Default nascosto.
+   */
+  private readonly mockOverride = signal<boolean | null>(null);
+  readonly showMock = computed(() => this.mockOverride() ?? this.prefs.get('dashboardMock', false));
 
   constructor() {
     // Toggle nel pannello tweaks per mostrare il grafico mock (transazioni).
@@ -71,12 +78,18 @@ export class DashboardComponent implements OnInit {
             labelKey: 'Dashboard.Tweaks.MockChart',
             hintKey: 'Dashboard.Tweaks.MockChartHint',
             value: this.showMock,
-            onChange: (v) => this.showMock.set(v),
+            onChange: (v) => this.setMock(v),
           },
         ],
-        onReset: () => this.showMock.set(false),
+        onReset: () => this.setMock(false),
       }),
     );
+  }
+
+  /** Applica il toggle in sessione e lo persiste nelle preferenze (operatori). */
+  private setMock(value: boolean): void {
+    this.mockOverride.set(value);
+    this.prefs.set('dashboardMock', value);
   }
 
   private readonly pendenzeAttive = signal<{ value: number | null; loading: boolean; error: boolean }>({ value: null, loading: true, error: false });

@@ -22,6 +22,8 @@ export interface AppPreferences {
   colorScheme?: ColorScheme;
   /** Lingua della UI (codice, es. `it`/`en`). */
   locale?: string;
+  /** Visibilità del grafico dimostrativo (mock) in dashboard. */
+  dashboardMock?: boolean;
   /** Chiavi future libere. */
   [key: string]: unknown;
 }
