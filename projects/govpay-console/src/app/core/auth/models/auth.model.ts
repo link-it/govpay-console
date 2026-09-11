@@ -33,6 +33,12 @@ export interface ProfiloResponse {
   tipiPendenza?: ProfiloTipoPendenza[];
   acl?: ProfiloAcl[];
   autenticazione?: 'BASIC' | 'SPID' | 'IAM' | 'OAUTH2' | string;
+  /**
+   * Preferenze utente libere (JSON non interpretato dal server), modificabili
+   * con `PATCH /profilo`. Assente per utenze non-operatore; oggetto (anche
+   * vuoto) per gli operatori.
+   */
+  preferenze?: Record<string, unknown>;
 }
 
 export interface ProfiloDominio {
@@ -95,6 +101,11 @@ export interface AuthUser {
   aclRaw?: ProfiloAcl[];
   /** Strategia di autenticazione effettiva sul server (BASIC, SPID, ...). */
   autenticazione?: string;
+  /**
+   * Preferenze UI persistite server-side (`Profilo.preferenze`). `undefined`
+   * per utenze non-operatore (in quel caso valgono solo le preferenze locali).
+   */
+  preferenze?: Record<string, unknown>;
 }
 
 export interface AuthAcl {
@@ -163,6 +174,8 @@ export function mapProfileToUser(
     tipiPendenza,
     aclRaw,
     autenticazione: p.autenticazione,
+    // Preservato grezzo; `undefined` per utenze non-operatore (vedi ProfiloResponse).
+    preferenze: p.preferenze,
   };
 }
 
