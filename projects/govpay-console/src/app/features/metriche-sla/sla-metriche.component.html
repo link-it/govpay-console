@@ -1,24 +1,45 @@
 <section class="space-y-4">
-  <div class="flex items-baseline justify-between gap-2">
+  <div class="flex flex-wrap items-end justify-between gap-3">
     <div>
       <h2 class="text-lg font-semibold">{{ 'Sla.Title' | translate }}</h2>
       <p class="text-sm text-[var(--muted-foreground)]">{{ 'Sla.Subtitle' | translate }}</p>
     </div>
-    @if (periodo(); as p) {
-      <span class="shrink-0 text-xs text-[var(--muted-foreground)]">{{ 'Sla.Periodo' | translate: { da: p.da, a: p.a } }}</span>
-    }
+    <div class="flex shrink-0 items-center gap-2">
+      <label class="flex items-center gap-1 text-xs">
+        <span class="text-[var(--muted-foreground)]">{{ 'Common.DateFrom' | translate }}</span>
+        <input type="date" [max]="dataA()" [ngModel]="dataDa()" (ngModelChange)="onDataDa($event)"
+          class="rounded border border-[var(--border)] bg-[var(--card-bg)] px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+      </label>
+      <label class="flex items-center gap-1 text-xs">
+        <span class="text-[var(--muted-foreground)]">{{ 'Common.DateTo' | translate }}</span>
+        <input type="date" [min]="dataDa()" [ngModel]="dataA()" (ngModelChange)="onDataA($event)"
+          class="rounded border border-[var(--border)] bg-[var(--card-bg)] px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" />
+      </label>
+      <button type="button" class="btn btn-ghost btn-icon btn-sm" (click)="refresh()" [disabled]="loading()"
+        [attr.aria-label]="'Common.Refresh' | translate" [title]="'Common.Refresh' | translate">
+        <ng-icon name="bootstrapArrowClockwise" size="1.1rem" />
+      </button>
+    </div>
   </div>
 
   @if (loading()) {
     <lnk-loading />
+  } @else if (error()) {
+    <p class="text-sm text-[var(--danger)]">{{ 'Common.LoadError' | translate }}</p>
   } @else {
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       @for (it of items(); track it.codice) {
-        <div class="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3 space-y-1">
+        <button
+          type="button"
+          (click)="selectMetodo(it.codice)"
+          class="rounded-lg border bg-[var(--card-bg)] p-3 space-y-1 text-left transition-colors hover:bg-[var(--muted)]"
+          [style.borderColor]="selected() === it.codice ? 'var(--ring)' : 'var(--border)'"
+          [attr.aria-pressed]="selected() === it.codice"
+        >
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <p class="text-sm font-semibold">{{ it.codice }}</p>
-              <p class="truncate text-xs text-[var(--muted-foreground)]" [title]="it.metodo">{{ it.metodo }}</p>
+              <p class="truncate text-sm font-semibold" [title]="it.metodo">{{ 'Sla.Metodo.' + it.codice | translate }}</p>
+              <p class="truncate text-xs text-[var(--muted-foreground)]" [title]="it.metodo">{{ it.codice }} · {{ it.metodo }}</p>
             </div>
             <span
               class="shrink-0 rounded-md px-1.5 py-0.5 text-xs/5"
@@ -32,8 +53,48 @@
           <p class="text-center text-xs text-[var(--muted-foreground)]">
             {{ 'Sla.Totale' | translate: { n: it.totale } }}
           </p>
-        </div>
+        </button>
       }
     </div>
+
+    @if (selected(); as cod) {
+      <div class="rounded-lg border border-[var(--border)] bg-[var(--card-bg)] p-3 space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-sm font-semibold">
+            {{ 'Sla.SerieTitle' | translate: { metodo: 'Sla.Metodo.' + cod | translate } }}
+          </h3>
+          <div class="flex items-center gap-1">
+            <span class="mr-1 text-xs text-[var(--muted-foreground)]">{{ 'Sla.Granularita' | translate }}</span>
+            @for (g of granularita; track g.minuti) {
+              <button
+                type="button"
+                (click)="setGran(g.minuti)"
+                class="rounded px-2 py-0.5 text-xs transition-colors"
+                [style.background]="gran() === g.minuti ? 'var(--ring)' : 'var(--muted)'"
+                [style.color]="gran() === g.minuti ? '#fff' : 'var(--foreground)'"
+              >
+                {{ g.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="h-[280px]">
+          @if (serieLoading()) {
+            <div class="flex h-full items-center justify-center"><lnk-loading /></div>
+          } @else if (serieError()) {
+            <div class="flex h-full items-center justify-center">
+              <p class="text-sm text-[var(--danger)]">{{ 'Common.LoadError' | translate }}</p>
+            </div>
+          } @else if (serieEmpty()) {
+            <div class="flex h-full items-center justify-center">
+              <p class="text-sm text-[var(--muted-foreground)]">{{ 'Sla.SerieVuota' | translate }}</p>
+            </div>
+          } @else if (serieSpec(); as s) {
+            <lnk-time-series-chart class="block h-full" [spec]="s" [height]="280" />
+          }
+        </div>
+      </div>
+    }
   }
 </section>

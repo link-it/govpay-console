@@ -9,9 +9,10 @@
  * the Free Software Foundation.
  */
 
-// Modello delle metriche SLA (schema `SlaResponse` di openapi-20260908,
-// endpoint `GET /metriche/sla`). Endpoint non ancora disponibile sul backend:
-// oggi alimentato da un mock (vedi metriche-sla.service.ts).
+// Modello delle metriche SLA (schemi `SlaResponse` / `SlaSerieStoricaResponse`
+// di openapi-20260911). Alimentato dalla console-api reale: KPI aggregati
+// (`GET /metriche/sla`) e serie storica per metodo (`GET /metriche/sla/{codice}`),
+// vedi metriche-sla.console-api.ts.
 
 /** Stato di conformità di un KPI (schema `SlaStato`). */
 export type SlaStato = 'OK' | 'WARNING' | 'KO';
@@ -47,4 +48,30 @@ export interface SlaKpi {
 export interface SlaResponse {
   periodo: SlaPeriodo;
   kpi: SlaKpi[];
+}
+
+/** Bucket temporale della serie storica (schema `SlaPunto`). */
+export interface SlaPunto {
+  /** Istante di inizio bucket, ISO 8601 con timezone (per asse temporale). */
+  data: string;
+  /** Invocazioni osservate nel bucket. */
+  totale: number;
+  /** % entro soglia; `null` se `totale=0` (bucket vuoto → gap nel grafico). */
+  conformitaOsservata: number | null;
+}
+
+/**
+ * Andamento storico della conformità per un metodo PA
+ * (schema `SlaSerieStoricaResponse`, `GET /metriche/sla/{codice}`). I punti sono
+ * ordinati e senza buchi (un bucket per `granularitaMinuti`).
+ */
+export interface SlaSerieStoricaResponse {
+  periodo: SlaPeriodo;
+  codice: SlaKpiCodice;
+  metodo: string;
+  /** Ampiezza del bucket in minuti (eco del parametro richiesto). */
+  granularitaMinuti: number;
+  sogliaSecondi: number;
+  sogliaPercentile: number;
+  serieStorica: SlaPunto[];
 }

@@ -11,6 +11,7 @@
 
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LoadingComponent } from '@linkit/shared-ui';
 import { TimeSeriesChartComponent } from '@core/charts/chart-echarts';
@@ -27,7 +28,7 @@ import { andamentoToTimeSeries } from './transazioni.adapter';
 @Component({
   selector: 'lnk-transazioni-andamento',
   standalone: true,
-  imports: [TranslatePipe, LoadingComponent, TimeSeriesChartComponent],
+  imports: [NgIcon, TranslatePipe, LoadingComponent, TimeSeriesChartComponent],
   host: { class: 'block' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './transazioni-andamento.component.html',
@@ -42,6 +43,16 @@ export class TransazioniAndamentoComponent implements OnInit {
   readonly spec = signal<TimeSeriesSpec | null>(null);
 
   ngOnInit(): void {
+    this.load();
+  }
+
+  /** Ricarica l'andamento delle transazioni. */
+  refresh(): void {
+    this.load();
+  }
+
+  private load(): void {
+    this.loading.set(true);
     this.service
       .getAndamento()
       .pipe(takeUntilDestroyed(this.destroyRef))

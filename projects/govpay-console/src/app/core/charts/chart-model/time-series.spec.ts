@@ -9,16 +9,29 @@
  * the Free Software Foundation.
  */
 
-/** Punto di una serie storica: istante `t` (timestamp ms o data ISO) e valore `y`. */
+/**
+ * Punto di una serie storica: istante `t` (timestamp ms o data ISO) e valore
+ * `y`. `y` è `null` per i buchi (bucket senza dato): la linea si interrompe.
+ */
 export interface TimeSeriesPoint {
   t: number | string;
-  y: number;
+  y: number | null;
 }
 
 /** Una serie nominata (una linea/area, una voce di legenda). */
 export interface TimeSeries {
   name: string;
   points: TimeSeriesPoint[];
+  /** Indice dell'asse Y su cui tracciare (0 = sinistro default, 1 = destro). */
+  axisIndex?: number;
+}
+
+/** Configurazione di un asse Y (unità/formattazione diverse per asse). */
+export interface TimeSeriesAxis {
+  /** Etichetta breve dell'asse (opzionale). */
+  name?: string;
+  /** Formattatore dei valori dell'asse. */
+  format?: (value: number) => string;
 }
 
 /**
@@ -35,6 +48,10 @@ export interface TimeSeriesSpec {
   area?: boolean;
   /** Abilita lo zoom temporale (`dataZoom`): consigliato su serie dense. */
   zoom?: boolean;
+  /** Se `true` unisce i punti attraverso i `null`; default `false` (mostra i gap). */
+  connectNulls?: boolean;
+  /** Assi Y (0..2) con unità/formattazione distinte. Default: un solo asse a sinistra. */
+  yAxes?: TimeSeriesAxis[];
   /** Formattatore del valore per tooltip/assi (default: `${value}${unit}`). */
   format?: (value: number) => string;
 }

@@ -9,8 +9,8 @@
  * the Free Software Foundation.
  */
 
-import type { GaugeSpec } from '@core/charts/chart-model';
-import type { SlaKpi } from './sla.model';
+import type { GaugeSpec, TimeSeriesSpec } from '@core/charts/chart-model';
+import type { SlaKpi, SlaSerieStoricaResponse } from './sla.model';
 
 /**
  * Adapter di dominio: `SlaKpi` → {@link GaugeSpec}. Vive nel confine della
@@ -34,5 +34,44 @@ export function slaKpiToGauge(kpi: SlaKpi): GaugeSpec {
       { at: target, level: 'ok' },
     ],
     format: (v) => (kpi.conformitaOsservata == null ? 'n/d' : `${v.toFixed(1)}%`),
+  };
+}
+
+/** Etichette (tradotte) delle due serie della serie storica SLA. */
+export interface SlaSerieLabels {
+  conformita: string;
+  totale: string;
+}
+
+const NUM_IT = new Intl.NumberFormat('it-IT');
+
+/**
+ * Adapter di dominio: `SlaSerieStoricaResponse` → {@link TimeSeriesSpec}. Due
+ * serie su assi distinti: **conformità %** (asse sinistro, gap dove `null`) e
+ * **totale invocazioni** (asse destro). Così la serie è sempre rappresentata
+ * anche quando non c'è traffico (conformità null ma totale valorizzato).
+ * Nessun import da echarts.
+ */
+export function slaSerieToTimeSeries(res: SlaSerieStoricaResponse, labels: SlaSerieLabels): TimeSeriesSpec {
+  const at = (p: { data: string }) => Date.parse(p.data);
+  return {
+    zoom: true,
+    connectNulls: false,
+    yAxes: [
+      { format: (v) => `${v.toFixed(0)}%` },
+      { format: (v) => NUM_IT.format(v) },
+    ],
+    series: [
+      {
+        name: labels.conformita,
+        axisIndex: 0,
+        points: res.serieStorica.map((p) => ({ t: at(p), y: p.conformitaOsservata })),
+      },
+      {
+        name: labels.totale,
+        axisIndex: 1,
+        points: res.serieStorica.map((p) => ({ t: at(p), y: p.totale })),
+      },
+    ],
   };
 }

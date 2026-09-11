@@ -4,9 +4,15 @@
       <h2 class="text-lg font-semibold">{{ 'Transazioni.Title' | translate }}</h2>
       <p class="text-sm text-[var(--muted-foreground)]">{{ 'Transazioni.Subtitle' | translate }}</p>
     </div>
-    @if (periodo(); as p) {
-      <span class="shrink-0 text-xs text-[var(--muted-foreground)]">{{ 'Transazioni.Periodo' | translate: { da: p.da, a: p.a } }}</span>
-    }
+    <div class="flex shrink-0 items-center gap-2">
+      @if (periodo(); as p) {
+        <span class="text-xs text-[var(--muted-foreground)]">{{ 'Transazioni.Periodo' | translate: { da: p.da, a: p.a } }}</span>
+      }
+      <button type="button" class="btn btn-ghost btn-icon btn-sm" (click)="refresh()" [disabled]="loading()"
+        [attr.aria-label]="'Common.Refresh' | translate" [title]="'Common.Refresh' | translate">
+        <ng-icon name="bootstrapArrowClockwise" size="1.1rem" />
+      </button>
+    </div>
   </div>
 
   @if (loading()) {

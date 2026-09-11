@@ -1471,6 +1471,17 @@
     "Subtitle": "Share of responses within threshold across the 4 pagoPA PA methods.",
     "Periodo": "Period {{da}} – {{a}}",
     "Totale": "{{n}} invocations",
+    "SerieTitle": "Compliance trend — {{metodo}}",
+    "SerieVuota": "No data in the selected period.",
+    "SerieConformita": "Compliance",
+    "SerieTotale": "Invocations",
+    "Granularita": "Granularity",
+    "Metodo": {
+      "TDP": "Payment notice request",
+      "TGP": "Payment activation",
+      "TSRT": "Receipt delivery (RT)",
+      "TVP": "Payment verification"
+    },
     "Stato": {
       "OK": "OK",
       "WARNING": "Warning",

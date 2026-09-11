@@ -1691,6 +1691,17 @@
     "Subtitle": "Percentuale di risposte entro soglia sui 4 metodi PA pagoPA.",
     "Periodo": "Periodo {{da}} – {{a}}",
     "Totale": "{{n}} invocazioni",
+    "SerieTitle": "Andamento conformità — {{metodo}}",
+    "SerieVuota": "Nessun dato nel periodo selezionato.",
+    "SerieConformita": "Conformità",
+    "SerieTotale": "Invocazioni",
+    "Granularita": "Granularità",
+    "Metodo": {
+      "TDP": "Richiesta avviso di pagamento",
+      "TGP": "Attivazione pagamento",
+      "TSRT": "Invio ricevuta telematica (RT)",
+      "TVP": "Verifica pagamento"
+    },
     "Stato": {
       "OK": "OK",
       "WARNING": "Attenzione",

@@ -11,5 +11,5 @@
 
 export * from './sla.model';
 export * from './sla.adapter';
-export * from './metriche-sla.service';
+export * from './metriche-sla.console-api';
 export * from './sla-metriche.component';

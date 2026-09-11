@@ -10,8 +10,8 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { slaKpiToGauge } from './sla.adapter';
-import type { SlaKpi } from './sla.model';
+import { slaKpiToGauge, slaSerieToTimeSeries } from './sla.adapter';
+import type { SlaKpi, SlaSerieStoricaResponse } from './sla.model';
 
 const base: SlaKpi = {
   codice: 'TDP',
@@ -51,5 +51,39 @@ describe('slaKpiToGauge', () => {
     const g = slaKpiToGauge({ ...base, conformitaOsservata: null, totale: 0, stato: 'WARNING' });
     expect(g.value).toBe(0);
     expect(g.format?.(0)).toBe('n/d');
+  });
+});
+
+const serie: SlaSerieStoricaResponse = {
+  periodo: { da: '2026-09-01', a: '2026-09-02' },
+  codice: 'TDP',
+  metodo: 'paDemandPaymentNotice',
+  granularitaMinuti: 1440,
+  sogliaSecondi: 2,
+  sogliaPercentile: 98,
+  serieStorica: [
+    { data: '2026-09-01T00:00:00Z', totale: 100, conformitaOsservata: 99.1 },
+    { data: '2026-09-02T00:00:00Z', totale: 0, conformitaOsservata: null },
+  ],
+};
+
+describe('slaSerieToTimeSeries', () => {
+  const labels = { conformita: 'Conformità', totale: 'Invocazioni' };
+
+  it('crea due serie su assi distinti (conformità % + totale) con gap sui null', () => {
+    const s = slaSerieToTimeSeries(serie, labels);
+    expect(s.zoom).toBe(true);
+    expect(s.connectNulls).toBe(false);
+    expect(s.yAxes).toHaveLength(2);
+    expect(s.series).toHaveLength(2);
+    expect(s.series[0].axisIndex).toBe(0);
+    expect(s.series[1].axisIndex).toBe(1);
+  });
+
+  it('conformità: punti [timestamp, valore|null]; totale: sempre numerico', () => {
+    const s = slaSerieToTimeSeries(serie, labels);
+    expect(s.series[0].points[0]).toEqual({ t: Date.parse('2026-09-01T00:00:00Z'), y: 99.1 });
+    expect(s.series[0].points[1]).toEqual({ t: Date.parse('2026-09-02T00:00:00Z'), y: null });
+    expect(s.series[1].points[1]).toEqual({ t: Date.parse('2026-09-02T00:00:00Z'), y: 0 });
   });
 });
