@@ -17,11 +17,6 @@ import type { ProfiloResponse } from '@core/auth/models/auth.model';
 import type { JsonPatchOp } from '@core/models';
 import type { AppPreferences } from './app-preferences.model';
 
-/** Escape di un segmento per JSON Pointer (RFC 6901): `~`→`~0`, `/`→`~1`. */
-function jsonPointerSegment(key: string): string {
-  return key.replace(/~/g, '~0').replace(/\//g, '~1');
-}
-
 /**
  * Preferenze UI dell'operatore, persistite server-side in `Profilo.preferenze`
  * via **`PATCH /profilo`** (JSON Patch, solo path `/preferenze`, last-write-wins).
@@ -52,15 +47,18 @@ export class PreferencesService {
   }
 
   /**
-   * Scrive una preferenza top-level e la persiste (`add /preferenze/<key>`).
-   * Aggiorna subito lo stato locale, poi riconcilia col `Profilo` ritornato.
-   * No-op per le utenze non-operatore.
+   * Scrive una preferenza top-level e la persiste. Il backend consente il
+   * PATCH **solo sul path `/preferenze`** (l'intero oggetto), non sui sotto-path:
+   * inviamo quindi `replace /preferenze` con l'oggetto completo (merge locale +
+   * la modifica). Aggiorna subito lo stato locale, poi riconcilia col `Profilo`
+   * ritornato. No-op per le utenze non-operatore.
    */
   set<T>(key: string, value: T): void {
     if (!this.available()) return;
+    const next: AppPreferences = { ...this.preferenze(), [key]: value };
     // Aggiornamento ottimistico.
-    this.auth.setPreferenze({ ...this.preferenze(), [key]: value });
-    const ops: JsonPatchOp[] = [{ op: 'add', path: `/preferenze/${jsonPointerSegment(key)}`, value }];
+    this.auth.setPreferenze(next);
+    const ops: JsonPatchOp[] = [{ op: 'replace', path: '/preferenze', value: next }];
     this.api
       .patch<ProfiloResponse>('profilo', ops)
       .pipe(catchError(() => of(null)))

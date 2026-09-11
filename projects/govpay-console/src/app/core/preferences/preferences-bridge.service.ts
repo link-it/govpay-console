@@ -11,6 +11,7 @@
 
 import { Injectable, effect, inject } from '@angular/core';
 import { LanguageService, SystemFacade, type ColorScheme } from '@linkit/shared-ui';
+import { AuthService } from '@core/auth/services/auth.service';
 import { PreferencesService } from './preferences.service';
 
 /**
@@ -18,41 +19,47 @@ import { PreferencesService } from './preferences.service';
  * UI della libreria (`SystemFacade` colore, `LanguageService` lingua), **senza
  * patchare la lib mirror** (bridge a livello app, §2 del piano).
  *
- * Per ogni preferenza sincronizzata due direzioni:
- * - **server → UI**: quando la preferenza cambia (login o altro device) la
- *   applica via il setter pubblico del servizio;
- * - **UI → server**: quando l'utente cambia il valore lo persiste.
+ * - **Ripristino al login**: quando compare un utente autenticato (login o
+ *   rehydrate di sessione) le sue preferenze salvate vengono applicate una
+ *   volta. Al logout le ancore si azzerano, così un successivo login riapplica.
+ * - **Persistenza**: i cambi UI dell'operatore vengono salvati; il confronto con
+ *   l'ancora `applied*` evita loop e la persistenza del valore iniziale al boot.
  *
- * `applied*` è l'ancora di riconciliazione: evita loop e la persistenza del
- * valore iniziale/di default al primo caricamento. Istanziato al boot da
- * `app.config.ts`.
+ * Istanziato al boot da `app.config.ts`.
  */
 @Injectable({ providedIn: 'root' })
 export class PreferencesBridge {
   private readonly prefs = inject(PreferencesService);
+  private readonly auth = inject(AuthService);
   private readonly system = inject(SystemFacade);
   private readonly lang = inject(LanguageService);
 
+  private lastUserId?: string;
   private appliedScheme?: ColorScheme;
   private appliedLocale?: string;
 
   constructor() {
-    // ── Color scheme ──────────────────────────────────────────────────
-    // server → UI
+    // Ripristino al login / azzeramento al logout.
     effect(() => {
-      const scheme = this.prefs.get<ColorScheme | undefined>('colorScheme', undefined);
-      if (scheme && scheme !== this.appliedScheme) {
-        this.appliedScheme = scheme;
-        this.system.setColorScheme(scheme);
+      const id = this.auth.user()?.id;
+      if (id) {
+        if (id !== this.lastUserId) {
+          this.lastUserId = id;
+          this.applySaved();
+        }
+      } else if (this.lastUserId !== undefined) {
+        this.lastUserId = undefined;
+        this.appliedScheme = undefined;
+        this.appliedLocale = undefined;
       }
     });
-    // UI → server
+
+    // Persistenza dei cambi UI (solo operatori con `preferenze`).
     effect(() => {
       const current = this.system.colorScheme();
       if (!this.prefs.available()) return;
       if (this.appliedScheme === undefined) {
-        // Prima sincronizzazione: adotta il valore corrente come baseline senza
-        // persistere (non salviamo il default al boot).
+        // Baseline: adotta il valore corrente senza persistere il default.
         this.appliedScheme = current;
         return;
       }
@@ -61,17 +68,6 @@ export class PreferencesBridge {
         this.prefs.set('colorScheme', current);
       }
     });
-
-    // ── Lingua ────────────────────────────────────────────────────────
-    // server → UI
-    effect(() => {
-      const locale = this.prefs.get<string | undefined>('locale', undefined);
-      if (locale && locale !== this.appliedLocale) {
-        this.appliedLocale = locale;
-        this.lang.setLanguage(locale);
-      }
-    });
-    // UI → server
     effect(() => {
       const current = this.lang.current();
       if (!this.prefs.available()) return;
@@ -84,5 +80,19 @@ export class PreferencesBridge {
         this.prefs.set('locale', current);
       }
     });
+  }
+
+  /** Applica le preferenze salvate (se presenti) ai servizi UI della libreria. */
+  private applySaved(): void {
+    const scheme = this.prefs.get<ColorScheme | undefined>('colorScheme', undefined);
+    if (scheme) {
+      this.appliedScheme = scheme;
+      this.system.setColorScheme(scheme);
+    }
+    const locale = this.prefs.get<string | undefined>('locale', undefined);
+    if (locale) {
+      this.appliedLocale = locale;
+      this.lang.setLanguage(locale);
+    }
   }
 }

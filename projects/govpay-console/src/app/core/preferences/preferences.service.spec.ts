@@ -65,11 +65,14 @@ describe('PreferencesService', () => {
     expect(svc.get('locale', 'it')).toBe('it');
   });
 
-  it('set(): op JSON Patch add /preferenze/<key> + aggiornamento ottimistico', () => {
-    const { svc, patchCalls } = make({});
+  it('set(): op JSON Patch replace /preferenze (oggetto intero) + aggiornamento ottimistico', () => {
+    const { svc, patchCalls } = make({ colorScheme: 'dark' });
     svc.set('locale', 'en');
     expect(patchCalls[0].path).toBe('profilo');
-    expect(patchCalls[0].ops).toEqual([{ op: 'add', path: '/preferenze/locale', value: 'en' }]);
+    // Solo /preferenze è modificabile: si invia l'oggetto completo (merge).
+    expect(patchCalls[0].ops).toEqual([
+      { op: 'replace', path: '/preferenze', value: { colorScheme: 'dark', locale: 'en' } },
+    ]);
     // aggiornamento ottimistico immediato
     expect(svc.get('locale', 'it')).toBe('en');
   });
