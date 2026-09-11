@@ -12,6 +12,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   computed,
   inject,
@@ -22,7 +23,7 @@ import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConsoleApiService } from '@core/services/console-api.service';
-import { SystemFacade } from '@linkit/shared-ui';
+import { SystemFacade, TweaksRegistry } from '@linkit/shared-ui';
 import { SlaMetricheComponent } from '@feature/metriche-sla';
 import { TransazioniAndamentoComponent } from '@feature/metriche-transazioni';
 import type { Slice } from '@core/models';
@@ -53,6 +54,30 @@ export class DashboardComponent implements OnInit {
   private readonly system = inject(SystemFacade);
   private readonly api = inject(ConsoleApiService);
   private readonly router = inject(Router);
+
+  /** Visibilità del grafico dimostrativo (mock), nascosto di default. */
+  readonly showMock = signal(false);
+
+  constructor() {
+    // Toggle nel pannello tweaks per mostrare il grafico mock (transazioni).
+    const tweaks = inject(TweaksRegistry);
+    inject(DestroyRef).onDestroy(
+      tweaks.register({
+        id: 'dashboard',
+        titleKey: 'Dashboard.Tweaks.Title',
+        rows: [
+          {
+            type: 'toggle',
+            labelKey: 'Dashboard.Tweaks.MockChart',
+            hintKey: 'Dashboard.Tweaks.MockChartHint',
+            value: this.showMock,
+            onChange: (v) => this.showMock.set(v),
+          },
+        ],
+        onReset: () => this.showMock.set(false),
+      }),
+    );
+  }
 
   private readonly pendenzeAttive = signal<{ value: number | null; loading: boolean; error: boolean }>({ value: null, loading: true, error: false });
   private readonly tracciatiInLavorazione = signal<{ value: number | null; loading: boolean; error: boolean }>({ value: null, loading: true, error: false });

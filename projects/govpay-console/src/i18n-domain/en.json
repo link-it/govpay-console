@@ -1464,6 +1464,11 @@
       "TracciatiInLavorazioneHint": "Pending batches being processed",
       "WaitingApi": "Available once connected to the API",
       "EmptyHint": "—"
+    },
+    "Tweaks": {
+      "Title": "Dashboard",
+      "MockChart": "Demo chart",
+      "MockChartHint": "Show the sample transactions chart (simulated data)."
     }
   },
   "Sla": {

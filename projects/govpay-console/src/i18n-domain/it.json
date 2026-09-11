@@ -1684,6 +1684,11 @@
       "TracciatiInLavorazioneHint": "Tracciati pendenze in elaborazione",
       "WaitingApi": "Disponibile dopo il collegamento alle API",
       "EmptyHint": "—"
+    },
+    "Tweaks": {
+      "Title": "Dashboard",
+      "MockChart": "Grafico dimostrativo",
+      "MockChartHint": "Mostra il grafico di esempio delle transazioni (dati simulati)."
     }
   },
   "Sla": {

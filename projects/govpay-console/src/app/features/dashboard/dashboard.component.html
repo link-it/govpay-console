@@ -31,5 +31,7 @@
 
   <lnk-sla-metriche />
 
-  <lnk-transazioni-andamento />
+  @if (showMock()) {
+    <lnk-transazioni-andamento />
+  }
 </section>
