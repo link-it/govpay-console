@@ -78,11 +78,10 @@ describe('TabsComponent', () => {
     expect(tablist.classList).toContain('lnk-tabs-size--sm');
   });
 
-  it('tabIndex 0 sull\'attivo, -1 sugli altri', () => {
+  it('tutti i tab sono raggiungibili con Tab (tabindex 0)', () => {
     const fixture = render('eventi');
     const buttons = fixture.nativeElement.querySelectorAll('button[role="tab"]');
-    expect(buttons[0].getAttribute('tabindex')).toBe('-1');
-    expect(buttons[1].getAttribute('tabindex')).toBe('0');
+    expect([...buttons].map((b) => (b as HTMLElement).getAttribute('tabindex'))).toEqual(['0', '0', '0']);
   });
 
   it('badge numerico viene renderizzato', () => {
@@ -112,5 +111,33 @@ describe('TabsComponent', () => {
 
     expect(fixture.componentInstance.activeId()).toBe('eventi');
     expect(buttons[1].getAttribute('aria-selected')).toBe('true');
+  });
+
+  function press(fixture: ReturnType<typeof render>, key: string): void {
+    const tablist = fixture.nativeElement.querySelector('[role="tablist"]') as HTMLElement;
+    tablist.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+    fixture.detectChanges();
+  }
+
+  it('ArrowRight sposta la selezione al tab successivo', () => {
+    const fixture = render('dati');
+    press(fixture, 'ArrowRight');
+    expect(fixture.componentInstance.activeId()).toBe('eventi');
+  });
+
+  it('ArrowRight salta i tab disabilitati e fa il wrap', () => {
+    const fixture = render('eventi'); // il successivo (allegati) è disabled → wrap a dati
+    press(fixture, 'ArrowRight');
+    expect(fixture.componentInstance.activeId()).toBe('dati');
+  });
+
+  it('ArrowLeft va al precedente; Home/End ai bordi (saltando i disabled)', () => {
+    const fixture = render('eventi');
+    press(fixture, 'ArrowLeft');
+    expect(fixture.componentInstance.activeId()).toBe('dati');
+    press(fixture, 'End');
+    expect(fixture.componentInstance.activeId()).toBe('eventi'); // allegati disabled
+    press(fixture, 'Home');
+    expect(fixture.componentInstance.activeId()).toBe('dati');
   });
 });

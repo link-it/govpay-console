@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgIcon } from '@ng-icons/core';
 import { LoadingComponent } from '../loading/loading.component';
@@ -263,7 +264,7 @@ export type TabsSize = 'md' | 'sm';
     }
   `,
   template: `
-    <div role="tablist" [class]="tablistClass()">
+    <div role="tablist" [class]="tablistClass()" (keydown)="onKeydown($event)">
       <!-- Niente aria-controls: i pannelli sono renderizzati dal chiamante e
            solo quello attivo è nel DOM (@if su activeId), quindi il riferimento
            risulterebbe pendente (a11y: aria-valid-attr-value). aria-controls è
@@ -274,11 +275,11 @@ export type TabsSize = 'md' | 'sm';
           role="tab"
           [id]="'tab-' + tab.id"
           [attr.aria-selected]="activeId() === tab.id"
-          [attr.tabindex]="activeId() === tab.id ? 0 : -1"
+          tabindex="0"
           [disabled]="tab.disabled || null"
           [class]="'lnk-tab lnk-tab--' + variant()"
           [class.is-active]="activeId() === tab.id"
-          (click)="!tab.disabled && activeId.set(tab.id)"
+          (click)="onActivate(tab, $event)"
         >
           @if (tab.icon) {
             <ng-icon [name]="tab.icon" size="1rem" />
@@ -303,7 +304,62 @@ export class TabsComponent {
   /** Dimensione: `md` (default) o `sm` (compatto). Effetto visibile sulla variante `segmented`. */
   readonly size = input<TabsSize>('md');
 
+  private readonly document = inject(DOCUMENT);
+
   protected readonly tablistClass = computed(
     () => `lnk-tablist--${this.variant()} lnk-tabs-size--${this.size()}`
   );
+
+  /**
+   * Attivazione via click: seleziona il tab e ne prende il focus. Il focus
+   * esplicito è necessario perché su macOS (Safari/Firefox) il click su un
+   * `<button>` non lo mette a fuoco — senza, le frecce non funzionerebbero dopo
+   * un click. `focus-visible` evita comunque l'anello di focus per il mouse.
+   */
+  protected onActivate(tab: TabDef, event: Event): void {
+    if (tab.disabled) return;
+    this.activeId.set(tab.id);
+    (event.currentTarget as HTMLElement | null)?.focus();
+  }
+
+  /**
+   * Navigazione da tastiera (WAI-ARIA tabs): ArrowLeft/Up → precedente,
+   * ArrowRight/Down → successivo (con wrap), Home → primo, End → ultimo; i tab
+   * disabilitati sono saltati. Tutti i tab sono raggiungibili con Tab
+   * (`tabindex=0`), quindi lo spostamento è relativo al tab **con focus**;
+   * l'attivazione è automatica (sposta focus e seleziona), coerente col click.
+   */
+  protected onKeydown(event: KeyboardEvent): void {
+    const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+    if (!keys.includes(event.key)) return;
+    const enabled = this.tabs().filter((t) => !t.disabled);
+    if (enabled.length < 2) return;
+    event.preventDefault();
+
+    // Riferimento = tab con focus (fallback: tab selezionato).
+    const focusedId = (this.document.activeElement as HTMLElement | null)?.id?.replace(/^tab-/, '');
+    let current = enabled.findIndex((t) => t.id === focusedId);
+    if (current < 0) current = Math.max(0, enabled.findIndex((t) => t.id === this.activeId()));
+    let target = current;
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        target = (current + 1) % enabled.length;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        target = (current - 1 + enabled.length) % enabled.length;
+        break;
+      case 'Home':
+        target = 0;
+        break;
+      case 'End':
+        target = enabled.length - 1;
+        break;
+    }
+
+    const targetTab = enabled[target];
+    this.activeId.set(targetTab.id);
+    this.document.getElementById('tab-' + targetTab.id)?.focus();
+  }
 }
