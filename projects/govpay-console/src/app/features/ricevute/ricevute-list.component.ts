@@ -55,6 +55,7 @@ import { RicevuteConsoleApi } from './ricevute.console-api';
 import { RicevutaUploadComponent } from './ricevuta-upload.component';
 import { RicevutaRecuperoComponent } from './ricevuta-recupero.component';
 import { statoRtColor, statoRtLabel, type Ricevuta, type RecuperoRicevutaEsito, type RicevutaSummary, type RicevuteListFilters } from './ricevuta.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -106,7 +107,8 @@ export class RicevuteListComponent implements OnInit {
     return layout?.listViewByFeature?.['ricevute'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+  private readonly prefView = inject(PreferencesService);
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.prefView.featureView('ricevute') ?? this.viewModeDefault());
 
   /** Override di sessione (tweaks) della variante search-pill. */
   private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
@@ -206,7 +208,7 @@ export class RicevuteListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('ricevute', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -314,7 +316,9 @@ export class RicevuteListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('ricevute', v);
   }
 
   onRowClick(r: RicevutaSummary): void {

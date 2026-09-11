@@ -51,6 +51,7 @@ import {
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { EntrateConsoleApi } from './entrate.console-api';
 import type { EntrateListFilters, EntrataSummary } from './entrata.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -95,7 +96,8 @@ export class EntrateListComponent implements OnInit {
     return layout?.listViewByFeature?.['entrate'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+  private readonly prefView = inject(PreferencesService);
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.prefView.featureView('entrate') ?? this.viewModeDefault());
 
   private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
   readonly searchPillVariant = computed<'pill' | 'square'>(
@@ -188,7 +190,7 @@ export class EntrateListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('entrate', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -276,7 +278,9 @@ export class EntrateListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('entrate', v);
   }
 
   onRowClick(e: EntrataSummary): void {

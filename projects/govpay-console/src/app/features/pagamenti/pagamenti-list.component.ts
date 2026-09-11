@@ -59,6 +59,7 @@ import {
   type PagamentiListFilters,
   type StatoPagamento,
 } from './pagamento.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -112,8 +113,9 @@ export class PagamentiListComponent implements OnInit {
     return layout?.listViewByFeature?.['pagamenti'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
+  private readonly prefView = inject(PreferencesService);
   readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+    () => this.viewModeOverride() ?? this.prefView.featureView('pagamenti') ?? this.viewModeDefault()
   );
 
   constructor() {
@@ -131,7 +133,7 @@ export class PagamentiListComponent implements OnInit {
             value: computed(() => matchDateRangePreset(this.filters().dataDa)),
             onChange: (v) => this.onDateRangeChange(v) },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => (this.prefView.setFeatureView('pagamenti', null), this.viewModeOverride.set(null)),
       })
     );
   }
@@ -278,7 +280,9 @@ export class PagamentiListComponent implements OnInit {
 
   // ---- Tweaks panel handlers -----------------------------------------
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('pagamenti', v);
   }
 
   onDateRangeChange(value: string): void {

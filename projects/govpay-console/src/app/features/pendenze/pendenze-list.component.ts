@@ -59,6 +59,7 @@ import {
   type PendenzaSummary,
   type PendenzeListFilters,
 } from './pendenza.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -110,8 +111,9 @@ export class PendenzeListComponent implements OnInit {
     return layout?.listViewByFeature?.['pendenze'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
+  private readonly prefView = inject(PreferencesService);
   readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+    () => this.viewModeOverride() ?? this.prefView.featureView('pendenze') ?? this.viewModeDefault()
   );
 
   /** Override di sessione (tweaks) della variante search-pill. */
@@ -243,7 +245,7 @@ export class PendenzeListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('pendenze', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -383,7 +385,9 @@ export class PendenzeListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('pendenze', v);
   }
 
   onRowClick(p: PendenzaSummary): void {

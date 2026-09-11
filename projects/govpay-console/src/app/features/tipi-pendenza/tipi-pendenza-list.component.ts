@@ -51,6 +51,7 @@ import {
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
 import type { TipiPendenzaListFilters, TipoPendenzaSummary } from './tipo-pendenza.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -99,7 +100,8 @@ export class TipiPendenzaListComponent implements OnInit {
     return layout?.listViewByFeature?.['tipi-pendenza'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+  private readonly prefView = inject(PreferencesService);
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.prefView.featureView('tipi-pendenza') ?? this.viewModeDefault());
 
   private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
   readonly searchPillVariant = computed<'pill' | 'square'>(
@@ -204,7 +206,7 @@ export class TipiPendenzaListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('tipi-pendenza', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -300,7 +302,9 @@ export class TipiPendenzaListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('tipi-pendenza', v);
   }
 
   onRowClick(t: TipoPendenzaSummary): void {

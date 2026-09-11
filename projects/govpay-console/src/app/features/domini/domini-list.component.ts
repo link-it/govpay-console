@@ -51,6 +51,7 @@ import {
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { DominiConsoleApi } from './domini.console-api';
 import type { DominiListFilters, DominioSummary } from './dominio.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -99,7 +100,8 @@ export class DominiListComponent implements OnInit {
     return layout?.listViewByFeature?.['domini'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+  private readonly prefView = inject(PreferencesService);
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.prefView.featureView('domini') ?? this.viewModeDefault());
 
   private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
   readonly searchPillVariant = computed<'pill' | 'square'>(
@@ -204,7 +206,7 @@ export class DominiListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('domini', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -300,7 +302,9 @@ export class DominiListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('domini', v);
   }
 
   onRowClick(d: DominioSummary): void {

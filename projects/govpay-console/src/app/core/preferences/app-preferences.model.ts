@@ -24,6 +24,8 @@ export interface AppPreferences {
   locale?: string;
   /** Visibilità del grafico dimostrativo (mock) in dashboard. */
   dashboardMock?: boolean;
+  /** Tipo di vista delle liste, per feature (`table`/`rows`). */
+  viewByFeature?: Record<string, 'table' | 'rows'>;
   /** Chiavi future libere. */
   [key: string]: unknown;
 }

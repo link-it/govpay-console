@@ -1,10 +1,55 @@
 <section class="space-y-4 pb-6 lnk-detail-page">
-  <div lnkListStickyToolbar class="px-6 pt-6 pb-4">
+  <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
     <lnk-page-header titleKey="Nav.Profilo" subtitleKey="Profilo.Subtitle" />
+    @if (user()) {
+      <lnk-tabs [tabs]="tabs" [(activeId)]="activeTab" variant="segmented" />
+    }
   </div>
 
   <div class="px-6 space-y-4">
   @if (user(); as u) {
+    @if (activeTab() === 'preferenze') {
+    <lnk-detail-section titleKey="Profilo.Preferenze.Title">
+      <p class="-mt-2 mb-4 text-sm text-[var(--muted-foreground)]">
+        {{ (prefsSynced() ? 'Profilo.Preferenze.SyncOn' : 'Profilo.Preferenze.SyncOff') | translate }}
+      </p>
+      <div class="grid max-w-xl gap-4 sm:grid-cols-2">
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="text-[var(--muted-foreground)]">{{ 'Profilo.Preferenze.Tema' | translate }}</span>
+          <lnk-select
+            [options]="colorSchemeOptions()"
+            [ngModel]="colorScheme()"
+            (ngModelChange)="onColorScheme($event)"
+            [ariaLabel]="'Profilo.Preferenze.Tema' | translate"
+          />
+        </label>
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="text-[var(--muted-foreground)]">{{ 'Profilo.Preferenze.Lingua' | translate }}</span>
+          <lnk-select
+            [options]="languageOptions()"
+            [ngModel]="locale()"
+            (ngModelChange)="onLanguage($event)"
+            [ariaLabel]="'Profilo.Preferenze.Lingua' | translate"
+          />
+        </label>
+      </div>
+      <h4 class="mt-6 mb-2 text-sm font-medium">{{ 'Profilo.Preferenze.ViewTitle' | translate }}</h4>
+      <div class="grid gap-3 sm:grid-cols-2 max-w-2xl">
+        @for (f of viewFeatures; track f.key) {
+          <label class="flex items-center justify-between gap-3 text-sm">
+            <span class="min-w-0 truncate">{{ f.labelKey | translate }}</span>
+            <lnk-select
+              class="block w-40 shrink-0"
+              [options]="viewOptions()"
+              [ngModel]="viewOf(f.key)"
+              (ngModelChange)="onViewFeature(f.key, $event)"
+              [ariaLabel]="f.labelKey | translate"
+            />
+          </label>
+        }
+      </div>
+    </lnk-detail-section>
+    } @else {
     <lnk-detail-section titleKey="Profilo.Detail.Anagrafica">
       <lnk-info-grid [items]="anagraficaItems()" />
     </lnk-detail-section>
@@ -79,6 +124,7 @@
         <p class="text-sm text-[var(--muted-foreground)]">{{ 'Profilo.Detail.NoAcl' | translate }}</p>
       }
     </lnk-detail-section>
+    }
   } @else {
     <lnk-empty-state
       icon="bootstrapPersonExclamation"

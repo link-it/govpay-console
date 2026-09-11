@@ -58,6 +58,7 @@ import {
   type EventoListFilters,
   type EventoSummary,
 } from './evento.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -112,8 +113,9 @@ export class GiornaleEventiListComponent implements OnInit {
     return layout?.listViewByFeature?.['giornale-eventi'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
+  private readonly prefView = inject(PreferencesService);
   readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+    () => this.viewModeOverride() ?? this.prefView.featureView('giornale-eventi') ?? this.viewModeDefault()
   );
 
   /** Variante grafica della search-pill: override tweaks → app-config → `pill`. */
@@ -141,7 +143,7 @@ export class GiornaleEventiListComponent implements OnInit {
             onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable') },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('giornale-eventi', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -364,7 +366,9 @@ export class GiornaleEventiListComponent implements OnInit {
     this.reset();
   }
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('giornale-eventi', v);
   }
 
   private reset(): void {

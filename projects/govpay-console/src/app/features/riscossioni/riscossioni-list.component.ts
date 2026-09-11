@@ -59,6 +59,7 @@ import {
   type RiscossioniListFilters,
   type StatoRiscossione,
 } from './riscossione.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -101,8 +102,9 @@ export class RiscossioniListComponent implements OnInit {
     return layout?.listViewByFeature?.['riscossioni'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
+  private readonly prefView = inject(PreferencesService);
   readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+    () => this.viewModeOverride() ?? this.prefView.featureView('riscossioni') ?? this.viewModeDefault()
   );
 
   constructor() {
@@ -120,7 +122,7 @@ export class RiscossioniListComponent implements OnInit {
             value: computed(() => matchDateRangePreset(this.filters().dataDa)),
             onChange: (v) => this.onDateRangeChange(v) },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => (this.prefView.setFeatureView('riscossioni', null), this.viewModeOverride.set(null)),
       })
     );
   }
@@ -238,7 +240,9 @@ export class RiscossioniListComponent implements OnInit {
 
   // ---- Tweaks panel handlers -----------------------------------------
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('riscossioni', v);
   }
   onDateRangeChange(value: string): void {
     const days = Number(value);

@@ -12,3 +12,4 @@
 export * from './app-preferences.model';
 export * from './preferences.service';
 export * from './preferences-bridge.service';
+export * from './feature-view';

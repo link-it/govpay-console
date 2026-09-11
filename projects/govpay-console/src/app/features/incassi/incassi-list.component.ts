@@ -59,6 +59,7 @@ import {
   type IncassiListFilters,
   type StatoIncasso,
 } from './incasso.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -101,8 +102,9 @@ export class IncassiListComponent implements OnInit {
     return layout?.listViewByFeature?.['incassi'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
+  private readonly prefView = inject(PreferencesService);
   readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+    () => this.viewModeOverride() ?? this.prefView.featureView('incassi') ?? this.viewModeDefault()
   );
 
   constructor() {
@@ -120,7 +122,7 @@ export class IncassiListComponent implements OnInit {
             value: computed(() => matchDateRangePreset(this.filters().dataDa)),
             onChange: (v) => this.onDateRangeChange(v) },
         ],
-        onReset: () => this.viewModeOverride.set(null),
+        onReset: () => (this.prefView.setFeatureView('incassi', null), this.viewModeOverride.set(null)),
       })
     );
   }
@@ -242,7 +244,9 @@ export class IncassiListComponent implements OnInit {
 
   // ---- Tweaks panel handlers -----------------------------------------
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('incassi', v);
   }
   onDateRangeChange(value: string): void {
     const days = Number(value);

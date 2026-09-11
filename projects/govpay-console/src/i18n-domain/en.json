@@ -1431,6 +1431,21 @@
   },
   "Profilo": {
     "Subtitle": "Connected user data, scope and ACLs.",
+    "Tabs": {
+      "Profilo": "Profile",
+      "Preferenze": "Preferences"
+    },
+    "Preferenze": {
+      "Title": "Preferences",
+      "Tema": "Theme",
+      "Lingua": "Language",
+      "SyncOn": "Preferences are saved to your account and restored on every sign-in.",
+      "SyncOff": "Preferences are saved on this device only.",
+      "ViewTitle": "List view",
+      "ViewAuto": "Default",
+      "ViewTable": "Table",
+      "ViewRows": "Rows"
+    },
     "NotAuthenticated": {
       "Title": "Not authenticated",
       "Description": "Sign in to view the profile."

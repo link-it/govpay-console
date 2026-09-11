@@ -1651,6 +1651,21 @@
   },
   "Profilo": {
     "Subtitle": "Dati dell'utente connesso, domini e ACL.",
+    "Tabs": {
+      "Profilo": "Profilo",
+      "Preferenze": "Preferenze"
+    },
+    "Preferenze": {
+      "Title": "Preferenze",
+      "Tema": "Tema",
+      "Lingua": "Lingua",
+      "SyncOn": "Le preferenze sono salvate sul tuo account e ripristinate ad ogni accesso.",
+      "SyncOff": "Le preferenze sono salvate solo su questo dispositivo.",
+      "ViewTitle": "Vista delle liste",
+      "ViewAuto": "Predefinita",
+      "ViewTable": "Tabella",
+      "ViewRows": "Righe"
+    },
     "NotAuthenticated": {
       "Title": "Non autenticato",
       "Description": "Effettua l'accesso per visualizzare il profilo."

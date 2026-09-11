@@ -46,6 +46,20 @@ export class PreferencesService {
     return v === undefined ? (fallback as T) : (v as T);
   }
 
+  /** Tipo di vista salvato per una feature (o `undefined` se non impostato). */
+  featureView(feature: string): 'table' | 'rows' | undefined {
+    return this.preferenze().viewByFeature?.[feature];
+  }
+
+  /** Imposta (o rimuove, con `null`) il tipo di vista per una feature. */
+  setFeatureView(feature: string, view: 'table' | 'rows' | null): void {
+    if (!this.available()) return;
+    const map: Record<string, 'table' | 'rows'> = { ...(this.preferenze().viewByFeature ?? {}) };
+    if (view === null) delete map[feature];
+    else map[feature] = view;
+    this.set('viewByFeature', map);
+  }
+
   /**
    * Scrive una preferenza top-level e la persiste. Il backend consente il
    * PATCH **solo sul path `/preferenze`** (l'intero oggetto), non sui sotto-path:

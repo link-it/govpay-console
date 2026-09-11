@@ -51,6 +51,7 @@ import {
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { IntermediariConsoleApi } from './intermediari.console-api';
 import type { IntermediariListFilters, IntermediarioSummary } from './intermediario.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -99,8 +100,9 @@ export class IntermediariListComponent implements OnInit {
     return layout?.listViewByFeature?.['intermediari'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
+  private readonly prefView = inject(PreferencesService);
   readonly viewMode = computed<'table' | 'rows'>(
-    () => this.viewModeOverride() ?? this.viewModeDefault()
+    () => this.viewModeOverride() ?? this.prefView.featureView('intermediari') ?? this.viewModeDefault()
   );
 
   /** Override di sessione (tweaks) della variante search-pill. */
@@ -210,7 +212,7 @@ export class IntermediariListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('intermediari', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -307,7 +309,9 @@ export class IntermediariListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('intermediari', v);
   }
 
   onRowClick(i: IntermediarioSummary): void {
