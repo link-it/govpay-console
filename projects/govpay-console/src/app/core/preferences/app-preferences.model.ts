@@ -22,8 +22,6 @@ export interface AppPreferences {
   colorScheme?: ColorScheme;
   /** Lingua della UI (codice, es. `it`/`en`). */
   locale?: string;
-  /** Visibilità del grafico dimostrativo (mock) in dashboard. */
-  dashboardMock?: boolean;
   /** Tipo di vista delle liste, per feature (`table`/`rows`). */
   viewByFeature?: Record<string, 'table' | 'rows'>;
   /** Chiavi future libere. */
