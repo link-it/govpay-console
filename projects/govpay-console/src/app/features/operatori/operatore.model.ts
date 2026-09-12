@@ -34,6 +34,12 @@ export interface Operatore {
   tipiPendenza?: TipoPendenzaRef[];
   ruoli?: RuoloRef[];
   acl?: Acl[];
+  /**
+   * Preferenze UI dell'operatore (JSON libero, non interpretato dal server).
+   * Gestite dall'operatore stesso via `PATCH /profilo`; l'editor operatori NON
+   * le modifica ma le preserva nel replace per non azzerarle.
+   */
+  preferenze?: Record<string, unknown>;
 }
 
 /** Body per la creazione (schema `OperatoreCreate`). */
@@ -45,6 +51,7 @@ export interface OperatoreCreate {
   tipiPendenza?: TipoPendenzaRef[];
   ruoli?: RuoloRef[];
   acl?: Acl[];
+  preferenze?: Record<string, unknown>;
 }
 
 /** Body per il replace completo (schema `OperatoreReplace`, `principal` dal path). */
@@ -55,6 +62,8 @@ export interface OperatoreReplace {
   tipiPendenza?: TipoPendenzaRef[];
   ruoli?: RuoloRef[];
   acl?: Acl[];
+  /** Round-trip delle preferenze esistenti: l'editor non le tocca ma le conserva. */
+  preferenze?: Record<string, unknown>;
 }
 
 /** Filtri lista operatori + paginazione V2. */
