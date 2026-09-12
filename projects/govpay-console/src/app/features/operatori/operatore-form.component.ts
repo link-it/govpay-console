@@ -65,6 +65,8 @@ export class OperatoreFormComponent implements OnInit {
 
   private editId: string | null = null;
   private etag: string | null = null;
+  /** Preferenze dell'operatore in modifica: round-trip per non azzerarle nel replace. */
+  private editPreferenze: Record<string, unknown> | undefined;
 
   readonly editId$ = signal<string | null>(null);
   readonly isEdit = computed(() => this.editId$() !== null);
@@ -115,6 +117,7 @@ export class OperatoreFormComponent implements OnInit {
           if (!res?.body) return;
           this.etag = res.etag;
           const o = res.body;
+          this.editPreferenze = o.preferenze;
           this.form.patchValue({ principal: o.principal, nome: o.nome, abilitato: o.abilitato });
           this.domini.set((o.domini ?? []).map((d) => d.idDominio));
           this.tipiPendenza.set((o.tipiPendenza ?? []).map((t) => t.idTipoPendenza));
@@ -150,7 +153,8 @@ export class OperatoreFormComponent implements OnInit {
     };
 
     if (this.editId) {
-      const body: OperatoreReplace = { nome: raw.nome, abilitato: raw.abilitato, ...assoc };
+      // Preserva le preferenze esistenti: il PUT è un replace, ometterle le azzererebbe.
+      const body: OperatoreReplace = { nome: raw.nome, abilitato: raw.abilitato, ...assoc, preferenze: this.editPreferenze };
       this.api
         .replace(this.editId, body, this.etag)
         .pipe(catchError((err) => this.onError(err, true)))

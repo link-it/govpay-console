@@ -61,6 +61,7 @@ import {
   type FlussoRendicontazioneSummary,
   type StatoFlussoRendicontazione,
 } from './rendicontazione.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -109,7 +110,8 @@ export class RendicontazioniListComponent implements OnInit {
     return layout?.listViewByFeature?.['rendicontazioni'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+  private readonly prefView = inject(PreferencesService);
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.prefView.featureView('rendicontazioni') ?? this.viewModeDefault());
 
   private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
   readonly searchPillVariant = computed<'pill' | 'square'>(
@@ -199,7 +201,7 @@ export class RendicontazioniListComponent implements OnInit {
             onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable') },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('rendicontazioni', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -295,7 +297,9 @@ export class RendicontazioniListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('rendicontazioni', v);
   }
 
   onRowClick(r: FlussoRendicontazioneSummary): void {

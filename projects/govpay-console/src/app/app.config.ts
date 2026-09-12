@@ -28,6 +28,7 @@ import localeIt from '@angular/common/locales/it';
 import localeEn from '@angular/common/locales/en';
 import { routes } from './app.routes';
 import { provideCore } from '@core/core.provider';
+import { PreferencesBridge } from '@core/preferences';
 import { APP_ICONS } from '@core/layout/icons.config';
 import { iconForNavLabel } from '@core/layout/nav';
 
@@ -61,6 +62,9 @@ export const appConfig: ApplicationConfig = {
     // lingua iniziale anche se nessun componente referenzia il selettore.
     provideAppInitializer(() => {
       inject(LanguageService);
+      // Ponte preferenze server ↔ UI (color scheme, lingua): i suoi effect
+      // applicano le preferenze dell'operatore e ne persistono i cambi.
+      inject(PreferencesBridge);
     }),
   ],
 };

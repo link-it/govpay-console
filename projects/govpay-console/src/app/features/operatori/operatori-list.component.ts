@@ -51,6 +51,7 @@ import {
 import { problemDetail, sliceHasMore, type Slice } from '@core/models';
 import { OperatoriConsoleApi } from './operatori.console-api';
 import type { OperatoriListFilters, OperatoreSummary } from './operatore.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 
@@ -99,7 +100,8 @@ export class OperatoriListComponent implements OnInit {
     return layout?.listViewByFeature?.['operatori'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+  private readonly prefView = inject(PreferencesService);
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.prefView.featureView('operatori') ?? this.viewModeDefault());
 
   private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
   readonly searchPillVariant = computed<'pill' | 'square'>(
@@ -204,7 +206,7 @@ export class OperatoriListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('operatori', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -300,7 +302,9 @@ export class OperatoriListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('operatori', v);
   }
 
   onRowClick(o: OperatoreSummary): void {

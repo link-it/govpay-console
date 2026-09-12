@@ -1431,6 +1431,21 @@
   },
   "Profilo": {
     "Subtitle": "Connected user data, scope and ACLs.",
+    "Tabs": {
+      "Profilo": "Profile",
+      "Preferenze": "Preferences"
+    },
+    "Preferenze": {
+      "Title": "Preferences",
+      "Tema": "Theme",
+      "Lingua": "Language",
+      "SyncOn": "Preferences are saved to your account and restored on every sign-in.",
+      "SyncOff": "Preferences are saved on this device only.",
+      "ViewTitle": "List view",
+      "ViewAuto": "Default",
+      "ViewTable": "Table",
+      "ViewRows": "Rows"
+    },
     "NotAuthenticated": {
       "Title": "Not authenticated",
       "Description": "Sign in to view the profile."
@@ -1464,7 +1479,41 @@
       "TracciatiInLavorazioneHint": "Pending batches being processed",
       "WaitingApi": "Available once connected to the API",
       "EmptyHint": "—"
+    },
+    "Tweaks": {
+      "Title": "Dashboard",
+      "MockChart": "Demo chart",
+      "MockChartHint": "Show the sample transactions chart (simulated data)."
     }
+  },
+  "Sla": {
+    "Title": "SLA compliance",
+    "Subtitle": "Share of responses within threshold across the 4 pagoPA PA methods.",
+    "Periodo": "Period {{da}} – {{a}}",
+    "Totale": "{{n}} invocations",
+    "SerieTitle": "Compliance trend — {{metodo}}",
+    "SerieVuota": "No data in the selected period.",
+    "SerieConformita": "Compliance",
+    "SerieTotale": "Invocations",
+    "Granularita": "Granularity",
+    "Metodo": {
+      "TDP": "Payment notice request",
+      "TGP": "Payment activation",
+      "TSRT": "Receipt delivery (RT)",
+      "TVP": "Payment verification"
+    },
+    "Stato": {
+      "OK": "OK",
+      "WARNING": "Warning",
+      "KO": "Out of threshold"
+    }
+  },
+  "Transazioni": {
+    "Title": "Transactions trend",
+    "Subtitle": "pagoPA transactions per day, paid and failed.",
+    "Periodo": "Period {{da}} – {{a}}",
+    "Pagate": "Paid",
+    "Fallite": "Failed"
   },
   "Nav": {
     "Dashboard": "Dashboard",

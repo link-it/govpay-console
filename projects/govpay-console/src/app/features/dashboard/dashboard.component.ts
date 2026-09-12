@@ -12,6 +12,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   computed,
   inject,
@@ -21,9 +22,11 @@ import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ApiService } from '@core/services/api.service';
-import { SystemFacade } from '@linkit/shared-ui';
-import type { Pageable } from '@core/models';
+import { ConsoleApiService } from '@core/services/console-api.service';
+import { SystemFacade, TweaksRegistry } from '@linkit/shared-ui';
+import { SlaMetricheComponent } from '@feature/metriche-sla';
+import { TransazioniAndamentoComponent } from '@feature/metriche-transazioni';
+import type { Slice } from '@core/models';
 
 interface KpiCard {
   titleKey: string;
@@ -31,6 +34,8 @@ interface KpiCard {
   value: number | null;
   loading: boolean;
   error: boolean;
+  /** KPI non ancora esposto dalla console-api (Fase 1): card informativa, no fetch. */
+  unavailable?: boolean;
   link: string[];
   queryParams?: Record<string, string>;
   hintKey: string;
@@ -41,24 +46,44 @@ interface KpiCard {
 @Component({
   selector: 'lnk-dashboard',
   standalone: true,
-  imports: [NgIcon, TranslatePipe],
+  imports: [NgIcon, TranslatePipe, SlaMetricheComponent, TransazioniAndamentoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
   private readonly system = inject(SystemFacade);
-  private readonly api = inject(ApiService);
+  private readonly api = inject(ConsoleApiService);
   private readonly router = inject(Router);
 
+  /** Visibilità del grafico dimostrativo (mock), nascosto di default (sessione). */
+  readonly showMock = signal(false);
+
+  constructor() {
+    // Toggle nel pannello tweaks per mostrare il grafico mock (transazioni).
+    const tweaks = inject(TweaksRegistry);
+    inject(DestroyRef).onDestroy(
+      tweaks.register({
+        id: 'dashboard',
+        titleKey: 'Dashboard.Tweaks.Title',
+        rows: [
+          {
+            type: 'toggle',
+            labelKey: 'Dashboard.Tweaks.MockChart',
+            hintKey: 'Dashboard.Tweaks.MockChartHint',
+            value: this.showMock,
+            onChange: (v) => this.showMock.set(v),
+          },
+        ],
+        onReset: () => this.showMock.set(false),
+      }),
+    );
+  }
+
   private readonly pendenzeAttive = signal<{ value: number | null; loading: boolean; error: boolean }>({ value: null, loading: true, error: false });
-  private readonly riscossioniMese = signal<{ value: number | null; loading: boolean; error: boolean }>({ value: null, loading: true, error: false });
   private readonly tracciatiInLavorazione = signal<{ value: number | null; loading: boolean; error: boolean }>({ value: null, loading: true, error: false });
 
   readonly cards = computed<KpiCard[]>(() => {
-    const ora = new Date();
-    const primoDelMese = new Date(ora.getFullYear(), ora.getMonth(), 1).toISOString().slice(0, 10);
     const p = this.pendenzeAttive();
-    const r = this.riscossioniMese();
     const t = this.tracciatiInLavorazione();
     return [
       {
@@ -72,17 +97,6 @@ export class DashboardComponent implements OnInit {
         tone: 'primary',
       },
       {
-        titleKey: 'Dashboard.Cards.RiscossioniMese',
-        value: r.value,
-        loading: r.loading,
-        error: r.error,
-        link: ['/riscossioni'],
-        queryParams: { dataDa: primoDelMese },
-        hintKey: 'Dashboard.Cards.RiscossioniMeseHint',
-        icon: 'bootstrapBank',
-        tone: 'success',
-      },
-      {
         titleKey: 'Dashboard.Cards.TracciatiInLavorazione',
         value: t.value,
         loading: t.loading,
@@ -91,6 +105,18 @@ export class DashboardComponent implements OnInit {
         hintKey: 'Dashboard.Cards.TracciatiInLavorazioneHint',
         icon: 'bootstrapFolder',
         tone: 'info',
+      },
+      {
+        // Riscossioni: la console-api non espone ancora /riscossioni (Fase 1).
+        titleKey: 'Dashboard.Cards.RiscossioniMese',
+        value: null,
+        loading: false,
+        error: false,
+        unavailable: true,
+        link: ['/riscossioni'],
+        hintKey: 'Dashboard.Cards.WaitingApi',
+        icon: 'bootstrapBank',
+        tone: 'success',
       },
     ];
   });
@@ -104,24 +130,22 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(card.link, { queryParams: card.queryParams });
   }
 
+  /**
+   * KPI via console-api V2: conteggio con `limit=1&total=true` →
+   * `pagination.totalResults`. Solo i KPI esposti in Fase 1 vengono richiesti
+   * (le riscossioni non hanno ancora endpoint, vedi `cards`).
+   */
   private loadKpi(): void {
-    // Pendenze attive: stato NON_ESEGUITA, conteggio totale dalla pagina 1.
+    // Pendenze attive: stato V2 NON_PAGATA.
     this.api
-      .list<unknown>('pendenze', { stato: 'NON_ESEGUITA', pagina: 1, risPerPagina: 1 })
-      .pipe(catchError(() => of({ numRisultati: 0 } as Pageable<unknown>)))
-      .subscribe((page) => this.pendenzeAttive.set({ value: page.numRisultati ?? 0, loading: false, error: false }));
+      .list<unknown>('pendenze', { stato: 'NON_PAGATA', limit: 1, total: true })
+      .pipe(catchError(() => of<Slice<unknown>>({ results: [] })))
+      .subscribe((slice) => this.pendenzeAttive.set({ value: slice.pagination?.totalResults ?? 0, loading: false, error: !slice.pagination }));
 
-    // Riscossioni del mese: filtro dataDa = primo del mese corrente.
-    const primo = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+    // Tracciati in elaborazione: filtro V2 `stato` (non `statoTracciatoPendenza`).
     this.api
-      .list<unknown>('riscossioni', { dataDa: primo, pagina: 1, risPerPagina: 1 })
-      .pipe(catchError(() => of({ numRisultati: 0 } as Pageable<unknown>)))
-      .subscribe((page) => this.riscossioniMese.set({ value: page.numRisultati ?? 0, loading: false, error: false }));
-
-    // Tracciati in elaborazione.
-    this.api
-      .list<unknown>('tracciati', { statoTracciatoPendenza: 'IN_ELABORAZIONE', pagina: 1, risPerPagina: 1 })
-      .pipe(catchError(() => of({ numRisultati: 0 } as Pageable<unknown>)))
-      .subscribe((page) => this.tracciatiInLavorazione.set({ value: page.numRisultati ?? 0, loading: false, error: false }));
+      .list<unknown>('pendenze/tracciati', { stato: 'IN_ELABORAZIONE', limit: 1, total: true })
+      .pipe(catchError(() => of<Slice<unknown>>({ results: [] })))
+      .subscribe((slice) => this.tracciatiInLavorazione.set({ value: slice.pagination?.totalResults ?? 0, loading: false, error: !slice.pagination }));
   }
 }

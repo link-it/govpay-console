@@ -61,6 +61,7 @@ import {
   type Tracciato,
   type TracciatiListFilters,
 } from './tracciato.model';
+import { PreferencesService } from '@core/preferences';
 
 const PAGE_SIZE = 25;
 const FORMATI: FormatoTracciato[] = ['JSON', 'CSV'];
@@ -111,7 +112,8 @@ export class TracciatiListComponent implements OnInit {
     return layout?.listViewByFeature?.['tracciati'] ?? layout?.listView ?? 'table';
   });
   private readonly viewModeOverride = signal<'table' | 'rows' | null>(null);
-  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.viewModeDefault());
+  private readonly prefView = inject(PreferencesService);
+  readonly viewMode = computed<'table' | 'rows'>(() => this.viewModeOverride() ?? this.prefView.featureView('tracciati') ?? this.viewModeDefault());
 
   private readonly searchPillVariantOverride = signal<'pill' | 'square' | null>(null);
   readonly searchPillVariant = computed<'pill' | 'square'>(
@@ -199,7 +201,7 @@ export class TracciatiListComponent implements OnInit {
             onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable') },
         ],
         onReset: () => {
-          this.viewModeOverride.set(null);
+          (this.prefView.setFeatureView('tracciati', null), this.viewModeOverride.set(null));
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -298,7 +300,9 @@ export class TracciatiListComponent implements OnInit {
   }
 
   onViewModeChange(value: string): void {
-    this.viewModeOverride.set(value === 'rows' ? 'rows' : 'table');
+    const v = value === 'rows' ? 'rows' : 'table';
+    this.viewModeOverride.set(v);
+    this.prefView.setFeatureView('tracciati', v);
   }
 
   onRowClick(r: Tracciato): void {

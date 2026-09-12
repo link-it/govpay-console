@@ -64,6 +64,15 @@ export class AuthService {
   }
 
   /**
+   * Aggiorna in memoria le preferenze dell'utente autenticato (dopo un
+   * `PATCH /profilo`, o in ottimistico prima della risposta). No-op se non
+   * autenticato.
+   */
+  setPreferenze(preferenze: Record<string, unknown>): void {
+    this._state.update((s) => (s.user ? { ...s, user: { ...s.user, preferenze } } : s));
+  }
+
+  /**
    * Verifica/recupera la sessione corrente. Usata dal guard prima di
    * decidere se reindirizzare a login. Riallinea il flusso al legacy
    * `govpay-console-github` (vedi `dashboard-view.component.ts:64` →

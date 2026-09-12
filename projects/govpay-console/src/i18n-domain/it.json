@@ -1651,6 +1651,21 @@
   },
   "Profilo": {
     "Subtitle": "Dati dell'utente connesso, domini e ACL.",
+    "Tabs": {
+      "Profilo": "Profilo",
+      "Preferenze": "Preferenze"
+    },
+    "Preferenze": {
+      "Title": "Preferenze",
+      "Tema": "Tema",
+      "Lingua": "Lingua",
+      "SyncOn": "Le preferenze sono salvate sul tuo account e ripristinate ad ogni accesso.",
+      "SyncOff": "Le preferenze sono salvate solo su questo dispositivo.",
+      "ViewTitle": "Vista delle liste",
+      "ViewAuto": "Predefinita",
+      "ViewTable": "Tabella",
+      "ViewRows": "Righe"
+    },
     "NotAuthenticated": {
       "Title": "Non autenticato",
       "Description": "Effettua l'accesso per visualizzare il profilo."
@@ -1684,7 +1699,41 @@
       "TracciatiInLavorazioneHint": "Tracciati pendenze in elaborazione",
       "WaitingApi": "Disponibile dopo il collegamento alle API",
       "EmptyHint": "—"
+    },
+    "Tweaks": {
+      "Title": "Dashboard",
+      "MockChart": "Grafico dimostrativo",
+      "MockChartHint": "Mostra il grafico di esempio delle transazioni (dati simulati)."
     }
+  },
+  "Sla": {
+    "Title": "Conformità SLA",
+    "Subtitle": "Percentuale di risposte entro soglia sui 4 metodi PA pagoPA.",
+    "Periodo": "Periodo {{da}} – {{a}}",
+    "Totale": "{{n}} invocazioni",
+    "SerieTitle": "Andamento conformità — {{metodo}}",
+    "SerieVuota": "Nessun dato nel periodo selezionato.",
+    "SerieConformita": "Conformità",
+    "SerieTotale": "Invocazioni",
+    "Granularita": "Granularità",
+    "Metodo": {
+      "TDP": "Richiesta avviso di pagamento",
+      "TGP": "Attivazione pagamento",
+      "TSRT": "Invio ricevuta telematica (RT)",
+      "TVP": "Verifica pagamento"
+    },
+    "Stato": {
+      "OK": "OK",
+      "WARNING": "Attenzione",
+      "KO": "Fuori soglia"
+    }
+  },
+  "Transazioni": {
+    "Title": "Andamento transazioni",
+    "Subtitle": "Transazioni pagoPA per giorno, pagate e fallite.",
+    "Periodo": "Periodo {{da}} – {{a}}",
+    "Pagate": "Pagate",
+    "Fallite": "Fallite"
   },
   "Nav": {
     "Dashboard": "Dashboard",
