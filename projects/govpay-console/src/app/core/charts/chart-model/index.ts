@@ -12,5 +12,5 @@
 // Strato neutro dei grafici: modello di dominio, NESSUN import da echarts.
 // La guardia `npm run charts:check` verifica che qui non entri codice di libreria.
 export * from './chart-theme';
-export * from './gauge.spec';
-export * from './time-series.spec';
+export * from './gauge';
+export * from './time-series';
