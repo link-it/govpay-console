@@ -1,3 +1,44 @@
+2026-09-12  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(charts): introduzione dei grafici in console con Apache
+    ECharts 6.1.0 (ngx-echarts), architettura a wrapper neutro (NOTE-CLAUDE/GRAFICI).
+    - **Strati**: `chart-model/` (ChartSpec: gauge, serie storica — nessun import
+      da echarts) e `chart-echarts/` (unico strato con echarts: provider a import
+      selettivi, tema light/dark dai design token, mapper e componenti
+      `lnk-gauge-chart` / `lnk-time-series-chart`). Renderer selezionabile per
+      grafico (canvas/svg); echarts confinato nei chunk lazy (fuori dall'initial
+      bundle). Guardia CI `npm run charts:check` (echarts non deve tracimare in
+      `chart-model/` né negli adapter). Time-series con doppio asse Y, gap sui
+      `null` e zoom temporale.
+
+  * [Frontend] feat(metriche): metriche SLA agganciate alla console-api reale
+    (openapi-20260911).
+    - `GET /metriche/sla` (KPI di conformità → 4 gauge) e
+      `GET /metriche/sla/{codice}` (serie storica per metodo PA), con periodo
+      `dataDa`/`dataA` obbligatori (default ultimi 30 giorni), drilldown al click
+      sul gauge con granularità selezionabile (5m/1h/1g) e pulsante refresh.
+    - Il grafico dimostrativo delle transazioni resta un mock, nascosto di
+      default (toggle nel pannello tweaks della dashboard).
+
+  * [Frontend] feat(preferences): preferenze utente persistite server-side in
+    `Profilo.preferenze` (openapi-20260911).
+    - `PreferencesService`: lettura reattiva e scrittura via `PATCH /profilo`
+      (JSON Patch `replace /preferenze`, last-write-wins); `PreferencesBridge`
+      applica al login e persiste i cambi di tema e lingua (bridge app-level,
+      senza patchare la lib mirror).
+    - Pannello **Preferenze** nel Profilo (tab dedicato): tema, lingua e **tipo di
+      vista delle liste per feature** (helper `createFeatureView` usato da tutte
+      le liste). L'editor operatori non modifica le preferenze ma le preserva nel
+      replace per non azzerarle.
+
+  * [Frontend] fix(a11y): navigazione da tastiera dei tab (`lnk-shared-ui/tabs`)
+    — tutti i tab raggiungibili con Tab (tabindex=0), frecce/Home/End con salto
+    dei disabilitati, focus sul tab al click. Da portare upstream + sync lib.
+
+  * [Frontend] fix(dashboard): KPI via console-api V2 (stato `NON_PAGATA`, filtro
+    tracciati `stato`); riscossioni non disponibili in Fase 1 gestite come card
+    informativa.
+
 2026-09-08  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(console-api-v2): allineamento allo spec openapi-20260908 e
