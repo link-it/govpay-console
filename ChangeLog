@@ -10,6 +10,15 @@
     - Sui pulsanti disabilitati si usa `aria-disabled` (non `disabled`) così il
       tooltip compare all'hover; il click resta bloccato dalla logica.
 
+  * [Frontend] fix(auth): allinea lo stato auth del FE alla sessione al boot.
+    Con autenticazione a sessione cookie, dopo un refresh sulla dashboard i dati
+    caricavano (cookie valido) ma la sidebar mostrava "Accedi" perché `user` era
+    ri-idratato solo dai guard delle route (la dashboard non ne aveva).
+    - Ri-idratazione al boot: `AuthService.ensureSession()` nell'app-initializer
+      (GET /profilo), deduplicato coi guard.
+    - Aggiunto `authGuard` alla route `dashboard` (ri-idrata e reindirizza al
+      login se la sessione non è valida).
+
 2026-09-12  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(charts): introduzione dei grafici in console con Apache
