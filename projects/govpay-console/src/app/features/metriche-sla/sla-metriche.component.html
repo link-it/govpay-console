@@ -65,11 +65,16 @@
           </h3>
           <div class="flex items-center gap-1">
             <span class="mr-1 text-xs text-[var(--muted-foreground)]">{{ 'Sla.Granularita' | translate }}</span>
-            @for (g of granularita; track g.minuti) {
+            @for (g of granularitaOptions(); track g.minuti) {
               <button
                 type="button"
                 (click)="setGran(g.minuti)"
+                [attr.aria-disabled]="g.disabled || null"
+                [lnkTooltip]="'Sla.GranTroppiPunti' | translate"
+                [lnkTooltipDisabled]="!g.disabled"
                 class="rounded px-2 py-0.5 text-xs transition-colors"
+                [class.opacity-40]="g.disabled"
+                [class.cursor-not-allowed]="g.disabled"
                 [style.background]="gran() === g.minuti ? 'var(--ring)' : 'var(--muted)'"
                 [style.color]="gran() === g.minuti ? '#fff' : 'var(--foreground)'"
               >

@@ -1493,6 +1493,7 @@
     "Totale": "{{n}} invocations",
     "SerieTitle": "Compliance trend — {{metodo}}",
     "SerieVuota": "No data in the selected period.",
+    "GranTroppiPunti": "Granularity too fine for the period (max 500 points): pick a coarser granularity or a shorter period.",
     "SerieConformita": "Compliance",
     "SerieTotale": "Invocations",
     "Granularita": "Granularity",

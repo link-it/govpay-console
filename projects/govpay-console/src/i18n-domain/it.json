@@ -1713,6 +1713,7 @@
     "Totale": "{{n}} invocazioni",
     "SerieTitle": "Andamento conformità — {{metodo}}",
     "SerieVuota": "Nessun dato nel periodo selezionato.",
+    "GranTroppiPunti": "Granularità troppo fine per il periodo (massimo 500 punti): scegli una granularità più ampia o un periodo più breve.",
     "SerieConformita": "Conformità",
     "SerieTotale": "Invocazioni",
     "Granularita": "Granularità",
