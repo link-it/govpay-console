@@ -28,6 +28,7 @@ import localeIt from '@angular/common/locales/it';
 import localeEn from '@angular/common/locales/en';
 import { routes } from './app.routes';
 import { provideCore } from '@core/core.provider';
+import { AuthService } from '@core/auth/services/auth.service';
 import { PreferencesBridge } from '@core/preferences';
 import { APP_ICONS } from '@core/layout/icons.config';
 import { iconForNavLabel } from '@core/layout/nav';
@@ -65,6 +66,11 @@ export const appConfig: ApplicationConfig = {
       // Ponte preferenze server ↔ UI (color scheme, lingua): i suoi effect
       // applicano le preferenze dell'operatore e ne persistono i cambi.
       inject(PreferencesBridge);
+      // Ri-idrata la sessione al boot (GET /profilo): allinea lo stato auth del
+      // FE alla sessione cookie su qualsiasi route di atterraggio (es. dashboard,
+      // che altrimenti mostrerebbe "Accedi" pur avendo una sessione valida).
+      // Fire-and-forget e deduplicato con `ensureSession()` dei guard.
+      void inject(AuthService).ensureSession();
     }),
   ],
 };

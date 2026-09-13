@@ -27,6 +27,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        canActivate: [authGuard],
         loadComponent: () => import('@feature/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       // Feature implementate
