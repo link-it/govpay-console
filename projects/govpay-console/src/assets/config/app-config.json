@@ -3,7 +3,8 @@
     "app": {
       "name": "govpay-console",
       "title": "GovPay Console",
-      "description": "Console di backoffice GovPay"
+      "description": "Console di backoffice GovPay",
+      "version": "4.1.0"
     },
     "STANDALONE": true,
     "GOVAPI": {
