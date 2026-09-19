@@ -1,3 +1,36 @@
+2026-09-19  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(pendenze): ridisegno del dettaglio pendenza allineato al
+    mock (NOTE-CLAUDE/MOCK-PENDENZA), differenziato per stato.
+    - Header: titolo = causale della pendenza, sottotitolo = tipo pendenza,
+      azione primaria commutata per stato (Stampa avviso ↔ link Stampa ricevuta).
+    - Fascia "hero" in evidenza: stato "da pagare" → importo dovuto (blu) +
+      data scadenza (ambra); stato "pagato" → importo pagato (verde) + blocco
+      "Ricevuta di pagamento" (PSP/metodo/data arricchiti dal dettaglio RT).
+    - Ente creditore + Soggetto debitore su due colonne sopra le informazioni
+      generali; debitore con toggle GDPR mostra/nascondi (i dati restano in
+      cache: la ri-visualizzazione non rigenera l'audit).
+    - Informazioni generali: rimossa la causale (nel titolo), font uniforme tra
+      etichette e valori (anche i valori monospace restano 14px).
+    - Voci: eliminato il box annidato attorno alla tabella; layout responsive
+      (tabella su desktop, card impilate sotto i 640px); accordion per voce con
+      tre sezioni — Dati aggiuntivi (Tassonomia, IBAN accredito; appoggio solo se
+      valorizzato), Metadati del servizio (coppie libere dinamiche), Dati di
+      contabilità (più dettagli tipizzati CORRISPETTIVO_DL118/INCASSO_TIPICO/
+      SPESE_NOTIFICA SEND, importi eurocent→euro). Parser best-effort dei campi
+      JSON opachi (`voce-dettaglio.ts`).
+
+  * [Frontend] fix(pendenze): allineamento del modello `RicevutaSummary` (sub
+    resource /pendenze/.../ricevute) allo schema condiviso reale
+    (`idRicevuta`/`dataRicevuta`/`codPsp`/`importo`/`stato`) al posto dei campi
+    V1 obsoleti (`ccp`/`dataPagamento`/`importoTotalePagato`/`esito`/`idPsp`).
+    Risolve il link/fetch ricevuta con id `undefined`.
+
+  * [Frontend] style(theme): colori di stati e hero card allineati al mock e
+    centralizzati (`--status-{tono}-{bg,text}` espliciti + `.lnk-hero-*`, con
+    varianti dark). Blu royal per "da pagare"/info, verde per "pagato"/success,
+    ambra per scadenza/warning.
+
 2026-09-13  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(metriche): validazione lato FE della serie storica SLA per

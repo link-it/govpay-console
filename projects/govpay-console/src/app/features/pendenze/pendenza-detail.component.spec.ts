@@ -16,8 +16,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import { PendenzeConsoleApi } from './pendenze.console-api';
+import { RicevuteConsoleApi } from '../ricevute/ricevute.console-api';
 import { PendenzaDetailComponent } from './pendenza-detail.component';
-import type { Pendenza, PendenzaLinks, Soggetto } from './pendenza.model';
+import type { Pendenza, PendenzaLinks, RicevutaSummary, Soggetto } from './pendenza.model';
 
 function pendenza(links: PendenzaLinks): Pendenza {
   return {
@@ -45,6 +46,7 @@ const LINKS_FULL: PendenzaLinks = {
 
 interface Stubs {
   links?: PendenzaLinks;
+  ricevute?: RicevutaSummary[];
   getInformazioniDebitore?: ReturnType<typeof vi.fn>;
   getAvvisoPdf?: ReturnType<typeof vi.fn>;
 }
@@ -53,9 +55,12 @@ function setup(stubs: Stubs = {}) {
   const links = stubs.links ?? LINKS_FULL;
   const api = {
     get: vi.fn(() => of(pendenza(links))),
-    listRicevute: vi.fn(() => of([])),
+    listRicevute: vi.fn(() => of(stubs.ricevute ?? [])),
     getInformazioniDebitore: stubs.getInformazioniDebitore ?? vi.fn(() => of(SOGGETTO)),
     getAvvisoPdf: stubs.getAvvisoPdf ?? vi.fn(() => of(new Blob(['%PDF'], { type: 'application/pdf' }))),
+  };
+  const ricevuteApi = {
+    get: vi.fn(() => of({ idDominio: 'D', iuv: 'IUV', idRicevuta: 'CCP', dataRicevuta: '', stato: '', rt: {}, _links: { rpt: { href: '' }, rt: { href: '' } }, rtView: { pspNome: 'PSP SpA', metodoPagamento: 'CC', transfers: [] } })),
   };
 
   TestBed.resetTestingModule();
@@ -63,6 +68,7 @@ function setup(stubs: Stubs = {}) {
     imports: [PendenzaDetailComponent],
     providers: [
       { provide: PendenzeConsoleApi, useValue: api },
+      { provide: RicevuteConsoleApi, useValue: ricevuteApi },
       { provide: SystemFacade, useValue: { setBreadcrumbs: vi.fn() } },
       { provide: SnackbarService, useValue: { error: vi.fn() } },
       { provide: TranslateService, useValue: { instant: (k: string) => k } },
@@ -75,7 +81,7 @@ function setup(stubs: Stubs = {}) {
   });
   TestBed.overrideComponent(PendenzaDetailComponent, { set: { template: '', imports: [] } });
   const comp = TestBed.createComponent(PendenzaDetailComponent).componentInstance;
-  return { comp, api };
+  return { comp, api, ricevuteApi };
 }
 
 describe('PendenzaDetailComponent', () => {
@@ -85,9 +91,38 @@ describe('PendenzaDetailComponent', () => {
     expect(api.get).toHaveBeenCalledWith('A2A', 'P1');
     expect(api.listRicevute).toHaveBeenCalledWith('A2A', 'P1');
     expect(comp.pendenza()?.idPendenza).toBe('P1');
-    expect(comp.title()).toBe('123456789012345678');
+    // Titolo = descrizione || causale || idPendenza (qui manca la descrizione → causale).
+    expect(comp.title()).toBe('Causale');
+    expect(comp.subtitle()).toBe('TARI');
     expect(comp.statoTone()).toBe('success');
     expect(comp.statoLabelKey()).toBe('Pendenze.Stati.Pagata');
+  });
+
+  it('stato pagato: hero + blocco ricevuta con arricchimento dal dettaglio RT', () => {
+    const ricevute: RicevutaSummary[] = [
+      { idDominio: 'D', iuv: 'IUV', idRicevuta: 'RIC1', dataRicevuta: '2026-06-30T10:00:00Z', importo: 100.99, stato: 'RT_ACCETTATA_PA', codPsp: 'PSP01' },
+    ];
+    const { comp, ricevuteApi } = setup({ ricevute });
+    comp.ngOnInit();
+    expect(comp.isPagato()).toBe(true);
+    expect(comp.hasRicevutaPagamento()).toBe(true);
+    expect(comp.ricevutaLink()).toEqual(['/ricevute', 'D', 'IUV', 'RIC1']);
+    // Nel dettaglio RT arricchiamo con PSP nome/metodo.
+    expect(ricevuteApi.get).toHaveBeenCalledWith('D', 'IUV', 'RIC1');
+    const items = comp.ricevutaItems();
+    expect(items.find((i) => i.labelKey === 'Pendenze.Detail.Psp')?.value).toBe('PSP SpA');
+    expect(items.find((i) => i.labelKey === 'Pendenze.Detail.MetodoPagamento')?.value).toBe('CC');
+  });
+
+  it('voci: toggle espansione riga', () => {
+    const { comp } = setup();
+    comp.ngOnInit();
+    const v = comp.pendenza()!.voci[0];
+    expect(comp.isVoceExpanded(v)).toBe(false);
+    comp.toggleVoce(v);
+    expect(comp.isVoceExpanded(v)).toBe(true);
+    comp.toggleVoce(v);
+    expect(comp.isVoceExpanded(v)).toBe(false);
   });
 
   it('gating _links: avviso e debitore presenti', () => {
@@ -119,6 +154,24 @@ describe('PendenzaDetailComponent', () => {
     expect(getInformazioniDebitore).toHaveBeenCalledWith('A2A', 'P1');
     expect(comp.askConsenso()).toBe(false);
     expect(comp.debitore()?.anagrafica).toBe('Mario Rossi');
+  });
+
+  it('debitore: nascondi/mostra non rigenera audit (nessuna seconda fetch)', () => {
+    const getInformazioniDebitore = vi.fn(() => of(SOGGETTO));
+    const { comp } = setup({ getInformazioniDebitore });
+    comp.ngOnInit();
+    comp.onMostraDebitore();
+    comp.onConsensoConfermato();
+    expect(comp.debitoreVisible()).toBe(true);
+    // Nascondi: dati in cache, non visibili.
+    comp.onNascondiDebitore();
+    expect(comp.debitoreVisible()).toBe(false);
+    expect(comp.debitore()?.anagrafica).toBe('Mario Rossi');
+    // Ri-mostra: nessuna nuova fetch (audit) perché già caricato.
+    comp.onMostraDebitore();
+    expect(comp.debitoreVisible()).toBe(true);
+    expect(comp.askConsenso()).toBe(false);
+    expect(getInformazioniDebitore).toHaveBeenCalledTimes(1);
   });
 
   it('consenso annullato non carica il debitore', () => {

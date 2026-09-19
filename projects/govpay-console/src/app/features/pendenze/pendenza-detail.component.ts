@@ -18,6 +18,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { NgTemplateOutlet } from '@angular/common';
 import { catchError, of } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -25,33 +26,29 @@ import { SystemFacade } from '@linkit/shared-ui';
 import { SnackbarService } from '@linkit/shared-ui';
 import {
   ConfirmDialogComponent,
-  DataTableComponent,
-  DetailSectionComponent,
   EmptyStateComponent,
   LoadingComponent,
   ListStickyToolbarDirective,
-  InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
   downloadBlob,
   formatDate,
   formatEuro,
-  truncate,
-  type ColumnDef,
   type InfoGridItem,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { PendenzeConsoleApi } from './pendenze.console-api';
+import { RicevuteConsoleApi } from '../ricevute/ricevute.console-api';
+import type { RtView } from '../ricevute/ricevuta.model';
 import {
   STATO_PENDENZA_COLOR,
   STATO_PENDENZA_LABEL,
-  STATO_VOCE_PENDENZA_COLOR,
-  STATO_VOCE_PENDENZA_LABEL,
   type Pendenza,
   type RicevutaSummary,
   type Soggetto,
   type VocePendenza,
 } from './pendenza.model';
+import { voceExtra as buildVoceExtra, type VoceExtra } from './voce-dettaglio';
 
 @Component({
   selector: 'lnk-pendenza-detail',
@@ -61,20 +58,19 @@ import {
     RouterLink,
     TranslatePipe,
     PageHeaderComponent,
-    DetailSectionComponent,
-    InfoGridComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
     LoadingComponent,
-    DataTableComponent,
     ListStickyToolbarDirective,
     ConfirmDialogComponent,
+    NgTemplateOutlet,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pendenza-detail.component.html',
 })
 export class PendenzaDetailComponent implements OnInit {
   private readonly api = inject(PendenzeConsoleApi);
+  private readonly ricevuteApi = inject(RicevuteConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
@@ -95,6 +91,8 @@ export class PendenzaDetailComponent implements OnInit {
   readonly debitore = signal<Soggetto | null>(null);
   readonly debitoreLoading = signal(false);
   readonly askConsenso = signal(false);
+  /** Visibilità dei dati debitore: toggle mostra/nascondi (i dati già caricati restano in cache). */
+  readonly debitoreVisible = signal(false);
   /** Il link è sempre presente in V2, ma gatiamo comunque sull'`_links`. */
   readonly hasDebitoreLink = computed(() => !!this.pendenza()?._links?.informazioniDebitore);
 
@@ -104,11 +102,26 @@ export class PendenzaDetailComponent implements OnInit {
 
   /* ---- Ricevute: elenco metadata-only ------------------------------- */
   readonly ricevute = signal<RicevutaSummary[] | null>(null);
+  /** Vista normalizzata della RT principale (PSP, metodo, …), caricata on-demand nello stato "pagato". */
+  readonly ricevutaView = signal<RtView | null>(null);
 
+  /* ---- Stato pendenza: differenzia hero + azioni -------------------- */
+  /** `true` per gli stati "conclusi con incasso" → UI stato *Pagato*. */
+  readonly isPagato = computed(() => {
+    const s = this.pendenza()?.stato;
+    return s === 'PAGATA' || s === 'RICONCILIATA';
+  });
+
+  /** Titolo = causale della pendenza (fallback all'id se assente). */
   readonly title = computed(() => {
     const p = this.pendenza();
-    return p?.numeroAvviso || p?.idPendenza || '—';
+    return p?.causale || p?.idPendenza || '—';
   });
+
+  /** Sottotitolo = tipo pendenza (fallback alla stringa i18n generica). */
+  readonly subtitle = computed(
+    () => this.pendenza()?.tipoPendenza?.descrizione || 'Pendenze.Detail.Subtitle',
+  );
 
   readonly statoTone = computed(() => {
     const s = this.pendenza()?.stato;
@@ -120,6 +133,55 @@ export class PendenzaDetailComponent implements OnInit {
     return s ? STATO_PENDENZA_LABEL[s] : 'Pendenze.Stati.NonPagata';
   });
 
+  /* ---- Hero (differenziato per stato) ------------------------------- */
+  /** Importo mostrato nell'hero: pagato → importo effettivamente pagato, altrimenti dovuto. */
+  readonly heroImporto = computed(() => {
+    const p = this.pendenza();
+    if (!p) return '—';
+    if (this.isPagato()) {
+      return formatEuro(this.ricevutaPrincipale()?.importo ?? p.importo);
+    }
+    return formatEuro(p.importo);
+  });
+
+  readonly heroScadenza = computed(() => {
+    const d = this.pendenza()?.dataScadenza;
+    return d ? formatDate(d) : null;
+  });
+
+  /* ---- Ricevuta principale + blocco "Ricevuta di pagamento" --------- */
+  /** RT rappresentativa: preferisce quella accettata dalla PA, altrimenti la prima. */
+  readonly ricevutaPrincipale = computed<RicevutaSummary | null>(() => {
+    const rt = this.ricevute();
+    if (!rt || rt.length === 0) return null;
+    return rt.find((r) => r.stato === 'RT_ACCETTATA_PA') ?? rt[0];
+  });
+
+  /** Mostra il blocco ricevuta solo se pagato e con una RT associata. */
+  readonly hasRicevutaPagamento = computed(() => this.isPagato() && !!this.ricevutaPrincipale());
+
+  /** Link al dettaglio della ricevuta (`/ricevute/:idDominio/:iuv/:idRicevuta`). */
+  readonly ricevutaLink = computed<unknown[] | null>(() => {
+    const r = this.ricevutaPrincipale();
+    return r ? ['/ricevute', r.idDominio, r.iuv, r.idRicevuta] : null;
+  });
+
+  readonly ricevutaItems = computed<InfoGridItem[]>(() => {
+    const r = this.ricevutaPrincipale();
+    if (!r) return [];
+    const v = this.ricevutaView();
+    const idPsp = v?.pspId ?? r.codPsp;
+    const dataPag = v?.dataOraPagamento ?? r.dataRicevuta;
+    return [
+      { labelKey: 'Pendenze.Detail.Psp', value: v?.pspNome, hide: !v?.pspNome },
+      { labelKey: 'Pendenze.Detail.IdentificativoPsp', value: idPsp, mono: true, hide: !idPsp },
+      { labelKey: 'Pendenze.Detail.DataPagamento', value: formatDate(dataPag), hide: !dataPag },
+      { labelKey: 'Pendenze.Detail.MetodoPagamento', value: v?.metodoPagamento, hide: !v?.metodoPagamento },
+      { labelKey: 'Pendenze.Detail.IdentificativoRicevuta', value: v?.receiptId ?? r.idRicevuta, mono: true, hide: !(v?.receiptId ?? r.idRicevuta) },
+    ];
+  });
+
+  /* ---- Griglie info ------------------------------------------------- */
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const p = this.pendenza();
     if (!p) return [];
@@ -128,24 +190,18 @@ export class PendenzaDetailComponent implements OnInit {
       { labelKey: 'Pendenze.Detail.IuvAvviso', value: p.iuvAvviso, mono: true, hide: !p.iuvAvviso },
       { labelKey: 'Pendenze.Detail.IdPendenza', value: p.idPendenza, mono: true },
       { labelKey: 'Pendenze.Detail.IdA2A', value: p.idA2A, mono: true },
-      { labelKey: 'Pendenze.Detail.Tipo', value: p.tipoPendenza?.descrizione },
-      { labelKey: 'Pendenze.Detail.Importo', value: formatEuro(p.importo) },
-      { labelKey: 'Pendenze.Detail.DataValidita', value: formatDate(p.dataValidita), hide: !p.dataValidita },
-      { labelKey: 'Pendenze.Detail.DataScadenza', value: formatDate(p.dataScadenza), hide: !p.dataScadenza },
-      { labelKey: 'Pendenze.Detail.DataAggiornamento', value: formatDate(p.dataUltimoAggiornamento), hide: !p.dataUltimoAggiornamento },
-      { labelKey: 'Pendenze.Detail.Descrizione', value: p.descrizione, wide: true, hide: !p.descrizione },
-      { labelKey: 'Pendenze.Detail.Causale', value: p.causale, wide: true },
+      // Font uniforme: anche le date sono `mono` come gli ID (coerenza etichetta/valore).
+      { labelKey: 'Pendenze.Detail.DataValidita', value: formatDate(p.dataValidita), mono: true, hide: !p.dataValidita },
+      // La scadenza vive nell'hero quando "da pagare"; qui solo se "pagato".
+      { labelKey: 'Pendenze.Detail.DataScadenza', value: formatDate(p.dataScadenza), mono: true, hide: !this.isPagato() || !p.dataScadenza },
+      { labelKey: 'Pendenze.Detail.DataAggiornamento', value: formatDate(p.dataUltimoAggiornamento), mono: true, hide: !p.dataUltimoAggiornamento },
     ];
   });
 
   readonly dominioItems = computed<InfoGridItem[]>(() => {
     const p = this.pendenza();
     if (!p) return [];
-    return [
-      { labelKey: 'Pendenze.Detail.IdDominio', value: p.dominio?.idDominio, mono: true },
-      { labelKey: 'Pendenze.Detail.RagioneSociale', value: p.dominio?.ragioneSociale, hide: !p.dominio?.ragioneSociale },
-      { labelKey: 'Pendenze.Detail.UnitaOperativa', value: p.unitaOperativa?.ragioneSociale, hide: !p.unitaOperativa },
-    ];
+    return [{ labelKey: 'Pendenze.Detail.IdDominio', value: p.dominio?.idDominio, mono: true }];
   });
 
   readonly debitoreItems = computed<InfoGridItem[]>(() => {
@@ -167,36 +223,43 @@ export class PendenzaDetailComponent implements OnInit {
     ];
   });
 
-  readonly vociColumns = computed<ColumnDef<VocePendenza>[]>(() => [
-    {
-      key: 'indice',
-      header: 'Pendenze.Voci.Indice',
-      format: (v) => (v.indice != null ? String(v.indice) : '—'),
-      cellClass: 'font-mono text-xs',
-      width: '4rem',
-    },
-    {
-      key: 'descrizione',
-      header: 'Pendenze.Voci.Descrizione',
-      format: (v) => truncate(v.descrizione, 80),
-    },
-    {
-      key: 'importo',
-      header: 'Pendenze.Voci.Importo',
-      format: (v) => formatEuro(v.importo),
-      align: 'right',
-      cellClass: 'font-mono',
-      width: '8rem',
-    },
-    {
-      key: 'stato',
-      header: 'Pendenze.Voci.Stato',
-      cellType: 'badge',
-      cellTone: (v) => STATO_VOCE_PENDENZA_COLOR[v.stato] ?? 'muted',
-      format: (v) => STATO_VOCE_PENDENZA_LABEL[v.stato] ?? v.stato,
-      width: '9rem',
-    },
-  ]);
+  /* ---- Voci: righe espandibili -------------------------------------- */
+  private readonly expandedVoci = signal<ReadonlySet<string>>(new Set());
+
+  formatImportoVoce(v: VocePendenza): string {
+    return formatEuro(v.importo);
+  }
+
+  voceIndice(v: VocePendenza, i: number): string {
+    return v.indice != null ? String(v.indice) : String(i + 1);
+  }
+
+  isVoceExpanded(v: VocePendenza): boolean {
+    return this.expandedVoci().has(v.idVocePendenza);
+  }
+
+  toggleVoce(v: VocePendenza): void {
+    const next = new Set(this.expandedVoci());
+    if (next.has(v.idVocePendenza)) next.delete(v.idVocePendenza);
+    else next.add(v.idVocePendenza);
+    this.expandedVoci.set(next);
+  }
+
+  /**
+   * Dettaglio dinamico per voce (dati aggiuntivi + metadati servizio +
+   * contabilità), parsato best-effort dai campi JSON opachi e memoizzato: il
+   * template lo interroga più volte (mobile) e così parsa una sola volta per
+   * pendenza. Vedi {@link buildVoceExtra}.
+   */
+  private readonly vociExtraMap = computed<Map<string, VoceExtra>>(() => {
+    const map = new Map<string, VoceExtra>();
+    for (const v of this.pendenza()?.voci ?? []) map.set(v.idVocePendenza, buildVoceExtra(v));
+    return map;
+  });
+
+  voceExtra(v: VocePendenza): VoceExtra {
+    return this.vociExtraMap().get(v.idVocePendenza) ?? buildVoceExtra(v);
+  }
 
   ngOnInit(): void {
     const params = this.route.snapshot.paramMap;
@@ -259,21 +322,36 @@ export class PendenzaDetailComponent implements OnInit {
     this.api
       .listRicevute(this.idA2A, this.idPendenza)
       .pipe(catchError(() => of<RicevutaSummary[]>([])))
-      .subscribe((r) => this.ricevute.set(r));
+      .subscribe((r) => {
+        this.ricevute.set(r);
+        // Nello stato "pagato" arricchiamo il blocco ricevuta con PSP/metodo dal dettaglio RT.
+        if (this.isPagato()) this.fetchRicevutaView();
+      });
   }
 
-  formatData(value: string | undefined): string {
-    return formatDate(value);
-  }
-
-  formatImporto(value: number | undefined): string {
-    return value != null ? formatEuro(value) : '—';
+  /** Dettaglio RT (normalizzato) per PSP nome/metodo; errore non bloccante (fallback al summary). */
+  private fetchRicevutaView(): void {
+    const r = this.ricevutaPrincipale();
+    if (!r) return;
+    this.ricevuteApi
+      .get(r.idDominio, r.iuv, r.idRicevuta)
+      .pipe(catchError(() => of(null)))
+      .subscribe((ric) => this.ricevutaView.set(ric?.rtView ?? null));
   }
 
   /* ---- Consenso GDPR + fetch debitore -------------------------------- */
   onMostraDebitore(): void {
-    if (this.debitore()) return; // già caricato
+    // Già caricato (in una sessione precedente): mostra senza nuovo audit.
+    if (this.debitore()) {
+      this.debitoreVisible.set(true);
+      return;
+    }
     this.askConsenso.set(true);
+  }
+
+  /** Nasconde i dati (restano in cache: la ri-visualizzazione non rigenera audit). */
+  onNascondiDebitore(): void {
+    this.debitoreVisible.set(false);
   }
 
   onConsensoAnnullato(): void {
@@ -293,6 +371,7 @@ export class PendenzaDetailComponent implements OnInit {
       )
       .subscribe((s) => {
         this.debitore.set(s);
+        this.debitoreVisible.set(true);
         this.debitoreLoading.set(false);
       });
   }
