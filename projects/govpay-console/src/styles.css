@@ -505,8 +505,8 @@ a {
 /* ==========================================================================
    DETTAGLIO PENDENZA — card e campi allineati al mock (radius 12px, padding
    24px, titolo maiuscolo SENZA underline di default; il divisore si aggiunge
-   dove serve con `.lnk-divider`). Font campi uniforme: label 13px, valore 14px
-   (anche i valori monospace restano 14px, via `.font-mono` di Tailwind). */
+   dove serve col componente `<lnk-divider>` di @linkit/shared-ui). Font campi
+   uniforme: label 13px, valore 14px (mono restano 14px, via `.font-mono`). */
 .lnk-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -519,13 +519,6 @@ a {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--foreground);
-}
-.lnk-divider {
-  height: 1px;
-  background: var(--card-border);
-}
-.lnk-divider.reduced {
-  margin: -8px 0px 0px;
 }
 .lnk-field-label {
   font-size: 13px;

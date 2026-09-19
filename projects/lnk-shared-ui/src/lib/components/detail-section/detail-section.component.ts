@@ -26,7 +26,7 @@ import { LNK_IN_DETAIL_GROUP } from '../detail-group/detail-group.token';
  *   da un `<lnk-detail-group>`).
  * - `'plain'`: card autonoma "morbida" — radius 12px, padding 24px, solo
  *   bordo (niente shadow) e titolo SENZA underline di default (i divisori
- *   si aggiungono nel contenuto con `.lnk-divider` dove servono). La
+ *   si aggiungono nel contenuto con `<lnk-divider>` dove servono). La
  *   spaziatura tra sezioni è delegata al container (es. `space-y-6`).
  * - `'embedded'`: niente bordo/bg/shadow, solo titolo + divider sotto;
  *   pensata per essere figlia di un `<lnk-detail-group>` che fa da

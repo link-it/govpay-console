@@ -27,6 +27,7 @@ import { SnackbarService } from '@linkit/shared-ui';
 import {
   ConfirmDialogComponent,
   DetailSectionComponent,
+  DividerComponent,
   EmptyStateComponent,
   LoadingComponent,
   ListStickyToolbarDirective,
@@ -61,6 +62,7 @@ import { voceExtra as buildVoceExtra, type VoceExtra } from './voce-dettaglio';
     TranslatePipe,
     PageHeaderComponent,
     DetailSectionComponent,
+    DividerComponent,
     InfoGridComponent,
     StatusBadgeComponent,
     EmptyStateComponent,

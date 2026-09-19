@@ -75,7 +75,7 @@
           </div>
           <div class="lnk-card-title">{{ 'Pendenze.Detail.RicevutaPagamento' | translate }}</div>
         </div>
-        <div class="lnk-divider"></div>
+        <lnk-divider />
         <lnk-info-grid uniform [columns]="3" [items]="ricevutaItems()" />
       </div>
     }
@@ -97,7 +97,7 @@
               }
             </div>
           </div>
-          <div class="lnk-divider"></div>
+          <lnk-divider />
           <lnk-info-grid uniform [columns]="1" [items]="dominioItems()" />
         </div>
       </lnk-detail-section>
@@ -106,7 +106,7 @@
         <div class="flex flex-col gap-4">
           @if (debitore() && debitoreVisible()) {
             <lnk-info-grid uniform [columns]="2" [items]="debitoreItems()" />
-            <div class="lnk-divider"></div>
+            <lnk-divider />
             <button type="button" class="btn btn-secondary btn-sm self-start" (click)="onNascondiDebitore()">
               <ng-icon name="bootstrapEyeSlash" size="1rem" />
               <span>{{ 'Pendenze.Detail.NascondiDebitore' | translate }}</span>
@@ -131,7 +131,7 @@
     <!-- Informazioni generali -->
     <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.Generali">
       <div class="flex flex-col gap-5">
-        <div class="lnk-divider reduced"></div>
+        <lnk-divider tight />
         <lnk-info-grid uniform [columns]="3" [items]="generaliItems()" />
       </div>
     </lnk-detail-section>
@@ -156,7 +156,7 @@
               </div>
             }
             @if (extra.datiAggiuntivi.length && (extra.metadati.length || extra.contabilita.length)) {
-              <div class="lnk-divider"></div>
+              <lnk-divider />
             }
             @if (extra.metadati.length) {
               <div class="flex flex-col gap-2">
@@ -167,7 +167,7 @@
               </div>
             }
             @if (extra.metadati.length && extra.contabilita.length) {
-              <div class="lnk-divider"></div>
+              <lnk-divider />
             }
             @if (extra.contabilita.length) {
               <div class="flex flex-col gap-3">

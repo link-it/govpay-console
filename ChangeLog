@@ -1,3 +1,17 @@
+2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] refactor(ricevute): dettaglio ricevute migrato al nuovo stile
+    card (`lnk-detail-section variant="plain"` + `lnk-info-grid uniform`),
+    coerente col dettaglio pendenza. Solo presentazione: logica, sezioni
+    configurabili (`showSection`), download e drilldown invariati.
+
+  * [Frontend] feat(shared-ui): nuovo componente `<lnk-divider>` (lib 0.34.0)
+    per i separatori in-content delle card di dettaglio. Input `tight`
+    (spaziatura ridotta, ex utility `.lnk-divider.reduced`), `role="separator"`,
+    self-contained (niente CSS globale). Promosse a standard le ex utility
+    app-local `.lnk-divider`/`.reduced`, ora rimosse da `styles.css`; usi in
+    `pendenza-detail` migrati al componente.
+
 2026-09-19  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] refactor(shared-ui): evoluzione additiva dei componenti card di
