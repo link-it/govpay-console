@@ -1,5 +1,10 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] fix(pendenze): ripristina il pari-altezza delle card "Ente
+    creditore" e "Soggetto pagatore" nel dettaglio pendenza (regressione della
+    riscrittura: la griglia usava `items-start` invece dello stretch). La griglia
+    torna a stretch (`.lnk-detail-cols`) e la card interna riempie la cella.
+
   * [Frontend] feat(pendenze,ricevute): navigazione annidata pendenza → ricevuta.
     Da una pendenza pagata "Stampa ricevuta" apre la ricevuta nel contesto della
     pendenza (rotta annidata `/pendenze/:idA2A/:idPendenza/ricevute/:idDominio/

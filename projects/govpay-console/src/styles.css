@@ -533,6 +533,15 @@ a {
   border-radius: 12px;
   padding: 24px;
 }
+
+/* Card affiancate a pari altezza (es. Ente creditore / Soggetto pagatore):
+   la griglia (default `stretch`) allunga l'host, la card interna lo riempie. */
+.lnk-detail-cols > lnk-detail-section {
+  display: flex;
+}
+.lnk-detail-cols > lnk-detail-section > section {
+  flex: 1;
+}
 .lnk-card-title {
   font-size: 13px;
   font-weight: 700;
