@@ -103,6 +103,9 @@ export class RicevutaDetailComponent implements OnInit {
   iuv = '';
   idRicevuta = '';
 
+  /** URL del bottone "Indietro": `/ricevute` oppure la pendenza padre (drilldown annidato). */
+  readonly backUrl = signal('/ricevute');
+
   readonly ricevuta = signal<Ricevuta | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -254,7 +257,26 @@ export class RicevutaDetailComponent implements OnInit {
     this.idDominio = idDominio;
     this.iuv = iuv;
     this.idRicevuta = idRicevuta;
-    this.system.setBreadcrumbs([{ label: 'Nav.Ricevute', url: '/ricevute' }, { label: iuv }]);
+
+    // Drilldown annidato da una pendenza (`/pendenze/:idA2A/:idPendenza/ricevute/...`):
+    // back + breadcrumb verso la pendenza di provenienza.
+    const url = this.router.url ?? '';
+    if (url.startsWith('/pendenze/') && p.has('idA2A') && p.has('idPendenza')) {
+      const idA2A = p.get('idA2A')!;
+      const idPendenza = p.get('idPendenza')!;
+      const parentUrl = `/pendenze/${encodeURIComponent(idA2A)}/${encodeURIComponent(idPendenza)}`;
+      this.backUrl.set(parentUrl);
+      this.system.setBreadcrumbs([
+        { label: 'Nav.Pendenze', url: '/pendenze' },
+        { label: idPendenza, url: parentUrl },
+        // Voce non cliccabile: chiarisce che l'ultimo segmento è una ricevuta.
+        { label: 'Ricevute.Detail.Breadcrumb' },
+        { label: iuv },
+      ]);
+    } else {
+      this.backUrl.set('/ricevute');
+      this.system.setBreadcrumbs([{ label: 'Nav.Ricevute', url: '/ricevute' }, { label: iuv }]);
+    }
     this.fetch();
   }
 

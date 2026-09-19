@@ -122,7 +122,8 @@
         "Categoria": "Categoria",
         "Causale": "Causale",
         "Totale": "Totale"
-      }
+      },
+      "Breadcrumb": "Ricevuta"
     },
     "Upload": {
       "Carica": "Carica RT",

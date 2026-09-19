@@ -122,7 +122,8 @@
         "Categoria": "Category",
         "Causale": "Remittance",
         "Totale": "Total"
-      }
+      },
+      "Breadcrumb": "Receipt"
     },
     "Upload": {
       "Carica": "Upload RT",

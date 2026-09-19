@@ -106,7 +106,7 @@ describe('PendenzaDetailComponent', () => {
     comp.ngOnInit();
     expect(comp.isPagato()).toBe(true);
     expect(comp.hasRicevutaPagamento()).toBe(true);
-    expect(comp.ricevutaLink()).toEqual(['/ricevute', 'D', 'IUV', 'RIC1']);
+    expect(comp.ricevutaLink()).toEqual(['/pendenze', 'A2A', 'P1', 'ricevute', 'D', 'IUV', 'RIC1']);
     // Nel dettaglio RT arricchiamo con PSP nome/metodo.
     expect(ricevuteApi.get).toHaveBeenCalledWith('D', 'IUV', 'RIC1');
     const items = comp.ricevutaItems();

@@ -1,5 +1,13 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] feat(pendenze,ricevute): navigazione annidata pendenza → ricevuta.
+    Da una pendenza pagata "Stampa ricevuta" apre la ricevuta nel contesto della
+    pendenza (rotta annidata `/pendenze/:idA2A/:idPendenza/ricevute/:idDominio/
+    :iuv/:idRicevuta`): `RicevutaDetailComponent` rileva il padre e mostra
+    "Indietro" verso la pendenza + breadcrumb `Pendenze › <idPendenza> ›
+    Ricevuta › <iuv>`. Simmetrica al drilldown ricevuta → pendenza già esistente.
+    Nuova chiave i18n `Ricevute.Detail.Breadcrumb`.
+
   * [Frontend] feat(ricevute): dettaglio ricevute allineato al pattern del
     dettaglio pendenza.
     - Fascia "hero" in evidenza con l'importo, colorato in base allo stato RT

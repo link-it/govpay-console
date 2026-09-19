@@ -2,7 +2,7 @@
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
     <lnk-page-header [titleKey]="iuv || '—'" subtitleKey="Ricevute.Detail.Subtitle">
       <div class="flex items-center gap-2">
-        <a routerLink="/ricevute" class="btn btn-secondary btn-sm">
+        <a [routerLink]="backUrl()" class="btn btn-secondary btn-sm">
           <ng-icon name="bootstrapChevronLeft" size="1rem" />
           <span>{{ 'Common.Back' | translate }}</span>
         </a>
@@ -20,7 +20,7 @@
 
   @if (error()) {
     <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
-      <a routerLink="/ricevute" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
+      <a [routerLink]="backUrl()" class="btn btn-secondary btn-sm">{{ 'Common.Back' | translate }}</a>
     </lnk-empty-state>
   } @else if (loading() && !ricevuta()) {
     <lnk-loading />

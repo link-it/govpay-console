@@ -166,10 +166,16 @@ export class PendenzaDetailComponent implements OnInit {
   /** Mostra il blocco ricevuta solo se pagato e con una RT associata. */
   readonly hasRicevutaPagamento = computed(() => this.isPagato() && !!this.ricevutaPrincipale());
 
-  /** Link al dettaglio della ricevuta (`/ricevute/:idDominio/:iuv/:idRicevuta`). */
+  /**
+   * Link al dettaglio della ricevuta come **drilldown annidato** sotto la
+   * pendenza (`/pendenze/:idA2A/:idPendenza/ricevute/:idDominio/:iuv/:idRicevuta`):
+   * il detail ricevuta rileva il padre e mostra back + breadcrumb verso la pendenza.
+   */
   readonly ricevutaLink = computed<unknown[] | null>(() => {
     const r = this.ricevutaPrincipale();
-    return r ? ['/ricevute', r.idDominio, r.iuv, r.idRicevuta] : null;
+    return r
+      ? ['/pendenze', this.idA2A, this.idPendenza, 'ricevute', r.idDominio, r.iuv, r.idRicevuta]
+      : null;
   });
 
   readonly ricevutaItems = computed<InfoGridItem[]>(() => {
