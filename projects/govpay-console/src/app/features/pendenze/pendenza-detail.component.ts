@@ -26,9 +26,11 @@ import { SystemFacade } from '@linkit/shared-ui';
 import { SnackbarService } from '@linkit/shared-ui';
 import {
   ConfirmDialogComponent,
+  DetailSectionComponent,
   EmptyStateComponent,
   LoadingComponent,
   ListStickyToolbarDirective,
+  InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
   downloadBlob,
@@ -58,6 +60,8 @@ import { voceExtra as buildVoceExtra, type VoceExtra } from './voce-dettaglio';
     RouterLink,
     TranslatePipe,
     PageHeaderComponent,
+    DetailSectionComponent,
+    InfoGridComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
     LoadingComponent,

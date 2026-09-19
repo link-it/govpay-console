@@ -45,20 +45,6 @@
     <lnk-loading />
   } @else if (pendenza(); as p) {
 
-    <!-- Griglia campi label/valore riusabile (font uniforme: label 13px, valore 14px) -->
-    <ng-template #fields let-items="items" let-cols="cols">
-      <div class="grid gap-x-6 gap-y-5" [class]="cols || 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'">
-        @for (item of items; track item.labelKey) {
-          @if (!item.hide) {
-            <div class="flex flex-col gap-1" [class.sm:col-span-2]="item.wide" [class.lg:col-span-3]="item.wide">
-              <span class="lnk-field-label">{{ item.labelKey | translate }}</span>
-              <span class="lnk-field-value" [class.font-mono]="item.mono">{{ item.value || '—' }}</span>
-            </div>
-          }
-        }
-      </div>
-    </ng-template>
-
     <!-- Hero: differenziato per stato -->
     @if (isPagato()) {
       <div class="lnk-hero-card lnk-hero-success">
@@ -90,66 +76,69 @@
           <div class="lnk-card-title">{{ 'Pendenze.Detail.RicevutaPagamento' | translate }}</div>
         </div>
         <div class="lnk-divider"></div>
-        <ng-container [ngTemplateOutlet]="fields" [ngTemplateOutletContext]="{ items: ricevutaItems(), cols: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' }" />
+        <lnk-info-grid uniform [columns]="3" [items]="ricevutaItems()" />
       </div>
     }
 
     <!-- Ente creditore + Soggetto debitore su due colonne -->
     <div class="grid gap-6 items-start md:grid-cols-2">
-      <div class="lnk-card flex flex-col gap-5 h-full">
-        <div class="lnk-card-title">{{ 'Pendenze.Detail.EnteCreditore' | translate }}</div>
-        <div class="flex items-center gap-4">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-[var(--card-border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
-            <ng-icon name="bootstrapBank" size="1.6rem" />
+      <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.EnteCreditore">
+        <div class="flex flex-col gap-5">
+          <div class="flex items-center gap-4">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-[var(--card-border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
+              <ng-icon name="bootstrapBank" size="1.6rem" />
+            </div>
+            <div class="min-w-0">
+              <div class="text-base font-bold break-words">{{ p.dominio.ragioneSociale || '—' }}</div>
+              @if (p.unitaOperativa?.ragioneSociale) {
+                <div class="text-sm text-[var(--muted-foreground)] break-words">
+                  {{ 'Pendenze.Detail.UnitaOperativa' | translate }}: {{ p.unitaOperativa!.ragioneSociale }}
+                </div>
+              }
+            </div>
           </div>
-          <div class="min-w-0">
-            <div class="text-base font-bold break-words">{{ p.dominio.ragioneSociale || '—' }}</div>
-            @if (p.unitaOperativa?.ragioneSociale) {
-              <div class="text-sm text-[var(--muted-foreground)] break-words">
-                {{ 'Pendenze.Detail.UnitaOperativa' | translate }}: {{ p.unitaOperativa!.ragioneSociale }}
-              </div>
-            }
-          </div>
-        </div>
-        <div class="lnk-divider"></div>
-        <ng-container [ngTemplateOutlet]="fields" [ngTemplateOutletContext]="{ items: dominioItems(), cols: 'grid-cols-1' }" />
-      </div>
-
-      <div class="lnk-card flex flex-col gap-4 h-full">
-        <div class="lnk-card-title">{{ 'Pendenze.Detail.SoggettoPagatore' | translate }}</div>
-        @if (debitore() && debitoreVisible()) {
-          <ng-container [ngTemplateOutlet]="fields" [ngTemplateOutletContext]="{ items: debitoreItems(), cols: 'grid-cols-1 sm:grid-cols-2' }" />
           <div class="lnk-divider"></div>
-          <button type="button" class="btn btn-secondary btn-sm self-start" (click)="onNascondiDebitore()">
-            <ng-icon name="bootstrapEyeSlash" size="1rem" />
-            <span>{{ 'Pendenze.Detail.NascondiDebitore' | translate }}</span>
-          </button>
-        } @else if (debitoreLoading()) {
-          <lnk-loading [inline]="true" size="sm" labelKey="Common.Loading" />
-        } @else {
-          <p class="text-sm text-[var(--muted-foreground)] leading-relaxed">
-            {{ 'Pendenze.Detail.DebitoreProtetto' | translate }}
-          </p>
-          @if (hasDebitoreLink()) {
-            <button type="button" class="btn btn-secondary btn-sm self-start" (click)="onMostraDebitore()">
-              <ng-icon name="bootstrapEye" size="1rem" />
-              <span>{{ 'Pendenze.Detail.MostraDebitore' | translate }}</span>
+          <lnk-info-grid uniform [columns]="1" [items]="dominioItems()" />
+        </div>
+      </lnk-detail-section>
+
+      <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.SoggettoPagatore">
+        <div class="flex flex-col gap-4">
+          @if (debitore() && debitoreVisible()) {
+            <lnk-info-grid uniform [columns]="2" [items]="debitoreItems()" />
+            <div class="lnk-divider"></div>
+            <button type="button" class="btn btn-secondary btn-sm self-start" (click)="onNascondiDebitore()">
+              <ng-icon name="bootstrapEyeSlash" size="1rem" />
+              <span>{{ 'Pendenze.Detail.NascondiDebitore' | translate }}</span>
             </button>
+          } @else if (debitoreLoading()) {
+            <lnk-loading [inline]="true" size="sm" labelKey="Common.Loading" />
+          } @else {
+            <p class="text-sm text-[var(--muted-foreground)] leading-relaxed">
+              {{ 'Pendenze.Detail.DebitoreProtetto' | translate }}
+            </p>
+            @if (hasDebitoreLink()) {
+              <button type="button" class="btn btn-secondary btn-sm self-start" (click)="onMostraDebitore()">
+                <ng-icon name="bootstrapEye" size="1rem" />
+                <span>{{ 'Pendenze.Detail.MostraDebitore' | translate }}</span>
+              </button>
+            }
           }
-        }
-      </div>
+        </div>
+      </lnk-detail-section>
     </div>
 
     <!-- Informazioni generali -->
-    <div class="lnk-card flex flex-col gap-5">
-      <div class="lnk-card-title">{{ 'Pendenze.Detail.Generali' | translate }}</div>
-      <div class="lnk-divider reduced"></div>
-      <ng-container [ngTemplateOutlet]="fields" [ngTemplateOutletContext]="{ items: generaliItems(), cols: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' }" />
-    </div>
+    <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.Generali">
+      <div class="flex flex-col gap-5">
+        <div class="lnk-divider reduced"></div>
+        <lnk-info-grid uniform [columns]="3" [items]="generaliItems()" />
+      </div>
+    </lnk-detail-section>
 
     <!-- Voci: tabella su desktop, card impilate su mobile; accordion per voce -->
-    <div class="lnk-card flex flex-col gap-4">
-      <div class="lnk-card-title">{{ 'Pendenze.Detail.Voci' | translate }}</div>
+    <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.Voci">
+      <div class="flex flex-col gap-4">
       @if (p.voci.length === 0) {
         <p class="text-sm text-[var(--muted-foreground)]">{{ 'Pendenze.Detail.VociEmpty' | translate }}</p>
       } @else {
@@ -163,7 +152,7 @@
             @if (extra.datiAggiuntivi.length) {
               <div class="flex flex-col gap-2">
                 <div class="lnk-voce-group-title">{{ 'Pendenze.Voci.DatiAggiuntivi' | translate }}</div>
-                <ng-container [ngTemplateOutlet]="fields" [ngTemplateOutletContext]="{ items: extra.datiAggiuntivi, cols: 'grid-cols-1 sm:grid-cols-2' }" />
+                <lnk-info-grid uniform [columns]="2" [items]="extra.datiAggiuntivi" />
               </div>
             }
             @if (extra.datiAggiuntivi.length && (extra.metadati.length || extra.contabilita.length)) {
@@ -174,7 +163,7 @@
                 <div class="lnk-voce-group-title">
                   {{ 'Pendenze.Voci.MetadatiServizio' | translate }} · {{ extra.metadati.length }}
                 </div>
-                <ng-container [ngTemplateOutlet]="fields" [ngTemplateOutletContext]="{ items: extra.metadati, cols: 'grid-cols-1 sm:grid-cols-2' }" />
+                <lnk-info-grid uniform [columns]="2" [items]="extra.metadati" />
               </div>
             }
             @if (extra.metadati.length && extra.contabilita.length) {
@@ -191,7 +180,7 @@
                     @if (c.tipo) {
                       <span class="inline-block self-start rounded-md bg-[var(--muted)] px-2 py-0.5 font-mono text-xs font-semibold text-[var(--muted-foreground)]">{{ c.tipo }}</span>
                     }
-                    <ng-container [ngTemplateOutlet]="fields" [ngTemplateOutletContext]="{ items: c.items, cols: 'grid-cols-2 sm:grid-cols-4' }" />
+                    <lnk-info-grid uniform [columns]="4" [items]="c.items" />
                   </div>
                 }
               </div>
@@ -273,7 +262,8 @@
           }
         </div>
       }
-    </div>
+      </div>
+    </lnk-detail-section>
   }
   </div>
 

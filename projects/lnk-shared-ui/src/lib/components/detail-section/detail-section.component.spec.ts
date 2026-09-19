@@ -128,4 +128,27 @@ describe('DetailSectionComponent', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance['effectiveVariant']()).toBe('card');
   });
+
+  it("variant='plain': radius 12px + bordo senza shadow, titolo SENZA underline, padding 24px", () => {
+    const fixture = TestBed.createComponent(DetailSectionComponent);
+    fixture.componentRef.setInput('titleKey', 'X');
+    fixture.componentRef.setInput('variant', 'plain');
+    fixture.detectChanges();
+
+    const section = fixture.nativeElement.querySelector('section') as HTMLElement;
+    const header = fixture.nativeElement.querySelector('header') as HTMLElement;
+    const h2 = fixture.nativeElement.querySelector('h2') as HTMLElement;
+
+    // Card "morbida": radius 12px + bordo, NIENTE shadow.
+    expect(section.className).toContain('rounded-xl');
+    expect(section.className).toContain('border-[var(--card-border)]');
+    expect(section.className).not.toContain('shadow-[var(--card-shadow)]');
+    // Titolo senza underline (nessun border-b né sull'header né sull'h2).
+    expect(header.className).not.toContain('border-b');
+    expect(h2.className).not.toContain('border-b');
+    // Padding 24px (px-6) su header e content.
+    expect(header.className).toContain('px-6');
+    expect(section.querySelector('.px-6.pb-6')).not.toBeNull();
+    expect(fixture.componentInstance['effectiveVariant']()).toBe('plain');
+  });
 });
