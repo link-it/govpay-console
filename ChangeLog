@@ -1,5 +1,15 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] feat(ricevute): dettaglio ricevute allineato al pattern del
+    dettaglio pendenza.
+    - Fascia "hero" in evidenza con l'importo, colorato in base allo stato RT
+      (accettata=verde, in corso=blu, scaduto/sconosciuto=ambra,
+      rifiutata/fallita=rosso, annullata=grigio); il badge di stato resta
+      nell'header (rimosso l'importo inline dalla toolbar).
+    - Nuove varianti hero `.lnk-hero-danger` e `.lnk-hero-muted` (con dark) per
+      coprire tutti i toni di stato.
+    - Divisori `<lnk-divider tight />` sotto il titolo di ogni sezione.
+
   * [Frontend] refactor(ricevute): dettaglio ricevute migrato al nuovo stile
     card (`lnk-detail-section variant="plain"` + `lnk-info-grid uniform`),
     coerente col dettaglio pendenza. Solo presentazione: logica, sezioni
