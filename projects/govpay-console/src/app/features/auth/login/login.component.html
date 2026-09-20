@@ -118,6 +118,13 @@
     </div>
   </div>
 
+  <!-- Versione applicativa (gated da Layout.showVersion/showBuild come in sidebar) -->
+  @if (showVersion()) {
+    <footer class="px-6 py-4 text-center text-xs text-[var(--muted-foreground)]">
+      v{{ version }}@if (showBuild()) { <span>· {{ gitHash }}</span> }
+    </footer>
+  }
+
   <!-- Pannello tweaks (sezione "Login" registrata in costruttore) -->
   <lnk-global-tweaks-host />
 </section>

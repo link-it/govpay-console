@@ -31,6 +31,7 @@ import {
 } from '@linkit/shared-ui';
 import { SnackbarService } from '@linkit/shared-ui';
 import { environment } from '@environment';
+import { VERSION } from '@environments';
 import type { AuthMode } from '@linkit/shared-ui';
 
 @Component({
@@ -77,6 +78,12 @@ export class LoginComponent {
 
   readonly logo = computed(() => this.config.branding()?.logo.full ?? '');
   readonly title = computed(() => this.config.appConfig()?.app?.title ?? 'GovPay Console');
+  /** Versione applicativa (da `version.ts` auto-generato), mostrata a piè di pagina
+   *  con la stessa logica della sidebar (`Layout.showVersion`/`showBuild`). */
+  readonly version = VERSION.version;
+  readonly gitHash = VERSION.gitHash;
+  readonly showVersion = computed(() => this.config.appConfig()?.Layout.showVersion !== false);
+  readonly showBuild = computed(() => this.config.appConfig()?.Layout.showBuild === true);
   readonly authModes = computed<AuthMode[]>(() => this.config.appConfig()?.Auth.Modes ?? []);
   readonly defaultMode = computed<AuthMode>(() => this.config.appConfig()?.Auth.Default ?? 'Basic');
   readonly selectedMode = signal<AuthMode>(this.defaultMode());
