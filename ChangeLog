@@ -1,5 +1,11 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] fix(a11y): contrasto del chip filtro (`search-chip`, lib 0.35.1)
+    portato ≥ 4.5:1. Il testo usava il primary pieno sul soft-bg (12%): sotto
+    soglia per testo 12px (col coral di default era 2.95:1). Ora è scurito
+    (~72% primary): coral 5.15, info 7.21. Emerso dall'audit gov-a11y
+    (giornale-eventi, `.chip__value`); gate accessibilità ora superato.
+
   * [Frontend] feat(auth): versione applicativa a piè di pagina nel login,
     condizionata da `Layout.showVersion`/`showBuild` come nella sidebar
     (default mostrata; git short SHA solo con `showBuild`).

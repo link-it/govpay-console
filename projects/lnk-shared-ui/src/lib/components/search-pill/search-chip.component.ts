@@ -63,7 +63,9 @@ import { NgIcon } from '@ng-icons/core';
       height: var(--sb-chip-h);
       padding: 0 4px 0 10px;
       background: var(--sb-primary-soft);
-      color: var(--sb-primary);
+      /* Testo scurito (~72% primary) per garantire contrasto >= 4.5:1 sul
+         soft-bg (12% primary): il primary pieno resta borderline su testo 12px (a11y). */
+      color: color-mix(in srgb, var(--sb-primary) 72%, #000);
       border-radius: 999px;
       font-size: var(--sb-chip-fs);
       font-weight: 500;
