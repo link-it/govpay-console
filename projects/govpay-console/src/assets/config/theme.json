@@ -77,7 +77,7 @@
     "success": "#16a34a",
     "warning": "#f59e0b",
     "danger": "#ff4050",
-    "info": "#0071a9",
+    "info": "#4f46e5",
     "dark": {
       "topBar": {
         "background": "#0f172a",
@@ -133,7 +133,7 @@
           "pillShadow": "0 1px 3px rgb(255 64 80 / 0.45)"
         }
       },
-      "info": "#38bdf8"
+      "info": "#818cf8"
     }
   }
 }

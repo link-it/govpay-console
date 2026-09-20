@@ -13,7 +13,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -27,18 +27,26 @@
     <lnk-loading />
   } @else if (pagamento(); as p) {
 
-    <lnk-detail-section titleKey="Pagamenti.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
+    <!-- Hero: importo colorato in base allo stato -->
+    @if (importoFmt(); as imp) {
+      <div [class]="'lnk-hero-card lnk-hero-' + statoTone()">
+        <div class="lnk-hero-label">{{ 'Pagamenti.Detail.Importo' | translate }}</div>
+        <div class="lnk-hero-value">{{ imp }}</div>
+      </div>
+    }
+
+    <lnk-detail-section variant="plain" titleDivider titleKey="Pagamenti.Detail.Generali">
+      <lnk-info-grid uniform [items]="generaliItems()" />
     </lnk-detail-section>
 
     @if (p.soggettoVersante) {
-      <lnk-detail-section titleKey="Pagamenti.Detail.SoggettoVersante">
-        <lnk-info-grid [items]="versanteItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Pagamenti.Detail.SoggettoVersante">
+        <lnk-info-grid uniform [items]="versanteItems()" />
       </lnk-detail-section>
     }
 
     @if (p.pendenze && p.pendenze.length > 0) {
-      <lnk-detail-section titleKey="Pagamenti.Detail.Pendenze">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Pagamenti.Detail.Pendenze">
         <ul class="flex flex-col gap-1 text-sm">
           @for (pend of p.pendenze; track pend.numeroAvviso || pend.iuv) {
             <li>
@@ -58,7 +66,7 @@
     }
 
     @if (p.ricevute && p.ricevute.length > 0) {
-      <lnk-detail-section titleKey="Pagamenti.Detail.Ricevute">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Pagamenti.Detail.Ricevute">
         <ul class="flex flex-col gap-1 text-sm">
           @for (ric of p.ricevute; track ric.iuv) {
             <li>

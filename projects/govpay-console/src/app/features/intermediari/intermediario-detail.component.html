@@ -24,7 +24,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -39,8 +39,8 @@
   } @else if (intermediario(); as i) {
 
     @if (activeTab() === 'dati') {
-      <lnk-detail-section titleKey="Intermediari.Detail.Generali">
-        <lnk-info-grid [items]="generaliItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Intermediari.Detail.Generali">
+        <lnk-info-grid uniform [items]="generaliItems()" />
       </lnk-detail-section>
     }
 

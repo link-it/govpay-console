@@ -15,8 +15,8 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
-        <lnk-detail-section titleKey="Applicazioni.Detail.Generali">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Applicazioni.Detail.Generali">
           <div class="space-y-5">
             <label class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idA2A">{{ 'Applicazioni.Detail.IdA2A' | translate }}</span>
@@ -41,7 +41,7 @@
           </div>
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Applicazioni.Detail.CodificaAvvisi">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Applicazioni.Detail.CodificaAvvisi">
           <div class="space-y-5">
             <div class="grid grid-cols-2 gap-3 max-w-md">
               <label class="flex flex-col gap-1">
@@ -63,19 +63,19 @@
           </div>
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Applicazioni.Detail.Domini">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Applicazioni.Detail.Domini">
           <lnk-ref-multiselect [(value)]="domini" [allowAll]="true" placeholderKey="Applicazioni.Form.DominioPlaceholder" />
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Applicazioni.Detail.TipiPendenza">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Applicazioni.Detail.TipiPendenza">
           <lnk-ref-multiselect [(value)]="tipiPendenza" [allowAll]="true" [suggestions]="tipiSuggestions()" placeholderKey="Applicazioni.Form.TipoPendenzaPlaceholder" />
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Applicazioni.Detail.Ruoli">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Applicazioni.Detail.Ruoli">
           <lnk-ref-multiselect [(value)]="ruoli" [suggestions]="ruoliSuggestions()" placeholderKey="Applicazioni.Form.RuoloPlaceholder" />
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Applicazioni.Detail.Acl">
+        <lnk-detail-section variant="plain" titleKey="Applicazioni.Detail.Acl">
           <lnk-acl-editor [(acl)]="aclValue" />
         </lnk-detail-section>
 

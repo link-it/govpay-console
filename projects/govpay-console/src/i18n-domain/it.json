@@ -122,7 +122,8 @@
         "Categoria": "Categoria",
         "Causale": "Causale",
         "Totale": "Totale"
-      }
+      },
+      "Breadcrumb": "Ricevuta"
     },
     "Upload": {
       "Carica": "Carica RT",
@@ -272,13 +273,48 @@
       "DebitoreProtetto": "I dati anagrafici del debitore sono protetti: la visualizzazione viene registrata a fini di audit (GDPR).",
       "DebitoreConsensoTitolo": "Visualizzare i dati del debitore?",
       "DebitoreConsensoTesto": "Stai per visualizzare i dati anagrafici e i contatti del debitore. L'operazione viene registrata a fini di audit (GDPR).",
-      "DebitoreConsensoConferma": "Visualizza"
+      "DebitoreConsensoConferma": "Visualizza",
+      "ImportoDovuto": "Importo dovuto",
+      "ImportoPagato": "Importo pagato",
+      "RicevutaPagamento": "Ricevuta di pagamento",
+      "Psp": "PSP",
+      "IdentificativoPsp": "Identificativo PSP",
+      "DataPagamento": "Data di pagamento",
+      "MetodoPagamento": "Metodo di pagamento",
+      "IdentificativoRicevuta": "Identificativo ricevuta",
+      "StampaRicevuta": "Stampa ricevuta",
+      "NascondiDebitore": "Nascondi informazioni debitore"
     },
     "Voci": {
       "Indice": "N.",
       "Descrizione": "Descrizione",
       "Importo": "Importo",
-      "Stato": "Stato"
+      "Stato": "Stato",
+      "CodEntrata": "Codice entrata",
+      "IbanAccredito": "IBAN accredito",
+      "IbanAppoggio": "IBAN appoggio",
+      "TipoContabilita": "Tipo contabilità",
+      "CodiceContabilita": "Codice contabilità",
+      "TipoBollo": "Tipo bollo",
+      "ProvinciaResidenza": "Provincia di residenza",
+      "HashDocumento": "Hash documento",
+      "DatiAggiuntivi": "Dati aggiuntivi",
+      "MetadatiServizio": "Metadati del servizio",
+      "DatiContabilita": "Dati di contabilità",
+      "Dettaglio": "dettaglio",
+      "Dettagli": "dettagli",
+      "NessunDettaglio": "Nessun dettaglio aggiuntivo per questa voce.",
+      "AnnoContabile": "Anno contabile",
+      "Capitolo": "Capitolo",
+      "Accertamento": "Accertamento",
+      "Articolo": "Articolo",
+      "CodiceUfficio": "Codice ufficio",
+      "TipoIncasso": "Tipo incasso",
+      "CodiceTributo": "Codice tributo",
+      "CodiceInformazione": "Codice informazione",
+      "ImportoNotifica": "Importo notifica",
+      "Voce": "Voce",
+      "DatiAggiuntiviContabilita": "Dati aggiuntivi e contabilità"
     },
     "StatiVoce": {
       "NonPagata": "Da pagare",

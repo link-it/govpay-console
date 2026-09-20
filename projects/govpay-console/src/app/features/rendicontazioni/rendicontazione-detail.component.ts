@@ -90,6 +90,12 @@ export class RendicontazioneDetailComponent implements OnInit {
     return s ? STATO_FLUSSO_LABEL[s] : 'Rendicontazioni.Stati.Acquisito';
   });
 
+  /** Importo formattato per l'hero (colorato in base allo stato). */
+  readonly importoFmt = computed(() => {
+    const x = this.flusso()?.importoTotale;
+    return x != null ? formatEuro(x) : null;
+  });
+
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const r = this.flusso();
     if (!r) return [];

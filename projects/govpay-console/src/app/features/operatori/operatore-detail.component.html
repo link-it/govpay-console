@@ -21,7 +21,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
@@ -31,12 +31,12 @@
     <lnk-loading />
   } @else if (operatore(); as o) {
 
-    <lnk-detail-section titleKey="Operatori.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Generali">
+      <lnk-info-grid uniform [items]="generaliItems()" />
     </lnk-detail-section>
 
     @if (dominiList().length > 0) {
-      <lnk-detail-section titleKey="Operatori.Detail.Domini">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Domini">
         <ul class="flex flex-wrap gap-2 text-sm">
           @for (d of dominiList(); track d) {
             <li class="rounded border border-[var(--border)] px-2 py-1 font-mono text-xs">{{ d }}</li>
@@ -46,7 +46,7 @@
     }
 
     @if (tipiPendenzaList().length > 0) {
-      <lnk-detail-section titleKey="Operatori.Detail.TipiPendenza">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.TipiPendenza">
         <ul class="flex flex-wrap gap-2 text-sm">
           @for (t of tipiPendenzaList(); track t) {
             <li class="rounded border border-[var(--border)] px-2 py-1 font-mono text-xs">{{ t }}</li>
@@ -56,7 +56,7 @@
     }
 
     @if (ruoliList().length > 0) {
-      <lnk-detail-section titleKey="Operatori.Detail.Ruoli">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Ruoli">
         <ul class="flex flex-wrap gap-2 text-sm">
           @for (r of ruoliList(); track r) {
             <li class="rounded border border-[var(--border)] px-2 py-1 text-xs">{{ r }}</li>
@@ -66,12 +66,12 @@
     }
 
     @if (o.acl && o.acl.length > 0) {
-      <lnk-detail-section titleKey="Operatori.Detail.Acl">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Acl">
         <lnk-acl-editor [acl]="o.acl" [disabled]="true" />
       </lnk-detail-section>
     }
 
-    <lnk-detail-section titleKey="Operatori.Detail.Password">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Password">
       <lnk-set-password-card [submit]="setPassword" />
     </lnk-detail-section>
   }

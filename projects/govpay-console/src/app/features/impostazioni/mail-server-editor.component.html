@@ -12,8 +12,8 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
-        <lnk-detail-section titleKey="Impostazioni.MailServer.Server">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Impostazioni.MailServer.Server">
           <div class="space-y-5">
             <label class="flex items-center gap-2">
               <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
@@ -54,7 +54,7 @@
           </div>
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Impostazioni.MailServer.Ssl">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Impostazioni.MailServer.Ssl">
           <div class="space-y-5">
             <div class="flex flex-wrap items-center gap-6">
               <label class="flex items-center gap-2">
@@ -94,8 +94,8 @@
         </lnk-form-action-bar>
       </form>
 
-      <lnk-detail-section titleKey="Impostazioni.MailServer.Password" class="mt-4 block">
-        <form [formGroup]="credForm" (ngSubmit)="savePassword()" class="space-y-4">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Impostazioni.MailServer.Password" class="mt-4 block">
+        <form [formGroup]="credForm" (ngSubmit)="savePassword()" class="space-y-6">
           <p class="text-xs text-[var(--muted-foreground)]">
             {{ (passwordImpostata() ? 'Impostazioni.MailServer.PasswordImpostata' : 'Impostazioni.MailServer.PasswordNonImpostata') | translate }}
           </p>

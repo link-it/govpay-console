@@ -82,6 +82,12 @@ export class IncassoDetailComponent implements OnInit {
     return s ? STATO_INCASSO_LABEL[s] : 'Incassi.Stati.Acquisito';
   });
 
+  /** Importo formattato per l'hero (colorato in base allo stato). */
+  readonly importoFmt = computed(() => {
+    const x = this.incasso()?.importo;
+    return x != null ? formatEuro(x) : null;
+  });
+
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const i = this.incasso();
     if (!i) return [];

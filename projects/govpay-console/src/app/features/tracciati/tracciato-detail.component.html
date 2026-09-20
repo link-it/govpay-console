@@ -32,7 +32,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -47,16 +47,16 @@
   } @else if (tracciato()) {
 
     @if (activeTab() === 'dati') {
-      <lnk-detail-section titleKey="Tracciati.Detail.Generali">
-        <lnk-info-grid [items]="generaliItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Tracciati.Detail.Generali">
+        <lnk-info-grid uniform [items]="generaliItems()" />
       </lnk-detail-section>
 
-      <lnk-detail-section titleKey="Tracciati.Detail.EnteCreditore">
-        <lnk-info-grid [items]="enteItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Tracciati.Detail.EnteCreditore">
+        <lnk-info-grid uniform [items]="enteItems()" />
       </lnk-detail-section>
 
-      <lnk-detail-section titleKey="Tracciati.Detail.Contatori">
-        <lnk-info-grid [items]="contatoriItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Tracciati.Detail.Contatori">
+        <lnk-info-grid uniform [items]="contatoriItems()" />
       </lnk-detail-section>
     }
 

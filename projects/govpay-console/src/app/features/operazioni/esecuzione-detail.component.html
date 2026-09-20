@@ -25,7 +25,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
@@ -35,12 +35,12 @@
     <lnk-loading />
   } @else if (esecuzione(); as e) {
 
-    <lnk-detail-section titleKey="Operazioni.Esecuzioni.Detail.Dati">
-      <lnk-info-grid [items]="datiItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Operazioni.Esecuzioni.Detail.Dati">
+      <lnk-info-grid uniform [items]="datiItems()" />
     </lnk-detail-section>
 
     @if (esito(); as esito) {
-      <lnk-detail-section titleKey="Operazioni.Esecuzioni.Detail.Esito">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Operazioni.Esecuzioni.Detail.Esito">
         <div class="space-y-2">
           <lnk-status-badge
             [tone]="esito.successo ? 'success' : 'danger'"
@@ -61,7 +61,7 @@
     }
 
     @if (e.dettaglio) {
-      <lnk-detail-section titleKey="Operazioni.Esecuzioni.Detail.Dettaglio">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Operazioni.Esecuzioni.Detail.Dettaglio">
         <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs whitespace-pre-wrap">{{ e.dettaglio }}</pre>
       </lnk-detail-section>
     }

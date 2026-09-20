@@ -6,10 +6,10 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
   @if (user(); as u) {
     @if (activeTab() === 'preferenze') {
-    <lnk-detail-section titleKey="Profilo.Preferenze.Title">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Profilo.Preferenze.Title">
       <p class="-mt-2 mb-4 text-sm text-[var(--muted-foreground)]">
         {{ (prefsSynced() ? 'Profilo.Preferenze.SyncOn' : 'Profilo.Preferenze.SyncOff') | translate }}
       </p>
@@ -50,11 +50,11 @@
       </div>
     </lnk-detail-section>
     } @else {
-    <lnk-detail-section titleKey="Profilo.Detail.Anagrafica">
-      <lnk-info-grid [items]="anagraficaItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Profilo.Detail.Anagrafica">
+      <lnk-info-grid uniform [items]="anagraficaItems()" />
     </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Profilo.Detail.Domini">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Profilo.Detail.Domini">
       @if (dominiList().length > 0) {
         <ul class="flex flex-wrap gap-2 text-sm">
           @for (d of dominiList(); track d.idDominio) {
@@ -71,7 +71,7 @@
       }
     </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Profilo.Detail.TipiPendenza">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Profilo.Detail.TipiPendenza">
       @if (tipiPendenzaList().length > 0) {
         <ul class="flex flex-wrap gap-2 text-sm">
           @for (t of tipiPendenzaList(); track t.idTipoPendenza) {
@@ -88,7 +88,7 @@
       }
     </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Profilo.Detail.Acl">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Profilo.Detail.Acl">
       @if (aclList().length > 0) {
         <table class="w-full text-sm">
           <thead class="text-left text-[var(--muted-foreground)]">

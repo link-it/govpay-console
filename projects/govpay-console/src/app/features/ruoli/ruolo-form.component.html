@@ -15,8 +15,8 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
-        <lnk-detail-section titleKey="Ruoli.Detail.Generali">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Ruoli.Detail.Generali">
           <label class="flex flex-col gap-1 max-w-md">
             <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idRuolo">{{ 'Ruoli.Detail.Id' | translate }}</span>
             <input
@@ -30,7 +30,7 @@
           </label>
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Ruoli.Detail.Acl">
+        <lnk-detail-section variant="plain" titleKey="Ruoli.Detail.Acl">
           <lnk-acl-editor [(acl)]="aclValue" />
           @if (!canSave()) {
             <p class="mt-2 text-xs text-[var(--danger)]">{{ 'Ruoli.Form.AclObbligatoria' | translate }}</p>

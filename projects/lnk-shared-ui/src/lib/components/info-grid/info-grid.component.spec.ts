@@ -121,4 +121,31 @@ describe('InfoGridComponent', () => {
     expect(dt.classList).toContain('uppercase');
     expect(dt.classList).toContain('tracking-wider');
   });
+
+  it('uniform=true: valore mono resta text-sm (niente shrink a text-xs), label 13px', () => {
+    const fixture = render([{ labelKey: 'L', value: 'IT60X…', mono: true }], { uniform: true });
+    const dt = fixture.nativeElement.querySelector('dt') as HTMLElement;
+    const dd = fixture.nativeElement.querySelector('dd') as HTMLElement;
+    expect(dd.classList).toContain('font-mono');
+    expect(dd.classList).toContain('text-sm');
+    expect(dd.classList).not.toContain('text-xs');
+    expect(dt.classList).toContain('text-[13px]');
+  });
+
+  it('columns imposta lo schema di colonne sul <dl>', () => {
+    const two = render([{ labelKey: 'L', value: 'v' }], { columns: 2 }).nativeElement.querySelector('dl') as HTMLElement;
+    expect(two.className).toContain('sm:grid-cols-2');
+    expect(two.className).not.toContain('lg:grid-cols-3');
+    const four = render([{ labelKey: 'L', value: 'v' }], { columns: 4 }).nativeElement.querySelector('dl') as HTMLElement;
+    expect(four.className).toContain('grid-cols-2');
+    expect(four.className).toContain('sm:grid-cols-4');
+  });
+
+  it('columns default: schema responsivo storico 1→2→3', () => {
+    const fixture = render([{ labelKey: 'L', value: 'v' }]);
+    const dl = fixture.nativeElement.querySelector('dl') as HTMLElement;
+    expect(dl.className).toContain('grid-cols-1');
+    expect(dl.className).toContain('sm:grid-cols-2');
+    expect(dl.className).toContain('lg:grid-cols-3');
+  });
 });

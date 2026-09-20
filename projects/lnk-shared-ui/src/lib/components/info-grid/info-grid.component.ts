@@ -70,7 +70,7 @@ const LABEL_SIZE_PRESETS: Record<string, string> = {
   imports: [TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3 text-sm">
+    <dl [class]="dlClass()">
       @for (item of visibleItems; track item.labelKey) {
         <div [class.sm:col-span-2]="item.wide" [class.lg:col-span-3]="item.wide">
           <dt [class]="labelClass()">
@@ -110,9 +110,43 @@ export class InfoGridComponent {
    */
   readonly uppercaseLabels = input<boolean, unknown>(false, { transform: booleanAttribute });
 
+  /**
+   * Numero di colonne desiderato. Default (undefined) = responsivo storico
+   * (1 mobile, 2 sm, 3 lg). Impostato forza uno schema fisso responsivo:
+   * `1`, `2` (1→2), `3` (1→2→3), `4` (2→4).
+   */
+  readonly columns = input<1 | 2 | 3 | 4 | undefined>(undefined);
+
+  /**
+   * Tipografia uniforme (label 13px, valore 14px): i valori `mono` NON
+   * vengono rimpiccioliti a `text-xs`, così etichette e valori restano
+   * coerenti nella stessa griglia. Default `false` (comportamento storico).
+   */
+  readonly uniform = input<boolean, unknown>(false, { transform: booleanAttribute });
+
   get visibleItems(): InfoGridItem[] {
     return this.items().filter((i) => !i.hide);
   }
+
+  /** Classi Tailwind per il numero di colonne richiesto. */
+  private readonly gridColsClass = computed(() => {
+    switch (this.columns()) {
+      case 1:
+        return 'grid-cols-1';
+      case 2:
+        return 'grid-cols-1 sm:grid-cols-2';
+      case 4:
+        return 'grid-cols-2 sm:grid-cols-4';
+      case 3:
+      default:
+        return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+    }
+  });
+
+  /** Classe completa del `<dl>` (colonne + gap + size base). */
+  readonly dlClass = computed(
+    () => `grid ${this.gridColsClass()} gap-x-6 ${this.uniform() ? 'gap-y-5' : 'gap-y-3'} text-sm`,
+  );
 
   /** Solo la classe Tailwind di size per il value (es. `text-sm`). */
   private readonly valueSize = computed(() => {
@@ -138,16 +172,23 @@ export class InfoGridComponent {
    * scenari Angular può azzerare al re-render.
    */
   readonly labelClass = computed(() => {
-    const base = `font-medium text-[var(--muted-foreground)] ${this.labelSize()}`;
+    // `uniform`: label a 13px semibold (coerente col valore a 14px).
+    const size = this.uniform() ? 'text-[13px]' : this.labelSize();
+    const weight = this.uniform() ? 'font-semibold' : 'font-medium';
+    const base = `${weight} text-[var(--muted-foreground)] ${size}`;
     return this.uppercaseLabels() ? `${base} uppercase tracking-wider` : base;
   });
 
   /**
-   * Stringa completa di classi per il `<dd>` (value). `mono` ha
-   * priorità sul `size` (i campi monospace restano sempre `text-xs`).
+   * Stringa completa di classi per il `<dd>` (value). Di default `mono` ha
+   * priorità sul `size` (i campi monospace restano `text-xs`); con `uniform`
+   * i valori mono mantengono invece la size del valore (no shrink).
    */
   valueClass(item: InfoGridItem): string {
     const base = 'mt-0.5 break-words';
+    if (this.uniform()) {
+      return `${base} text-sm${item.mono ? ' font-mono' : ''}`;
+    }
     return item.mono ? `${base} font-mono text-xs` : `${base} ${this.valueSize()}`;
   }
 }

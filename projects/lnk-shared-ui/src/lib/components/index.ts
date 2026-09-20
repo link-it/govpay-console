@@ -27,6 +27,7 @@ export * from './select-input/select-input.component';
 export * from './select/select.component';
 export * from './date-input/date-input.component';
 export * from './detail-section/detail-section.component';
+export * from './divider/divider.component';
 export * from './detail-group/detail-group.component';
 export * from './detail-group/detail-group.token';
 export * from './info-grid/info-grid.component';

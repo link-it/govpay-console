@@ -22,4 +22,12 @@ export const PENDENZE_ROUTES: Routes = [
     loadComponent: () =>
       import('./pendenza-detail.component').then((m) => m.PendenzaDetailComponent),
   },
+  {
+    // Drilldown annidato alla ricevuta collegata (da "Stampa ricevuta" su una
+    // pendenza pagata): il detail ricevuta rileva il padre dal `router.url` e
+    // imposta back + breadcrumb verso la pendenza.
+    path: ':idA2A/:idPendenza/ricevute/:idDominio/:iuv/:idRicevuta',
+    loadComponent: () =>
+      import('../ricevute/ricevuta-detail.component').then((m) => m.RicevutaDetailComponent),
+  },
 ];

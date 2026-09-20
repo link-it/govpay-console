@@ -22,7 +22,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
@@ -33,23 +33,23 @@
   } @else if (dominio(); as d) {
 
     @if (activeTab() === 'dati') {
-      <lnk-detail-section titleKey="Domini.Detail.Generali">
-        <lnk-info-grid [items]="generaliItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Detail.Generali">
+        <lnk-info-grid uniform [items]="generaliItems()" />
       </lnk-detail-section>
 
       @if (hasAnagrafica()) {
-        <lnk-detail-section titleKey="Domini.Detail.Anagrafica">
-          <lnk-info-grid [items]="anagraficaItems()" />
+        <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Detail.Anagrafica">
+          <lnk-info-grid uniform [items]="anagraficaItems()" />
         </lnk-detail-section>
       }
 
       @if (hasContatti()) {
-        <lnk-detail-section titleKey="Domini.Detail.Contatti">
-          <lnk-info-grid [items]="contattiItems()" />
+        <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Detail.Contatti">
+          <lnk-info-grid uniform [items]="contattiItems()" />
         </lnk-detail-section>
       }
 
-      <lnk-detail-section titleKey="Domini.Detail.Logo">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Detail.Logo">
         <div class="flex items-center gap-4">
           @if (logoUrl(); as url) {
             <img [src]="url" alt="logo" class="h-16 w-16 rounded object-contain border border-[var(--border)] bg-[var(--card-bg)]" />

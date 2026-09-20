@@ -1,3 +1,126 @@
+2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(ricevute): ridisegno del dettaglio ricevuta sul modello del
+    dettaglio pendenza.
+    - Box "Ente creditore" con logo del dominio (via `DominiConsoleApi.getLogo`,
+      fallback icona) e denominazione come titolo.
+    - Layout a due colonne per card correlate: Ente creditore ‖ Versante,
+      Esito pagamento ‖ PSP (pari altezza).
+    - Azioni di download spostate in testata come dropdown "Download" con lista
+      raggruppata RT (PDF/XML/JSON) e RPT (XML/JSON); rimossa la sezione Download
+      a fondo pagina. Chiusura su click-esterno/Esc. Nuova utility `.lnk-menu-item`.
+    - Nota GDPR: il versante resta mostrato inline (non serve consenso come per il
+      debitore pendenza): l'API espone l'anagrafica nel dettaglio e traccia ogni
+      visualizzazione in `gp_audit` (`RICEVUTA_VISUALIZZA`).
+
+  * [Frontend] feat(pendenze): nel box "Ente creditore" del dettaglio pendenza
+    mostra il logo del dominio se presente (via `DominiConsoleApi.getLogo`),
+    altrimenti l'icona di fallback. Object URL revocato in `ngOnDestroy`;
+    errore/assenza logo non bloccante. `alt=""` (decorativo, ragione sociale
+    già accanto).
+
+  * [Frontend] refactor(pendenze): uniformato il dettaglio pendenza al
+    `titleDivider` come le altre viste. Divisore sotto il titolo su Ente
+    creditore, Soggetto pagatore, Informazioni generali e Voci; rimossi il
+    `<lnk-divider tight>` manuale (Generali) e il divisore logo/ID (Ente),
+    ora ridondanti. Restano i divisori di contenuto (ricevuta, azione debitore,
+    gruppi voce).
+
+  * [Frontend] refactor(detail): estensione del nuovo stile card a TUTTE le viste
+    di dettaglio e alle form di modifica (coerenza con pendenza/ricevute).
+    - `lnk-detail-section` (lib 0.35.0): nuovo input `titleDivider` per il
+      divisore sotto il titolo nella variant `plain` (evita di wrappare a mano
+      il contenuto con `<lnk-divider>`).
+    - 16 pagine di dettaglio migrate a `variant="plain"` + `lnk-info-grid uniform`
+      + `titleDivider` (entrate, domini, operatori, applicazioni, incassi,
+      tracciati, rendicontazioni, operazioni, tipi-pendenza, riscossioni,
+      giornale-eventi, intermediari, pagamenti, ruoli).
+    - Ricevute ritrofittate a `titleDivider` (rimossi i `<lnk-divider tight>` manuali).
+    - Fascia hero (importo colorato per stato) aggiunta a pagamenti, riscossioni,
+      incassi, rendicontazioni.
+    - Form di modifica ed editor impostazioni + profilo migrati a `variant="plain"`
+      + `titleDivider` (gap sezioni portato a 24px).
+
+  * [Frontend] fix(pendenze): ripristina il pari-altezza delle card "Ente
+    creditore" e "Soggetto pagatore" nel dettaglio pendenza (regressione della
+    riscrittura: la griglia usava `items-start` invece dello stretch). La griglia
+    torna a stretch (`.lnk-detail-cols`) e la card interna riempie la cella.
+
+  * [Frontend] feat(pendenze,ricevute): navigazione annidata pendenza → ricevuta.
+    Da una pendenza pagata "Stampa ricevuta" apre la ricevuta nel contesto della
+    pendenza (rotta annidata `/pendenze/:idA2A/:idPendenza/ricevute/:idDominio/
+    :iuv/:idRicevuta`): `RicevutaDetailComponent` rileva il padre e mostra
+    "Indietro" verso la pendenza + breadcrumb `Pendenze › <idPendenza> ›
+    Ricevuta › <iuv>`. Simmetrica al drilldown ricevuta → pendenza già esistente.
+    Nuova chiave i18n `Ricevute.Detail.Breadcrumb`.
+
+  * [Frontend] feat(ricevute): dettaglio ricevute allineato al pattern del
+    dettaglio pendenza.
+    - Fascia "hero" in evidenza con l'importo, colorato in base allo stato RT
+      (accettata=verde, in corso=blu, scaduto/sconosciuto=ambra,
+      rifiutata/fallita=rosso, annullata=grigio); il badge di stato resta
+      nell'header (rimosso l'importo inline dalla toolbar).
+    - Nuove varianti hero `.lnk-hero-danger` e `.lnk-hero-muted` (con dark) per
+      coprire tutti i toni di stato.
+    - Divisori `<lnk-divider tight />` sotto il titolo di ogni sezione.
+
+  * [Frontend] refactor(ricevute): dettaglio ricevute migrato al nuovo stile
+    card (`lnk-detail-section variant="plain"` + `lnk-info-grid uniform`),
+    coerente col dettaglio pendenza. Solo presentazione: logica, sezioni
+    configurabili (`showSection`), download e drilldown invariati.
+
+  * [Frontend] feat(shared-ui): nuovo componente `<lnk-divider>` (lib 0.34.0)
+    per i separatori in-content delle card di dettaglio. Input `tight`
+    (spaziatura ridotta, ex utility `.lnk-divider.reduced`), `role="separator"`,
+    self-contained (niente CSS globale). Promosse a standard le ex utility
+    app-local `.lnk-divider`/`.reduced`, ora rimosse da `styles.css`; usi in
+    `pendenza-detail` migrati al componente.
+
+2026-09-19  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] refactor(shared-ui): evoluzione additiva dei componenti card di
+    dettaglio (lib @linkit/shared-ui 0.33.0), per riusare lo stile del nuovo
+    dettaglio pendenza sugli altri layout in fasi successive.
+    - `lnk-detail-section`: nuovo `variant="plain"` (radius 12px, padding 24px,
+      solo bordo senza shadow, titolo senza underline; spaziatura al container).
+      Default invariati → nessuna regressione sulle pagine esistenti.
+    - `lnk-info-grid`: nuovi input `uniform` (valori monospace senza shrink a
+      `text-xs`, label/valore coerenti 13/14px) e `columns` (1/2/3/4).
+    - `pendenza-detail` migrato sui componenti evoluti (rimosse le utility
+      app-local `.lnk-card`/`#fields`; resta la card ricevuta con icona nel titolo).
+    - Piano di migrazione delle altre pagine tracciato in NOTE-CLAUDE.
+
+  * [Frontend] feat(pendenze): ridisegno del dettaglio pendenza allineato al
+    mock (NOTE-CLAUDE/MOCK-PENDENZA), differenziato per stato.
+    - Header: titolo = causale della pendenza, sottotitolo = tipo pendenza,
+      azione primaria commutata per stato (Stampa avviso ↔ link Stampa ricevuta).
+    - Fascia "hero" in evidenza: stato "da pagare" → importo dovuto (blu) +
+      data scadenza (ambra); stato "pagato" → importo pagato (verde) + blocco
+      "Ricevuta di pagamento" (PSP/metodo/data arricchiti dal dettaglio RT).
+    - Ente creditore + Soggetto debitore su due colonne sopra le informazioni
+      generali; debitore con toggle GDPR mostra/nascondi (i dati restano in
+      cache: la ri-visualizzazione non rigenera l'audit).
+    - Informazioni generali: rimossa la causale (nel titolo), font uniforme tra
+      etichette e valori (anche i valori monospace restano 14px).
+    - Voci: eliminato il box annidato attorno alla tabella; layout responsive
+      (tabella su desktop, card impilate sotto i 640px); accordion per voce con
+      tre sezioni — Dati aggiuntivi (Tassonomia, IBAN accredito; appoggio solo se
+      valorizzato), Metadati del servizio (coppie libere dinamiche), Dati di
+      contabilità (più dettagli tipizzati CORRISPETTIVO_DL118/INCASSO_TIPICO/
+      SPESE_NOTIFICA SEND, importi eurocent→euro). Parser best-effort dei campi
+      JSON opachi (`voce-dettaglio.ts`).
+
+  * [Frontend] fix(pendenze): allineamento del modello `RicevutaSummary` (sub
+    resource /pendenze/.../ricevute) allo schema condiviso reale
+    (`idRicevuta`/`dataRicevuta`/`codPsp`/`importo`/`stato`) al posto dei campi
+    V1 obsoleti (`ccp`/`dataPagamento`/`importoTotalePagato`/`esito`/`idPsp`).
+    Risolve il link/fetch ricevuta con id `undefined`.
+
+  * [Frontend] style(theme): colori di stati e hero card allineati al mock e
+    centralizzati (`--status-{tono}-{bg,text}` espliciti + `.lnk-hero-*`, con
+    varianti dark). Blu royal per "da pagare"/info, verde per "pagato"/success,
+    ambra per scadenza/warning.
+
 2026-09-13  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(metriche): validazione lato FE della serie storica SLA per

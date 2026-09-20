@@ -19,7 +19,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -33,16 +33,24 @@
     <lnk-loading />
   } @else if (flusso()) {
 
-    <lnk-detail-section titleKey="Rendicontazioni.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
+    <!-- Hero: importo totale colorato in base allo stato -->
+    @if (importoFmt(); as imp) {
+      <div [class]="'lnk-hero-card lnk-hero-' + statoTone()">
+        <div class="lnk-hero-label">{{ 'Rendicontazioni.Detail.Importo' | translate }}</div>
+        <div class="lnk-hero-value">{{ imp }}</div>
+      </div>
+    }
+
+    <lnk-detail-section variant="plain" titleDivider titleKey="Rendicontazioni.Detail.Generali">
+      <lnk-info-grid uniform [items]="generaliItems()" />
     </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Rendicontazioni.Detail.EnteCreditore">
-      <lnk-info-grid [items]="enteItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Rendicontazioni.Detail.EnteCreditore">
+      <lnk-info-grid uniform [items]="enteItems()" />
     </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Rendicontazioni.Detail.Psp">
-      <lnk-info-grid [items]="pspItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Rendicontazioni.Detail.Psp">
+      <lnk-info-grid uniform [items]="pspItems()" />
     </lnk-detail-section>
   }
   </div>

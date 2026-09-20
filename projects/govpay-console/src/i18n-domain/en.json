@@ -122,7 +122,8 @@
         "Categoria": "Category",
         "Causale": "Remittance",
         "Totale": "Total"
-      }
+      },
+      "Breadcrumb": "Receipt"
     },
     "Upload": {
       "Carica": "Upload RT",
@@ -272,13 +273,48 @@
       "DebitoreProtetto": "The debtor's personal data is protected: viewing it is logged for audit purposes (GDPR).",
       "DebitoreConsensoTitolo": "View the debtor's data?",
       "DebitoreConsensoTesto": "You are about to view the debtor's personal data and contacts. This action is logged for audit purposes (GDPR).",
-      "DebitoreConsensoConferma": "View"
+      "DebitoreConsensoConferma": "View",
+      "ImportoDovuto": "Amount due",
+      "ImportoPagato": "Amount paid",
+      "RicevutaPagamento": "Payment receipt",
+      "Psp": "PSP",
+      "IdentificativoPsp": "PSP identifier",
+      "DataPagamento": "Payment date",
+      "MetodoPagamento": "Payment method",
+      "IdentificativoRicevuta": "Receipt identifier",
+      "StampaRicevuta": "Print receipt",
+      "NascondiDebitore": "Hide debtor information"
     },
     "Voci": {
       "Indice": "#",
       "Descrizione": "Description",
       "Importo": "Amount",
-      "Stato": "Status"
+      "Stato": "Status",
+      "CodEntrata": "Revenue code",
+      "IbanAccredito": "Credit IBAN",
+      "IbanAppoggio": "Support IBAN",
+      "TipoContabilita": "Accounting type",
+      "CodiceContabilita": "Accounting code",
+      "TipoBollo": "Stamp type",
+      "ProvinciaResidenza": "Province of residence",
+      "HashDocumento": "Document hash",
+      "DatiAggiuntivi": "Additional data",
+      "MetadatiServizio": "Service metadata",
+      "DatiContabilita": "Accounting data",
+      "Dettaglio": "detail",
+      "Dettagli": "details",
+      "NessunDettaglio": "No additional detail for this item.",
+      "AnnoContabile": "Accounting year",
+      "Capitolo": "Chapter",
+      "Accertamento": "Assessment",
+      "Articolo": "Article",
+      "CodiceUfficio": "Office code",
+      "TipoIncasso": "Collection type",
+      "CodiceTributo": "Tax code",
+      "CodiceInformazione": "Information code",
+      "ImportoNotifica": "Notification amount",
+      "Voce": "Item",
+      "DatiAggiuntiviContabilita": "Additional data and accounting"
     },
     "StatiVoce": {
       "NonPagata": "To pay",

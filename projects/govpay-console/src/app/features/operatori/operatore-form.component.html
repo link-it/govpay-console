@@ -15,8 +15,8 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
-        <lnk-detail-section titleKey="Operatori.Detail.Generali">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Generali">
           <div class="space-y-5">
             <label class="flex flex-col gap-1">
               <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.principal">{{ 'Operatori.Detail.Principal' | translate }}</span>
@@ -49,19 +49,19 @@
           </div>
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Operatori.Detail.Domini">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Domini">
           <lnk-ref-multiselect [(value)]="domini" [allowAll]="true" placeholderKey="Operatori.Form.DominioPlaceholder" />
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Operatori.Detail.TipiPendenza">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.TipiPendenza">
           <lnk-ref-multiselect [(value)]="tipiPendenza" [allowAll]="true" [suggestions]="tipiSuggestions()" placeholderKey="Operatori.Form.TipoPendenzaPlaceholder" />
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Operatori.Detail.Ruoli">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Ruoli">
           <lnk-ref-multiselect [(value)]="ruoli" [suggestions]="ruoliSuggestions()" placeholderKey="Operatori.Form.RuoloPlaceholder" />
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Operatori.Detail.Acl">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Operatori.Detail.Acl">
           <lnk-acl-editor [(acl)]="aclValue" />
         </lnk-detail-section>
 

@@ -14,16 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LNK_IN_DETAIL_GROUP } from '../detail-group/detail-group.token';
 
 /**
  * Sezione di una pagina di dettaglio: titolo i18n + slot contenuto.
  *
- * Due varianti visive controllate via `variant`:
+ * Varianti visive controllate via `variant`:
  * - `'card'`: card autonoma con bordo, bg e shadow (default fuori
  *   da un `<lnk-detail-group>`).
+ * - `'plain'`: card autonoma "morbida" — radius 12px, padding 24px, solo
+ *   bordo (niente shadow) e titolo SENZA underline di default (i divisori
+ *   si aggiungono nel contenuto con `<lnk-divider>` dove servono). La
+ *   spaziatura tra sezioni è delegata al container (es. `space-y-6`).
  * - `'embedded'`: niente bordo/bg/shadow, solo titolo + divider sotto;
  *   pensata per essere figlia di un `<lnk-detail-group>` che fa da
  *   container visivo.
@@ -61,7 +65,10 @@ import { LNK_IN_DETAIL_GROUP } from '../detail-group/detail-group.token';
           {{ titleKey() | translate }}
         </h2>
       </header>
-      <div [class]="contentClass">
+      @if (showTitleDivider()) {
+        <div class="mx-6 mt-3 h-px bg-[var(--card-border)]"></div>
+      }
+      <div [class]="contentClass()">
         <ng-content />
       </div>
     </section>
@@ -78,24 +85,41 @@ export class DetailSectionComponent {
    * - `'auto'` (default): `embedded` se dentro un `<lnk-detail-group>`,
    *   `card` altrimenti.
    */
-  readonly variant = input<'card' | 'embedded' | 'auto'>('auto');
+  readonly variant = input<'card' | 'embedded' | 'plain' | 'auto'>('auto');
+
+  /**
+   * Solo per `variant="plain"`: mostra un divisore sottile tra il titolo e il
+   * contenuto (le varianti `card`/`embedded` hanno già l'underline sul titolo).
+   * Evita di wrappare a mano il contenuto con `<lnk-divider>` in ogni sezione.
+   */
+  readonly titleDivider = input(false, { transform: booleanAttribute });
 
   /** True se la section e` annidata in un `<lnk-detail-group>`. */
   private readonly inGroup = inject(LNK_IN_DETAIL_GROUP, { optional: true }) ?? false;
 
+  /** Divisore sotto il titolo attivo solo in variant `plain` + `titleDivider`. */
+  protected readonly showTitleDivider = computed(
+    () => this.effectiveVariant() === 'plain' && this.titleDivider(),
+  );
+
   /** Variant effettivo dopo risoluzione `'auto'`. Esposto come attributo
    *  host `data-variant` per gli stili `:host` differenziati per variant. */
-  protected readonly effectiveVariant = computed<'card' | 'embedded'>(() => {
+  protected readonly effectiveVariant = computed<'card' | 'embedded' | 'plain'>(() => {
     const v = this.variant();
     if (v === 'auto') return this.inGroup ? 'embedded' : 'card';
     return v;
   });
 
-  protected readonly sectionClass = computed(() =>
-    this.effectiveVariant() === 'card'
-      ? 'rounded-md border border-[var(--card-border)] bg-[var(--card-bg)] shadow-[var(--card-shadow)]'
-      : '',
-  );
+  protected readonly sectionClass = computed(() => {
+    switch (this.effectiveVariant()) {
+      case 'card':
+        return 'rounded-md border border-[var(--card-border)] bg-[var(--card-bg)] shadow-[var(--card-shadow)]';
+      case 'plain':
+        return 'rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)]';
+      default:
+        return '';
+    }
+  });
 
   /**
    * Classi del wrapper `<header>` differenziate per variant.
@@ -107,11 +131,16 @@ export class DetailSectionComponent {
    *   parte allineato col primo glifo del titolo invece di estendersi
    *   per tutta la larghezza dell'header dentro il group.
    */
-  protected readonly headerClass = computed(() =>
-    this.effectiveVariant() === 'card'
-      ? 'px-4 py-3 border-b border-[var(--card-border)]'
-      : 'px-4 pt-3',
-  );
+  protected readonly headerClass = computed(() => {
+    switch (this.effectiveVariant()) {
+      case 'card':
+        return 'px-4 py-3 border-b border-[var(--card-border)]';
+      case 'plain':
+        return 'px-6 pt-6';
+      default:
+        return 'px-4 pt-3';
+    }
+  });
 
   /**
    * Classi del `<h2>` titolo. In variant `embedded` aggiunge `pb-3` +
@@ -120,11 +149,14 @@ export class DetailSectionComponent {
    * fosse sull'`<header>`).
    */
   protected readonly titleClass = computed(() => {
+    const v = this.effectiveVariant();
+    if (v === 'plain')
+      return 'text-[13px] font-bold uppercase tracking-[0.04em] text-[var(--foreground)]';
     const base = 'text-sm font-semibold uppercase tracking-wide text-[var(--muted-foreground)]';
-    return this.effectiveVariant() === 'embedded'
-      ? `${base} pb-3 border-b border-[var(--card-border)]`
-      : base;
+    return v === 'embedded' ? `${base} pb-3 border-b border-[var(--card-border)]` : base;
   });
 
-  protected readonly contentClass = 'p-4';
+  protected readonly contentClass = computed(() =>
+    this.effectiveVariant() === 'plain' ? 'px-6 pb-6 pt-5' : 'p-4',
+  );
 }

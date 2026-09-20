@@ -232,19 +232,27 @@ export interface Avviso {
 }
 
 /**
- * Proiezione leggera di una ricevuta telematica (schema `RicevutaSummary`),
- * elemento della lista `GET …/ricevute`. `(idDominio, iuv, ccp)` identificano
- * la RT per la futura navigazione ai sub-resource XML/PDF (fuori questa spec).
+ * Proiezione leggera di una ricevuta telematica (schema `RicevutaSummary`,
+ * condiviso con la feature Ricevute), elemento della lista `GET …/ricevute`.
+ * La tupla `(idDominio, iuv, idRicevuta)` identifica la RT per la navigazione
+ * ai sub-resource (`/ricevute/{idDominio}/{iuv}/{idRicevuta}`).
  */
 export interface RicevutaSummary {
   idDominio: string;
   iuv: string;
-  ccp: string;
-  dataPagamento?: string;
-  importoTotalePagato?: number;
-  /** Codice esito pagoPA (0 = Eseguito, 2 = Parzialmente eseguito). */
-  esito?: number;
-  idPsp?: string;
+  /** Identificativo della ricevuta (era `ccp` in V1). */
+  idRicevuta: string;
+  /** Data di ricezione della RT (ISO date-time), non la data di pagamento. */
+  dataRicevuta: string;
+  /** Codice del PSP che ha emesso la RT. */
+  codPsp?: string;
+  /** Versione del protocollo pagoPA della RT (es. `1.0`, `2.0`). */
+  versione?: string;
+  /** Stato nativo della RT (stringa V1, es. `RT_ACCETTATA_PA`). */
+  stato: string;
+  descrizioneStato?: string;
+  /** Importo totale pagato. */
+  importo?: number;
 }
 
 /** Anagrafica e contatti del debitore (schema `Soggetto`, via `/informazioniDebitore`). */
