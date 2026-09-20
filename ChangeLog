@@ -1,5 +1,12 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] refactor(pendenze): uniformato il dettaglio pendenza al
+    `titleDivider` come le altre viste. Divisore sotto il titolo su Ente
+    creditore, Soggetto pagatore, Informazioni generali e Voci; rimossi il
+    `<lnk-divider tight>` manuale (Generali) e il divisore logo/ID (Ente),
+    ora ridondanti. Restano i divisori di contenuto (ricevuta, azione debitore,
+    gruppi voce).
+
   * [Frontend] refactor(detail): estensione del nuovo stile card a TUTTE le viste
     di dettaglio e alle form di modifica (coerenza con pendenza/ricevute).
     - `lnk-detail-section` (lib 0.35.0): nuovo input `titleDivider` per il

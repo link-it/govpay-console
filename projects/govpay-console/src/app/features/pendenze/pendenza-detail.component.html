@@ -82,7 +82,7 @@
 
     <!-- Ente creditore + Soggetto debitore su due colonne (pari altezza) -->
     <div class="grid gap-6 md:grid-cols-2 lnk-detail-cols">
-      <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.EnteCreditore">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Pendenze.Detail.EnteCreditore">
         <div class="flex flex-col gap-5">
           <div class="flex items-center gap-4">
             <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-[var(--card-border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
@@ -97,12 +97,11 @@
               }
             </div>
           </div>
-          <lnk-divider />
           <lnk-info-grid uniform [columns]="1" [items]="dominioItems()" />
         </div>
       </lnk-detail-section>
 
-      <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.SoggettoPagatore">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Pendenze.Detail.SoggettoPagatore">
         <div class="flex flex-col gap-4">
           @if (debitore() && debitoreVisible()) {
             <lnk-info-grid uniform [columns]="2" [items]="debitoreItems()" />
@@ -129,15 +128,14 @@
     </div>
 
     <!-- Informazioni generali -->
-    <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.Generali">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Pendenze.Detail.Generali">
       <div class="flex flex-col gap-5">
-        <lnk-divider tight />
         <lnk-info-grid uniform [columns]="3" [items]="generaliItems()" />
       </div>
     </lnk-detail-section>
 
     <!-- Voci: tabella su desktop, card impilate su mobile; accordion per voce -->
-    <lnk-detail-section variant="plain" titleKey="Pendenze.Detail.Voci">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Pendenze.Detail.Voci">
       <div class="flex flex-col gap-4">
       @if (p.voci.length === 0) {
         <p class="text-sm text-[var(--muted-foreground)]">{{ 'Pendenze.Detail.VociEmpty' | translate }}</p>
