@@ -4,7 +4,7 @@
       "name": "govpay-console",
       "title": "GovPay Console",
       "description": "Console di backoffice GovPay",
-      "version": "4.1.0"
+      "version": "4.2.0"
     },
     "STANDALONE": true,
     "GOVAPI": {
