@@ -1,5 +1,9 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] feat(auth): versione applicativa a piè di pagina nel login,
+    condizionata da `Layout.showVersion`/`showBuild` come nella sidebar
+    (default mostrata; git short SHA solo con `showBuild`).
+
   * [Frontend] feat(ricevute): ridisegno del dettaglio ricevuta sul modello del
     dettaglio pendenza.
     - Box "Ente creditore" con logo del dominio (via `DominiConsoleApi.getLogo`,
