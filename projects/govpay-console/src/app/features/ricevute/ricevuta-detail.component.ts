@@ -9,7 +9,18 @@
  * the Free Software Foundation.
  */
 
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, map, of, type Observable } from 'rxjs';
@@ -35,6 +46,7 @@ import {
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
 import { RicevuteConsoleApi } from './ricevute.console-api';
+import { DominiConsoleApi } from '../domini/domini.console-api';
 import {
   statoRtColor,
   statoRtLabel,
@@ -70,8 +82,9 @@ function compact(items: InfoGridItem[]): InfoGridItem[] {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ricevuta-detail.component.html',
 })
-export class RicevutaDetailComponent implements OnInit {
+export class RicevutaDetailComponent implements OnInit, OnDestroy {
   private readonly api = inject(RicevuteConsoleApi);
+  private readonly dominiApi = inject(DominiConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
@@ -109,6 +122,13 @@ export class RicevutaDetailComponent implements OnInit {
   readonly error = signal<string | null>(null);
   /** Chiave del download in corso (es. `rt:pdf`), per disabilitare il bottone. */
   readonly downloading = signal<string | null>(null);
+
+  /** Object URL del logo dell'ente creditore (null se il dominio non ne ha uno). */
+  readonly enteLogoUrl = signal<string | null>(null);
+
+  /** Stato del dropdown "Scarica" in testata (RT/RPT raggruppati). */
+  readonly downloadOpen = signal(false);
+  private readonly downloadWrap = viewChild<ElementRef<HTMLElement>>('downloadWrap');
 
   readonly statoTone = computed(() => statoRtColor(this.ricevuta()?.stato ?? ''));
   readonly statoLabel = computed(() => statoRtLabel(this.ricevuta()?.stato ?? ''));
@@ -187,11 +207,12 @@ export class RicevutaDetailComponent implements OnInit {
     ]);
   });
 
-  /** Ente creditore (RT). */
+  /** Ente creditore (RT). Denominazione mostrata come titolo del box (con logo). */
+  readonly enteNome = computed(() => this.rtView().enteNome);
   readonly enteItems = computed<InfoGridItem[]>(() => {
     const v = this.rtView();
     return compact([
-      { labelKey: 'Ricevute.Detail.EnteDenominazione', value: v.enteNome },
+      { labelKey: 'Ricevute.Detail.Dominio', value: this.idDominio, mono: true },
       { labelKey: 'Ricevute.Detail.EnteFiscalCode', value: v.enteCf, mono: true },
       { labelKey: 'Ricevute.Detail.CreditorReferenceId', value: v.iuv, mono: true },
       { labelKey: 'Ricevute.Detail.Causale', value: v.causale, wide: true },
@@ -255,6 +276,7 @@ export class RicevutaDetailComponent implements OnInit {
     this.idDominio = idDominio;
     this.iuv = iuv;
     this.idRicevuta = idRicevuta;
+    this.fetchEnteLogo(idDominio);
 
     // Drilldown annidato da una pendenza (`/pendenze/:idA2A/:idPendenza/ricevute/...`):
     // back + breadcrumb verso la pendenza di provenienza.
@@ -297,11 +319,50 @@ export class RicevutaDetailComponent implements OnInit {
       });
   }
 
+  /** Logo dell'ente creditore (Blob); errore/assenza non bloccante → fallback icona. */
+  private fetchEnteLogo(idDominio: string): void {
+    this.dominiApi
+      .getLogo(idDominio)
+      .pipe(catchError(() => of(null)))
+      .subscribe((blob) => {
+        this.revokeEnteLogo();
+        this.enteLogoUrl.set(blob && blob.size > 0 ? URL.createObjectURL(blob) : null);
+      });
+  }
+
+  private revokeEnteLogo(): void {
+    const url = this.enteLogoUrl();
+    if (url) URL.revokeObjectURL(url);
+  }
+
+  ngOnDestroy(): void {
+    this.revokeEnteLogo();
+  }
+
+  /* ---- Dropdown "Scarica" (RT/RPT) ---------------------------------- */
+  toggleDownload(): void {
+    this.downloadOpen.update((v) => !v);
+  }
+
+  @HostListener('document:click', ['$event.target'])
+  onDocClick(target: EventTarget | null): void {
+    if (!this.downloadOpen()) return;
+    const wrap = this.downloadWrap()?.nativeElement;
+    if (wrap && target instanceof Node && !wrap.contains(target)) this.downloadOpen.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.downloadOpen()) this.downloadOpen.set(false);
+  }
+
   onDownloadRt(formato: RicevutaFormato): void {
+    this.downloadOpen.set(false);
     this.download('rt', formato, this.api.getRtBlob(this.idDominio, this.iuv, this.idRicevuta, formato));
   }
 
   onDownloadRpt(formato: Exclude<RicevutaFormato, 'pdf'>): void {
+    this.downloadOpen.set(false);
     this.download('rpt', formato, this.api.getRptBlob(this.idDominio, this.iuv, this.idRicevuta, formato));
   }
 

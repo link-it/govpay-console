@@ -1,5 +1,18 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] feat(ricevute): ridisegno del dettaglio ricevuta sul modello del
+    dettaglio pendenza.
+    - Box "Ente creditore" con logo del dominio (via `DominiConsoleApi.getLogo`,
+      fallback icona) e denominazione come titolo.
+    - Layout a due colonne per card correlate: Ente creditore ‖ Versante,
+      Esito pagamento ‖ PSP (pari altezza).
+    - Azioni di download spostate in testata come dropdown "Download" con lista
+      raggruppata RT (PDF/XML/JSON) e RPT (XML/JSON); rimossa la sezione Download
+      a fondo pagina. Chiusura su click-esterno/Esc. Nuova utility `.lnk-menu-item`.
+    - Nota GDPR: il versante resta mostrato inline (non serve consenso come per il
+      debitore pendenza): l'API espone l'anagrafica nel dettaglio e traccia ogni
+      visualizzazione in `gp_audit` (`RICEVUTA_VISUALIZZA`).
+
   * [Frontend] feat(pendenze): nel box "Ente creditore" del dettaglio pendenza
     mostra il logo del dominio se presente (via `DominiConsoleApi.getLogo`),
     altrimenti l'icona di fallback. Object URL revocato in `ngOnDestroy`;

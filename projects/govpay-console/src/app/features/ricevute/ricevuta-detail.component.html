@@ -2,6 +2,52 @@
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
     <lnk-page-header [titleKey]="iuv || '—'" subtitleKey="Ricevute.Detail.Subtitle">
       <div class="flex items-center gap-2">
+        @if (ricevuta() && showSection('download')) {
+          <div #downloadWrap class="relative">
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              [attr.aria-expanded]="downloadOpen()"
+              aria-haspopup="menu"
+              [disabled]="downloading() !== null"
+              (click)="toggleDownload()"
+            >
+              <ng-icon name="bootstrapDownload" size="1rem" />
+              <span>{{ 'Ricevute.Detail.Download' | translate }}</span>
+              <ng-icon name="bootstrapChevronDown" size="0.8rem" />
+            </button>
+            @if (downloadOpen()) {
+              <div
+                role="menu"
+                class="absolute right-0 z-30 mt-1 min-w-48 rounded-md border border-[var(--card-border)] bg-[var(--card-bg)] py-1 shadow-[var(--card-shadow)]"
+              >
+                <div class="px-3 pb-1 pt-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                  {{ 'Ricevute.Detail.Rt' | translate }}
+                </div>
+                <button type="button" class="lnk-menu-item" [disabled]="downloading() !== null" (click)="onDownloadRt('pdf')">
+                  <ng-icon name="bootstrapFileEarmarkPdf" size="1rem" /><span>PDF</span>
+                </button>
+                <button type="button" class="lnk-menu-item" [disabled]="downloading() !== null" (click)="onDownloadRt('xml')">
+                  <ng-icon name="bootstrapFiletypeXml" size="1rem" /><span>XML</span>
+                </button>
+                <button type="button" class="lnk-menu-item" [disabled]="downloading() !== null" (click)="onDownloadRt('json')">
+                  <ng-icon name="bootstrapFiletypeJson" size="1rem" /><span>JSON</span>
+                </button>
+                @if (hasRpt()) {
+                  <div class="mt-1 border-t border-[var(--card-border)] px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                    {{ 'Ricevute.Detail.Rpt' | translate }}
+                  </div>
+                  <button type="button" class="lnk-menu-item" [disabled]="downloading() !== null" (click)="onDownloadRpt('xml')">
+                    <ng-icon name="bootstrapFiletypeXml" size="1rem" /><span>XML</span>
+                  </button>
+                  <button type="button" class="lnk-menu-item" [disabled]="downloading() !== null" (click)="onDownloadRpt('json')">
+                    <ng-icon name="bootstrapFiletypeJson" size="1rem" /><span>JSON</span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
         <a [routerLink]="backUrl()" class="btn btn-secondary btn-sm">
           <ng-icon name="bootstrapChevronLeft" size="1rem" />
           <span>{{ 'Common.Back' | translate }}</span>
@@ -34,6 +80,59 @@
       </div>
     }
 
+    <!-- Ente creditore (con logo) + Soggetto versante: due colonne -->
+    @if (showSection('enteCreditore') || (versanteItems().length && showSection('versante'))) {
+      <div class="grid gap-6 md:grid-cols-2 lnk-detail-cols">
+        @if (showSection('enteCreditore')) {
+          <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EnteCreditore">
+            <div class="flex flex-col gap-5">
+              <div class="flex items-center gap-4">
+                <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--card-border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
+                  @if (enteLogoUrl(); as logo) {
+                    <img [src]="logo" alt="" class="h-full w-full object-contain" />
+                  } @else {
+                    <ng-icon name="bootstrapBank" size="1.6rem" />
+                  }
+                </div>
+                <div class="min-w-0">
+                  <div class="text-base font-bold break-words">{{ enteNome() || idDominio }}</div>
+                </div>
+              </div>
+              <lnk-info-grid uniform [items]="enteItems()" />
+            </div>
+          </lnk-detail-section>
+        }
+        @if (versanteItems().length && showSection('versante')) {
+          <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Versante">
+            <div class="flex flex-col gap-5">
+              <lnk-info-grid uniform [items]="versanteItems()" />
+            </div>
+          </lnk-detail-section>
+        }
+      </div>
+    }
+
+    <!-- Esito pagamento + PSP: due colonne -->
+    @if ((esitoRtItems().length && showSection('esitoPagamento')) || (pspItems().length && showSection('psp'))) {
+      <div class="grid gap-6 md:grid-cols-2 lnk-detail-cols">
+        @if (esitoRtItems().length && showSection('esitoPagamento')) {
+          <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EsitoPagamento">
+            <div class="flex flex-col gap-5">
+              <lnk-info-grid uniform [items]="esitoRtItems()" />
+            </div>
+          </lnk-detail-section>
+        }
+        @if (pspItems().length && showSection('psp')) {
+          <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.SezionePsp">
+            <div class="flex flex-col gap-5">
+              <lnk-info-grid uniform [items]="pspItems()" />
+            </div>
+          </lnk-detail-section>
+        }
+      </div>
+    }
+
+    <!-- Informazioni generali (tecniche) -->
     @if (showSection('generali')) {
       <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Generali">
         <div class="flex flex-col gap-5">
@@ -42,46 +141,16 @@
       </lnk-detail-section>
     }
 
-    @if (esitoRtItems().length && showSection('esitoPagamento')) {
-      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EsitoPagamento">
-        <div class="flex flex-col gap-5">
-          <lnk-info-grid uniform [items]="esitoRtItems()" />
-        </div>
-      </lnk-detail-section>
-    }
-
-    @if (versanteItems().length && showSection('versante')) {
-      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Versante">
-        <div class="flex flex-col gap-5">
-          <lnk-info-grid uniform [items]="versanteItems()" />
-        </div>
-      </lnk-detail-section>
-    }
-
-    @if (enteItems().length && showSection('enteCreditore')) {
-      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EnteCreditore">
-        <div class="flex flex-col gap-5">
-          <lnk-info-grid uniform [items]="enteItems()" />
-        </div>
-      </lnk-detail-section>
-    }
-
+    <!-- Trasferimenti -->
     @if (transfers().length && showSection('trasferimenti')) {
-      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Trasferimenti">
+      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.Trasferimenti">
         <div class="flex flex-col gap-4">
           <lnk-data-table [columns]="transferColumns" [rows]="transferRows()" [clickable]="false" emptyKey="Common.NoResults" />
         </div>
       </lnk-detail-section>
     }
 
-    @if (pspItems().length && showSection('psp')) {
-      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.SezionePsp">
-        <div class="flex flex-col gap-5">
-          <lnk-info-grid uniform [items]="pspItems()" />
-        </div>
-      </lnk-detail-section>
-    }
-
+    <!-- Richiesta di pagamento (RPT) -->
     @if (rptItems().length && showSection('richiestaPagamento')) {
       <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.RichiestaPagamento">
         <div class="flex flex-col gap-5">
@@ -90,6 +159,7 @@
       </lnk-detail-section>
     }
 
+    <!-- Pendenza collegata -->
     @if (showSection('pendenza') && pendenza(); as p) {
       <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.PendenzaCollegata">
         <div class="flex flex-col gap-4">
@@ -100,38 +170,6 @@
           </a>
         </div>
       </lnk-detail-section>
-    }
-
-    @if (showSection('download')) {
-    <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Download">
-      <div class="flex flex-col gap-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-medium min-w-[3rem]">{{ 'Ricevute.Detail.Rt' | translate }}</span>
-          <button type="button" class="btn btn-secondary btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRt('pdf')">
-            <ng-icon name="bootstrapFileEarmarkPdf" size="1rem" /><span>PDF</span>
-          </button>
-          <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRt('xml')">
-            <ng-icon name="bootstrapFiletypeXml" size="1rem" /><span>XML</span>
-          </button>
-          <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRt('json')">
-            <ng-icon name="bootstrapFiletypeJson" size="1rem" /><span>JSON</span>
-          </button>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-medium min-w-[3rem]">{{ 'Ricevute.Detail.Rpt' | translate }}</span>
-          @if (hasRpt()) {
-            <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRpt('xml')">
-              <ng-icon name="bootstrapFiletypeXml" size="1rem" /><span>XML</span>
-            </button>
-            <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRpt('json')">
-              <ng-icon name="bootstrapFiletypeJson" size="1rem" /><span>JSON</span>
-            </button>
-          } @else {
-            <span class="text-sm text-[var(--muted-foreground)]">{{ 'Ricevute.Detail.RptNonDisponibile' | translate }}</span>
-          }
-        </div>
-      </div>
-    </lnk-detail-section>
     }
 
     @if (r.segnalazioni?.length && showSection('segnalazioni')) {

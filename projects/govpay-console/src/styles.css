@@ -560,6 +560,25 @@ a {
   overflow-wrap: anywhere;
 }
 
+/* Voce di un menu/dropdown (es. "Scarica" nel dettaglio ricevuta). */
+.lnk-menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+.lnk-menu-item:hover:not(:disabled) {
+  background-color: var(--card-hover);
+}
+.lnk-menu-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Titolo di gruppo dentro il pannello espanso di una voce (dati aggiuntivi,
    metadati del servizio, dati di contabilità). */
 .lnk-voce-group-title {
