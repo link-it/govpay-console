@@ -16,7 +16,7 @@
   </lnk-page-header>
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
@@ -25,10 +25,10 @@
   } @else if (loading() && !ruolo()) {
     <lnk-loading />
   } @else if (ruolo(); as r) {
-    <lnk-detail-section titleKey="Ruoli.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Ruoli.Detail.Generali">
+      <lnk-info-grid uniform [items]="generaliItems()" />
     </lnk-detail-section>
-    <lnk-detail-section titleKey="Ruoli.Detail.Acl">
+    <lnk-detail-section variant="plain" titleKey="Ruoli.Detail.Acl">
       @if (r.acl.length > 0) {
         <lnk-acl-editor [acl]="r.acl" [disabled]="true" />
       } @else {

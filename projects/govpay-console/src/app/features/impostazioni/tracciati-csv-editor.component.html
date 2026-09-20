@@ -12,8 +12,8 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
-        <lnk-detail-section titleKey="Impostazioni.TracciatiCsv.Template">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Impostazioni.TracciatiCsv.Template">
           <div class="space-y-4">
             <div class="flex flex-col gap-1 max-w-[16rem]">
               <span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Impostazioni.Template.Tipo' | translate }}</span>

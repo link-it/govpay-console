@@ -15,14 +15,14 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
         @if (!isEdit()) {
           <div class="rounded-lg border border-dashed border-[var(--border)] bg-[var(--muted)]/40 p-4 space-y-2">
             <p class="text-xs text-[var(--muted-foreground)]">{{ 'PagoPA.EnteCreditore.FormHint' | translate }}</p>
             <lnk-ente-creditore-lookup (selected)="onEnteCreditoreSelected($event)" />
           </div>
         }
-        <lnk-detail-section titleKey="Domini.Detail.Generali">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Detail.Generali">
           <div class="space-y-5">
             <div class="grid grid-cols-2 gap-4">
               <label class="flex flex-col gap-1">
@@ -49,7 +49,7 @@
           </div>
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Domini.Form.SezionePagoPA">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Form.SezionePagoPA">
           <div class="grid grid-cols-2 gap-4">
             <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Gln' | translate }}</span>
               <input type="text" formControlName="gln" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
@@ -66,7 +66,7 @@
           </div>
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="Domini.Form.SezioneAnagrafica">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Form.SezioneAnagrafica">
           <div class="grid grid-cols-2 gap-4">
             <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Indirizzo' | translate }}</span>
               <input type="text" formControlName="indirizzo" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>

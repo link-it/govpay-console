@@ -18,11 +18,11 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-5">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
 
         <!-- ── Dati ─────────────────────────────────────────────── -->
         <div [hidden]="activeTab() !== 'dati'">
-          <lnk-detail-section titleKey="TipiPendenza.Detail.Generali">
+          <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Detail.Generali">
             <div class="space-y-5">
               <label class="flex flex-col gap-1">
                 <span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="form.controls.idTipoPendenza">{{ 'TipiPendenza.Detail.IdTipoPendenza' | translate }}</span>
@@ -60,7 +60,7 @@
         <!-- ── Portale backoffice (unità tipo→template) ─────────── -->
         <div [hidden]="activeTab() !== 'backoffice'" formGroupName="portaleBackoffice">
           @let bkc = form.controls.portaleBackoffice.controls;
-          <lnk-detail-section titleKey="TipiPendenza.Form.TabPortaleBackoffice">
+          <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Form.TabPortaleBackoffice">
             <div class="space-y-5">
               <label class="flex items-center gap-2">
                 <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
@@ -111,7 +111,7 @@
         <!-- ── Portale pagamento (pilota: unità tipo→template) ───── -->
         <div [hidden]="activeTab() !== 'pagamento'" formGroupName="portalePagamento">
           @let pgc = form.controls.portalePagamento.controls;
-          <lnk-detail-section titleKey="TipiPendenza.Form.TabPortalePagamento">
+          <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Form.TabPortalePagamento">
             <div class="space-y-5">
               <label class="flex items-center gap-2">
                 <input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" />
@@ -168,7 +168,7 @@
 
         <!-- ── Avvisatura email ─────────────────────────────────── -->
         <div [hidden]="activeTab() !== 'avvMail'">
-          <lnk-detail-section titleKey="TipiPendenza.Form.TabAvvisaturaMail">
+          <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Form.TabAvvisaturaMail">
             <div class="space-y-6">
               <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaAvviso" titleKey="TipiPendenza.Config.PromemoriaAvviso" />
               <lnk-promemoria-fields [group]="form.controls.avvisaturaMail.controls.promemoriaScadenza" titleKey="TipiPendenza.Config.PromemoriaScadenza" />
@@ -179,7 +179,7 @@
 
         <!-- ── Avvisatura App IO ────────────────────────────────── -->
         <div [hidden]="activeTab() !== 'avvAppIO'">
-          <lnk-detail-section titleKey="TipiPendenza.Form.TabAvvisaturaAppIO">
+          <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Form.TabAvvisaturaAppIO">
             <div class="space-y-6">
               <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaAvviso" titleKey="TipiPendenza.Config.PromemoriaAvviso" />
               <lnk-promemoria-fields [group]="form.controls.avvisaturaAppIO.controls.promemoriaScadenza" titleKey="TipiPendenza.Config.PromemoriaScadenza" />
@@ -191,7 +191,7 @@
         <!-- ── Altre funzioni (unità tipo→template) ─────────────── -->
         <div [hidden]="activeTab() !== 'altre'">
           @let tcc = form.controls.tracciatoCsv.controls;
-          <lnk-detail-section titleKey="TipiPendenza.Form.TabAltre">
+          <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Form.TabAltre">
             <div class="space-y-5">
               <lnk-template-unit
                 titleKey="TipiPendenza.Config.TracciatoCsv"

@@ -13,7 +13,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -27,18 +27,18 @@
     <lnk-loading />
   } @else if (operazione()) {
 
-    <lnk-detail-section titleKey="Tracciati.Operazioni.Detail.Dati">
-      <lnk-info-grid [items]="datiItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Tracciati.Operazioni.Detail.Dati">
+      <lnk-info-grid uniform [items]="datiItems()" />
     </lnk-detail-section>
 
     @if (richiestaJson()) {
-      <lnk-detail-section titleKey="Tracciati.Operazioni.Detail.Richiesta">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Tracciati.Operazioni.Detail.Richiesta">
         <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ richiestaJson() }}</pre>
       </lnk-detail-section>
     }
 
     @if (rispostaJson()) {
-      <lnk-detail-section titleKey="Tracciati.Operazioni.Detail.Risposta">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Tracciati.Operazioni.Detail.Risposta">
         <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ rispostaJson() }}</pre>
       </lnk-detail-section>
     }

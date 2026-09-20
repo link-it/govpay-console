@@ -13,7 +13,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -27,16 +27,24 @@
     <lnk-loading />
   } @else if (incasso(); as i) {
 
-    <lnk-detail-section titleKey="Incassi.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
+    <!-- Hero: importo colorato in base allo stato -->
+    @if (importoFmt(); as imp) {
+      <div [class]="'lnk-hero-card lnk-hero-' + statoTone()">
+        <div class="lnk-hero-label">{{ 'Incassi.Detail.Importo' | translate }}</div>
+        <div class="lnk-hero-value">{{ imp }}</div>
+      </div>
+    }
+
+    <lnk-detail-section variant="plain" titleDivider titleKey="Incassi.Detail.Generali">
+      <lnk-info-grid uniform [items]="generaliItems()" />
     </lnk-detail-section>
 
-    <lnk-detail-section titleKey="Incassi.Detail.EnteCreditore">
-      <lnk-info-grid [items]="enteItems()" />
+    <lnk-detail-section variant="plain" titleDivider titleKey="Incassi.Detail.EnteCreditore">
+      <lnk-info-grid uniform [items]="enteItems()" />
     </lnk-detail-section>
 
     @if (i.riscossioni && i.riscossioni.length > 0) {
-      <lnk-detail-section titleKey="Incassi.Detail.RiscossioniRiconciliate">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Incassi.Detail.RiscossioniRiconciliate">
         <table class="w-full text-sm">
           <thead class="text-left text-[var(--muted-foreground)]">
             <tr>

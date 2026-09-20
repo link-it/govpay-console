@@ -14,7 +14,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -29,12 +29,12 @@
   } @else if (evento(); as e) {
 
     @if (activeTab() === 'dati') {
-      <lnk-detail-section titleKey="GiornaleEventi.Detail.Generali">
-        <lnk-info-grid [items]="generaliItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="GiornaleEventi.Detail.Generali">
+        <lnk-info-grid uniform [items]="generaliItems()" />
       </lnk-detail-section>
 
-      <lnk-detail-section titleKey="GiornaleEventi.Detail.Riferimenti">
-        <lnk-info-grid [items]="riferimentiItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="GiornaleEventi.Detail.Riferimenti">
+        <lnk-info-grid uniform [items]="riferimentiItems()" />
       </lnk-detail-section>
     }
 
@@ -42,7 +42,7 @@
       @if (richiestaLoading() && !richiesta()) {
         <lnk-loading />
       } @else if (richiesta(); as req) {
-        <lnk-detail-section titleKey="GiornaleEventi.Detail.Headers">
+        <lnk-detail-section variant="plain" titleDivider titleKey="GiornaleEventi.Detail.Headers">
           @if (req.headers.length) {
             <div class="overflow-x-auto rounded border border-[var(--border)]" lnkScrollableRegionFocusable>
               <table class="w-full text-xs">
@@ -61,7 +61,7 @@
           }
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="GiornaleEventi.Detail.Payload">
+        <lnk-detail-section variant="plain" titleDivider titleKey="GiornaleEventi.Detail.Payload">
           @if (req.payload) {
             <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ req.payload }}</pre>
           } @else {
@@ -75,7 +75,7 @@
       @if (rispostaLoading() && !risposta()) {
         <lnk-loading />
       } @else if (risposta(); as res) {
-        <lnk-detail-section titleKey="GiornaleEventi.Detail.Headers">
+        <lnk-detail-section variant="plain" titleDivider titleKey="GiornaleEventi.Detail.Headers">
           @if (res.headers.length) {
             <div class="overflow-x-auto rounded border border-[var(--border)]" lnkScrollableRegionFocusable>
               <table class="w-full text-xs">
@@ -94,7 +94,7 @@
           }
         </lnk-detail-section>
 
-        <lnk-detail-section titleKey="GiornaleEventi.Detail.Payload">
+        <lnk-detail-section variant="plain" titleDivider titleKey="GiornaleEventi.Detail.Payload">
           @if (res.payload) {
             <pre lnkScrollableRegionFocusable class="overflow-x-auto rounded border border-[var(--border)] bg-[var(--muted)] p-3 text-xs">{{ res.payload }}</pre>
           } @else {

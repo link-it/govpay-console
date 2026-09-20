@@ -14,7 +14,7 @@
     </lnk-page-header>
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!">
@@ -25,12 +25,12 @@
   } @else {
 
     @if (operazione()) {
-      <lnk-detail-section titleKey="Operazioni.Detail.Generali">
-        <lnk-info-grid [items]="metaItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Operazioni.Detail.Generali">
+        <lnk-info-grid uniform [items]="metaItems()" />
       </lnk-detail-section>
     }
 
-    <lnk-detail-section titleKey="Operazioni.Detail.Esecuzioni">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Operazioni.Detail.Esecuzioni">
       @if (esecuzioniLoading() && esecuzioni().length === 0) {
         <lnk-loading />
       } @else if (esecuzioni().length === 0) {

@@ -19,7 +19,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -41,15 +41,15 @@
           <lnk-status-badge tone="info" labelKey="TipiPendenza.Detail.PagaTerzi" />
         }
       </div>
-      <lnk-detail-section titleKey="TipiPendenza.Detail.Generali">
-        <lnk-info-grid [items]="generaliItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Detail.Generali">
+        <lnk-info-grid uniform [items]="generaliItems()" />
       </lnk-detail-section>
     }
 
     <!-- PORTALE BACKOFFICE -->
     @if (activeTab() === 'backoffice') {
-      <lnk-detail-section titleKey="TipiPendenza.Detail.PortaleBackoffice">
-        @if (backofficeItems().length) { <lnk-info-grid [items]="backofficeItems()" /> }
+      <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Detail.PortaleBackoffice">
+        @if (backofficeItems().length) { <lnk-info-grid uniform [items]="backofficeItems()" /> }
         <div class="mt-3 divide-y divide-[var(--border)]">
           <lnk-config-field-view labelKey="TipiPendenza.Config.Definizione" [value]="t.portaleBackoffice?.form?.definizione" />
           <lnk-config-field-view labelKey="TipiPendenza.Config.Validazione" [value]="t.portaleBackoffice?.validazione" />
@@ -60,8 +60,8 @@
 
     <!-- PORTALE PAGAMENTO -->
     @if (activeTab() === 'pagamento') {
-      <lnk-detail-section titleKey="TipiPendenza.Detail.PortalePagamento">
-        @if (pagamentoItems().length) { <lnk-info-grid [items]="pagamentoItems()" /> }
+      <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Detail.PortalePagamento">
+        @if (pagamentoItems().length) { <lnk-info-grid uniform [items]="pagamentoItems()" /> }
         <div class="mt-3 divide-y divide-[var(--border)]">
           <lnk-config-field-view labelKey="TipiPendenza.Config.Definizione" [value]="t.portalePagamento?.form?.definizione" />
           <lnk-config-field-view labelKey="TipiPendenza.Config.Impaginazione" [value]="t.portalePagamento?.form?.impaginazione" />
@@ -74,8 +74,8 @@
     <!-- AVVISATURA EMAIL -->
     @if (activeTab() === 'avvMail') {
       @for (pr of mailPromemoria(); track pr.titleKey) {
-        <lnk-detail-section [titleKey]="pr.titleKey">
-          @if (promemoriaItems(pr).length) { <lnk-info-grid [items]="promemoriaItems(pr)" /> }
+        <lnk-detail-section variant="plain" titleDivider [titleKey]="pr.titleKey">
+          @if (promemoriaItems(pr).length) { <lnk-info-grid uniform [items]="promemoriaItems(pr)" /> }
           <div class="mt-3 divide-y divide-[var(--border)]">
             <lnk-config-field-view labelKey="TipiPendenza.Config.Oggetto" [value]="pr.p?.oggetto" />
             <lnk-config-field-view labelKey="TipiPendenza.Config.Messaggio" [value]="pr.p?.messaggio" />
@@ -87,8 +87,8 @@
     <!-- AVVISATURA APP IO -->
     @if (activeTab() === 'avvAppIO') {
       @for (pr of appIoPromemoria(); track pr.titleKey) {
-        <lnk-detail-section [titleKey]="pr.titleKey">
-          @if (promemoriaItems(pr).length) { <lnk-info-grid [items]="promemoriaItems(pr)" /> }
+        <lnk-detail-section variant="plain" titleDivider [titleKey]="pr.titleKey">
+          @if (promemoriaItems(pr).length) { <lnk-info-grid uniform [items]="promemoriaItems(pr)" /> }
           <div class="mt-3 divide-y divide-[var(--border)]">
             <lnk-config-field-view labelKey="TipiPendenza.Config.Oggetto" [value]="pr.p?.oggetto" />
             <lnk-config-field-view labelKey="TipiPendenza.Config.Messaggio" [value]="pr.p?.messaggio" />
@@ -99,10 +99,10 @@
 
     <!-- ALTRE FUNZIONI -->
     @if (activeTab() === 'altre') {
-      <lnk-detail-section titleKey="TipiPendenza.Form.TabAltre">
+      <lnk-detail-section variant="plain" titleDivider titleKey="TipiPendenza.Form.TabAltre">
         <!-- Parser tracciati CSV: tipo/intestazione + richiesta/risposta -->
         <div class="text-sm font-semibold mb-2">{{ 'TipiPendenza.Config.TracciatoCsv' | translate }}</div>
-        @if (tracciatoItems().length) { <lnk-info-grid [items]="tracciatoItems()" /> }
+        @if (tracciatoItems().length) { <lnk-info-grid uniform [items]="tracciatoItems()" /> }
         <div class="mt-2 divide-y divide-[var(--border)]">
           <lnk-config-field-view labelKey="TipiPendenza.Config.Richiesta" [value]="t.tracciatoCsv?.richiesta" />
           <lnk-config-field-view labelKey="TipiPendenza.Config.Risposta" [value]="t.tracciatoCsv?.risposta" />

@@ -81,6 +81,12 @@ export class RiscossioneDetailComponent implements OnInit {
     return s ? STATO_RISCOSSIONE_LABEL[s] : 'Riscossioni.Stati.Riscossa';
   });
 
+  /** Importo formattato per l'hero (colorato in base allo stato). */
+  readonly importoFmt = computed(() => {
+    const x = this.riscossione()?.importo;
+    return x != null ? formatEuro(x) : null;
+  });
+
   readonly generaliItems = computed<InfoGridItem[]>(() => {
     const r = this.riscossione();
     if (!r) return [];

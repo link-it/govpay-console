@@ -13,7 +13,7 @@
     }
   </div>
 
-  <div class="px-6 space-y-4">
+  <div class="px-6 space-y-6">
 
   @if (error()) {
     <lnk-empty-state
@@ -27,18 +27,26 @@
     <lnk-loading />
   } @else if (riscossione(); as r) {
 
-    <lnk-detail-section titleKey="Riscossioni.Detail.Generali">
-      <lnk-info-grid [items]="generaliItems()" />
+    <!-- Hero: importo colorato in base allo stato -->
+    @if (importoFmt(); as imp) {
+      <div [class]="'lnk-hero-card lnk-hero-' + statoTone()">
+        <div class="lnk-hero-label">{{ 'Riscossioni.Detail.Importo' | translate }}</div>
+        <div class="lnk-hero-value">{{ imp }}</div>
+      </div>
+    }
+
+    <lnk-detail-section variant="plain" titleDivider titleKey="Riscossioni.Detail.Generali">
+      <lnk-info-grid uniform [items]="generaliItems()" />
     </lnk-detail-section>
 
     @if (r.vocePendenza) {
-      <lnk-detail-section titleKey="Riscossioni.Detail.VocePendenza">
-        <lnk-info-grid [items]="voceItems()" />
+      <lnk-detail-section variant="plain" titleDivider titleKey="Riscossioni.Detail.VocePendenza">
+        <lnk-info-grid uniform [items]="voceItems()" />
       </lnk-detail-section>
     }
 
     @if (r.pendenza || r.rpp || r.incasso) {
-      <lnk-detail-section titleKey="Riscossioni.Detail.Riferimenti">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Riscossioni.Detail.Riferimenti">
         <ul class="flex flex-col gap-2 text-sm">
           @if (r.pendenza) {
             <li class="flex items-center gap-2">

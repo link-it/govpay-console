@@ -15,8 +15,8 @@
     @if (loading()) {
       <lnk-loading />
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
-        <lnk-detail-section titleKey="Intermediari.Detail.Generali">
+      <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
+        <lnk-detail-section variant="plain" titleDivider titleKey="Intermediari.Detail.Generali">
           <div class="space-y-5">
             <!-- ID intermediario (solo in creazione; in modifica è disabilitato) -->
             <label class="flex flex-col gap-1">

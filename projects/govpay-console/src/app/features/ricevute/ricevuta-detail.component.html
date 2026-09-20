@@ -35,43 +35,39 @@
     }
 
     @if (showSection('generali')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.Generali">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Generali">
         <div class="flex flex-col gap-5">
-          <lnk-divider tight />
           <lnk-info-grid uniform [items]="generaliItems()" />
         </div>
       </lnk-detail-section>
     }
 
     @if (esitoRtItems().length && showSection('esitoPagamento')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.EsitoPagamento">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EsitoPagamento">
         <div class="flex flex-col gap-5">
-          <lnk-divider tight />
           <lnk-info-grid uniform [items]="esitoRtItems()" />
         </div>
       </lnk-detail-section>
     }
 
     @if (versanteItems().length && showSection('versante')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.Versante">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Versante">
         <div class="flex flex-col gap-5">
-          <lnk-divider tight />
           <lnk-info-grid uniform [items]="versanteItems()" />
         </div>
       </lnk-detail-section>
     }
 
     @if (enteItems().length && showSection('enteCreditore')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.EnteCreditore">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EnteCreditore">
         <div class="flex flex-col gap-5">
-          <lnk-divider tight />
           <lnk-info-grid uniform [items]="enteItems()" />
         </div>
       </lnk-detail-section>
     }
 
     @if (transfers().length && showSection('trasferimenti')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.Trasferimenti">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Trasferimenti">
         <div class="flex flex-col gap-4">
           <lnk-data-table [columns]="transferColumns" [rows]="transferRows()" [clickable]="false" emptyKey="Common.NoResults" />
         </div>
@@ -79,27 +75,24 @@
     }
 
     @if (pspItems().length && showSection('psp')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.SezionePsp">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.SezionePsp">
         <div class="flex flex-col gap-5">
-          <lnk-divider tight />
           <lnk-info-grid uniform [items]="pspItems()" />
         </div>
       </lnk-detail-section>
     }
 
     @if (rptItems().length && showSection('richiestaPagamento')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.RichiestaPagamento">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.RichiestaPagamento">
         <div class="flex flex-col gap-5">
-          <lnk-divider tight />
           <lnk-info-grid uniform [items]="rptItems()" />
         </div>
       </lnk-detail-section>
     }
 
     @if (showSection('pendenza') && pendenza(); as p) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.PendenzaCollegata">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.PendenzaCollegata">
         <div class="flex flex-col gap-4">
-          <lnk-divider tight />
           <lnk-info-grid uniform [items]="pendenzaItems()" />
           <a [routerLink]="['/ricevute', idDominio, iuv, idRicevuta, 'pendenza', p.idA2A, p.idPendenza]" class="btn btn-secondary btn-sm self-start">
             <ng-icon name="bootstrapArrowRight" size="1rem" />
@@ -110,9 +103,8 @@
     }
 
     @if (showSection('download')) {
-    <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.Download">
+    <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Download">
       <div class="flex flex-col gap-4">
-        <lnk-divider tight />
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-medium min-w-[3rem]">{{ 'Ricevute.Detail.Rt' | translate }}</span>
           <button type="button" class="btn btn-secondary btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRt('pdf')">
@@ -143,9 +135,8 @@
     }
 
     @if (r.segnalazioni?.length && showSection('segnalazioni')) {
-      <lnk-detail-section variant="plain" titleKey="Ricevute.Detail.Segnalazioni">
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Segnalazioni">
         <div class="flex flex-col gap-4">
-          <lnk-divider tight />
           <ul class="flex flex-col gap-2 text-sm">
             @for (s of r.segnalazioni; track $index) {
               <li class="flex flex-wrap items-center gap-x-4 gap-y-1">

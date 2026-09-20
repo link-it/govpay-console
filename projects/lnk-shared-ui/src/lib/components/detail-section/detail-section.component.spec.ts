@@ -151,4 +151,27 @@ describe('DetailSectionComponent', () => {
     expect(section.querySelector('.px-6.pb-6')).not.toBeNull();
     expect(fixture.componentInstance['effectiveVariant']()).toBe('plain');
   });
+
+  it("variant='plain' + titleDivider: mostra il divisore sotto il titolo", () => {
+    const fixture = TestBed.createComponent(DetailSectionComponent);
+    fixture.componentRef.setInput('titleKey', 'X');
+    fixture.componentRef.setInput('variant', 'plain');
+    fixture.componentRef.setInput('titleDivider', true);
+    fixture.detectChanges();
+    const section = fixture.nativeElement.querySelector('section') as HTMLElement;
+    // divisore 1px tra header e content
+    expect(section.querySelector('.h-px')).not.toBeNull();
+    expect(fixture.componentInstance['showTitleDivider']()).toBe(true);
+  });
+
+  it('titleDivider ignorato fuori da variant plain (card)', () => {
+    const fixture = TestBed.createComponent(DetailSectionComponent);
+    fixture.componentRef.setInput('titleKey', 'X');
+    fixture.componentRef.setInput('variant', 'card');
+    fixture.componentRef.setInput('titleDivider', true);
+    fixture.detectChanges();
+    const section = fixture.nativeElement.querySelector('section') as HTMLElement;
+    expect(section.querySelector('.h-px')).toBeNull();
+    expect(fixture.componentInstance['showTitleDivider']()).toBe(false);
+  });
 });

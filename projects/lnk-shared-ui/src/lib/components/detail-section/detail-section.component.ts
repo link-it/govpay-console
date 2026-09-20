@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LNK_IN_DETAIL_GROUP } from '../detail-group/detail-group.token';
 
@@ -65,6 +65,9 @@ import { LNK_IN_DETAIL_GROUP } from '../detail-group/detail-group.token';
           {{ titleKey() | translate }}
         </h2>
       </header>
+      @if (showTitleDivider()) {
+        <div class="mx-6 mt-3 h-px bg-[var(--card-border)]"></div>
+      }
       <div [class]="contentClass()">
         <ng-content />
       </div>
@@ -84,8 +87,20 @@ export class DetailSectionComponent {
    */
   readonly variant = input<'card' | 'embedded' | 'plain' | 'auto'>('auto');
 
+  /**
+   * Solo per `variant="plain"`: mostra un divisore sottile tra il titolo e il
+   * contenuto (le varianti `card`/`embedded` hanno già l'underline sul titolo).
+   * Evita di wrappare a mano il contenuto con `<lnk-divider>` in ogni sezione.
+   */
+  readonly titleDivider = input(false, { transform: booleanAttribute });
+
   /** True se la section e` annidata in un `<lnk-detail-group>`. */
   private readonly inGroup = inject(LNK_IN_DETAIL_GROUP, { optional: true }) ?? false;
+
+  /** Divisore sotto il titolo attivo solo in variant `plain` + `titleDivider`. */
+  protected readonly showTitleDivider = computed(
+    () => this.effectiveVariant() === 'plain' && this.titleDivider(),
+  );
 
   /** Variant effettivo dopo risoluzione `'auto'`. Esposto come attributo
    *  host `data-variant` per gli stili `:host` differenziati per variant. */
