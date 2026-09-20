@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SnackbarService, SystemFacade } from '@linkit/shared-ui';
 import { PendenzeConsoleApi } from './pendenze.console-api';
 import { RicevuteConsoleApi } from '../ricevute/ricevute.console-api';
+import { DominiConsoleApi } from '../domini/domini.console-api';
 import { PendenzaDetailComponent } from './pendenza-detail.component';
 import type { Pendenza, PendenzaLinks, RicevutaSummary, Soggetto } from './pendenza.model';
 
@@ -62,6 +63,7 @@ function setup(stubs: Stubs = {}) {
   const ricevuteApi = {
     get: vi.fn(() => of({ idDominio: 'D', iuv: 'IUV', idRicevuta: 'CCP', dataRicevuta: '', stato: '', rt: {}, _links: { rpt: { href: '' }, rt: { href: '' } }, rtView: { pspNome: 'PSP SpA', metodoPagamento: 'CC', transfers: [] } })),
   };
+  const dominiApi = { getLogo: vi.fn(() => of(null)) };
 
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
@@ -69,6 +71,7 @@ function setup(stubs: Stubs = {}) {
     providers: [
       { provide: PendenzeConsoleApi, useValue: api },
       { provide: RicevuteConsoleApi, useValue: ricevuteApi },
+      { provide: DominiConsoleApi, useValue: dominiApi },
       { provide: SystemFacade, useValue: { setBreadcrumbs: vi.fn() } },
       { provide: SnackbarService, useValue: { error: vi.fn() } },
       { provide: TranslateService, useValue: { instant: (k: string) => k } },

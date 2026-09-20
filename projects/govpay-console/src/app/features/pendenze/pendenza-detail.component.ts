@@ -12,6 +12,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
   computed,
   inject,
@@ -43,6 +44,7 @@ import { problemDetail } from '@core/models';
 import { PendenzeConsoleApi } from './pendenze.console-api';
 import { RicevuteConsoleApi } from '../ricevute/ricevute.console-api';
 import type { RtView } from '../ricevute/ricevuta.model';
+import { DominiConsoleApi } from '../domini/domini.console-api';
 import {
   STATO_PENDENZA_COLOR,
   STATO_PENDENZA_LABEL,
@@ -74,9 +76,10 @@ import { voceExtra as buildVoceExtra, type VoceExtra } from './voce-dettaglio';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pendenza-detail.component.html',
 })
-export class PendenzaDetailComponent implements OnInit {
+export class PendenzaDetailComponent implements OnInit, OnDestroy {
   private readonly api = inject(PendenzeConsoleApi);
   private readonly ricevuteApi = inject(RicevuteConsoleApi);
+  private readonly dominiApi = inject(DominiConsoleApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
@@ -86,6 +89,9 @@ export class PendenzaDetailComponent implements OnInit {
   readonly pendenza = signal<Pendenza | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+
+  /** Object URL del logo dell'ente creditore (null se il dominio non ne ha uno). */
+  readonly enteLogoUrl = signal<string | null>(null);
 
   private idA2A = '';
   private idPendenza = '';
@@ -325,8 +331,31 @@ export class PendenzaDetailComponent implements OnInit {
       .subscribe((p) => {
         this.pendenza.set(p);
         this.loading.set(false);
-        if (p) this.fetchRicevute();
+        if (p) {
+          this.fetchRicevute();
+          this.fetchEnteLogo(p.dominio.idDominio);
+        }
       });
+  }
+
+  /** Logo dell'ente creditore (Blob); errore/assenza non bloccante → fallback icona. */
+  private fetchEnteLogo(idDominio: string): void {
+    this.dominiApi
+      .getLogo(idDominio)
+      .pipe(catchError(() => of(null)))
+      .subscribe((blob) => {
+        this.revokeEnteLogo();
+        this.enteLogoUrl.set(blob && blob.size > 0 ? URL.createObjectURL(blob) : null);
+      });
+  }
+
+  private revokeEnteLogo(): void {
+    const url = this.enteLogoUrl();
+    if (url) URL.revokeObjectURL(url);
+  }
+
+  ngOnDestroy(): void {
+    this.revokeEnteLogo();
   }
 
   /** Elenco (metadata-only) delle ricevute; errore non bloccante. */

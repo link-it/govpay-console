@@ -1,5 +1,11 @@
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] feat(pendenze): nel box "Ente creditore" del dettaglio pendenza
+    mostra il logo del dominio se presente (via `DominiConsoleApi.getLogo`),
+    altrimenti l'icona di fallback. Object URL revocato in `ngOnDestroy`;
+    errore/assenza logo non bloccante. `alt=""` (decorativo, ragione sociale
+    già accanto).
+
   * [Frontend] refactor(pendenze): uniformato il dettaglio pendenza al
     `titleDivider` come le altre viste. Divisore sotto il titolo su Ente
     creditore, Soggetto pagatore, Informazioni generali e Voci; rimossi il

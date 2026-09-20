@@ -85,8 +85,12 @@
       <lnk-detail-section variant="plain" titleDivider titleKey="Pendenze.Detail.EnteCreditore">
         <div class="flex flex-col gap-5">
           <div class="flex items-center gap-4">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-[var(--card-border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
-              <ng-icon name="bootstrapBank" size="1.6rem" />
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--card-border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
+              @if (enteLogoUrl(); as logo) {
+                <img [src]="logo" alt="" class="h-full w-full object-contain" />
+              } @else {
+                <ng-icon name="bootstrapBank" size="1.6rem" />
+              }
             </div>
             <div class="min-w-0">
               <div class="text-base font-bold break-words">{{ p.dominio.ragioneSociale || '—' }}</div>
