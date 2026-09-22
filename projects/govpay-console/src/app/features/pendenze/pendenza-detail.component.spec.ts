@@ -62,6 +62,7 @@ function setup(stubs: Stubs = {}) {
   };
   const ricevuteApi = {
     get: vi.fn(() => of({ idDominio: 'D', iuv: 'IUV', idRicevuta: 'CCP', dataRicevuta: '', stato: '', rt: {}, _links: { rpt: { href: '' }, rt: { href: '' } }, rtView: { pspNome: 'PSP SpA', metodoPagamento: 'CC', transfers: [] } })),
+    getRtBlob: vi.fn(() => of(new Blob(['%PDF'], { type: 'application/pdf' }))),
   };
   const dominiApi = { getLogo: vi.fn(() => of(null)) };
 
@@ -201,6 +202,17 @@ describe('PendenzaDetailComponent', () => {
       comp.ngOnInit();
       comp.onStampaAvviso();
       expect(getAvvisoPdf).toHaveBeenCalledWith('A2A', 'P1');
+      expect(URL.createObjectURL).toHaveBeenCalled();
+    });
+
+    it('stampa ricevuta: scarica il PDF della RT (getRtBlob), non naviga', () => {
+      const ricevute: RicevutaSummary[] = [
+        { idDominio: 'D', iuv: 'IUV', idRicevuta: 'RIC1', dataRicevuta: '2026-06-30T10:00:00Z', importo: 100.99, stato: 'RT_ACCETTATA_PA', codPsp: 'PSP01' },
+      ];
+      const { comp, ricevuteApi } = setup({ ricevute });
+      comp.ngOnInit();
+      comp.onStampaRicevuta();
+      expect(ricevuteApi.getRtBlob).toHaveBeenCalledWith('D', 'IUV', 'RIC1', 'pdf');
       expect(URL.createObjectURL).toHaveBeenCalled();
     });
   });

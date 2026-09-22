@@ -283,7 +283,9 @@
       "MetodoPagamento": "Metodo di pagamento",
       "IdentificativoRicevuta": "Identificativo ricevuta",
       "StampaRicevuta": "Stampa ricevuta",
-      "NascondiDebitore": "Nascondi informazioni debitore"
+      "NascondiDebitore": "Nascondi informazioni debitore",
+      "VaiRicevuta": "Vai alla ricevuta",
+      "RicevutaErrore": "Impossibile scaricare la ricevuta PDF."
     },
     "Voci": {
       "Indice": "N.",

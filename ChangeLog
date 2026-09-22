@@ -1,3 +1,11 @@
+2026-09-22  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(pendenze): nel dettaglio pendenza (stato pagato) il pulsante
+    "Stampa ricevuta" in testata ora scarica il PDF della RT
+    (`RicevuteConsoleApi.getRtBlob`), come nel dettaglio ricevute. La navigazione
+    al dettaglio ricevuta (drilldown annidato) è spostata nel pulsante
+    "Vai alla ricevuta" dentro il box "Ricevuta di pagamento".
+
 2026-09-20  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] fix(a11y): contrasto del chip filtro (`search-chip`, lib 0.35.1)

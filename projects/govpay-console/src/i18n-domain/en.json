@@ -283,7 +283,9 @@
       "MetodoPagamento": "Payment method",
       "IdentificativoRicevuta": "Receipt identifier",
       "StampaRicevuta": "Print receipt",
-      "NascondiDebitore": "Hide debtor information"
+      "NascondiDebitore": "Hide debtor information",
+      "VaiRicevuta": "Go to receipt",
+      "RicevutaErrore": "Could not download the receipt PDF."
     },
     "Voci": {
       "Indice": "#",
