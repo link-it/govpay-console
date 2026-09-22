@@ -4,11 +4,11 @@
       <div class="flex items-center gap-2">
         <!-- Azione primaria differenziata per stato -->
         @if (isPagato()) {
-          @if (ricevutaLink(); as link) {
-            <a [routerLink]="link" class="btn btn-secondary btn-sm">
-              <ng-icon name="bootstrapReceipt" size="1rem" />
+          @if (hasRicevutaPagamento()) {
+            <button type="button" class="btn btn-secondary btn-sm" (click)="onStampaRicevuta()" [disabled]="ricevutaPdfLoading()">
+              <ng-icon name="bootstrapFileEarmarkPdf" size="1rem" />
               <span>{{ 'Pendenze.Detail.StampaRicevuta' | translate }}</span>
-            </a>
+            </button>
           }
         } @else if (hasAvvisoLink()) {
           <button type="button" class="btn btn-secondary btn-sm" (click)="onStampaAvviso()" [disabled]="avvisoLoading()">
@@ -77,6 +77,12 @@
         </div>
         <lnk-divider />
         <lnk-info-grid uniform [columns]="3" [items]="ricevutaItems()" />
+        @if (ricevutaLink(); as link) {
+          <a [routerLink]="link" class="btn btn-secondary btn-sm self-start">
+            <ng-icon name="bootstrapReceipt" size="1rem" />
+            <span>{{ 'Pendenze.Detail.VaiRicevuta' | translate }}</span>
+          </a>
+        }
       </div>
     }
 

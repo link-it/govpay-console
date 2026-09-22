@@ -112,6 +112,9 @@ export class PendenzaDetailComponent implements OnInit, OnDestroy {
   readonly hasAvvisoLink = computed(() => !!this.pendenza()?._links?.avviso);
   readonly avvisoLoading = signal(false);
 
+  /** Download in corso del PDF della ricevuta (RT) per l'azione "Stampa ricevuta". */
+  readonly ricevutaPdfLoading = signal(false);
+
   /* ---- Ricevute: elenco metadata-only ------------------------------- */
   readonly ricevute = signal<RicevutaSummary[] | null>(null);
   /** Vista normalizzata della RT principale (PSP, metodo, …), caricata on-demand nello stato "pagato". */
@@ -435,6 +438,26 @@ export class PendenzaDetailComponent implements OnInit, OnDestroy {
         const p = this.pendenza();
         const name = `avviso-${p?.numeroAvviso || p?.idPendenza || 'pendenza'}.pdf`;
         downloadBlob(blob, name);
+      });
+  }
+
+  /* ---- Stampa ricevuta PDF (RT della ricevuta principale) ------------ */
+  onStampaRicevuta(): void {
+    const r = this.ricevutaPrincipale();
+    if (!r || this.ricevutaPdfLoading()) return;
+    this.ricevutaPdfLoading.set(true);
+    this.ricevuteApi
+      .getRtBlob(r.idDominio, r.iuv, r.idRicevuta, 'pdf')
+      .pipe(
+        catchError((err) => {
+          this.snackbar.error(problemDetail(err, this.translate.instant('Pendenze.Detail.RicevutaErrore')));
+          return of(null);
+        })
+      )
+      .subscribe((blob) => {
+        this.ricevutaPdfLoading.set(false);
+        if (!blob) return;
+        downloadBlob(blob, `ricevuta-${r.iuv}.pdf`);
       });
   }
 }
