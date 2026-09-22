@@ -1,5 +1,16 @@
 2026-09-22  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
+  * [Frontend] fix(a11y): comandi di `lnk-data-table` raggiungibili da tastiera
+    (lib 0.35.2), gate gov-a11y superato.
+    - Intestazioni ordinabili: il trigger dell'ordinamento è ora un `<button>`
+      (Enter/Spazio) con `aria-sort` sul `<th>`; le colonne non ordinabili non
+      hanno più alcun gestore di click.
+    - Righe row-click (senza colonna `link`): `role="button"` + `tabindex="0"`
+      + Enter/Spazio, con focus visibile.
+    Risolti i 51 "comandi utilizzabili col solo mouse" segnalati dallo scanner.
+
+2026-09-22  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
   * [Frontend] feat(pendenze): nel dettaglio pendenza (stato pagato) il pulsante
     "Stampa ricevuta" in testata ora scarica il PDF della RT
     (`RicevuteConsoleApi.getRtBlob`), come nel dettaglio ricevute. La navigazione

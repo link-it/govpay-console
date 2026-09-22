@@ -1,6 +1,6 @@
 {
   "name": "govpay-console",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "GovPay Web Console v2 — backoffice Link.it (Angular 21+, standalone, signals, TailwindCSS, Material).",
   "license": "GPL-3.0-or-later",
   "scripts": {
