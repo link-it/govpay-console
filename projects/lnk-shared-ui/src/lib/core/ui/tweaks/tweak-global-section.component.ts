@@ -19,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { ConfigService } from '../../config';
 import type { ControlPosition } from '../../config';
 import { LayoutOverridesService } from '../../system';
+import { LNK_TABS_DEFAULTS } from '../../../components/tabs/tabs.component';
 import { TweakRowComponent } from './tweak-row.component';
 import { TweakSectionComponent } from './tweak-section.component';
 import {
@@ -45,6 +46,11 @@ const INFO_GRID_SIZE_OPTIONS: TweakSegmentedOption[] = [
   { value: 'sm', labelKey: 'Tweaks.InfoGridSize.Sm' },
   { value: 'md', labelKey: 'Tweaks.InfoGridSize.Md' },
   { value: 'lg', labelKey: 'Tweaks.InfoGridSize.Lg' },
+];
+
+const TABS_VARIANT_OPTIONS: TweakSegmentedOption[] = [
+  { value: 'underline', labelKey: 'Tweaks.TabsVariant.Underline' },
+  { value: 'segmented', labelKey: 'Tweaks.TabsVariant.Segmented' },
 ];
 
 /**
@@ -117,6 +123,14 @@ const INFO_GRID_SIZE_OPTIONS: TweakSegmentedOption[] = [
           (valueChange)="onInfoGridSizeChange($event)"
         />
       </lnk-tweak-row>
+      <lnk-tweak-row labelKey="Tweaks.TabsVariant" hintKey="Tweaks.TabsVariantHint">
+        <lnk-tweak-segmented
+          [options]="tabsVariantOptions"
+          size="sm"
+          [value]="tabsVariant()"
+          (valueChange)="onTabsVariantChange($event)"
+        />
+      </lnk-tweak-row>
       <lnk-tweak-row labelKey="Tweaks.HelpButton" [inline]="true">
         <lnk-tweak-toggle
           [value]="helpButton()"
@@ -160,10 +174,12 @@ const INFO_GRID_SIZE_OPTIONS: TweakSegmentedOption[] = [
 export class TweakGlobalSectionComponent {
   protected readonly overrides = inject(LayoutOverridesService);
   protected readonly config = inject(ConfigService);
+  private readonly tabsDefaults = inject(LNK_TABS_DEFAULTS, { optional: true });
 
   protected readonly maxWidthOptions = MAX_WIDTH_OPTIONS;
   protected readonly positionOptions = POSITION_OPTIONS;
   protected readonly infoGridSizeOptions = INFO_GRID_SIZE_OPTIONS;
+  protected readonly tabsVariantOptions = TABS_VARIANT_OPTIONS;
 
   /** Opzioni del selettore tema (da `Layout.themes`), col colore di riferimento. */
   protected readonly themeOptions = computed<TweakSelectOption[]>(() =>
@@ -178,6 +194,10 @@ export class TweakGlobalSectionComponent {
     () => this.config.effectiveLayout()?.detailMaxWidth ?? 'none'
   );
   protected readonly infoGridSize = computed(() => this.overrides.infoGridSize() ?? 'sm');
+  /** Valore mostrato: override runtime → default DI (`LNK_TABS_DEFAULTS`) → fallback. */
+  protected readonly tabsVariant = computed<string>(
+    () => this.overrides.tabsVariant() ?? this.tabsDefaults?.variant ?? 'underline'
+  );
   protected readonly helpButton = computed(
     () => this.config.effectiveLayout()?.helpButton !== false
   );
@@ -199,6 +219,9 @@ export class TweakGlobalSectionComponent {
   }
   onInfoGridSizeChange(value: string): void {
     this.overrides.infoGridSize.set(value as 'sm' | 'md' | 'lg');
+  }
+  onTabsVariantChange(value: string): void {
+    this.overrides.tabsVariant.set(value as 'underline' | 'segmented');
   }
   onHelpButtonChange(value: boolean): void {
     this.overrides.helpButton.set(value);

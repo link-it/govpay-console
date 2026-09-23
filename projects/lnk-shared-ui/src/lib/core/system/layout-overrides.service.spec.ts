@@ -44,6 +44,15 @@ describe('LayoutOverridesService', () => {
     expect(svc.hasAnyOverride()).toBe(true);
   });
 
+  it('tabsVariant: default null, attiva hasAnyOverride e viene azzerato da reset()', () => {
+    expect(svc.tabsVariant()).toBeNull();
+    svc.tabsVariant.set('underline');
+    expect(svc.hasAnyOverride()).toBe(true);
+    svc.reset();
+    expect(svc.tabsVariant()).toBeNull();
+    expect(svc.hasAnyOverride()).toBe(false);
+  });
+
   it('hasAnyOverride reagisce a override "falsy" (es. false / stringa vuota)', () => {
     // `false` è un valore di override valido (diverso da null), deve
     // attivare hasAnyOverride.

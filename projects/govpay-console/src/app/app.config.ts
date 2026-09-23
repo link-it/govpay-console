@@ -16,7 +16,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { BREADCRUMB_ICON_RESOLVER, LanguageService } from '@linkit/shared-ui';
+import { BREADCRUMB_ICON_RESOLVER, LanguageService, provideTabsDefaults } from '@linkit/shared-ui';
 import { registerLocaleData } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
@@ -43,6 +43,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideCore(),
     { provide: BREADCRUMB_ICON_RESOLVER, useValue: iconForNavLabel },
+    // Default globale dei tab: allinea tutte le istanze di <lnk-tabs> (override
+    // per-istanza sempre possibile via l'input `variant`).
+    provideTabsDefaults({ variant: 'segmented' }),
     { provide: LOCALE_ID, useValue: 'it' },
     { provide: MAT_DATE_LOCALE, useValue: 'it' },
     provideNativeDateAdapter(),
