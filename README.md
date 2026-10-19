@@ -222,9 +222,9 @@ completo.
 > sovrascritta montando un volume su
 > `/usr/share/nginx/html/assets/config/app-config.json`.
 
-> Per le immagini basate su release pubblicate (download da GitHub o build
-> locale già pronta) sono disponibili gli script in `docker/` (`build_image.sh`,
-> con i relativi `Dockerfile.github` / `Dockerfile.daFile`).
+> Per costruire l'immagine da una build Angular già pronta c'è lo script
+> `docker/build_image.sh -l <dir>`, che usa `Dockerfile.daFile`, lo stesso
+> della pipeline. La scansione dell'immagine è descritta in `docker/SCANSIONE.md`.
 
 ## Licenza
 
