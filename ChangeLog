@@ -1,3 +1,14 @@
+2026-11-03  Giuliano Pintori <pintori@link.it>
+
+  * [Build] fix: la build di production carica `assets/config/app-config.json`
+    (issue #36). In `angular.json` la configurazione `production` non aveva
+    `fileReplacements`: `environment.ts` non veniva sostituito da
+    `environment.prod.ts` e l'immagine Docker leggeva `app-config.dev.json`,
+    la configurazione di sviluppo (titolo "(DEV)", selettori di tema e lingua,
+    hash della build). Chi monta la configurazione su `app-config.dev.json`
+    deve montarla su `app-config.json`: l'entrypoint del container scrive un
+    avviso se trova un file montato sul vecchio percorso.
+
 2026-09-22  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 
   * [Frontend] feat(pendenze): nel dettaglio pendenza (stato pagato) il pulsante
