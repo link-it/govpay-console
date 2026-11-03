@@ -101,6 +101,20 @@ EOF
 fi
 
 ##############################################################################
+# Configurazione applicativa
+##############################################################################
+
+# La build di produzione carica assets/config/app-config.json. Prima della
+# correzione di link-it/govpay-console#36 caricava app-config.dev.json, e il
+# README indicava di montare la configurazione su quel file: un file montato
+# li' ora non viene piu' letto.
+APP_CONFIG_DIR="${GOVPAY_CONSOLE_HOME}/assets/config"
+if grep -qs " ${APP_CONFIG_DIR}/app-config.dev.json " /proc/self/mountinfo; then
+    log_warn "Trovato un file montato su ${APP_CONFIG_DIR}/app-config.dev.json: la console non lo legge."
+    log_warn "La configurazione dell'installazione va montata su ${APP_CONFIG_DIR}/app-config.json."
+fi
+
+##############################################################################
 # Blocco opzionale di reverse proxy verso il backend GovPay
 ##############################################################################
 

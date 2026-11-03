@@ -65,11 +65,14 @@ L'applicazione non ha configurazione di build per ambiente: legge tutto a runtim
 
 | File | Contenuto |
 |------|-----------|
-| `assets/config/app-config.json` / `app-config.dev.json` | Configurazione applicativa (chiavi sotto) |
+| `assets/config/app-config.json` | Configurazione applicativa (chiavi sotto), letta dalla build di production e quindi dall'immagine Docker |
+| `assets/config/app-config.dev.json` | Configurazione applicativa usata da `ng serve` e dalla build di development |
 | `assets/config/themes/*.json` | Temi: logo, colori, font. Quello di avvio è indicato da `Layout.themeUrl` (default `assets/config/theme.json`) |
 | `assets/config/<area>-config.json` | Presentazione delle liste di ogni area (colonne, etichette e colori degli stati, `persistState`) |
 
-Il file di configurazione applicativa caricato è quello indicato da `configFile` in `environments/environment.ts`, cioè `assets/config/app-config.dev.json`. `environment.prod.ts` punta ad `app-config.json`, ma `angular.json` non lo sostituisce in nessuna configurazione di build: anche la build di production (e quindi l'immagine Docker) carica `app-config.dev.json`. Per cambiare la configurazione di un'installazione va quindi sovrascritto `app-config.dev.json`.
+Il file di configurazione applicativa caricato è quello indicato da `configFile` nell'environment della build: `environment.ts` (`app-config.dev.json`) per `ng serve` e la build di development, `environment.prod.ts` (`app-config.json`) per la build di production, dove `angular.json` sostituisce il primo con il secondo. Per cambiare la configurazione di un'installazione va quindi sovrascritto `app-config.json`.
+
+> Fino alla correzione di [#36](https://github.com/link-it/govpay-console/issues/36) anche la build di production caricava `app-config.dev.json`, e le istruzioni indicavano di montare lì la configurazione. Chi la monta ancora su `app-config.dev.json` deve montarla su `app-config.json`: all'avvio l'entrypoint del container scrive un avviso se trova un file montato sul vecchio percorso.
 
 ### Chiavi di `AppConfig`
 
@@ -184,7 +187,7 @@ La console è poi su `http://localhost:8080`. Per sovrascrivere la configurazion
 
 ```bash
 docker run -d --name govpay-console -p 8080:80 \
-  -v ./app-config.json:/usr/share/nginx/html/assets/config/app-config.dev.json:ro \
+  -v ./app-config.json:/usr/share/nginx/html/assets/config/app-config.json:ro \
   linkitaly/govpay-console-dev:main
 ```
 

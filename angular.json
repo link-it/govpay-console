@@ -50,6 +50,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/govpay-console/src/environments/environment.ts",
+                  "with": "projects/govpay-console/src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
