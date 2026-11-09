@@ -1,3 +1,9 @@
+2026-11-09  Giuliano Pintori <pintori@link.it>
+
+  * [Release] Ramo 3.11.x: versione 4.3.0
+    Gli sviluppi di GovPay 3.10 e 3.11 non sono compatibili e proseguono su
+    rami separati: 3.10.x resta a 4.2.0, 3.11.x passa a 4.3.0.
+
 2026-11-03  Giuliano Pintori <pintori@link.it>
 
   * [Build] fix: la build di production carica `assets/config/app-config.json`
