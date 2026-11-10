@@ -1,3 +1,12 @@
+2026-11-10  Giuliano Pintori <pintori@link.it>
+
+  * [Domini] Nuovo campo "Pagamento dal sito dell'ente" (pagamentoSito)
+    nel form e nel dettaglio del dominio (link-it/govpay-pendenze-api#13):
+    indica se l'ente consente il pagamento degli avvisi dal proprio sito, e
+    la stampa dell'avviso riporta "oppure sul sito di <ente>". Richiede
+    govpay-console-api con il campo pagamentoSito (ramo 3.11) e lo schema
+    GovPay alla patch 3.11.0. Spento per i domini nuovi.
+
 2026-11-09  Giuliano Pintori <pintori@link.it>
 
   * [Release] Ramo 3.11.x: versione 4.3.0
