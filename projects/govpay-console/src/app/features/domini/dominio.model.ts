@@ -54,6 +54,8 @@ export interface Dominio extends AnagraficaBase {
   tassonomiaPagoPA?: string;
   intermediato?: boolean;
   scaricaFr?: boolean;
+  /** L'ente consente il pagamento degli avvisi dal proprio sito. */
+  pagamentoSito?: boolean;
   abilitato?: boolean;
   idStazione?: string;
   /** Sola lettura: derivato dalla stazione. */
@@ -66,6 +68,8 @@ export interface DominioCreate extends AnagraficaBase {
   ragioneSociale: string;
   abilitato: boolean;
   scaricaFr: boolean;
+  /** Facoltativo: se assente vale false. */
+  pagamentoSito?: boolean;
   gln?: string;
   cbill?: string;
   iuvPrefix?: string;
