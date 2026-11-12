@@ -38,7 +38,7 @@ Il path `/govpay/backend/api/backoffice` (API di backoffice di GovPay 3.x) è an
 
 ## Compilazione
 
-Requisiti: Node.js 22 (versione in [.nvmrc](.nvmrc), oggi `22.13`; è la stessa usata dalla pipeline e dall'immagine `node:22.13-alpine`) e npm 10 (`packageManager` in `package.json`: `npm@10.9.0`).
+Requisiti: Node.js 24 (versione in [.nvmrc](.nvmrc), oggi `24.16`; è la stessa usata dalla pipeline e dall'immagine `node:24.16-alpine`) e npm 11 (`packageManager` in `package.json`: `npm@11.13.0`).
 
 ```bash
 nvm use                # usa la versione di Node indicata in .nvmrc

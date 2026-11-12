@@ -15,7 +15,7 @@ import {
   makeEnvironmentProviders,
   provideAppInitializer,
 } from '@angular/core';
-import { provideHttpClient, withInterceptors, withXsrfConfiguration } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXsrfConfiguration, withXhr } from '@angular/common/http';
 import { ConfigService } from '@linkit/shared-ui';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { errorInterceptor } from './interceptors/error.interceptor';
@@ -31,6 +31,9 @@ import { environment } from '@environment';
 export function provideCore(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideHttpClient(
+      // Angular 22 usa fetch come backend di default: manteniamo XHR per
+      // lasciare invariato il comportamento HTTP rispetto alla v21.
+      withXhr(),
       withInterceptors([authInterceptor, errorInterceptor]),
       withXsrfConfiguration({
         cookieName: 'XSRF-TOKEN',
