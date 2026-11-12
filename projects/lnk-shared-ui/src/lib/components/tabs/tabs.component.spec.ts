@@ -18,7 +18,8 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateLoader, provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TabsComponent, type TabDef } from './tabs.component';
+import { LNK_TABS_DEFAULTS, TabsComponent, provideTabsDefaults, type TabDef } from './tabs.component';
+import { LayoutOverridesService } from '../../core/system/layout-overrides.service';
 
 class FakeTranslateLoader {
   getTranslation() {
@@ -32,14 +33,18 @@ const TABS: TabDef[] = [
   { id: 'allegati', labelKey: 'Detail.Allegati', disabled: true },
 ];
 
-function render(activeId = 'dati', variant: 'underline' | 'segmented' = 'underline', size: 'md' | 'sm' = 'md') {
+function render(activeId = 'dati', variant?: 'underline' | 'segmented', size?: 'md' | 'sm') {
   const fixture = TestBed.createComponent(TabsComponent);
   fixture.componentRef.setInput('tabs', TABS);
   fixture.componentRef.setInput('activeId', activeId);
-  fixture.componentRef.setInput('variant', variant);
-  fixture.componentRef.setInput('size', size);
+  if (variant !== undefined) fixture.componentRef.setInput('variant', variant);
+  if (size !== undefined) fixture.componentRef.setInput('size', size);
   fixture.detectChanges();
   return fixture;
+}
+
+function tablistClasses(fixture: ReturnType<typeof render>): DOMTokenList {
+  return (fixture.nativeElement.querySelector('[role="tablist"]') as HTMLElement).classList;
 }
 
 describe('TabsComponent', () => {
@@ -139,5 +144,64 @@ describe('TabsComponent', () => {
     expect(fixture.componentInstance.activeId()).toBe('eventi'); // allegati disabled
     press(fixture, 'Home');
     expect(fixture.componentInstance.activeId()).toBe('dati');
+  });
+
+  it('senza variant/size né default DI usa il fallback underline/md', () => {
+    const fixture = render('dati'); // nessun input variant/size
+    const cls = tablistClasses(fixture);
+    expect(cls).toContain('lnk-tablist--underline');
+    expect(cls).toContain('lnk-tabs-size--md');
+  });
+});
+
+describe('TabsComponent — default configurabili (LNK_TABS_DEFAULTS)', () => {
+  function configure(defaults?: { variant?: 'underline' | 'segmented'; size?: 'md' | 'sm' }): void {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslateService({
+          fallbackLang: 'it',
+          loader: { provide: TranslateLoader, useClass: FakeTranslateLoader },
+        }),
+        ...(defaults ? [provideTabsDefaults(defaults)] : []),
+      ],
+    });
+  }
+
+  it('provideTabsDefaults registra il token con i valori forniti', () => {
+    configure({ variant: 'segmented', size: 'sm' });
+    expect(TestBed.inject(LNK_TABS_DEFAULTS)).toEqual({ variant: 'segmented', size: 'sm' });
+  });
+
+  it('il default DI si applica a tutte le istanze senza input locale', () => {
+    configure({ variant: 'segmented', size: 'sm' });
+    const cls = tablistClasses(render('dati'));
+    expect(cls).toContain('lnk-tablist--segmented');
+    expect(cls).toContain('lnk-tabs-size--sm');
+  });
+
+  it("l'input locale vince sul default DI", () => {
+    configure({ variant: 'segmented', size: 'sm' });
+    const cls = tablistClasses(render('dati', 'underline', 'md'));
+    expect(cls).toContain('lnk-tablist--underline');
+    expect(cls).toContain('lnk-tabs-size--md');
+  });
+
+  it('default parziale: variant dal DI, size dal fallback', () => {
+    configure({ variant: 'segmented' }); // size non fornito
+    const cls = tablistClasses(render('dati'));
+    expect(cls).toContain('lnk-tablist--segmented');
+    expect(cls).toContain('lnk-tabs-size--md'); // fallback
+  });
+
+  it("l'override runtime (Tweaks) vince sul default DI ma non sull'input locale", () => {
+    configure({ variant: 'segmented' });
+    const overrides = TestBed.inject(LayoutOverridesService);
+    overrides.tabsVariant.set('underline');
+    // Nessun input locale → l'override runtime prevale sul default DI ('segmented').
+    expect(tablistClasses(render('dati'))).toContain('lnk-tablist--underline');
+    // Con input locale, quest'ultimo prevale sull'override runtime.
+    expect(tablistClasses(render('dati', 'segmented'))).toContain('lnk-tablist--segmented');
+    overrides.tabsVariant.set(null);
   });
 });

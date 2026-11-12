@@ -202,6 +202,14 @@ export interface LayoutConfig {
    */
   searchPillVariant?: 'pill' | 'square';
   /**
+   * Variante grafica di default dei `<lnk-tabs>`:
+   *   - `'underline'` (default) → barra con sottolineatura sull'attivo
+   *   - `'segmented'`           → pillole (segmented control)
+   * Applicata a tutte le istanze senza `variant` esplicito. Sovrascrivibile a
+   * runtime dal pannello tweaks (sezione "Globale" → "Stile tab").
+   */
+  tabsVariant?: 'underline' | 'segmented';
+  /**
    * Densità (spaziatura/altezza) della barra di ricerca `<lnk-search-pill>`
    * nelle liste: `'compact'` (default nelle liste) | `'regular'` |
    * `'comfortable'`. Sovrascrivibile a runtime dal pannello tweaks.

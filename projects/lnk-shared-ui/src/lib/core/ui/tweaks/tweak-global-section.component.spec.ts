@@ -101,6 +101,13 @@ describe('TweakGlobalSectionComponent', () => {
     expect(overrides.darkModeTogglePosition()).toBe('none');
   });
 
+  it('onTabsVariantChange scrive su LayoutOverridesService.tabsVariant', () => {
+    const fixture = TestBed.createComponent(TweakGlobalSectionComponent);
+    const overrides = TestBed.inject(LayoutOverridesService);
+    fixture.componentInstance.onTabsVariantChange('segmented');
+    expect(overrides.tabsVariant()).toBe('segmented');
+  });
+
   it('resetGlobals chiama overrides.reset()', () => {
     const fixture = TestBed.createComponent(TweakGlobalSectionComponent);
     const overrides = TestBed.inject(LayoutOverridesService);

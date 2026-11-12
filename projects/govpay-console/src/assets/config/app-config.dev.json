@@ -176,6 +176,7 @@
         "intermediari": "rows"
       },
       "searchPillVariant": "square",
+      "tabsVariant": "underline",
       "gotoTopButton": true,
       "helpButton": true,
       "tweaksPanel": true,

@@ -471,6 +471,11 @@ a {
   font-weight: 600;
   line-height: 1.15;
 }
+.lnk-hero-note {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.85;
+}
 .lnk-hero-info {
   background-color: #eaf1ff;
   border-color: #c7d9fb;

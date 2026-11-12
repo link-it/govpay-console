@@ -123,6 +123,10 @@ export class DataTableComponent<T extends object = object> {
    *  click si attiva solo sulle celle marcate, non sulla riga. */
   readonly hasLinkCol = computed(() => this.columns().some((c) => c.link));
 
+  /** Vero quando è l'intera riga a essere il trigger del click (no colonna
+   *  `link`): in tal caso la `<tr>` diventa focusabile e attivabile da tastiera. */
+  readonly rowInteractive = computed(() => this.clickable() && !this.hasLinkCol());
+
   cellValue(row: T, col: ColumnDef<T>): string {
     if (col.format) return col.format(row);
     const v = (row as Record<string, unknown>)[col.key];
@@ -142,6 +146,14 @@ export class DataTableComponent<T extends object = object> {
     }
   }
 
+  /** Valore `aria-sort` per l'header: null se non ordinabile. */
+  ariaSort(col: ColumnDef<T>): 'ascending' | 'descending' | 'none' | null {
+    if (!col.sortable) return null;
+    const s = this.sort();
+    if (s?.key !== col.key) return 'none';
+    return s.direction === 'asc' ? 'ascending' : 'descending';
+  }
+
   onHeaderClick(col: ColumnDef<T>): void {
     if (!col.sortable) return;
     const current = this.sort();
@@ -153,7 +165,15 @@ export class DataTableComponent<T extends object = object> {
   onRowClick(row: T): void {
     // Se ci sono colonne `link`, il click sulla riga è disabilitato:
     // l'evento è gestito dalle celle marcate (`onLinkClick`).
-    if (this.clickable() && !this.hasLinkCol()) this.rowClick.emit(row);
+    if (this.rowInteractive()) this.rowClick.emit(row);
+  }
+
+  /** Attivazione da tastiera della riga cliccabile (Enter/Spazio): rende la
+   *  `<tr role="button" tabindex="0">` usabile senza mouse (a11y). */
+  onRowActivate(row: T, event: Event): void {
+    if (!this.rowInteractive()) return;
+    event.preventDefault(); // evita lo scroll su Spazio
+    this.rowClick.emit(row);
   }
 
   onLinkClick(row: T, event: Event): void {

@@ -43,6 +43,8 @@ export class LayoutOverridesService {
   readonly darkModeTogglePosition = signal<ControlPosition | null>(null);
   /** Dimensione tipografica delle `<lnk-info-grid>` nei dettagli. */
   readonly infoGridSize = signal<'sm' | 'md' | 'lg' | null>(null);
+  /** Variante di default delle `<lnk-tabs>` (`underline` | `segmented`). */
+  readonly tabsVariant = signal<'underline' | 'segmented' | null>(null);
 
   /** True se almeno un override è impostato (per badge/bottone reset). */
   readonly hasAnyOverride = computed(
@@ -53,7 +55,8 @@ export class LayoutOverridesService {
       this.gotoTopButton() !== null ||
       this.languageSelectorPosition() !== null ||
       this.darkModeTogglePosition() !== null ||
-      this.infoGridSize() !== null
+      this.infoGridSize() !== null ||
+      this.tabsVariant() !== null
   );
 
   /** Azzera tutti gli override (torna al config base). */
@@ -65,5 +68,6 @@ export class LayoutOverridesService {
     this.languageSelectorPosition.set(null);
     this.darkModeTogglePosition.set(null);
     this.infoGridSize.set(null);
+    this.tabsVariant.set(null);
   }
 }
