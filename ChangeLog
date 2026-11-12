@@ -12,6 +12,22 @@
       è fetch, manteniamo XHR per non cambiare il comportamento HTTP.
     - TypeScript 6: rimosso `baseUrl` dal `tsconfig.json` (paths relativi).
 
+  * [Docker] fix: header di sicurezza HTTP nell'immagine (issue #41,
+    segnalazioni OWASP ZAP). nginx aggiunge a tutte le risposte, anche di
+    errore e del proxy API, `X-Frame-Options: DENY`, `X-Content-Type-Options:
+    nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` e una Content
+    Security Policy, e non espone più la versione nell'header `Server`.
+    - La CSP è configurabile con `GOVPAY_CONSOLE_CSP` e parte in modalità
+      Report-Only (`GOVPAY_CONSOLE_CSP_REPORT_ONLY=true`): le violazioni
+      compaiono nella console del browser senza bloccare. Con `false` viene
+      applicata.
+    - Disattivato `inlineCritical` nella build di production: lo script inline
+      che aggiungeva sarebbe bloccato da `script-src 'self'`.
+    - I file statici sono resi leggibili all'utente nginx a prescindere dai
+      permessi del checkout (403 su `govpay.png` con permessi 700).
+    - Resta da impostare `SameSite` sul cookie di sessione in
+      govpay-console-api.
+
   * [Frontend] feat(eventi): nuova timeline eventi `<lnk-eventi-timeline>`
     riutilizzabile nei dettagli: eventi del giornale filtrati per contesto,
     nodi espandibili (categoria, componente, sottotipo, esito, transactionId)

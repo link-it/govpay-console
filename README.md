@@ -199,12 +199,14 @@ Variabili d'ambiente lette dall'entrypoint (`docker/commons/entrypoint.sh`), che
 | `GOVPAY_CONSOLE_BASE_PATH` | no | `/` | Base path da cui è servita la console, es. `/govpay-console` per un'installazione su `https://host/govpay-console/`. Viene scritto nel tag `<base href>` di `index.html`; ammessi solo caratteri validi in un path |
 | `GOVPAY_API_BACKEND` | no | - | Se valorizzata, nginx fa da reverse proxy per `/govpay-console-api/` verso questo backend (es. `https://govpay.example.org`), evitando problemi di CORS. Se vuota la console chiama `GOVAPI.GOVPAY` direttamente |
 | `GOVPAY_API_BACKEND_PATH` | no | `/govpay/console-api` | Path upstream sul backend a cui mappare `/govpay-console-api/*`, come dichiarato in `openapi.yaml` di govpay-console-api. Usare `/` se il backend serve gli endpoint alla radice: il prefisso viene rimosso prima dell'inoltro |
+| `GOVPAY_CONSOLE_CSP` | no | policy restrittiva (vedi [Header di sicurezza](#header-di-sicurezza)) | Content Security Policy inviata da nginx. Va estesa se la console chiama le API o carica font e immagini da un'altra origine. Non può contenere `"`, `\`, `$` né andare a capo |
+| `GOVPAY_CONSOLE_CSP_REPORT_ONLY` | no | `true` | `true` invia la policy come `Content-Security-Policy-Report-Only` (il browser segnala le violazioni in console senza bloccare); `false` la applica come `Content-Security-Policy` |
 | `GOVPAY_CONSOLE_HOME` | no | `/usr/share/nginx/html` | Directory dei file statici; si cambia alla costruzione dell'immagine (`build_image.sh -e`), non a runtime |
 | `GOVPAY_CONSOLE_LOGDIR` | no | `/var/log/govpay-console` | Directory dei log di nginx (`access.log`, `error.log`); si cambia alla costruzione dell'immagine (`build_image.sh -f`) |
 | `GOVPAY_CONSOLE_FULLVERSION` | no | versione dell'immagine | Solo informativa, impostata alla costruzione |
 | `TZ` | no | `Europe/Rome` | Fuso orario del container |
 
-Le altre variabili usate nell'entrypoint (`API_PROXY_BLOCK`, `BASE_LOCATION_BLOCK`, `INDEX_HTML`, `NGINX_CONF`, `UPSTREAM_PATH`) sono interne allo script e non vanno impostate.
+Le altre variabili usate nell'entrypoint (`API_PROXY_BLOCK`, `BASE_LOCATION_BLOCK`, `CSP_DEFAULT`, `CSP_HEADER`, `CSP_POLICY`, `INDEX_HTML`, `NGINX_CONF`, `UPSTREAM_PATH`) sono interne allo script e non vanno impostate.
 
 Esempio con backend che espone gli endpoint alla radice (proxy same-origin, nessun CORS):
 
@@ -230,6 +232,33 @@ docker run --rm -p 8080:80 \
 Il container serve l'applicazione sia dalla radice sia dal prefisso, quindi funziona in entrambi gli scenari di reverse proxy: sia che il proxy davanti rimuova il prefisso prima di inoltrare, sia che lo inoltri così com'è.
 
 Il proxy delle API resta invece **alla radice** (`/govpay-console-api/`), perché `GOVAPI.GOVPAY` è un path assoluto e non segue il `<base href>`. Se il reverse proxy davanti instrada al container solo `/<base-path>/*`, va instradato esplicitamente anche `/govpay-console-api/*`, oppure va valorizzato `GOVAPI.GOVPAY` con il path completo.
+
+### Header di sicurezza
+
+nginx aggiunge a tutte le risposte, comprese quelle di errore e quelle del proxy API:
+
+- `X-Frame-Options: DENY` e `frame-ancestors 'none'`: la console non può essere caricata in un frame (protezione dal clickjacking);
+- `X-Content-Type-Options: nosniff`;
+- `Referrer-Policy: strict-origin-when-cross-origin`;
+- la Content Security Policy, per ora in modalità `Report-Only` (vedi `GOVPAY_CONSOLE_CSP_REPORT_ONLY`).
+
+L'header `Server` non riporta la versione di nginx (`server_tokens off`).
+
+La policy di default è:
+
+```text
+default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;
+font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none';
+form-action 'self'
+```
+
+`style-src` ammette `'unsafe-inline'` perché Angular, Material e CDK iniettano i propri stili a runtime. `img-src` ammette `blob:` per i loghi degli enti. Se `GOVAPI.GOVPAY` punta a un'altra origine invece che al proxy, o se il tema carica un foglio di font esterno (`fonts.primary.url`), quelle origini vanno aggiunte a `connect-src`, `style-src` e `font-src` con `GOVPAY_CONSOLE_CSP`.
+
+Per controllare gli header:
+
+```bash
+curl -sI http://localhost:8080/
+```
 
 ### Costruzione dell'immagine in locale
 

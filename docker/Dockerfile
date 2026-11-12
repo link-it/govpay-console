@@ -70,6 +70,9 @@ WORKDIR ${GOVPAY_CONSOLE_HOME}
 
 # Copia la build statica dallo stage precedente
 COPY --from=build /app/dist/govpay-console/browser/ ${GOVPAY_CONSOLE_HOME}/
+# I file ereditano i permessi del checkout: li si rende leggibili all'utente
+# nginx (altrimenti 403 su asset con permessi 700, es. govpay.png).
+RUN chmod -R a+rX ${GOVPAY_CONSOLE_HOME}
 
 # Copia l'entrypoint che genera la configurazione nginx a runtime
 COPY docker/commons/entrypoint.sh /usr/local/bin/entrypoint.sh
