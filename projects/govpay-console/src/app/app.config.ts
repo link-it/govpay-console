@@ -16,7 +16,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { BREADCRUMB_ICON_RESOLVER, LanguageService, provideTabsDefaults } from '@linkit/shared-ui';
+import { BREADCRUMB_ICON_RESOLVER, ConfigService, LNK_TABS_DEFAULTS, LanguageService } from '@linkit/shared-ui';
 import { registerLocaleData } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
@@ -43,9 +43,15 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideCore(),
     { provide: BREADCRUMB_ICON_RESOLVER, useValue: iconForNavLabel },
-    // Default globale dei tab: allinea tutte le istanze di <lnk-tabs> (override
-    // per-istanza sempre possibile via l'input `variant`).
-    provideTabsDefaults({ variant: 'segmented' }),
+    // Default globale dei tab da `app-config.json` (Layout.tabsVariant): allinea
+    // tutte le istanze di <lnk-tabs>. Override per-istanza (input `variant`) e a
+    // runtime (pannello Tweaks) sempre possibili. La factory è valutata lazy al
+    // primo utilizzo, quando la config è già stata caricata dall'app initializer.
+    {
+      provide: LNK_TABS_DEFAULTS,
+      useFactory: (config: ConfigService) => ({ variant: config.appConfig()?.Layout.tabsVariant }),
+      deps: [ConfigService],
+    },
     { provide: LOCALE_ID, useValue: 'it' },
     { provide: MAT_DATE_LOCALE, useValue: 'it' },
     provideNativeDateAdapter(),

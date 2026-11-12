@@ -31,6 +31,7 @@ import {
   DataTableComponent,
   DisplayConfigLoader,
   DetailSectionComponent,
+  DividerComponent,
   EmptyStateComponent,
   InfoGridComponent,
   LoadingComponent,
@@ -72,6 +73,7 @@ function compact(items: InfoGridItem[]): InfoGridItem[] {
     TranslatePipe,
     PageHeaderComponent,
     DetailSectionComponent,
+    DividerComponent,
     InfoGridComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
@@ -204,6 +206,19 @@ export class RicevutaDetailComponent implements OnInit, OnDestroy {
       { labelKey: 'Ricevute.Detail.PspId', value: v.pspId, mono: true },
       { labelKey: 'Ricevute.Detail.PspFiscalCode', value: v.pspCf, mono: true },
       { labelKey: 'Ricevute.Detail.Canale', value: v.canale },
+    ]);
+  });
+
+  /* ---- Card PSP (vista sintetica, mock ricevuta) -------------------- */
+  readonly pspNome = computed(() => this.rtView().pspNome);
+  readonly pspId = computed(() => this.rtView().pspId);
+  /** Griglia della card PSP: canale, metodo, commissione. */
+  readonly pspCardItems = computed<InfoGridItem[]>(() => {
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.Canale', value: v.canale },
+      { labelKey: 'Ricevute.Detail.MetodoPagamento', value: v.metodoPagamento },
+      { labelKey: 'Ricevute.Detail.Commissione', value: v.commissione != null ? formatEuro(v.commissione) : undefined },
     ]);
   });
 

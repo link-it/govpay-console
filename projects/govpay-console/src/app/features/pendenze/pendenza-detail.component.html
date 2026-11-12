@@ -26,6 +26,7 @@
       <div class="flex items-center gap-2">
         <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabelKey()" />
       </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" />
     }
   </div>
 
@@ -45,10 +46,22 @@
     <lnk-loading />
   } @else if (pendenza(); as p) {
 
+    @if (activeTab() === 'dati') {
+
     <!-- Hero: differenziato per stato -->
     @if (isPagato()) {
       <div class="lnk-hero-card lnk-hero-success">
         <div class="lnk-hero-label">{{ 'Pendenze.Detail.ImportoPagato' | translate }}</div>
+        <div class="lnk-hero-value">{{ heroImporto() }}</div>
+        @if (importoNota(); as nota) {
+          <div class="lnk-hero-note">
+            {{ nota.key | translate: { importo: nota.importo } }}@if (ricevutaLink(); as link) { · <a [routerLink]="link" class="underline">{{ 'Pendenze.Detail.MaggioriInfoRicevuta' | translate }}</a>}
+          </div>
+        }
+      </div>
+    } @else if (isRendicontata()) {
+      <div class="lnk-hero-card lnk-hero-warning">
+        <div class="lnk-hero-label">{{ 'Pendenze.Detail.ImportoRendicontato' | translate }}</div>
         <div class="lnk-hero-value">{{ heroImporto() }}</div>
       </div>
     } @else {
@@ -78,11 +91,32 @@
         <lnk-divider />
         <lnk-info-grid uniform [columns]="3" [items]="ricevutaItems()" />
         @if (ricevutaLink(); as link) {
-          <a [routerLink]="link" class="btn btn-secondary btn-sm self-start">
-            <ng-icon name="bootstrapReceipt" size="1rem" />
-            <span>{{ 'Pendenze.Detail.VaiRicevuta' | translate }}</span>
+          <lnk-divider />
+          <a [routerLink]="link" class="inline-flex items-center gap-1.5 self-start text-[13px] font-medium text-[var(--status-info-text)] no-underline hover:underline">
+            <span>{{ 'Pendenze.Detail.VediDettaglioRicevuta' | translate }}</span>
+            <ng-icon name="bootstrapArrowUpRight" size="0.6rem" />
           </a>
         }
+      </div>
+    }
+
+    <!-- Rendicontazione: stato "Pagato salvo buon fine" (RT non ancora acquisita) -->
+    @if (isRendicontata()) {
+      <div class="lnk-card flex flex-col gap-5">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg lnk-hero-warning">
+            <ng-icon name="bootstrapFileEarmarkText" size="1.25rem" />
+          </div>
+          <div class="lnk-card-title">{{ 'Pendenze.Detail.Rendicontazione' | translate }}</div>
+        </div>
+        @if (rendicontazioneItems().length) {
+          <lnk-divider />
+          <lnk-info-grid uniform [columns]="3" [items]="rendicontazioneItems()" />
+        }
+        <lnk-divider />
+        <p class="text-sm text-[var(--muted-foreground)] leading-relaxed">
+          {{ 'Pendenze.Detail.RendicontazioneNota' | translate }}
+        </p>
       </div>
     }
 
@@ -272,6 +306,11 @@
       }
       </div>
     </lnk-detail-section>
+    }
+
+    @if (activeTab() === 'eventi') {
+      <lnk-eventi-timeline [filters]="eventiFilters()" (count)="eventiCount.set($event)" />
+    }
   }
   </div>
 
