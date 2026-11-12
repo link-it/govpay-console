@@ -125,7 +125,11 @@
       },
       "Breadcrumb": "Receipt",
       "TitoloPagamento": "Payment receipt",
-      "DettagliTecnici": "Technical details"
+      "DettagliTecnici": "Technical details",
+      "Tabs": {
+        "Dati": "Details",
+        "Eventi": "Events"
+      }
     },
     "Upload": {
       "Carica": "Upload RT",

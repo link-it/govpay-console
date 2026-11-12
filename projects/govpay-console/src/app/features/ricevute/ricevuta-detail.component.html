@@ -59,6 +59,7 @@
       <div class="flex items-center gap-2">
         <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabel()" />
       </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" />
     }
   </div>
 
@@ -71,6 +72,8 @@
   } @else if (loading() && !ricevuta()) {
     <lnk-loading />
   } @else if (ricevuta(); as r) {
+
+    @if (activeTab() === 'dati') {
 
     <!-- Hero: importo colorato in base allo stato della RT -->
     @if (importoFmt(); as imp) {
@@ -214,6 +217,11 @@
           </ul>
         </div>
       </lnk-detail-section>
+    }
+    }
+
+    @if (activeTab() === 'eventi') {
+      <lnk-eventi-timeline [filters]="eventiFilters()" (count)="eventiCount.set($event)" />
     }
   }
   </div>

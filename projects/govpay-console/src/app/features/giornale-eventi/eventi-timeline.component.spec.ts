@@ -16,7 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '@linkit/shared-ui';
 import { GiornaleEventiConsoleApi } from './giornale-eventi.console-api';
 import { EventiTimelineComponent } from './eventi-timeline.component';
-import type { Evento, EventoSummary } from './evento.model';
+import type { Evento, EventoListFilters, EventoSummary } from './evento.model';
 
 const SUMMARY: EventoSummary = {
   id: 7,
@@ -37,7 +37,10 @@ const DETTAGLIO: Evento = {
   _links: { self: { href: '/eventi/7' }, richiesta: { href: '/eventi/7/richiesta' }, risposta: { href: '/eventi/7/risposta' } },
 };
 
-function setup(events: EventoSummary[] = [SUMMARY]) {
+function setup(
+  events: EventoSummary[] = [SUMMARY],
+  filters: EventoListFilters = { idA2A: 'A2A', idPendenza: 'P1' },
+) {
   const api = {
     list: vi.fn(() => of({ results: events, pagination: { hasNextPage: false } })),
     get: vi.fn(() => of(DETTAGLIO)),
@@ -56,7 +59,7 @@ function setup(events: EventoSummary[] = [SUMMARY]) {
   });
   TestBed.overrideComponent(EventiTimelineComponent, { set: { template: '', imports: [] } });
   const fixture = TestBed.createComponent(EventiTimelineComponent);
-  fixture.componentRef.setInput('filters', { idA2A: 'A2A', idPendenza: 'P1' });
+  fixture.componentRef.setInput('filters', filters);
   const comp = fixture.componentInstance;
   return { comp, fixture, api };
 }
@@ -73,6 +76,12 @@ describe('EventiTimelineComponent', () => {
     expect(comp.events().length).toBe(2);
     expect(comp.loading()).toBe(false);
     expect(counts.at(-1)).toBe(2);
+  });
+
+  it('contesto ricevuta: filtra per la tupla RT (idDominio, iuv, ccp)', () => {
+    const { fixture, api } = setup([SUMMARY], { idDominio: '01234567890', iuv: 'RF123', ccp: 'R1' });
+    fixture.detectChanges();
+    expect(api.list).toHaveBeenCalledWith({ idDominio: '01234567890', iuv: 'RF123', ccp: 'R1', limit: 100 });
   });
 
   it('toggle espande la riga e carica il dettaglio (_links) una sola volta', () => {

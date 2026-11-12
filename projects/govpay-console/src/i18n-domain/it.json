@@ -125,7 +125,11 @@
       },
       "Breadcrumb": "Ricevuta",
       "TitoloPagamento": "Ricevuta di pagamento",
-      "DettagliTecnici": "Dettagli tecnici"
+      "DettagliTecnici": "Dettagli tecnici",
+      "Tabs": {
+        "Dati": "Dettaglio",
+        "Eventi": "Eventi"
+      }
     },
     "Upload": {
       "Carica": "Carica RT",
