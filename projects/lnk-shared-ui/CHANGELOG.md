@@ -13,6 +13,32 @@ versioning [Semantic Versioning](https://semver.org/lang/it/).
 
 ---
 
+## [0.38.0] — 2026-11-12
+
+### Aggiunto
+
+- **`ConfigService.pageSize`**: dimensione di pagina delle liste da
+  `Preferences.PAGE_SIZE`, intero tra 1 e 200 (il massimo del parametro `limit`
+  delle API), default 25 se assente o non valido.
+- **`ConfigService.requestTimeout`**: timeout HTTP in ms da
+  `Preferences.TIMEOUT`; `null` (nessun timeout) se assente o non positivo.
+- **`lnk-confirm-dialog`**: si chiude con Esc come "Annulla".
+
+### Modificato
+
+- `AppConfig.STANDALONE` diventa opzionale; `STANDALONE` e `GOVAPI.GOVHUB`
+  sono deprecate (non lette da libreria e console).
+- `DisplayOptionsMap` è ora un tipo `Record` (stessa forma).
+
+### Risolto
+
+- Errori ESLint (angular-eslint 22, regole raccomandate e di accessibilità dei
+  template): import non usati, tipi array, callback no-op dei
+  `ControlValueAccessor` commentate, eccezioni motivate dove la regola dà un
+  falso positivo.
+
+---
+
 ## [0.32.0] — 2026-07-26
 
 ### Aggiunto

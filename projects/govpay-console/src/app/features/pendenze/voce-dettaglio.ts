@@ -67,7 +67,7 @@ function isPlainObject(v: unknown): v is Record<string, unknown> {
 /** Chiave → parole leggibili (`annoEsercizio`/`ANNO_ESERCIZIO` → "Anno esercizio"). */
 export function prettifyKey(key: string): string {
   const s = key
-    .replace(/[_\-]+/g, ' ')
+    .replace(/[_-]+/g, ' ')
     .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
     .replace(/\s+/g, ' ')
     .trim()

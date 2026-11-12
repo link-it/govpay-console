@@ -313,6 +313,9 @@ export function provideTabsDefaults(defaults: TabsDefaults): Provider {
     }
   `,
   template: `
+    <!-- Il tablist raccoglie le frecce premute sui tab (focus roving sui <button>):
+         non deve essere focalizzabile lui stesso. -->
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
     <div role="tablist" [class]="tablistClass()" (keydown)="onKeydown($event)">
       <!-- Niente aria-controls: i pannelli sono renderizzati dal chiamante e
            solo quello attivo è nel DOM (@if su activeId), quindi il riferimento

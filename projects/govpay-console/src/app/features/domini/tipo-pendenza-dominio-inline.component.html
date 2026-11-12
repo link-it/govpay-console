@@ -21,7 +21,7 @@
     </div>
   </form>
 } @else {
-  <lnk-inline-edit-card [title]="tipo()!.idTipoPendenza" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+  <lnk-inline-edit-card [title]="tipo()!.idTipoPendenza" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancelled)="onCancel()">
     <div view><lnk-info-grid [items]="viewItems()" /></div>
     <form edit [formGroup]="form" class="space-y-4">
       @if (detail()?.tipoPendenza?.descrizione ?? tipo()?.descrizione; as descr) {

@@ -43,7 +43,6 @@ import {
   daysAgoIso,
   formatDate,
   formatEuro,
-  formatOrdinamento,
   matchDateRangePreset,
   truncate,
   type ColumnDef,
@@ -60,8 +59,6 @@ import {
   type StatoRiscossione,
 } from './riscossione.model';
 import { PreferencesService } from '@core/preferences';
-
-const PAGE_SIZE = 25;
 
 interface ListFilters {
   search: string;
@@ -268,7 +265,7 @@ export class RiscossioniListComponent implements OnInit {
     const f = this.filters();
     const filters: RiscossioniListFilters = {
       pagina: this.page(),
-      risPerPagina: PAGE_SIZE,
+      risPerPagina: this.cfgSvc.pageSize(),
       // ordinamento: formatOrdinamento(this.sort()),
       stato: f.stato || undefined,
       iur: f.search || undefined,
@@ -282,7 +279,7 @@ export class RiscossioniListComponent implements OnInit {
           const msg = err?.error?.descrizione ?? this.translate.instant('Common.LoadError');
           this.error.set(msg);
           this.snackbar.error(msg);
-          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: PAGE_SIZE });
+          return of({ risultati: [], numRisultati: 0, numPagine: 1, pagina: 1, risPerPagina: this.cfgSvc.pageSize() });
         })
       )
       .subscribe((page) => {

@@ -48,6 +48,7 @@ export interface AppInfo {
 
 export interface GovApiConfig {
   GOVPAY: string;
+  /** @deprecated Non letta dalla libreria né dalla console GovPay; verrà rimossa. */
   GOVHUB?: string;
 }
 
@@ -253,7 +254,9 @@ export interface FeaturesConfig {
 }
 
 export interface PreferencesConfig {
+  /** Timeout delle chiamate HTTP in ms (≤ 0 o assente: nessun timeout). Vedi `ConfigService.requestTimeout`. */
   TIMEOUT?: number;
+  /** Dimensione di pagina delle liste, 1–200 (default 25). Vedi `ConfigService.pageSize`. */
   PAGE_SIZE?: number;
   [key: string]: number | string | boolean | undefined;
 }
@@ -268,7 +271,8 @@ export interface MaintenanceConfig {
 
 export interface AppConfig {
   app: AppInfo;
-  STANDALONE: boolean;
+  /** @deprecated Non letta dalla libreria né dalla console GovPay; verrà rimossa. */
+  STANDALONE?: boolean;
   GOVAPI: GovApiConfig;
   Auth: AuthConfig;
   Layout: LayoutConfig;

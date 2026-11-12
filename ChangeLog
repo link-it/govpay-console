@@ -28,6 +28,21 @@
     - Resta da impostare `SameSite` sul cookie di sessione in
       govpay-console-api.
 
+  * [Build] Lint e preferenze di `app-config.json` (issue #39).
+    - `npm run lint` esegue `ng lint` con angular-eslint 22 su app e libreria
+      (regole raccomandate e di accessibilità dei template, `eslint.config.js`);
+      corretti tutti gli errori. Gli output `cancel` dei componenti dell'app
+      sono rinominati `cancelled`; il componente radice è `lnk-root`.
+    - Le liste usano `Preferences.PAGE_SIZE` (1-200, default 25) al posto di
+      una costante fissa.
+    - `Preferences.TIMEOUT` si applica alle chiamate alle API con un nuovo
+      interceptor: allo scadere la chiamata fallisce con status 0, come un
+      backend non raggiungibile. I download di file sono esclusi.
+    - Tolte da `app-config*.json` le chiavi non usate `STANDALONE` e
+      `GOVAPI.GOVHUB`.
+    - Libreria `@linkit/shared-ui` 0.38.0: `ConfigService.pageSize` e
+      `requestTimeout`, chiusura con Esc di `lnk-confirm-dialog`.
+
   * [Frontend] feat(eventi): nuova timeline eventi `<lnk-eventi-timeline>`
     riutilizzabile nei dettagli: eventi del giornale filtrati per contesto,
     nodi espandibili (categoria, componente, sottotipo, esito, transactionId)

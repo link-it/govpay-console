@@ -53,6 +53,9 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
 
       <!-- TEXT -->
       @if (field().kind === 'text') {
+        <!-- Il click sul contenitore porta il focus all'input (comodità per il mouse):
+             l'input resta raggiungibile e utilizzabile da tastiera. -->
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
         <div class="fld__control" (click)="txt.focus()">
           <input
             #txt
@@ -76,6 +79,7 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
 
       <!-- DATE -->
       @else if (field().kind === 'date') {
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
         <div class="fld__control" (click)="dt.focus()">
           <input
             #dt
@@ -131,6 +135,8 @@ import { SearchField, SearchPillLabels, DEFAULT_LABELS } from './search-pill.typ
               @if (searchable()) {
                 <div class="menu__search">
                   <ng-icon name="bootstrapSearch" size="0.9rem" />
+                  <!-- Il menu si è appena aperto su azione dell'utente: il focus va al filtro. -->
+                  <!-- eslint-disable-next-line @angular-eslint/template/no-autofocus -->
                   <input #q autofocus type="text" [placeholder]="labels().optionsFilter"
                     (input)="filterText.set($any($event.target).value)" />
                 </div>

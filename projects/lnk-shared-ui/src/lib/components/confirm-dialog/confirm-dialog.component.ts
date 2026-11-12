@@ -39,9 +39,12 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
   imports: [TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown.escape)': 'onEscape()' },
   template: `
     @if (open()) {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Click sullo sfondo = Annulla, solo per il mouse: da tastiera si chiude con Esc. -->
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
         <div class="absolute inset-0 bg-black/40" (click)="cancel.emit()"></div>
         <div
           role="dialog"
@@ -72,4 +75,9 @@ export class ConfirmDialogComponent {
 
   readonly confirm = output<void>();
   readonly cancel = output<void>();
+
+  /** Esc chiude il dialog come "Annulla" (solo se aperto). */
+  protected onEscape(): void {
+    if (this.open()) this.cancel.emit();
+  }
 }
