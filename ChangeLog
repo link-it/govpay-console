@@ -1,3 +1,42 @@
+2026-11-12  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Build] Versione 4.4.0: aggiornamento ad Angular 22.
+    - Angular 22.2 (CLI/Build/Material/CDK 22.2), TypeScript 6.0, ng-packagr 22,
+      @ng-icons 36, ngx-cookie-service 22, ngx-echarts 22, @ngx-translate 18.1,
+      @testing-library/angular 19.6, happy-dom 21, zone.js 0.16, Tailwind 4.3.5.
+      Vitest resta alla 4.x (con la 5 i test falliscono dopo il primo file con
+      "Zone is not defined", salvo cambiare pool con suite molto più lenta).
+    - Node.js 24.16 / npm 11 (requisito di Angular 22): `.nvmrc`, immagine
+      Docker `node:24.16-alpine` e `packageManager`.
+    - `provideHttpClient` con `withXhr()`: in Angular 22 il backend di default
+      è fetch, manteniamo XHR per non cambiare il comportamento HTTP.
+    - TypeScript 6: rimosso `baseUrl` dal `tsconfig.json` (paths relativi).
+
+  * [Frontend] feat(eventi): nuova timeline eventi `<lnk-eventi-timeline>`
+    riutilizzabile nei dettagli: eventi del giornale filtrati per contesto,
+    nodi espandibili (categoria, componente, sottotipo, esito, transactionId)
+    e download dei messaggi HTTP di richiesta/risposta come `.txt`.
+    - Dettaglio pendenza: tab "Dettaglio" / "Eventi" (filtro idA2A +
+      idPendenza), con badge del numero di eventi e deep-link `?tab=eventi`.
+    - Dettaglio ricevuta: tab "Dettaglio" / "Eventi" (filtro sulla tupla della
+      RT idDominio + iuv + ccp, solo gli eventi di quella ricevuta).
+
+  * [Frontend] feat(pendenze): stato "Pagato salvo buon fine" (`RENDICONTATA`,
+    provvisorio: non ancora esposto dal BE): hero ambra e card "Rendicontazione"
+    con nota informativa (i dati del flusso si mostreranno quando l'API li
+    fornirà). Nello stato pagato, nota sullo scostamento tra importo pagato e
+    dovuto ("maggiorato/ridotto di ...") con link alla ricevuta; il pulsante
+    "Vai alla ricevuta" diventa il link "Vedi dettaglio ricevuta".
+
+  * [Frontend] feat(ricevute): dettaglio ricevuta riorganizzato. Titolo
+    "Ricevuta di pagamento" con IUV e id ricevuta nel sottotitolo, card PSP
+    sintetica (nome, identificativo, canale, metodo, commissione), pendenza
+    collegata in evidenza; esito, trasferimenti, RPT e segnalazioni raccolti
+    in fondo sotto "Dettagli tecnici".
+
+  * [Frontend] feat(ui): variante di default dei `<lnk-tabs>` configurabile da
+    `app-config.json` (`Layout.tabsVariant`, default `underline`), lib 0.37.0.
+
 2026-11-03  Giuliano Pintori <pintori@link.it>
 
   * [Build] fix: la build di production carica `assets/config/app-config.json`
