@@ -5,10 +5,8 @@
       "title": "GovPay Console (DEV)",
       "description": "Console di backoffice GovPay — ambiente di sviluppo"
     },
-    "STANDALONE": true,
     "GOVAPI": {
-      "GOVPAY": "/govpay-console-api",
-      "GOVHUB": ""
+      "GOVPAY": "/govpay-console-api"
     },
     "Auth": {
       "Modes": [

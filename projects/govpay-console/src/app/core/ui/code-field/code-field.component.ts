@@ -137,8 +137,12 @@ export class CodeFieldComponent implements ControlValueAccessor, Validator {
   );
 
   private dragDepth = 0;
-  private onChange: (v: unknown) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (v: unknown) => void = () => {
+    /* no-op finché Angular non registra il callback (registerOnChange) */
+  };
+  private onTouched: () => void = () => {
+    /* no-op finché Angular non registra il callback (registerOnTouched) */
+  };
 
   writeValue(v: unknown): void {
     if (v == null || v === '') {

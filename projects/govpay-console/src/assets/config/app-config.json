@@ -6,10 +6,8 @@
       "description": "Console di backoffice GovPay",
       "version": "4.4.0"
     },
-    "STANDALONE": true,
     "GOVAPI": {
-      "GOVPAY": "/govpay-console-api",
-      "GOVHUB": ""
+      "GOVPAY": "/govpay-console-api"
     },
     "Auth": {
       "Modes": [

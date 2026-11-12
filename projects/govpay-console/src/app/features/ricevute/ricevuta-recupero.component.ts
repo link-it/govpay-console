@@ -45,7 +45,7 @@ export class RicevutaRecuperoComponent {
   private readonly translate = inject(TranslateService);
 
   readonly recuperata = output<RecuperoRicevutaEsito>();
-  readonly cancel = output<void>();
+  readonly cancelled = output<void>();
 
   readonly idDominio = signal<string>('');
   readonly iuv = signal<string>('');
@@ -87,6 +87,6 @@ export class RicevutaRecuperoComponent {
   }
 
   onCancel(): void {
-    this.cancel.emit();
+    this.cancelled.emit();
   }
 }

@@ -171,3 +171,38 @@ describe('ConfigService', () => {
     expect(svc.branding()).toBeNull();
   });
 });
+
+describe('ConfigService — Preferences (pageSize, requestTimeout)', () => {
+  async function loadWith(prefs: Record<string, unknown> | undefined) {
+    const http = new FakeHttpClient();
+    setup(http);
+    http.responses['app-config.json'] = {
+      AppConfig: { ...RUNTIME.AppConfig, Preferences: prefs },
+    } as unknown as RuntimeConfig;
+    http.responses['assets/config/theme.json'] = BRANDING;
+    const svc = TestBed.inject(ConfigService);
+    await svc.load('app-config.json');
+    return svc;
+  }
+
+  it('default: pageSize 25 e nessun timeout senza Preferences', async () => {
+    const svc = await loadWith(undefined);
+    expect(svc.pageSize()).toBe(25);
+    expect(svc.requestTimeout()).toBeNull();
+  });
+
+  it('pageSize: usa PAGE_SIZE, limitato a 1..200 e intero', async () => {
+    expect((await loadWith({ PAGE_SIZE: 50 })).pageSize()).toBe(50);
+    expect((await loadWith({ PAGE_SIZE: 500 })).pageSize()).toBe(200);
+    expect((await loadWith({ PAGE_SIZE: 10.7 })).pageSize()).toBe(10);
+    expect((await loadWith({ PAGE_SIZE: 0 })).pageSize()).toBe(25);
+    expect((await loadWith({ PAGE_SIZE: 'abc' })).pageSize()).toBe(25);
+  });
+
+  it('requestTimeout: TIMEOUT positivo, altrimenti null', async () => {
+    expect((await loadWith({ TIMEOUT: 30000 })).requestTimeout()).toBe(30000);
+    expect((await loadWith({ TIMEOUT: 0 })).requestTimeout()).toBeNull();
+    expect((await loadWith({ TIMEOUT: -5 })).requestTimeout()).toBeNull();
+    expect((await loadWith({ TIMEOUT: 'x' })).requestTimeout()).toBeNull();
+  });
+});

@@ -25,7 +25,7 @@ import { LnkTooltipDirective } from '@linkit/shared-ui';
  *
  * ```html
  * <lnk-inline-edit-card [title]="titolo" [(editing)]="editing" [saving]="saving()"
- *   (save)="onSave()" (cancel)="onCancel()">
+ *   (save)="onSave()" (cancelled)="onCancel()">
  *   <div view><!-- lettura --></div>
  *   <form edit><!-- modifica --></form>
  * </lnk-inline-edit-card>
@@ -130,10 +130,10 @@ export class InlineEditCardComponent {
   });
 
   readonly save = output<void>();
-  readonly cancel = output<void>();
+  readonly cancelled = output<void>();
 
   protected onCancel(): void {
     this.editing.set(false);
-    this.cancel.emit();
+    this.cancelled.emit();
   }
 }

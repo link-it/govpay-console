@@ -197,7 +197,9 @@ describe('PendenzaDetailComponent', () => {
     beforeEach(() => {
       URL.createObjectURL = vi.fn(() => 'blob:mock');
       URL.revokeObjectURL = vi.fn();
-      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {
+        /* nessuna navigazione in test */
+      });
     });
     afterEach(() => vi.restoreAllMocks());
 

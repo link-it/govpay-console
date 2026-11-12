@@ -62,8 +62,6 @@ import {
   type TracciatiListFilters,
 } from './tracciato.model';
 import { PreferencesService } from '@core/preferences';
-
-const PAGE_SIZE = 25;
 const FORMATI: FormatoTracciato[] = ['JSON', 'CSV'];
 
 /** Chiavi filtro (= id dei `SearchField` della search-pill). */
@@ -201,7 +199,8 @@ export class TracciatiListComponent implements OnInit {
             onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable') },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('tracciati', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('tracciati', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -339,7 +338,7 @@ export class TracciatiListComponent implements OnInit {
     const filters: TracciatiListFilters = {
       ...this.baseFilters(),
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
     };
     this.api

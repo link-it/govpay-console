@@ -61,8 +61,6 @@ import {
 } from './pendenza.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 /** Chiavi filtro (= id dei `SearchField` della pill) allineate ai 4 filtri V2. */
 const F = {
   idPendenza: 'idPendenza',
@@ -245,7 +243,8 @@ export class PendenzeListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('pendenze', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('pendenze', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -432,7 +431,7 @@ export class PendenzeListComponent implements OnInit {
     const filters: PendenzeListFilters = {
       ...this.baseFilters(),
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
     };
 

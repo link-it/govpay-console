@@ -83,10 +83,8 @@ Il file di configurazione applicativa caricato è quello indicato da `configFile
 | `app.subtitle` | - | Sottotitolo (opzionale) |
 | `app.description` | `Console di backoffice GovPay` | Descrizione |
 | `app.version` | `4.2.0` (solo in `app-config.json`) | Non usata: la versione mostrata viene da `version.ts` |
-| `STANDALONE` | `true` | Presente nel modello di configurazione, non letta dall'app |
 | `GOVAPI.GOVPAY` | `/govpay-console-api` | Base URL di govpay-console-api, assoluto o relativo alla radice del sito |
 | `GOVAPI.CONSOLE` | - | Base URL alternativo usato dal client delle API V2; se assente vale `/govpay-console-api` |
-| `GOVAPI.GOVHUB` | `""` | Presente nel modello di configurazione, non letta dall'app |
 | `Auth.Modes` | `Basic`, `Spid`, `Iam`, `OAuth2` | Modalità di login offerte nella pagina di accesso |
 | `Auth.Default` | `Basic` | Modalità proposta di default |
 | `Auth.Endpoints.login` | `/login` | Endpoint di login, relativo a `GOVAPI.GOVPAY` |
@@ -121,8 +119,8 @@ Il file di configurazione applicativa caricato è quello indicato da `configFile
 | `Layout.detailMaxWidth` | `64rem` | Larghezza massima delle pagine dettaglio |
 | `Features.GESTIONE_*` | `true` | Abilitano i gruppi del menu: `PAGAMENTI`, `RISCOSSIONI`, `MONITORAGGIO`, `ANAGRAFICHE`, `SICUREZZA`, `MANUTENZIONE`, `IMPOSTAZIONI` |
 | `Features.MENU_*` | `true`, tranne `PAGAMENTI`, `RISCOSSIONI`, `INCASSI` a `false` | Abilitano le singole voci: `PENDENZE`, `RICEVUTE`, `PAGAMENTI`, `RISCOSSIONI`, `RENDICONTAZIONI`, `INCASSI`, `GIORNALE_EVENTI`, `TRACCIATI`, `DOMINI`, `TIPI_PENDENZA`, `ENTRATE`, `APPLICAZIONI`, `INTERMEDIARI`, `OPERATORI`, `RUOLI`, `OPERAZIONI`, `IMPOSTAZIONI` |
-| `Preferences.TIMEOUT` | `30000` | Presente nel file, non letta dall'app |
-| `Preferences.PAGE_SIZE` | `25` | Presente nel file, non letta dall'app (le liste usano una dimensione di pagina fissa) |
+| `Preferences.TIMEOUT` | `30000` | Timeout in millisecondi delle chiamate alle API: allo scadere la chiamata fallisce come un backend non raggiungibile. Non si applica ai download di file. Assente o non positivo: nessun timeout |
+| `Preferences.PAGE_SIZE` | `25` | Numero di elementi per pagina delle liste, da 1 a 200 (il massimo del parametro `limit` delle API); se assente o non valido vale 25 |
 | `Maintenance.enabled` | `false` | Se `true` ogni pagina della console reindirizza alla pagina di manutenzione |
 | `Maintenance.title` | `Servizio in manutenzione` | Titolo della pagina di manutenzione (testo o chiave di traduzione) |
 | `Maintenance.message` | testo di cortesia | Messaggio della pagina di manutenzione (testo o chiave di traduzione) |
@@ -297,6 +295,14 @@ npm run sync:lib sync -- --build     # rsync + build di validazione
 ```
 
 Le opzioni complete sono descritte in testa a `scripts/sync-shared-ui.mjs`.
+
+## Analisi statica
+
+```bash
+npm run lint      # ng lint: ESLint su app e libreria
+```
+
+La configurazione è in `eslint.config.js`: regole raccomandate di ESLint, typescript-eslint e angular-eslint, comprese quelle di accessibilità dei template. I controlli di form della libreria (`lnk-select`, `lnk-secret-input`, `lnk-code-field`) valgono come campo associato a un'etichetta. Per la libreria è disattivata `no-output-native`: rinominare i suoi output cambierebbe l'API usata dalle altre applicazioni.
 
 ## Test
 
