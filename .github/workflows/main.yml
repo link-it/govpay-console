@@ -63,6 +63,7 @@ jobs:
             --failOnCVSS 0
             --nodeAuditSkipDevDependencies
             --nodePackageSkipDevDependencies
+            --disableYarnAudit
             --suppression /github/workspace/.github/dependency-check-suppressions.xml
 
       - name: Upload OWASP report
