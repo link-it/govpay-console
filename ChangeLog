@@ -88,8 +88,10 @@
 2026-11-09  Giuliano Pintori <pintori@link.it>
 
   * [Release] Ramo 3.11.x: versione 4.3.0
-    Gli sviluppi di GovPay 3.10 e 3.11 non sono compatibili e proseguono su
-    rami separati: 3.10.x resta a 4.2.0, 3.11.x passa a 4.3.0.
+    Gli sviluppi che richiedono GovPay 3.11 proseguono su un ramo separato:
+    3.10.x resta a 4.2.0, 3.11.x passa a 4.3.0. Le modifiche di 3.10.x
+    vengono riportate anche su 3.11.x (vedi versione 4.5.0), non il
+    contrario.
 
 2026-11-03  Giuliano Pintori <pintori@link.it>
 
