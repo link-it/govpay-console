@@ -256,12 +256,14 @@ export interface TableConfig {
  * Mappa di gruppi di opzioni: `STATI_PENDENZA → { values: { ESEGUITA: { label, background, color }, … } }`.
  * Usata dai tipi `status`, `label`, `tag`, `icon` per risolvere stile/label dal valore grezzo.
  */
-export interface DisplayOptionsMap {
-  [groupName: string]: {
+export type DisplayOptionsMap = Record<
+  string,
+  {
     label?: string;
     small?: boolean;
-    values: {
-      [rawValue: string]: {
+    values: Record<
+      string,
+      {
         label?: string;
         icon?: string;
         background?: string;
@@ -270,10 +272,10 @@ export interface DisplayOptionsMap {
         tooltip?: string;
         tooltip2?: string;
         tooltipPlacement?: TooltipPlacement;
-      };
-    };
-  };
-}
+      }
+    >;
+  }
+>;
 
 /**
  * Configurazione completa della vista lista. Accettata sia da

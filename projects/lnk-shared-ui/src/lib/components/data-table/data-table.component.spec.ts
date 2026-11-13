@@ -137,6 +137,25 @@ describe('DataTableComponent', () => {
     expect(handler).not.toHaveBeenCalled();
   });
 
+  it("header ordinabile è un <button> (raggiungibile da tastiera); non-ordinabile no", () => {
+    const fixture = render();
+    const ths = fixture.nativeElement.querySelectorAll('thead th');
+    // COLS[0]=nome sortable → button; COLS[1]=importo non sortable → nessun button
+    expect(ths[0].querySelector('button')).not.toBeNull();
+    expect(ths[1].querySelector('button')).toBeNull();
+  });
+
+  it("ariaSort: null se non ordinabile, 'none'/'ascending'/'descending' se ordinabile", () => {
+    const fixture = render();
+    const c = fixture.componentInstance;
+    expect(c.ariaSort(COLS[1])).toBeNull();
+    expect(c.ariaSort(COLS[0])).toBe('none');
+    fixture.componentRef.setInput('sort', { key: 'nome', direction: 'asc' });
+    expect(c.ariaSort(COLS[0])).toBe('ascending');
+    fixture.componentRef.setInput('sort', { key: 'nome', direction: 'desc' });
+    expect(c.ariaSort(COLS[0])).toBe('descending');
+  });
+
   it("sortIcon: chevron-up se non sorted o asc, chevron-down se desc", () => {
     const fixture = render();
     expect(fixture.componentInstance.sortIcon(COLS[0])).toBe('bootstrapChevronUp');
@@ -169,6 +188,32 @@ describe('DataTableComponent', () => {
     fixture.componentInstance.rowClick.subscribe(handler);
     fixture.componentInstance.onRowClick(ROWS[0]);
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("riga row-click: focusabile da tastiera (role=button + tabindex=0)", () => {
+    const fixture = render();
+    const tr = fixture.nativeElement.querySelector('tbody tr') as HTMLElement;
+    expect(fixture.componentInstance.rowInteractive()).toBe(true);
+    expect(tr.getAttribute('role')).toBe('button');
+    expect(tr.getAttribute('tabindex')).toBe('0');
+  });
+
+  it("con colonna link la riga NON è focusabile (click sulle celle)", () => {
+    const fixture = render({ columns: [{ ...COLS[0], link: true }, COLS[1]] });
+    const tr = fixture.nativeElement.querySelector('tbody tr') as HTMLElement;
+    expect(fixture.componentInstance.rowInteractive()).toBe(false);
+    expect(tr.getAttribute('role')).toBeNull();
+    expect(tr.getAttribute('tabindex')).toBeNull();
+  });
+
+  it("onRowActivate (Enter/Spazio) emette rowClick e fa preventDefault", () => {
+    const fixture = render();
+    const handler = vi.fn();
+    fixture.componentInstance.rowClick.subscribe(handler);
+    const event = { preventDefault: vi.fn() } as unknown as Event;
+    fixture.componentInstance.onRowActivate(ROWS[0], event);
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(handler).toHaveBeenCalledWith(ROWS[0]);
   });
 
   it("onRowClick non emette se c'è una colonna link (handover alle celle)", () => {

@@ -1,3 +1,73 @@
+2026-11-12  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Build] Versione 4.4.0: aggiornamento ad Angular 22.
+    - Angular 22.2 (CLI/Build/Material/CDK 22.2), TypeScript 6.0, ng-packagr 22,
+      @ng-icons 36, ngx-cookie-service 22, ngx-echarts 22, @ngx-translate 18.1,
+      @testing-library/angular 19.6, happy-dom 21, zone.js 0.16, Tailwind 4.3.5.
+      Vitest resta alla 4.x (con la 5 i test falliscono dopo il primo file con
+      "Zone is not defined", salvo cambiare pool con suite molto più lenta).
+    - Node.js 24.16 / npm 11 (requisito di Angular 22): `.nvmrc`, immagine
+      Docker `node:24.16-alpine` e `packageManager`.
+    - `provideHttpClient` con `withXhr()`: in Angular 22 il backend di default
+      è fetch, manteniamo XHR per non cambiare il comportamento HTTP.
+    - TypeScript 6: rimosso `baseUrl` dal `tsconfig.json` (paths relativi).
+
+  * [Docker] fix: header di sicurezza HTTP nell'immagine (issue #41,
+    segnalazioni OWASP ZAP). nginx aggiunge a tutte le risposte, anche di
+    errore e del proxy API, `X-Frame-Options: DENY`, `X-Content-Type-Options:
+    nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` e una Content
+    Security Policy, e non espone più la versione nell'header `Server`.
+    - La CSP è configurabile con `GOVPAY_CONSOLE_CSP` e parte in modalità
+      Report-Only (`GOVPAY_CONSOLE_CSP_REPORT_ONLY=true`): le violazioni
+      compaiono nella console del browser senza bloccare. Con `false` viene
+      applicata.
+    - Disattivato `inlineCritical` nella build di production: lo script inline
+      che aggiungeva sarebbe bloccato da `script-src 'self'`.
+    - I file statici sono resi leggibili all'utente nginx a prescindere dai
+      permessi del checkout (403 su `govpay.png` con permessi 700).
+    - Resta da impostare `SameSite` sul cookie di sessione in
+      govpay-console-api.
+
+  * [Build] Lint e preferenze di `app-config.json` (issue #39).
+    - `npm run lint` esegue `ng lint` con angular-eslint 22 su app e libreria
+      (regole raccomandate e di accessibilità dei template, `eslint.config.js`);
+      corretti tutti gli errori. Gli output `cancel` dei componenti dell'app
+      sono rinominati `cancelled`; il componente radice è `lnk-root`.
+    - Le liste usano `Preferences.PAGE_SIZE` (1-200, default 25) al posto di
+      una costante fissa.
+    - `Preferences.TIMEOUT` si applica alle chiamate alle API con un nuovo
+      interceptor: allo scadere la chiamata fallisce con status 0, come un
+      backend non raggiungibile. I download di file sono esclusi.
+    - Tolte da `app-config*.json` le chiavi non usate `STANDALONE` e
+      `GOVAPI.GOVHUB`.
+    - Libreria `@linkit/shared-ui` 0.38.0: `ConfigService.pageSize` e
+      `requestTimeout`, chiusura con Esc di `lnk-confirm-dialog`.
+
+  * [Frontend] feat(eventi): nuova timeline eventi `<lnk-eventi-timeline>`
+    riutilizzabile nei dettagli: eventi del giornale filtrati per contesto,
+    nodi espandibili (categoria, componente, sottotipo, esito, transactionId)
+    e download dei messaggi HTTP di richiesta/risposta come `.txt`.
+    - Dettaglio pendenza: tab "Dettaglio" / "Eventi" (filtro idA2A +
+      idPendenza), con badge del numero di eventi e deep-link `?tab=eventi`.
+    - Dettaglio ricevuta: tab "Dettaglio" / "Eventi" (filtro sulla tupla della
+      RT idDominio + iuv + ccp, solo gli eventi di quella ricevuta).
+
+  * [Frontend] feat(pendenze): stato "Pagato salvo buon fine" (`RENDICONTATA`,
+    provvisorio: non ancora esposto dal BE): hero ambra e card "Rendicontazione"
+    con nota informativa (i dati del flusso si mostreranno quando l'API li
+    fornirà). Nello stato pagato, nota sullo scostamento tra importo pagato e
+    dovuto ("maggiorato/ridotto di ...") con link alla ricevuta; il pulsante
+    "Vai alla ricevuta" diventa il link "Vedi dettaglio ricevuta".
+
+  * [Frontend] feat(ricevute): dettaglio ricevuta riorganizzato. Titolo
+    "Ricevuta di pagamento" con IUV e id ricevuta nel sottotitolo, card PSP
+    sintetica (nome, identificativo, canale, metodo, commissione), pendenza
+    collegata in evidenza; esito, trasferimenti, RPT e segnalazioni raccolti
+    in fondo sotto "Dettagli tecnici".
+
+  * [Frontend] feat(ui): variante di default dei `<lnk-tabs>` configurabile da
+    `app-config.json` (`Layout.tabsVariant`, default `underline`), lib 0.37.0.
+
 2026-11-03  Giuliano Pintori <pintori@link.it>
 
   * [Build] fix: la build di production carica `assets/config/app-config.json`
@@ -8,6 +78,31 @@
     hash della build). Chi monta la configurazione su `app-config.dev.json`
     deve montarla su `app-config.json`: l'entrypoint del container scrive un
     avviso se trova un file montato sul vecchio percorso.
+
+2026-09-23  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] feat(ui): variante di default configurabile per `<lnk-tabs>`
+    (lib 0.36.0), allineabile in un punto solo e sovrascrivibile per istanza.
+    - Nuovo token DI `LNK_TABS_DEFAULTS` + helper `provideTabsDefaults()`; la
+      variante effettiva segue la precedenza: input locale → override runtime
+      (Tweaks) → default DI → fallback `underline`.
+    - Nuova opzione "Stile tab" (Sottolineati / Pillole) nella sezione "Globale"
+      del pannello Tweaks: cambia a runtime la variante di tutti i tab per la
+      sessione (backing `LayoutOverridesService.tabsVariant`, azzerata da
+      "Azzera globali").
+    - Default globale dell'app impostato a `segmented` in `app.config.ts`;
+      rimossi gli override `variant` per-istanza dalle pagine che ora ereditano.
+
+2026-09-22  Alfonso Tatarelli <alfonso.tatarelli@link.it>
+
+  * [Frontend] fix(a11y): comandi di `lnk-data-table` raggiungibili da tastiera
+    (lib 0.35.2), gate gov-a11y superato.
+    - Intestazioni ordinabili: il trigger dell'ordinamento è ora un `<button>`
+      (Enter/Spazio) con `aria-sort` sul `<th>`; le colonne non ordinabili non
+      hanno più alcun gestore di click.
+    - Righe row-click (senza colonna `link`): `role="button"` + `tabindex="0"`
+      + Enter/Spazio, con focus visibile.
+    Risolti i 51 "comandi utilizzabili col solo mouse" segnalati dallo scanner.
 
 2026-09-22  Alfonso Tatarelli <alfonso.tatarelli@link.it>
 

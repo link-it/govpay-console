@@ -52,8 +52,6 @@ import { RuoliConsoleApi } from './ruoli.console-api';
 import type { RuoliListFilters, RuoloSummary } from './ruolo.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 const F = { idRuolo: 'idRuolo' } as const;
 
 @Component({
@@ -184,7 +182,8 @@ export class RuoliListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('ruoli', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('ruoli', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -288,7 +287,7 @@ export class RuoliListComponent implements OnInit {
     const f = this.searchState().filters;
     const filters: RuoliListFilters = {
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
       idRuolo: f[F.idRuolo] || undefined,
