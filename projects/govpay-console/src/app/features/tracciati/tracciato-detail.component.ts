@@ -22,7 +22,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of, type Observable } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade, SnackbarService } from '@linkit/shared-ui';
+import { ConfigService, SystemFacade, SnackbarService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DetailSectionComponent,
@@ -53,7 +53,6 @@ import {
 } from './tracciato.model';
 
 type TracciatoTab = 'dati' | 'operazioni';
-const OP_PAGE_SIZE = 25;
 
 @Component({
   selector: 'lnk-tracciato-detail',
@@ -78,6 +77,7 @@ const OP_PAGE_SIZE = 25;
 })
 export class TracciatoDetailComponent implements OnInit {
   private readonly api = inject(TracciatiConsoleApi);
+  private readonly config = inject(ConfigService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
@@ -223,7 +223,7 @@ export class TracciatoDetailComponent implements OnInit {
   private fetchOperazioni(append: boolean): void {
     this.operazioniLoading.set(true);
     this.api
-      .listOperazioni(this.id, append ? { cursor: this.operazioniCursor(), limit: OP_PAGE_SIZE } : { limit: OP_PAGE_SIZE })
+      .listOperazioni(this.id, append ? { cursor: this.operazioniCursor(), limit: this.config.pageSize() } : { limit: this.config.pageSize() })
       .pipe(
         catchError((err) => {
           this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));

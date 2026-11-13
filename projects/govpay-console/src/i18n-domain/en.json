@@ -123,7 +123,13 @@
         "Causale": "Remittance",
         "Totale": "Total"
       },
-      "Breadcrumb": "Receipt"
+      "Breadcrumb": "Receipt",
+      "TitoloPagamento": "Payment receipt",
+      "DettagliTecnici": "Technical details",
+      "Tabs": {
+        "Dati": "Details",
+        "Eventi": "Events"
+      }
     },
     "Upload": {
       "Carica": "Upload RT",
@@ -233,7 +239,8 @@
       "Annullata": "Cancelled",
       "Scaduta": "Expired",
       "Riconciliata": "Reconciled",
-      "Anomala": "Anomalous"
+      "Anomala": "Anomalous",
+      "SalvoBuonFine": "Paid subject to collection"
     },
     "Detail": {
       "Subtitle": "Item details.",
@@ -276,6 +283,9 @@
       "DebitoreConsensoConferma": "View",
       "ImportoDovuto": "Amount due",
       "ImportoPagato": "Amount paid",
+      "ImportoMaggiorato": "Amount {{importo}} higher than due",
+      "ImportoRidotto": "Amount {{importo}} lower than due",
+      "MaggioriInfoRicevuta": "more details in the receipt",
       "RicevutaPagamento": "Payment receipt",
       "Psp": "PSP",
       "IdentificativoPsp": "PSP identifier",
@@ -285,7 +295,18 @@
       "StampaRicevuta": "Print receipt",
       "NascondiDebitore": "Hide debtor information",
       "VaiRicevuta": "Go to receipt",
-      "RicevutaErrore": "Could not download the receipt PDF."
+      "VediDettaglioRicevuta": "View receipt details",
+      "RicevutaErrore": "Could not download the receipt PDF.",
+      "Tabs": {
+        "Dati": "Details",
+        "Eventi": "Events"
+      },
+      "ImportoRendicontato": "Reconciled amount",
+      "Rendicontazione": "Reconciliation flow",
+      "RendicontazioneNota": "The debt position is marked as paid based on the reconciliation flow received from the PSP; the electronic receipt (RT) has not been acquired yet.",
+      "FlussoRendicontazione": "Reconciliation flow",
+      "DataFlusso": "Flow date",
+      "DataRendicontazione": "Reconciliation date"
     },
     "Voci": {
       "Indice": "#",
@@ -565,7 +586,14 @@
       "NoHeaders": "No headers recorded.",
       "NoPayload": "No payload recorded."
     },
-    "AllLoaded": "All results loaded."
+    "AllLoaded": "All results loaded.",
+    "Timeline": {
+      "VuotoTitolo": "No events",
+      "VuotoTesto": "No events recorded for this item.",
+      "MessaggiHttp": "HTTP messages",
+      "Richiesta": "Request",
+      "Risposta": "Response"
+    }
   },
   "Tracciati": {
     "Subtitle": "Bulk payment-notice upload flows.",

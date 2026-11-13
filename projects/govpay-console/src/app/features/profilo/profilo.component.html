@@ -2,7 +2,7 @@
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
     <lnk-page-header titleKey="Nav.Profilo" subtitleKey="Profilo.Subtitle" />
     @if (user()) {
-      <lnk-tabs [tabs]="tabs" [(activeId)]="activeTab" variant="segmented" />
+      <lnk-tabs [tabs]="tabs" [(activeId)]="activeTab" />
     }
   </div>
 

@@ -294,7 +294,7 @@ interface OptionGroup {
 })
 export class SelectComponent implements ControlValueAccessor {
   /** Opzioni: oggetti `LnkSelectOption` oppure semplici stringhe (value=label). */
-  readonly options = input<Array<LnkSelectOption | string>>([]);
+  readonly options = input<(LnkSelectOption | string)[]>([]);
   readonly placeholder = input('');
   readonly ariaLabel = input('');
   /** Mostra l'opzione "vuota" (clear) in cima. Solo single. */
@@ -362,8 +362,12 @@ export class SelectComponent implements ControlValueAccessor {
     return labels.length ? labels.join(', ') : this.placeholder();
   });
 
-  private onChange: (v: unknown) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (v: unknown) => void = () => {
+    /* no-op finché Angular non registra il callback (registerOnChange) */
+  };
+  private onTouched: () => void = () => {
+    /* no-op finché Angular non registra il callback (registerOnTouched) */
+  };
 
   writeValue(v: unknown): void {
     if (this.multiple()) {

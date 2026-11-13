@@ -36,6 +36,10 @@ import type { PaginationParams } from '@core/models';
  * `ESEGUITA→PAGATA`, `NON_ESEGUITA→NON_PAGATA`,
  * `ESEGUITA_PARZIALE→PAGATA_PARZIALE`, `INCASSATA→RICONCILIATA`;
  * `ANNULLATA`/`SCADUTA`/`ANOMALA` invariati.
+ *
+ * `RENDICONTATA` = "Pagato salvo buon fine": pagata sulla base del flusso di
+ * rendicontazione del PSP, RT non ancora acquisita. NB: stato **provvisorio**,
+ * non ancora esposto dal BE (il nome potrebbe cambiare) — vedi [[datiRendicontazione]].
  */
 export type StatoPendenza =
   | 'NON_PAGATA'
@@ -44,6 +48,7 @@ export type StatoPendenza =
   | 'ANNULLATA'
   | 'SCADUTA'
   | 'RICONCILIATA'
+  | 'RENDICONTATA'
   | 'ANOMALA';
 
 /** Stato di una singola voce (schema `StatoVocePendenza`). */
@@ -210,7 +215,27 @@ export interface Pendenza extends PendenzaSummary {
   datiAllegati?: string;
   /** Solo con `?expand=proprieta`. */
   proprieta?: string;
+  /**
+   * Dati di rendicontazione per lo stato "Pagato salvo buon fine"
+   * ([[StatoPendenza]] `RENDICONTATA`). **Forma provvisoria**: non ancora
+   * esposta dal BE — i campi si valorizzeranno quando l'API la fornirà, per
+   * ora la card mostra solo la nota informativa.
+   */
+  datiRendicontazione?: DatiRendicontazione;
   _links: PendenzaLinks;
+}
+
+/**
+ * Sintesi rendicontazione della pendenza pagata "salvo buon fine": pagata dal
+ * flusso di rendicontazione del PSP, RT non ancora acquisita. Tutti i campi
+ * opzionali (forma provvisoria in attesa della definizione BE).
+ */
+export interface DatiRendicontazione {
+  pspNome?: string;
+  pspId?: string;
+  flusso?: string;
+  dataFlusso?: string;
+  dataRendicontazione?: string;
 }
 
 /* =========================================================================
@@ -307,6 +332,7 @@ export const STATO_PENDENZA_LABEL: Record<StatoPendenza, string> = {
   ANNULLATA: 'Pendenze.Stati.Annullata',
   SCADUTA: 'Pendenze.Stati.Scaduta',
   RICONCILIATA: 'Pendenze.Stati.Riconciliata',
+  RENDICONTATA: 'Pendenze.Stati.SalvoBuonFine',
   ANOMALA: 'Pendenze.Stati.Anomala',
 };
 
@@ -314,6 +340,7 @@ export const STATO_PENDENZA_LABEL: Record<StatoPendenza, string> = {
 export const STATO_PENDENZA_COLOR: Record<StatoPendenza, 'success' | 'info' | 'warning' | 'danger' | 'muted'> = {
   PAGATA: 'success',
   RICONCILIATA: 'success',
+  RENDICONTATA: 'warning',
   PAGATA_PARZIALE: 'info',
   NON_PAGATA: 'info',
   SCADUTA: 'warning',

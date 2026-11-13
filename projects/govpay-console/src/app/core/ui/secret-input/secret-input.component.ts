@@ -75,8 +75,12 @@ export class SecretInputComponent implements ControlValueAccessor {
   /** `readonly` finché il campo non riceve il focus (anti-autofill al load). */
   readonly guard = signal(true);
 
-  private onChange: (v: string) => void = () => {};
-  onTouched: () => void = () => {};
+  private onChange: (v: string) => void = () => {
+    /* no-op finché Angular non registra il callback (registerOnChange) */
+  };
+  onTouched: () => void = () => {
+    /* no-op finché Angular non registra il callback (registerOnTouched) */
+  };
 
   toggle(): void {
     this.visible.update((v) => !v);

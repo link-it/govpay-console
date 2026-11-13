@@ -79,7 +79,12 @@ function setup(stubs: Stubs = {}) {
       { provide: Router, useValue: { navigate: vi.fn() } },
       {
         provide: ActivatedRoute,
-        useValue: { snapshot: { paramMap: { get: (k: string) => (k === 'idA2A' ? 'A2A' : 'P1') } } },
+        useValue: {
+          snapshot: {
+            paramMap: { get: (k: string) => (k === 'idA2A' ? 'A2A' : 'P1') },
+            queryParamMap: { get: () => null },
+          },
+        },
       },
     ],
   });
@@ -192,7 +197,9 @@ describe('PendenzaDetailComponent', () => {
     beforeEach(() => {
       URL.createObjectURL = vi.fn(() => 'blob:mock');
       URL.revokeObjectURL = vi.fn();
-      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {
+        /* nessuna navigazione in test */
+      });
     });
     afterEach(() => vi.restoreAllMocks());
 

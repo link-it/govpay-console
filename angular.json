@@ -68,6 +68,11 @@
                   "maximumError": "12kB"
                 }
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": { "minify": true, "inlineCritical": false },
+                "fonts": true
+              },
               "outputHashing": "all"
             },
             "development": {
@@ -89,6 +94,12 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/govpay-console/**/*.ts", "projects/govpay-console/**/*.html"]
+          }
         }
       }
     },
@@ -122,6 +133,12 @@
             }
           },
           "defaultConfiguration": "production"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/lnk-shared-ui/**/*.ts", "projects/lnk-shared-ui/**/*.html"]
+          }
         }
       }
     }

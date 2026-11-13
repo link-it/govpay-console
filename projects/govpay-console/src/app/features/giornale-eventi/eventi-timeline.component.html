@@ -1,0 +1,79 @@
+@if (loading()) {
+  <lnk-loading />
+} @else if (error()) {
+  <lnk-empty-state icon="bootstrapExclamationTriangle" titleKey="Common.LoadError" [descriptionKey]="error()!" />
+} @else if (events().length === 0) {
+  <lnk-empty-state icon="bootstrapClockHistory" titleKey="GiornaleEventi.Timeline.VuotoTitolo" descriptionKey="GiornaleEventi.Timeline.VuotoTesto" />
+} @else {
+  <ol class="flex flex-col">
+    @for (e of events(); track e.id; let last = $last) {
+      <li class="flex gap-3.5">
+        <!-- Colonna pallino + connettore -->
+        <div class="flex w-3.5 shrink-0 flex-col items-center" aria-hidden="true">
+          <span class="mt-1.5 h-3 w-3 shrink-0 rounded-full" [style.background]="dotColor(e)"></span>
+          @if (!last) {
+            <span class="mt-1 w-0.5 flex-1 bg-[var(--card-border)]"></span>
+          }
+        </div>
+
+        <!-- Contenuto nodo -->
+        <div class="min-w-0 flex-1 pb-5">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between gap-3 rounded text-left lnk-row-hover"
+            (click)="toggle(e)"
+            [attr.aria-expanded]="isOpen(e.id)"
+          >
+            <span class="flex min-w-0 flex-col gap-0.5">
+              <span class="text-sm font-semibold break-words text-[var(--foreground)]">{{ titolo(e) }}</span>
+              <span class="text-xs text-[var(--muted-foreground)]">{{ sottotitolo(e) }}</span>
+            </span>
+            <span class="flex shrink-0 items-center gap-2.5">
+              <lnk-status-badge [tone]="esitoTone(e)" [labelKey]="esitoLabelKey(e)" />
+              <ng-icon
+                [name]="isOpen(e.id) ? 'bootstrapChevronDown' : 'bootstrapChevronRight'"
+                size="0.85rem"
+                class="text-[var(--muted-foreground)]"
+              />
+            </span>
+          </button>
+
+          @if (isOpen(e.id)) {
+            <div class="mt-3 rounded-lg border border-[var(--card-border)] bg-[var(--background)] p-4">
+              @if (isDetailLoading(e.id)) {
+                <lnk-loading [inline]="true" size="sm" labelKey="Common.Loading" />
+              } @else {
+                <div class="flex flex-col gap-3">
+                  <lnk-info-grid uniform [columns]="3" [items]="campi(e)" />
+
+                  <!-- Messaggi HTTP: download richiesta/risposta come .txt -->
+                  @if (hasRichiesta(e.id) || hasRisposta(e.id)) {
+                    <div class="flex flex-col gap-2">
+                      <span class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                        {{ 'GiornaleEventi.Timeline.MessaggiHttp' | translate }}
+                      </span>
+                      <div class="flex flex-wrap items-center gap-2">
+                        @if (hasRichiesta(e.id)) {
+                          <button type="button" class="btn btn-secondary btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRichiesta(e.id)">
+                            <ng-icon name="bootstrapDownload" size="1rem" />
+                            <span>{{ 'GiornaleEventi.Timeline.Richiesta' | translate }}@if (formatDim(dimRichiesta(e.id)); as d) { · {{ d }} }</span>
+                          </button>
+                        }
+                        @if (hasRisposta(e.id)) {
+                          <button type="button" class="btn btn-ghost btn-sm" [disabled]="downloading() !== null" (click)="onDownloadRisposta(e.id)">
+                            <ng-icon name="bootstrapDownload" size="1rem" />
+                            <span>{{ 'GiornaleEventi.Timeline.Risposta' | translate }}@if (formatDim(dimRisposta(e.id)); as d) { · {{ d }} }</span>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </li>
+    }
+  </ol>
+}

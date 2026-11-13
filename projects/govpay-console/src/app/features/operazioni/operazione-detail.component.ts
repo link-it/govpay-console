@@ -21,7 +21,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of, type Observable } from 'rxjs';
 import { NgIcon } from '@ng-icons/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { SystemFacade, SnackbarService } from '@linkit/shared-ui';
+import { ConfigService, SystemFacade, SnackbarService } from '@linkit/shared-ui';
 import {
   DataTableComponent,
   DetailSectionComponent,
@@ -44,8 +44,6 @@ import {
   type Operazione,
 } from './operazione.model';
 
-const PAGE_SIZE = 25;
-
 @Component({
   selector: 'lnk-operazione-detail',
   standalone: true,
@@ -67,6 +65,7 @@ const PAGE_SIZE = 25;
 })
 export class OperazioneDetailComponent implements OnInit {
   private readonly api = inject(OperazioniConsoleApi);
+  private readonly config = inject(ConfigService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly system = inject(SystemFacade);
@@ -157,7 +156,7 @@ export class OperazioneDetailComponent implements OnInit {
   private fetchEsecuzioni(append: boolean): void {
     this.esecuzioniLoading.set(true);
     this.api
-      .listEsecuzioni(this.id, { page: this.page(), limit: PAGE_SIZE })
+      .listEsecuzioni(this.id, { page: this.page(), limit: this.config.pageSize() })
       .pipe(
         catchError((err) => {
           this.snackbar.error(problemDetail(err, this.translate.instant('Common.LoadError')));

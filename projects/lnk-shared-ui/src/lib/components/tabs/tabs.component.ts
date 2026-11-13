@@ -14,11 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ChangeDetectionStrategy, Component, computed, inject, input, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  InjectionToken,
+  type Provider,
+  computed,
+  inject,
+  input,
+  model,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NgIcon } from '@ng-icons/core';
 import { LoadingComponent } from '../loading/loading.component';
+import { LayoutOverridesService } from '../../core/system/layout-overrides.service';
 
 /** Definizione di un tab. */
 export interface TabDef {
@@ -48,6 +58,39 @@ export type TabsVariant = 'underline' | 'segmented';
 export type TabsSize = 'md' | 'sm';
 
 /**
+ * Default applicativi per `<lnk-tabs>`: consentono di allineare in un colpo
+ * solo la variante/dimensione di **tutte** le istanze del progetto senza
+ * ripetere `variant`/`size` su ogni tag. I valori impostati per istanza
+ * (`<lnk-tabs variant="...">`) vincono sempre su questi default.
+ */
+export interface TabsDefaults {
+  variant?: TabsVariant;
+  size?: TabsSize;
+}
+
+/** Fallback hard-coded quando non sono forniti né input locale né default DI. */
+const TABS_FALLBACK: Required<TabsDefaults> = { variant: 'underline', size: 'md' };
+
+/**
+ * DI token con i default di `<lnk-tabs>`. Fornirlo (tipicamente in
+ * `app.config.ts`) per cambiare la variante/dimensione di default di tutti i
+ * tab dell'app. Usa `provideTabsDefaults()` per comodità.
+ */
+export const LNK_TABS_DEFAULTS = new InjectionToken<TabsDefaults>('LNK_TABS_DEFAULTS');
+
+/**
+ * Helper per registrare i default di `<lnk-tabs>` a livello applicativo.
+ *
+ *   ```ts
+ *   // app.config.ts
+ *   providers: [provideTabsDefaults({ variant: 'segmented' })]
+ *   ```
+ */
+export function provideTabsDefaults(defaults: TabsDefaults): Provider {
+  return { provide: LNK_TABS_DEFAULTS, useValue: defaults };
+}
+
+/**
  * Tabs riutilizzabili.
  *
  *   ```html
@@ -65,6 +108,12 @@ export type TabsSize = 'md' | 'sm';
  * - `segmented`: contenitore a pillola con sfondo `--muted`; il tab attivo
  *   ha background card con leggera ombra (segmented control iOS-like).
  *   Disponibile in due dimensioni via `size`: `'md'` (default) e `'sm'`.
+ *
+ * **Default globali.** Variante e dimensione seguono questa precedenza:
+ * input per-istanza (`variant`/`size`) → default DI (`LNK_TABS_DEFAULTS`,
+ * via `provideTabsDefaults()`) → fallback `underline`/`md`. Così si può
+ * cambiare l'aspetto di tutti i tab dell'app in un punto solo, lasciando la
+ * possibilità di sovrascrivere localmente.
  *
  * **Theming.** Tutti i colori, raggi e spaziature sono pilotati da
  * CSS variables `--lnk-tabs-*` (con fallback sui token globali del tema).
@@ -264,6 +313,9 @@ export type TabsSize = 'md' | 'sm';
     }
   `,
   template: `
+    <!-- Il tablist raccoglie le frecce premute sui tab (focus roving sui <button>):
+         non deve essere focalizzabile lui stesso. -->
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
     <div role="tablist" [class]="tablistClass()" (keydown)="onKeydown($event)">
       <!-- Niente aria-controls: i pannelli sono renderizzati dal chiamante e
            solo quello attivo è nel DOM (@if su activeId), quindi il riferimento
@@ -277,7 +329,7 @@ export type TabsSize = 'md' | 'sm';
           [attr.aria-selected]="activeId() === tab.id"
           tabindex="0"
           [disabled]="tab.disabled || null"
-          [class]="'lnk-tab lnk-tab--' + variant()"
+          [class]="'lnk-tab lnk-tab--' + effectiveVariant()"
           [class.is-active]="activeId() === tab.id"
           (click)="onActivate(tab, $event)"
         >
@@ -299,15 +351,38 @@ export class TabsComponent {
   readonly tabs = input.required<TabDef[]>();
   /** Tab corrente. Two-way binding con il chiamante. */
   readonly activeId = model.required<string>();
-  /** Variante grafica: `underline` (default) o `segmented` (pill). */
-  readonly variant = input<TabsVariant>('underline');
-  /** Dimensione: `md` (default) o `sm` (compatto). Effetto visibile sulla variante `segmented`. */
-  readonly size = input<TabsSize>('md');
+  /**
+   * Variante grafica: `underline` o `segmented` (pill). Se omessa, usa il
+   * default DI (`LNK_TABS_DEFAULTS`) o il fallback `underline`.
+   */
+  readonly variant = input<TabsVariant>();
+  /**
+   * Dimensione: `md` o `sm` (compatto). Se omessa, usa il default DI
+   * (`LNK_TABS_DEFAULTS`) o il fallback `md`. Effetto visibile sulla variante
+   * `segmented`.
+   */
+  readonly size = input<TabsSize>();
 
   private readonly document = inject(DOCUMENT);
+  private readonly defaults = inject(LNK_TABS_DEFAULTS, { optional: true });
+  private readonly overrides = inject(LayoutOverridesService);
+
+  /**
+   * Variante effettiva. Precedenza: input per-istanza → override runtime dal
+   * pannello Tweaks (`LayoutOverridesService.tabsVariant`) → default DI
+   * (`LNK_TABS_DEFAULTS`) → fallback. L'override è un signal, quindi tutte le
+   * istanze montate si aggiornano quando lo si cambia nei Tweaks.
+   */
+  protected readonly effectiveVariant = computed<TabsVariant>(
+    () => this.variant() ?? this.overrides.tabsVariant() ?? this.defaults?.variant ?? TABS_FALLBACK.variant
+  );
+  /** Dimensione effettiva: input locale → default DI → fallback. */
+  protected readonly effectiveSize = computed<TabsSize>(
+    () => this.size() ?? this.defaults?.size ?? TABS_FALLBACK.size
+  );
 
   protected readonly tablistClass = computed(
-    () => `lnk-tablist--${this.variant()} lnk-tabs-size--${this.size()}`
+    () => `lnk-tablist--${this.effectiveVariant()} lnk-tabs-size--${this.effectiveSize()}`
   );
 
   /**

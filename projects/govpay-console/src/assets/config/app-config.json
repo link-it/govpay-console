@@ -4,12 +4,10 @@
       "name": "govpay-console",
       "title": "GovPay Console",
       "description": "Console di backoffice GovPay",
-      "version": "4.2.0"
+      "version": "4.4.0"
     },
-    "STANDALONE": true,
     "GOVAPI": {
-      "GOVPAY": "/govpay-console-api",
-      "GOVHUB": ""
+      "GOVPAY": "/govpay-console-api"
     },
     "Auth": {
       "Modes": [
@@ -177,6 +175,7 @@
         "intermediari": "rows"
       },
       "searchPillVariant": "square",
+      "tabsVariant": "underline",
       "gotoTopButton": true,
       "helpButton": true,
       "tweaksPanel": true,

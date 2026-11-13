@@ -16,7 +16,6 @@ import type { AppConfig } from '@linkit/shared-ui';
 const cfg = (features: Record<string, boolean> = {}): AppConfig =>
   ({
     app: { name: 'a', title: 't', version: '1' },
-    STANDALONE: true,
     GOVAPI: { GOVPAY: '/api' },
     Auth: { Modes: ['Basic'], Default: 'Basic', Endpoints: {} },
     Layout: { showHeaderBar: true, showFooterBar: false, profileMenuPosition: 'sidebar' },

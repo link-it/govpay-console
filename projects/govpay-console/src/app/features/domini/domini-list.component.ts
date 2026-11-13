@@ -53,8 +53,6 @@ import { DominiConsoleApi } from './domini.console-api';
 import type { DominiListFilters, DominioSummary } from './dominio.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 const F = {
   idDominio: 'idDominio',
   ragioneSociale: 'ragioneSociale',
@@ -206,7 +204,8 @@ export class DominiListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('domini', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('domini', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -326,7 +325,7 @@ export class DominiListComponent implements OnInit {
     const abil = f[F.abilitato];
     const filters: DominiListFilters = {
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
       idDominio: f[F.idDominio] || undefined,

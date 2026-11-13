@@ -30,6 +30,11 @@ import { ThemeLoaderService } from './theme-loader.service';
 
 const THEME_URL = 'assets/config/theme.json';
 
+/** Dimensione di pagina di default delle liste (`Preferences.PAGE_SIZE`). */
+const DEFAULT_PAGE_SIZE = 25;
+/** Massimo ammesso: il limite del parametro `limit` delle API. */
+const MAX_PAGE_SIZE = 200;
+
 /**
  * Headers che disabilitano la cache HTTP per i file di configurazione.
  * Necessario perché in dev `ng serve` può servire la copia cached del config
@@ -72,6 +77,26 @@ export class ConfigService {
   readonly config = this._config.asReadonly();
   readonly branding = this._branding.asReadonly();
   readonly appConfig = computed<AppConfig | null>(() => this._config()?.AppConfig ?? null);
+
+  /**
+   * Dimensione di pagina delle liste da `Preferences.PAGE_SIZE`: intero tra
+   * 1 e 200 (il massimo del parametro `limit` delle API), default 25 se
+   * assente o non valido.
+   */
+  readonly pageSize = computed<number>(() => {
+    const v = Number(this.appConfig()?.Preferences?.PAGE_SIZE);
+    if (!Number.isFinite(v) || v < 1) return DEFAULT_PAGE_SIZE;
+    return Math.min(Math.floor(v), MAX_PAGE_SIZE);
+  });
+
+  /**
+   * Timeout delle chiamate HTTP in millisecondi da `Preferences.TIMEOUT`.
+   * `null` (nessun timeout) se assente, non numerico o non positivo.
+   */
+  readonly requestTimeout = computed<number | null>(() => {
+    const v = Number(this.appConfig()?.Preferences?.TIMEOUT);
+    return Number.isFinite(v) && v > 0 ? v : null;
+  });
 
   /** Temi selezionabili a runtime (da `Layout.themes`). */
   readonly themes = computed<ThemeOption[]>(() => this.appConfig()?.Layout.themes ?? []);

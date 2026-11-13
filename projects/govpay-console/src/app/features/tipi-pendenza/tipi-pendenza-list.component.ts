@@ -53,8 +53,6 @@ import { TipiPendenzaConsoleApi } from './tipi-pendenza.console-api';
 import type { TipiPendenzaListFilters, TipoPendenzaSummary } from './tipo-pendenza.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 const F = {
   idTipoPendenza: 'idTipoPendenza',
   descrizione: 'descrizione',
@@ -206,7 +204,8 @@ export class TipiPendenzaListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('tipi-pendenza', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('tipi-pendenza', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -326,7 +325,7 @@ export class TipiPendenzaListComponent implements OnInit {
     const abil = f[F.abilitato];
     const filters: TipiPendenzaListFilters = {
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
       idTipoPendenza: f[F.idTipoPendenza] || undefined,

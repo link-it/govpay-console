@@ -60,8 +60,6 @@ import {
 } from './evento.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 /** Ampiezza massima della finestra per cui il BE ammette `total=true` (24h). */
 const COUNT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -143,7 +141,8 @@ export class GiornaleEventiListComponent implements OnInit {
             onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable') },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('giornale-eventi', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('giornale-eventi', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -408,7 +407,7 @@ export class GiornaleEventiListComponent implements OnInit {
     // sempre in offset (con `pagination`, senza `nextCursor`): affidarsi al
     // cursore degradava la pagina successiva a un `?limit=25` senza `dataDa`,
     // rifiutato dal GDE con 502.
-    const filters: EventoListFilters = { ...this.baseFilters(), page: this.page(), limit: PAGE_SIZE };
+    const filters: EventoListFilters = { ...this.baseFilters(), page: this.page(), limit: this.cfgSvc.pageSize() };
     this.api
       .list(filters)
       .pipe(

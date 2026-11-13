@@ -73,15 +73,15 @@
     }
 
     /* Hide loading when app is ready */
-    app-root:not(:empty) + .app-loading,
-    app-root:not(:empty) ~ .app-loading {
+    lnk-root:not(:empty) + .app-loading,
+    lnk-root:not(:empty) ~ .app-loading {
       display: none;
     }
   </style>
 
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased">
-  <app-root></app-root>
+  <lnk-root></lnk-root>
 
   <!-- Loading indicator -->
   <div class="app-loading">
