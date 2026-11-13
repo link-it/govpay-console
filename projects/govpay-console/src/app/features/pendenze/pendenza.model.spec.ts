@@ -22,7 +22,7 @@ import {
 } from './pendenza.model';
 
 const STATI_PENDENZA: StatoPendenza[] = [
-  'NON_PAGATA', 'PAGATA', 'PAGATA_PARZIALE', 'ANNULLATA', 'SCADUTA', 'RICONCILIATA', 'ANOMALA',
+  'NON_PAGATA', 'PAGATA', 'PAGATA_PARZIALE', 'ANNULLATA', 'SCADUTA', 'RICONCILIATA', 'RENDICONTATA', 'ANOMALA',
 ];
 const STATI_VOCE: StatoVocePendenza[] = ['NON_PAGATA', 'PAGATA', 'ANOMALA'];
 const STATI_AVVISO: StatoAvviso[] = ['PAGATO', 'NON_PAGATO', 'SCADUTO', 'ANNULLATO'];
@@ -43,6 +43,9 @@ describe('pendenza.model — mappe di presentazione', () => {
     expect(STATO_PENDENZA_COLOR.ANOMALA).toBe('danger');
     expect(STATO_PENDENZA_COLOR.SCADUTA).toBe('warning');
     expect(STATO_PENDENZA_COLOR.ANNULLATA).toBe('muted');
+    // "Pagato salvo buon fine": ambra come lo stato provvisorio di rendicontazione.
+    expect(STATO_PENDENZA_COLOR.RENDICONTATA).toBe('warning');
+    expect(STATO_PENDENZA_LABEL.RENDICONTATA).toBe('Pendenze.Stati.SalvoBuonFine');
   });
 
   it('ogni stato voce ha label i18n e tono badge', () => {

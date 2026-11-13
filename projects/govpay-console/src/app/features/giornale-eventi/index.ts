@@ -14,3 +14,4 @@ export * from './giornale-eventi.console-api';
 export * from './giornale-eventi.routes';
 export * from './giornale-eventi-list.component';
 export * from './evento-detail.component';
+export * from './eventi-timeline.component';

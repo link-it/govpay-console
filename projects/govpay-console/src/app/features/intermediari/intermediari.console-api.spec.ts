@@ -9,7 +9,7 @@
  * the Free Software Foundation.
  */
 
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { of } from 'rxjs';
 import { ConsoleApiService } from '@core/services';

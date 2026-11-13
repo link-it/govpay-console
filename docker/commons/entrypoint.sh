@@ -28,6 +28,15 @@
 #                         URL prodotti dalla build sono relativi, quindi asset,
 #                         file di configurazione e rotte Angular si allineano
 #                         di conseguenza.
+#   GOVPAY_CONSOLE_CSP    Content Security Policy inviata da nginx (default:
+#                         policy restrittiva, vedi CSP_DEFAULT). Da estendere
+#                         se la console chiama le API o carica font/immagini
+#                         da un'altra origine.
+#   GOVPAY_CONSOLE_CSP_REPORT_ONLY
+#                         "true" (default) invia la policy come
+#                         Content-Security-Policy-Report-Only: il browser
+#                         segnala le violazioni in console senza bloccare.
+#                         "false" la applica (Content-Security-Policy).
 ##############################################################################
 
 set -e
@@ -148,6 +157,36 @@ else
 fi
 
 ##############################################################################
+# Header di sicurezza (Content Security Policy)
+##############################################################################
+
+# Policy di default, tarata sulla build di production:
+# - script-src 'self': nessuno script inline (inlineCritical disattivato in
+#   angular.json, altrimenti la build aggiunge uno <script> per i fogli CSS);
+# - style-src 'unsafe-inline': Angular, Material e CDK iniettano <style>;
+# - img-src data: blob:: i loghi degli enti sono object URL;
+# - connect-src 'self': le API passano dal proxy /govpay-console-api/.
+#   Il login OAuth2 e' una navigazione verso l'IdP, non una chiamata.
+CSP_DEFAULT="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'"
+CSP_POLICY="${GOVPAY_CONSOLE_CSP:-${CSP_DEFAULT}}"
+
+# Il valore finisce tra doppi apici nella configurazione nginx: si rifiutano
+# i caratteri che chiuderebbero la stringa o verrebbero interpretati da nginx.
+if printf '%s' "${CSP_POLICY}" | grep -q '["\\$]' || [ "$(printf '%s' "${CSP_POLICY}" | wc -l)" -gt 0 ]; then
+    log_error "GOVPAY_CONSOLE_CSP contiene caratteri non ammessi (\", \\, \$ o a capo)"
+    exit 1
+fi
+
+case "${GOVPAY_CONSOLE_CSP_REPORT_ONLY:-true}" in
+    true)  CSP_HEADER="Content-Security-Policy-Report-Only" ;;
+    false) CSP_HEADER="Content-Security-Policy" ;;
+    *)
+        log_error "GOVPAY_CONSOLE_CSP_REPORT_ONLY deve valere true o false: ${GOVPAY_CONSOLE_CSP_REPORT_ONLY}"
+        exit 1
+        ;;
+esac
+
+##############################################################################
 # Generazione configurazione nginx
 ##############################################################################
 
@@ -159,6 +198,15 @@ server {
     server_name _;
     root ${GOVPAY_CONSOLE_HOME};
     index index.html;
+
+    # Header di sicurezza: "always" li aggiunge anche alle risposte di errore
+    # e a quelle del proxy API. Le location non definiscono add_header propri,
+    # quindi li ereditano tutti.
+    server_tokens off;
+    add_header ${CSP_HEADER} "${CSP_POLICY}" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
     # Compressione asset statici
     gzip on;
@@ -183,6 +231,7 @@ log_info "Base path: ${BASE_PATH}"
 log_info "Log Directory: ${GOVPAY_CONSOLE_LOGDIR}"
 log_info "Backend API: ${GOVPAY_API_BACKEND:-<nessuno>}"
 [ -n "${GOVPAY_API_BACKEND}" ] && log_info "Path upstream: ${UPSTREAM_PATH:-/}/"
+log_info "CSP (${CSP_HEADER}): ${CSP_POLICY}"
 log_info "========================================"
 
 # Verifica della configurazione generata

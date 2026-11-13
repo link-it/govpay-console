@@ -31,20 +31,24 @@ import {
   DataTableComponent,
   DisplayConfigLoader,
   DetailSectionComponent,
+  DividerComponent,
   EmptyStateComponent,
   InfoGridComponent,
   LoadingComponent,
   ListStickyToolbarDirective,
   PageHeaderComponent,
   StatusBadgeComponent,
+  TabsComponent,
   downloadBlob,
   formatDate,
   formatDateTime,
   formatEuro,
   type ColumnDef,
   type InfoGridItem,
+  type TabDef,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { EventiTimelineComponent } from '../giornale-eventi';
 import { RicevuteConsoleApi } from './ricevute.console-api';
 import { DominiConsoleApi } from '../domini/domini.console-api';
 import {
@@ -72,12 +76,15 @@ function compact(items: InfoGridItem[]): InfoGridItem[] {
     TranslatePipe,
     PageHeaderComponent,
     DetailSectionComponent,
+    DividerComponent,
     InfoGridComponent,
     StatusBadgeComponent,
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
     DataTableComponent,
+    TabsComponent,
+    EventiTimelineComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ricevuta-detail.component.html',
@@ -129,6 +136,26 @@ export class RicevutaDetailComponent implements OnInit, OnDestroy {
   /** Stato del dropdown "Scarica" in testata (RT/RPT raggruppati). */
   readonly downloadOpen = signal(false);
   private readonly downloadWrap = viewChild<ElementRef<HTMLElement>>('downloadWrap');
+
+  /* ---- Tab Dettaglio / Eventi -------------------------------------- */
+  readonly activeTab = signal<'dati' | 'eventi'>('dati');
+  /** Conteggio eventi caricati dalla timeline (per il badge del tab). */
+  readonly eventiCount = signal<number | null>(null);
+  readonly tabs = computed<TabDef[]>(() => [
+    { id: 'dati', labelKey: 'Ricevute.Detail.Tabs.Dati' },
+    {
+      id: 'eventi',
+      labelKey: 'Ricevute.Detail.Tabs.Eventi',
+      icon: 'bootstrapClockHistory',
+      badge: this.eventiCount(),
+    },
+  ]);
+  /**
+   * Filtro per la timeline eventi: la RT è identificata da (idDominio, iuv, ccp)
+   * e in V2 `ccp` coincide con `idRicevuta` → solo gli eventi di questa ricevuta,
+   * non quelli degli altri tentativi di pagamento della pendenza.
+   */
+  readonly eventiFilters = computed(() => ({ idDominio: this.idDominio, iuv: this.iuv, ccp: this.idRicevuta }));
 
   readonly statoTone = computed(() => statoRtColor(this.ricevuta()?.stato ?? ''));
   readonly statoLabel = computed(() => statoRtLabel(this.ricevuta()?.stato ?? ''));
@@ -207,6 +234,19 @@ export class RicevutaDetailComponent implements OnInit, OnDestroy {
     ]);
   });
 
+  /* ---- Card PSP (vista sintetica, mock ricevuta) -------------------- */
+  readonly pspNome = computed(() => this.rtView().pspNome);
+  readonly pspId = computed(() => this.rtView().pspId);
+  /** Griglia della card PSP: canale, metodo, commissione. */
+  readonly pspCardItems = computed<InfoGridItem[]>(() => {
+    const v = this.rtView();
+    return compact([
+      { labelKey: 'Ricevute.Detail.Canale', value: v.canale },
+      { labelKey: 'Ricevute.Detail.MetodoPagamento', value: v.metodoPagamento },
+      { labelKey: 'Ricevute.Detail.Commissione', value: v.commissione != null ? formatEuro(v.commissione) : undefined },
+    ]);
+  });
+
   /** Ente creditore (RT). Denominazione mostrata come titolo del box (con logo). */
   readonly enteNome = computed(() => this.rtView().enteNome);
   readonly enteItems = computed<InfoGridItem[]>(() => {
@@ -277,6 +317,11 @@ export class RicevutaDetailComponent implements OnInit, OnDestroy {
     this.iuv = iuv;
     this.idRicevuta = idRicevuta;
     this.fetchEnteLogo(idDominio);
+
+    // Deep-link al tab Eventi (?tab=eventi).
+    if (this.route.snapshot.queryParamMap.get('tab') === 'eventi') {
+      this.activeTab.set('eventi');
+    }
 
     // Drilldown annidato da una pendenza (`/pendenze/:idA2A/:idPendenza/ricevute/...`):
     // back + breadcrumb verso la pendenza di provenienza.

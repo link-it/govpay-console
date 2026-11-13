@@ -53,7 +53,7 @@ export class TracciatoUploadComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly uploaded = output<number>();
-  readonly cancel = output<void>();
+  readonly cancelled = output<void>();
 
   readonly file = signal<File | null>(null);
   readonly idDominio = signal<string>('');
@@ -138,6 +138,6 @@ export class TracciatoUploadComponent {
   }
 
   onCancel(): void {
-    this.cancel.emit();
+    this.cancelled.emit();
   }
 }

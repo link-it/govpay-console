@@ -20,7 +20,7 @@
     </div>
   </form>
 } @else {
-  <lnk-inline-edit-card [title]="conto()!.ibanAccredito" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+  <lnk-inline-edit-card [title]="conto()!.ibanAccredito" [(editing)]="editing" [saving]="saving()" [saveDisabled]="form.invalid" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancelled)="onCancel()">
     <div view><lnk-info-grid [items]="viewItems()" /></div>
     <form edit [formGroup]="form" class="space-y-4">
       <ng-container [ngTemplateOutlet]="anagrafica" />

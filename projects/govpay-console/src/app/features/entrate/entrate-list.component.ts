@@ -53,8 +53,6 @@ import { EntrateConsoleApi } from './entrate.console-api';
 import type { EntrateListFilters, EntrataSummary } from './entrata.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 const F = {
   idEntrata: 'idEntrata',
   descrizione: 'descrizione',
@@ -190,7 +188,8 @@ export class EntrateListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('entrate', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('entrate', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -301,7 +300,7 @@ export class EntrateListComponent implements OnInit {
     const f = this.searchState().filters;
     const filters: EntrateListFilters = {
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
       idEntrata: f[F.idEntrata] || undefined,
