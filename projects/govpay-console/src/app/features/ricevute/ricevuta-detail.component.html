@@ -1,6 +1,6 @@
 <section class="space-y-4 pb-6 lnk-detail-page">
   <div lnkListStickyToolbar class="px-6 pt-6 pb-4 space-y-3">
-    <lnk-page-header [titleKey]="iuv || '—'" subtitleKey="Ricevute.Detail.Subtitle">
+    <lnk-page-header titleKey="Ricevute.Detail.TitoloPagamento" [subtitleKey]="'IUV ' + (iuv || '—') + (idRicevuta ? ' · ' + idRicevuta : '')">
       <div class="flex items-center gap-2">
         @if (ricevuta() && showSection('download')) {
           <div #downloadWrap class="relative">
@@ -59,6 +59,7 @@
       <div class="flex items-center gap-2">
         <lnk-status-badge [tone]="statoTone()" [labelKey]="statoLabel()" />
       </div>
+      <lnk-tabs [tabs]="tabs()" [(activeId)]="activeTab" />
     }
   </div>
 
@@ -72,12 +73,38 @@
     <lnk-loading />
   } @else if (ricevuta(); as r) {
 
+    @if (activeTab() === 'dati') {
+
     <!-- Hero: importo colorato in base allo stato della RT -->
     @if (importoFmt(); as imp) {
       <div [class]="'lnk-hero-card lnk-hero-' + statoTone()">
         <div class="lnk-hero-label">{{ 'Ricevute.Detail.Importo' | translate }}</div>
         <div class="lnk-hero-value">{{ imp }}</div>
       </div>
+    }
+
+    <!-- PSP: card sintetica (nome + identificativo + canale/metodo/commissione) -->
+    @if (showSection('psp') && (pspNome() || pspId() || pspCardItems().length)) {
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.SezionePsp">
+        <div class="flex flex-col gap-5">
+          <div class="flex items-center gap-4">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-[var(--card-border)] bg-[var(--muted)] text-[var(--muted-foreground)]">
+              <ng-icon name="bootstrapCreditCard2Front" size="1.6rem" />
+            </div>
+            <div class="min-w-0">
+              <div class="text-base font-bold break-words">{{ pspNome() || '—' }}</div>
+              @if (pspId(); as id) {
+                <div class="text-sm text-[var(--muted-foreground)] break-words font-mono">
+                  {{ 'Ricevute.Detail.Identificativo' | translate }}: {{ id }}
+                </div>
+              }
+            </div>
+          </div>
+          @if (pspCardItems().length) {
+            <lnk-info-grid uniform [items]="pspCardItems()" />
+          }
+        </div>
+      </lnk-detail-section>
     }
 
     <!-- Ente creditore (con logo) + Soggetto versante: due colonne -->
@@ -112,31 +139,49 @@
       </div>
     }
 
-    <!-- Esito pagamento + PSP: due colonne -->
-    @if ((esitoRtItems().length && showSection('esitoPagamento')) || (pspItems().length && showSection('psp'))) {
-      <div class="grid gap-6 md:grid-cols-2 lnk-detail-cols">
-        @if (esitoRtItems().length && showSection('esitoPagamento')) {
-          <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EsitoPagamento">
-            <div class="flex flex-col gap-5">
-              <lnk-info-grid uniform [items]="esitoRtItems()" />
-            </div>
-          </lnk-detail-section>
-        }
-        @if (pspItems().length && showSection('psp')) {
-          <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.SezionePsp">
-            <div class="flex flex-col gap-5">
-              <lnk-info-grid uniform [items]="pspItems()" />
-            </div>
-          </lnk-detail-section>
-        }
-      </div>
-    }
-
-    <!-- Informazioni generali (tecniche) -->
+    <!-- Informazioni generali -->
     @if (showSection('generali')) {
       <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Generali">
         <div class="flex flex-col gap-5">
           <lnk-info-grid uniform [items]="generaliItems()" />
+        </div>
+      </lnk-detail-section>
+    }
+
+    <!-- Pendenza collegata -->
+    @if (showSection('pendenza') && pendenza(); as p) {
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.PendenzaCollegata">
+        <div class="flex flex-col gap-4">
+          <lnk-info-grid uniform [items]="pendenzaItems()" />
+          <a [routerLink]="['/ricevute', idDominio, iuv, idRicevuta, 'pendenza', p.idA2A, p.idPendenza]" class="btn btn-secondary btn-sm self-start">
+            <ng-icon name="bootstrapArrowRight" size="1rem" />
+            <span>{{ 'Ricevute.Detail.VaiPendenza' | translate }}</span>
+          </a>
+        </div>
+      </lnk-detail-section>
+    }
+
+    <!-- Dettagli tecnici (in fondo): Esito, Trasferimenti, RPT, Segnalazioni.
+         Affiancati alla vista sintetica; verranno nascosti/rimossi in seguito. -->
+    @if (
+      (esitoRtItems().length && showSection('esitoPagamento')) ||
+      (transfers().length && showSection('trasferimenti')) ||
+      (rptItems().length && showSection('richiestaPagamento')) ||
+      (r.segnalazioni?.length && showSection('segnalazioni'))
+    ) {
+      <div class="pt-2">
+        <div class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+          {{ 'Ricevute.Detail.DettagliTecnici' | translate }}
+        </div>
+        <lnk-divider />
+      </div>
+    }
+
+    <!-- Esito pagamento -->
+    @if (esitoRtItems().length && showSection('esitoPagamento')) {
+      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.EsitoPagamento">
+        <div class="flex flex-col gap-5">
+          <lnk-info-grid uniform [items]="esitoRtItems()" />
         </div>
       </lnk-detail-section>
     }
@@ -159,19 +204,6 @@
       </lnk-detail-section>
     }
 
-    <!-- Pendenza collegata -->
-    @if (showSection('pendenza') && pendenza(); as p) {
-      <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.PendenzaCollegata">
-        <div class="flex flex-col gap-4">
-          <lnk-info-grid uniform [items]="pendenzaItems()" />
-          <a [routerLink]="['/ricevute', idDominio, iuv, idRicevuta, 'pendenza', p.idA2A, p.idPendenza]" class="btn btn-secondary btn-sm self-start">
-            <ng-icon name="bootstrapArrowRight" size="1rem" />
-            <span>{{ 'Ricevute.Detail.VaiPendenza' | translate }}</span>
-          </a>
-        </div>
-      </lnk-detail-section>
-    }
-
     @if (r.segnalazioni?.length && showSection('segnalazioni')) {
       <lnk-detail-section variant="plain" titleDivider titleKey="Ricevute.Detail.Segnalazioni">
         <div class="flex flex-col gap-4">
@@ -185,6 +217,11 @@
           </ul>
         </div>
       </lnk-detail-section>
+    }
+    }
+
+    @if (activeTab() === 'eventi') {
+      <lnk-eventi-timeline [filters]="eventiFilters()" (count)="eventiCount.set($event)" />
     }
   }
   </div>

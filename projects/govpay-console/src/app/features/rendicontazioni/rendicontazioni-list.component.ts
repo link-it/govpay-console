@@ -63,8 +63,6 @@ import {
 } from './rendicontazione.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 /** Chiavi filtro (= id dei `SearchField` della search-pill). */
 const F = {
   idFlusso: 'idFlusso',
@@ -201,7 +199,8 @@ export class RendicontazioniListComponent implements OnInit {
             onChange: (v) => this.searchPillDensityOverride.set(v as 'compact' | 'regular' | 'comfortable') },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('rendicontazioni', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('rendicontazioni', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -338,7 +337,7 @@ export class RendicontazioniListComponent implements OnInit {
     const filters: FlussiRendicontazioneListFilters = {
       ...this.baseFilters(),
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
     };
     this.api

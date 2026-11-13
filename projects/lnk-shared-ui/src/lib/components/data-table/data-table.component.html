@@ -9,23 +9,29 @@
             <th
               scope="col"
               class="px-4 py-3 font-medium"
-              [class.cursor-pointer]="col.sortable"
-              [class.select-none]="col.sortable"
               [class]="alignClass(col.align) + ' ' + (col.headerClass || '')"
               [style.width]="col.width"
-              (click)="onHeaderClick(col)"
+              [attr.aria-sort]="ariaSort(col)"
             >
-              <span class="inline-flex items-center gap-1">
-                {{ col.header | translate }}
-                @if (col.sortable) {
+              @if (col.sortable) {
+                <!-- Ordinamento attivabile da tastiera: il trigger è un <button>
+                     (le colonne non ordinabili non hanno alcun gestore di click). -->
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 cursor-pointer select-none border-0 bg-transparent p-0 font-[inherit] text-inherit uppercase tracking-wide focus-visible:outline focus-visible:outline-2 focus-visible:[outline-offset:2px] focus-visible:outline-[var(--ring)]"
+                  (click)="onHeaderClick(col)"
+                >
+                  {{ col.header | translate }}
                   <ng-icon
                     [name]="sortIcon(col)"
                     size="0.875rem"
                     [class.opacity-30]="!isSorted(col)"
                     [class.opacity-100]="isSorted(col)"
                   />
-                }
-              </span>
+                </button>
+              } @else {
+                <span class="inline-flex items-center gap-1">{{ col.header | translate }}</span>
+              }
             </th>
           }
         </tr>
@@ -51,10 +57,14 @@
         } @else {
           @for (row of rows(); track $index) {
             <tr
-              class="border-t border-[var(--card-border)] transition-colors"
+              class="border-t border-[var(--card-border)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:[outline-offset:-2px] focus-visible:outline-[var(--ring)]"
               [class.cursor-pointer]="clickable() && !hasLinkCol()"
               [class.lnk-row-hover]="clickable()"
+              [attr.role]="rowInteractive() ? 'button' : null"
+              [attr.tabindex]="rowInteractive() ? 0 : null"
               (click)="onRowClick(row)"
+              (keydown.enter)="onRowActivate(row, $event)"
+              (keydown.space)="onRowActivate(row, $event)"
             >
               @for (col of columns(); track col.key) {
                 <td

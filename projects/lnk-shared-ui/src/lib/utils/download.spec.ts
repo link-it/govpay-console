@@ -31,7 +31,9 @@ describe('downloadBlob', () => {
   });
 
   it('crea un anchor con download+href, clicca e ripulisce', () => {
-    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {
+      /* nessuna navigazione in test */
+    });
     const blob = new Blob(['x'], { type: 'application/pdf' });
 
     downloadBlob(blob, 'avviso-123.pdf');

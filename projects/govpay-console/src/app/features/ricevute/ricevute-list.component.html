@@ -35,10 +35,10 @@
   <div class="px-6 space-y-4">
 
   @if (showUpload()) {
-    <lnk-ricevuta-upload class="block" (uploaded)="onUploaded($event)" (cancel)="showUpload.set(false)" />
+    <lnk-ricevuta-upload class="block" (uploaded)="onUploaded($event)" (cancelled)="showUpload.set(false)" />
   }
   @if (showRecupero()) {
-    <lnk-ricevuta-recupero class="block" (recuperata)="onRecuperata($event)" (cancel)="showRecupero.set(false)" />
+    <lnk-ricevuta-recupero class="block" (recuperata)="onRecuperata($event)" (cancelled)="showRecupero.set(false)" />
   }
 
   @if (showEmptyState()) {

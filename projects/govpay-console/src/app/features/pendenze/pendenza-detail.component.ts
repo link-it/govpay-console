@@ -35,12 +35,15 @@ import {
   InfoGridComponent,
   PageHeaderComponent,
   StatusBadgeComponent,
+  TabsComponent,
   downloadBlob,
   formatDate,
   formatEuro,
   type InfoGridItem,
+  type TabDef,
 } from '@linkit/shared-ui';
 import { problemDetail } from '@core/models';
+import { EventiTimelineComponent } from '../giornale-eventi';
 import { PendenzeConsoleApi } from './pendenze.console-api';
 import { RicevuteConsoleApi } from '../ricevute/ricevute.console-api';
 import type { RtView } from '../ricevute/ricevuta.model';
@@ -67,10 +70,12 @@ import { voceExtra as buildVoceExtra, type VoceExtra } from './voce-dettaglio';
     DividerComponent,
     InfoGridComponent,
     StatusBadgeComponent,
+    TabsComponent,
     EmptyStateComponent,
     LoadingComponent,
     ListStickyToolbarDirective,
     ConfirmDialogComponent,
+    EventiTimelineComponent,
     NgTemplateOutlet,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -127,6 +132,13 @@ export class PendenzaDetailComponent implements OnInit, OnDestroy {
     return s === 'PAGATA' || s === 'RICONCILIATA';
   });
 
+  /**
+   * `true` per lo stato "Pagato salvo buon fine" ([[StatoPendenza]]
+   * `RENDICONTATA`): pagata dal flusso di rendicontazione, RT non ancora
+   * acquisita → hero ambra + card "Rendicontazione" al posto di quella ricevuta.
+   */
+  readonly isRendicontata = computed(() => this.pendenza()?.stato === 'RENDICONTATA');
+
   /** Titolo = causale della pendenza (fallback all'id se assente). */
   readonly title = computed(() => {
     const p = this.pendenza();
@@ -148,13 +160,29 @@ export class PendenzaDetailComponent implements OnInit, OnDestroy {
     return s ? STATO_PENDENZA_LABEL[s] : 'Pendenze.Stati.NonPagata';
   });
 
+  /* ---- Tab Dettaglio / Eventi -------------------------------------- */
+  readonly activeTab = signal<'dati' | 'eventi'>('dati');
+  /** Conteggio eventi caricati dalla timeline (per il badge del tab). */
+  readonly eventiCount = signal<number | null>(null);
+  readonly tabs = computed<TabDef[]>(() => [
+    { id: 'dati', labelKey: 'Pendenze.Detail.Tabs.Dati' },
+    {
+      id: 'eventi',
+      labelKey: 'Pendenze.Detail.Tabs.Eventi',
+      icon: 'bootstrapClockHistory',
+      badge: this.eventiCount(),
+    },
+  ]);
+  /** Filtro per la timeline eventi: chiave canonica pendenza (idA2A + idPendenza). */
+  readonly eventiFilters = computed(() => ({ idA2A: this.idA2A, idPendenza: this.idPendenza }));
+
   /* ---- Hero (differenziato per stato) ------------------------------- */
   /** Importo mostrato nell'hero: pagato → importo effettivamente pagato, altrimenti dovuto. */
   readonly heroImporto = computed(() => {
     const p = this.pendenza();
     if (!p) return '—';
     if (this.isPagato()) {
-      return formatEuro(this.ricevutaPrincipale()?.importo ?? p.importo);
+      return formatEuro(this.importoPagato() ?? p.importo);
     }
     return formatEuro(p.importo);
   });
@@ -172,8 +200,37 @@ export class PendenzaDetailComponent implements OnInit, OnDestroy {
     return rt.find((r) => r.stato === 'RT_ACCETTATA_PA') ?? rt[0];
   });
 
+  /**
+   * Importo effettivamente pagato: preferisce la RT normalizzata
+   * (`rtView.importoPagato`, caricata nello stato pagato), con fallback
+   * all'importo del summary. `null` se non ancora disponibile.
+   */
+  readonly importoPagato = computed<number | null>(() => {
+    const raw = this.ricevutaView()?.importoPagato;
+    const fromView = raw != null && raw !== '' ? Number(raw) : NaN;
+    if (!Number.isNaN(fromView)) return fromView;
+    return this.ricevutaPrincipale()?.importo ?? null;
+  });
+
   /** Mostra il blocco ricevuta solo se pagato e con una RT associata. */
   readonly hasRicevutaPagamento = computed(() => this.isPagato() && !!this.ricevutaPrincipale());
+
+  /**
+   * Nota sullo scostamento tra importo effettivamente pagato (dalla RT) e
+   * importo dovuto della pendenza. `null` se coincidono o non calcolabile.
+   * `key` → maggiorato/ridotto; `importo` → delta assoluto formattato.
+   */
+  readonly importoNota = computed<{ key: string; importo: string } | null>(() => {
+    const p = this.pendenza();
+    const pagato = this.importoPagato();
+    if (!p || pagato == null) return null;
+    const delta = Math.round((pagato - p.importo) * 100) / 100;
+    if (delta === 0) return null;
+    return {
+      key: delta > 0 ? 'Pendenze.Detail.ImportoMaggiorato' : 'Pendenze.Detail.ImportoRidotto',
+      importo: formatEuro(Math.abs(delta)),
+    };
+  });
 
   /**
    * Link al dettaglio della ricevuta come **drilldown annidato** sotto la
@@ -199,6 +256,23 @@ export class PendenzaDetailComponent implements OnInit, OnDestroy {
       { labelKey: 'Pendenze.Detail.DataPagamento', value: formatDate(dataPag), hide: !dataPag },
       { labelKey: 'Pendenze.Detail.MetodoPagamento', value: v?.metodoPagamento, hide: !v?.metodoPagamento },
       { labelKey: 'Pendenze.Detail.IdentificativoRicevuta', value: v?.receiptId ?? r.idRicevuta, mono: true, hide: !(v?.receiptId ?? r.idRicevuta) },
+    ];
+  });
+
+  /**
+   * Griglia della card "Rendicontazione" (stato salvo buon fine). Ogni campo è
+   * gated: finché il BE non popola `datiRendicontazione`, la griglia è vuota e
+   * la card mostra solo la nota informativa.
+   */
+  readonly rendicontazioneItems = computed<InfoGridItem[]>(() => {
+    const d = this.pendenza()?.datiRendicontazione;
+    if (!d) return [];
+    return [
+      { labelKey: 'Pendenze.Detail.Psp', value: d.pspNome, hide: !d.pspNome },
+      { labelKey: 'Pendenze.Detail.IdentificativoPsp', value: d.pspId, mono: true, hide: !d.pspId },
+      { labelKey: 'Pendenze.Detail.FlussoRendicontazione', value: d.flusso, mono: true, hide: !d.flusso },
+      { labelKey: 'Pendenze.Detail.DataFlusso', value: formatDate(d.dataFlusso), mono: true, hide: !d.dataFlusso },
+      { labelKey: 'Pendenze.Detail.DataRendicontazione', value: formatDate(d.dataRendicontazione), mono: true, hide: !d.dataRendicontazione },
     ];
   });
 
@@ -292,6 +366,11 @@ export class PendenzaDetailComponent implements OnInit, OnDestroy {
     }
     this.idA2A = idA2A;
     this.idPendenza = idPendenza;
+
+    // Deep-link al tab Eventi (?tab=eventi) — usato anche dal back dell'evento annidato.
+    if (this.route.snapshot.queryParamMap.get('tab') === 'eventi') {
+      this.activeTab.set('eventi');
+    }
 
     // Drilldown annidato da una ricevuta: back + breadcrumb verso la ricevuta.
     const url = this.router.url ?? '';

@@ -68,6 +68,7 @@ export class LnkTooltipDirective implements OnDestroy {
   readonly delay = input<number>(300, { alias: 'lnkTooltipDelay' });
   readonly variant = input<LnkTooltipVariant>('default', { alias: 'lnkTooltipVariant' });
   /** Classi Tailwind aggiuntive — usate quando `variant === 'custom'`. */
+  // eslint-disable-next-line @angular-eslint/no-input-rename -- alias pubblico [lnkTooltipClass], parte dell'API della direttiva
   readonly customClass = input<string>('', { alias: 'lnkTooltipClass' });
   /**
    * Disabilita la directive: niente show su mouseenter/focus, niente

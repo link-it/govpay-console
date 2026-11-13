@@ -38,7 +38,7 @@ Il path `/govpay/backend/api/backoffice` (API di backoffice di GovPay 3.x) è an
 
 ## Compilazione
 
-Requisiti: Node.js 22 (versione in [.nvmrc](.nvmrc), oggi `22.13`; è la stessa usata dalla pipeline e dall'immagine `node:22.13-alpine`) e npm 10 (`packageManager` in `package.json`: `npm@10.9.0`).
+Requisiti: Node.js 24 (versione in [.nvmrc](.nvmrc), oggi `24.16`; è la stessa usata dalla pipeline e dall'immagine `node:24.16-alpine`) e npm 11 (`packageManager` in `package.json`: `npm@11.13.0`).
 
 ```bash
 nvm use                # usa la versione di Node indicata in .nvmrc
@@ -83,10 +83,8 @@ Il file di configurazione applicativa caricato è quello indicato da `configFile
 | `app.subtitle` | - | Sottotitolo (opzionale) |
 | `app.description` | `Console di backoffice GovPay` | Descrizione |
 | `app.version` | `4.2.0` (solo in `app-config.json`) | Non usata: la versione mostrata viene da `version.ts` |
-| `STANDALONE` | `true` | Presente nel modello di configurazione, non letta dall'app |
 | `GOVAPI.GOVPAY` | `/govpay-console-api` | Base URL di govpay-console-api, assoluto o relativo alla radice del sito |
 | `GOVAPI.CONSOLE` | - | Base URL alternativo usato dal client delle API V2; se assente vale `/govpay-console-api` |
-| `GOVAPI.GOVHUB` | `""` | Presente nel modello di configurazione, non letta dall'app |
 | `Auth.Modes` | `Basic`, `Spid`, `Iam`, `OAuth2` | Modalità di login offerte nella pagina di accesso |
 | `Auth.Default` | `Basic` | Modalità proposta di default |
 | `Auth.Endpoints.login` | `/login` | Endpoint di login, relativo a `GOVAPI.GOVPAY` |
@@ -121,8 +119,8 @@ Il file di configurazione applicativa caricato è quello indicato da `configFile
 | `Layout.detailMaxWidth` | `64rem` | Larghezza massima delle pagine dettaglio |
 | `Features.GESTIONE_*` | `true` | Abilitano i gruppi del menu: `PAGAMENTI`, `RISCOSSIONI`, `MONITORAGGIO`, `ANAGRAFICHE`, `SICUREZZA`, `MANUTENZIONE`, `IMPOSTAZIONI` |
 | `Features.MENU_*` | `true`, tranne `PAGAMENTI`, `RISCOSSIONI`, `INCASSI` a `false` | Abilitano le singole voci: `PENDENZE`, `RICEVUTE`, `PAGAMENTI`, `RISCOSSIONI`, `RENDICONTAZIONI`, `INCASSI`, `GIORNALE_EVENTI`, `TRACCIATI`, `DOMINI`, `TIPI_PENDENZA`, `ENTRATE`, `APPLICAZIONI`, `INTERMEDIARI`, `OPERATORI`, `RUOLI`, `OPERAZIONI`, `IMPOSTAZIONI` |
-| `Preferences.TIMEOUT` | `30000` | Presente nel file, non letta dall'app |
-| `Preferences.PAGE_SIZE` | `25` | Presente nel file, non letta dall'app (le liste usano una dimensione di pagina fissa) |
+| `Preferences.TIMEOUT` | `30000` | Timeout in millisecondi delle chiamate alle API: allo scadere la chiamata fallisce come un backend non raggiungibile. Non si applica ai download di file. Assente o non positivo: nessun timeout |
+| `Preferences.PAGE_SIZE` | `25` | Numero di elementi per pagina delle liste, da 1 a 200 (il massimo del parametro `limit` delle API); se assente o non valido vale 25 |
 | `Maintenance.enabled` | `false` | Se `true` ogni pagina della console reindirizza alla pagina di manutenzione |
 | `Maintenance.title` | `Servizio in manutenzione` | Titolo della pagina di manutenzione (testo o chiave di traduzione) |
 | `Maintenance.message` | testo di cortesia | Messaggio della pagina di manutenzione (testo o chiave di traduzione) |
@@ -199,12 +197,14 @@ Variabili d'ambiente lette dall'entrypoint (`docker/commons/entrypoint.sh`), che
 | `GOVPAY_CONSOLE_BASE_PATH` | no | `/` | Base path da cui è servita la console, es. `/govpay-console` per un'installazione su `https://host/govpay-console/`. Viene scritto nel tag `<base href>` di `index.html`; ammessi solo caratteri validi in un path |
 | `GOVPAY_API_BACKEND` | no | - | Se valorizzata, nginx fa da reverse proxy per `/govpay-console-api/` verso questo backend (es. `https://govpay.example.org`), evitando problemi di CORS. Se vuota la console chiama `GOVAPI.GOVPAY` direttamente |
 | `GOVPAY_API_BACKEND_PATH` | no | `/govpay/console-api` | Path upstream sul backend a cui mappare `/govpay-console-api/*`, come dichiarato in `openapi.yaml` di govpay-console-api. Usare `/` se il backend serve gli endpoint alla radice: il prefisso viene rimosso prima dell'inoltro |
+| `GOVPAY_CONSOLE_CSP` | no | policy restrittiva (vedi [Header di sicurezza](#header-di-sicurezza)) | Content Security Policy inviata da nginx. Va estesa se la console chiama le API o carica font e immagini da un'altra origine. Non può contenere `"`, `\`, `$` né andare a capo |
+| `GOVPAY_CONSOLE_CSP_REPORT_ONLY` | no | `true` | `true` invia la policy come `Content-Security-Policy-Report-Only` (il browser segnala le violazioni in console senza bloccare); `false` la applica come `Content-Security-Policy` |
 | `GOVPAY_CONSOLE_HOME` | no | `/usr/share/nginx/html` | Directory dei file statici; si cambia alla costruzione dell'immagine (`build_image.sh -e`), non a runtime |
 | `GOVPAY_CONSOLE_LOGDIR` | no | `/var/log/govpay-console` | Directory dei log di nginx (`access.log`, `error.log`); si cambia alla costruzione dell'immagine (`build_image.sh -f`) |
 | `GOVPAY_CONSOLE_FULLVERSION` | no | versione dell'immagine | Solo informativa, impostata alla costruzione |
 | `TZ` | no | `Europe/Rome` | Fuso orario del container |
 
-Le altre variabili usate nell'entrypoint (`API_PROXY_BLOCK`, `BASE_LOCATION_BLOCK`, `INDEX_HTML`, `NGINX_CONF`, `UPSTREAM_PATH`) sono interne allo script e non vanno impostate.
+Le altre variabili usate nell'entrypoint (`API_PROXY_BLOCK`, `BASE_LOCATION_BLOCK`, `CSP_DEFAULT`, `CSP_HEADER`, `CSP_POLICY`, `INDEX_HTML`, `NGINX_CONF`, `UPSTREAM_PATH`) sono interne allo script e non vanno impostate.
 
 Esempio con backend che espone gli endpoint alla radice (proxy same-origin, nessun CORS):
 
@@ -230,6 +230,33 @@ docker run --rm -p 8080:80 \
 Il container serve l'applicazione sia dalla radice sia dal prefisso, quindi funziona in entrambi gli scenari di reverse proxy: sia che il proxy davanti rimuova il prefisso prima di inoltrare, sia che lo inoltri così com'è.
 
 Il proxy delle API resta invece **alla radice** (`/govpay-console-api/`), perché `GOVAPI.GOVPAY` è un path assoluto e non segue il `<base href>`. Se il reverse proxy davanti instrada al container solo `/<base-path>/*`, va instradato esplicitamente anche `/govpay-console-api/*`, oppure va valorizzato `GOVAPI.GOVPAY` con il path completo.
+
+### Header di sicurezza
+
+nginx aggiunge a tutte le risposte, comprese quelle di errore e quelle del proxy API:
+
+- `X-Frame-Options: DENY` e `frame-ancestors 'none'`: la console non può essere caricata in un frame (protezione dal clickjacking);
+- `X-Content-Type-Options: nosniff`;
+- `Referrer-Policy: strict-origin-when-cross-origin`;
+- la Content Security Policy, per ora in modalità `Report-Only` (vedi `GOVPAY_CONSOLE_CSP_REPORT_ONLY`).
+
+L'header `Server` non riporta la versione di nginx (`server_tokens off`).
+
+La policy di default è:
+
+```text
+default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;
+font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none';
+form-action 'self'
+```
+
+`style-src` ammette `'unsafe-inline'` perché Angular, Material e CDK iniettano i propri stili a runtime. `img-src` ammette `blob:` per i loghi degli enti. Se `GOVAPI.GOVPAY` punta a un'altra origine invece che al proxy, o se il tema carica un foglio di font esterno (`fonts.primary.url`), quelle origini vanno aggiunte a `connect-src`, `style-src` e `font-src` con `GOVPAY_CONSOLE_CSP`.
+
+Per controllare gli header:
+
+```bash
+curl -sI http://localhost:8080/
+```
 
 ### Costruzione dell'immagine in locale
 
@@ -268,6 +295,14 @@ npm run sync:lib sync -- --build     # rsync + build di validazione
 ```
 
 Le opzioni complete sono descritte in testa a `scripts/sync-shared-ui.mjs`.
+
+## Analisi statica
+
+```bash
+npm run lint      # ng lint: ESLint su app e libreria
+```
+
+La configurazione è in `eslint.config.js`: regole raccomandate di ESLint, typescript-eslint e angular-eslint, comprese quelle di accessibilità dei template. I controlli di form della libreria (`lnk-select`, `lnk-secret-input`, `lnk-code-field`) valgono come campo associato a un'etichetta. Per la libreria è disattivata `no-output-native`: rinominare i suoi output cambierebbe l'API usata dalle altre applicazioni.
 
 ## Test
 

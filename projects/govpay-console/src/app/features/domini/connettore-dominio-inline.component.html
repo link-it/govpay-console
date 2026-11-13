@@ -3,7 +3,7 @@
     {{ descriptor().labelKey | translate }} · {{ 'Common.Loading' | translate }}
   </div>
 } @else {
-  <lnk-inline-edit-card [title]="descriptor().labelKey | translate" [(editing)]="editing" [saving]="saving()" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancel)="onCancel()">
+  <lnk-inline-edit-card [title]="descriptor().labelKey | translate" [(editing)]="editing" [saving]="saving()" [statusTone]="statusTone()" [statusLabel]="statusLabel()" (save)="save()" (cancelled)="onCancel()">
     <div view><lnk-info-grid [items]="viewItems()" /></div>
     <form edit [formGroup]="form" class="space-y-4">
       @if (hasAbilitato()) {

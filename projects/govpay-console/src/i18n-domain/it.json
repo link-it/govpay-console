@@ -123,7 +123,13 @@
         "Causale": "Causale",
         "Totale": "Totale"
       },
-      "Breadcrumb": "Ricevuta"
+      "Breadcrumb": "Ricevuta",
+      "TitoloPagamento": "Ricevuta di pagamento",
+      "DettagliTecnici": "Dettagli tecnici",
+      "Tabs": {
+        "Dati": "Dettaglio",
+        "Eventi": "Eventi"
+      }
     },
     "Upload": {
       "Carica": "Carica RT",
@@ -233,7 +239,8 @@
       "Annullata": "Annullata",
       "Scaduta": "Scaduta",
       "Riconciliata": "Riconciliata",
-      "Anomala": "Anomala"
+      "Anomala": "Anomala",
+      "SalvoBuonFine": "Pagato salvo buon fine"
     },
     "Detail": {
       "Subtitle": "Dettaglio della pendenza.",
@@ -276,6 +283,9 @@
       "DebitoreConsensoConferma": "Visualizza",
       "ImportoDovuto": "Importo dovuto",
       "ImportoPagato": "Importo pagato",
+      "ImportoMaggiorato": "Importo maggiorato di {{importo}} rispetto al dovuto",
+      "ImportoRidotto": "Importo ridotto di {{importo}} rispetto al dovuto",
+      "MaggioriInfoRicevuta": "maggiori informazioni nella ricevuta",
       "RicevutaPagamento": "Ricevuta di pagamento",
       "Psp": "PSP",
       "IdentificativoPsp": "Identificativo PSP",
@@ -285,7 +295,18 @@
       "StampaRicevuta": "Stampa ricevuta",
       "NascondiDebitore": "Nascondi informazioni debitore",
       "VaiRicevuta": "Vai alla ricevuta",
-      "RicevutaErrore": "Impossibile scaricare la ricevuta PDF."
+      "VediDettaglioRicevuta": "Vedi dettaglio ricevuta",
+      "RicevutaErrore": "Impossibile scaricare la ricevuta PDF.",
+      "Tabs": {
+        "Dati": "Dettaglio",
+        "Eventi": "Eventi"
+      },
+      "ImportoRendicontato": "Importo rendicontato",
+      "Rendicontazione": "Rendicontazione",
+      "RendicontazioneNota": "La pendenza risulta pagata sulla base del flusso di rendicontazione ricevuto dal PSP: la ricevuta telematica (RT) non è però ancora stata acquisita.",
+      "FlussoRendicontazione": "Flusso di rendicontazione",
+      "DataFlusso": "Data flusso",
+      "DataRendicontazione": "Data rendicontazione"
     },
     "Voci": {
       "Indice": "N.",
@@ -785,7 +806,14 @@
       "NoHeaders": "Nessun header registrato.",
       "NoPayload": "Nessun payload registrato."
     },
-    "AllLoaded": "Tutti i risultati caricati."
+    "AllLoaded": "Tutti i risultati caricati.",
+    "Timeline": {
+      "VuotoTitolo": "Nessun evento",
+      "VuotoTesto": "Non ci sono eventi registrati per questo elemento.",
+      "MessaggiHttp": "Messaggi HTTP",
+      "Richiesta": "Richiesta",
+      "Risposta": "Risposta"
+    }
   },
   "Tracciati": {
     "Subtitle": "Tracciati di caricamento massivo delle pendenze.",

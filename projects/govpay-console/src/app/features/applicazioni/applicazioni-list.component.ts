@@ -53,8 +53,6 @@ import { ApplicazioniConsoleApi } from './applicazioni.console-api';
 import type { ApplicazioniListFilters, ApplicazioneSummary } from './applicazione.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 const F = {
   idA2A: 'idA2A',
   principal: 'principal',
@@ -206,7 +204,8 @@ export class ApplicazioniListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('applicazioni', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('applicazioni', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -326,7 +325,7 @@ export class ApplicazioniListComponent implements OnInit {
     const abil = f[F.abilitato];
     const filters: ApplicazioniListFilters = {
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
       idA2A: f[F.idA2A] || undefined,

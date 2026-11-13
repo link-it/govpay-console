@@ -43,7 +43,7 @@ export class RicevutaUploadComponent {
   private readonly translate = inject(TranslateService);
 
   readonly uploaded = output<Ricevuta>();
-  readonly cancel = output<void>();
+  readonly cancelled = output<void>();
 
   readonly file = signal<File | null>(null);
   readonly submitting = signal(false);
@@ -76,6 +76,6 @@ export class RicevutaUploadComponent {
   }
 
   onCancel(): void {
-    this.cancel.emit();
+    this.cancelled.emit();
   }
 }

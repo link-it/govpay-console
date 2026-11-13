@@ -53,8 +53,6 @@ import { OperatoriConsoleApi } from './operatori.console-api';
 import type { OperatoriListFilters, OperatoreSummary } from './operatore.model';
 import { PreferencesService } from '@core/preferences';
 
-const PAGE_SIZE = 25;
-
 const F = {
   principal: 'principal',
   nome: 'nome',
@@ -206,7 +204,8 @@ export class OperatoriListComponent implements OnInit {
           },
         ],
         onReset: () => {
-          (this.prefView.setFeatureView('operatori', null), this.viewModeOverride.set(null));
+          this.prefView.setFeatureView('operatori', null);
+          this.viewModeOverride.set(null);
           this.searchPillVariantOverride.set(null);
           this.searchPillDensityOverride.set(null);
         },
@@ -326,7 +325,7 @@ export class OperatoriListComponent implements OnInit {
     const abil = f[F.abilitato];
     const filters: OperatoriListFilters = {
       page: this.page(),
-      limit: PAGE_SIZE,
+      limit: this.config.pageSize(),
       sort: formatOrdinamento(this.sort()),
       total: append ? undefined : true,
       principal: f[F.principal] || undefined,

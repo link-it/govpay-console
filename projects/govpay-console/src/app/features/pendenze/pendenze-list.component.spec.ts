@@ -59,7 +59,7 @@ function setup(list?: ReturnType<typeof vi.fn>) {
     imports: [PendenzeListComponent],
     providers: [
       { provide: PendenzeConsoleApi, useValue: { list: apiList } },
-      { provide: ConfigService, useValue: { appConfig: () => ({ Layout: {} }) } },
+      { provide: ConfigService, useValue: { appConfig: () => ({ Layout: {} }), pageSize: () => 25 } },
       { provide: SystemFacade, useValue: { setBreadcrumbs: vi.fn() } },
       { provide: ListStateService, useValue: { get: () => null, set: vi.fn() } },
       { provide: SnackbarService, useValue: { error: snackbarError } },
@@ -77,7 +77,7 @@ function setup(list?: ReturnType<typeof vi.fn>) {
         },
       },
       { provide: DisplayConfigLoader, useValue: { load: () => of(null) } },
-      { provide: TweaksRegistry, useValue: { register: () => () => {} } },
+      { provide: TweaksRegistry, useValue: { register: () => () => undefined } },
     ],
   });
   TestBed.overrideComponent(PendenzeListComponent, { set: { template: '', imports: [] } });
