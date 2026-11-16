@@ -171,6 +171,7 @@ export class DominioDetailComponent implements OnInit, OnDestroy {
       { labelKey: 'Domini.Detail.Intermediario', value: d.riferimentoIntermediario?.idIntermediario, mono: true, hide: !d.riferimentoIntermediario },
       { labelKey: 'Domini.Detail.Intermediato', value: this.translate.instant(d.intermediato ? 'Common.Yes' : 'Common.No') },
       { labelKey: 'Domini.Detail.ScaricaFr', value: this.translate.instant(d.scaricaFr ? 'Common.Yes' : 'Common.No') },
+      { labelKey: 'Domini.Detail.PagamentoSito', value: this.translate.instant(d.pagamentoSito ? 'Common.Yes' : 'Common.No') },
       { labelKey: 'Domini.Detail.AuxDigit', value: d.auxDigit != null ? String(d.auxDigit) : undefined, hide: d.auxDigit == null },
       { labelKey: 'Domini.Detail.SegregationCode', value: d.segregationCode != null ? String(d.segregationCode) : undefined, hide: d.segregationCode == null },
     ];

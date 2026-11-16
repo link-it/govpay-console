@@ -10,6 +10,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
@@ -67,6 +68,8 @@ export class DominioFormComponent implements OnInit {
   readonly isEdit = computed(() => this.editId$() !== null);
   readonly loading = signal(false);
   readonly saving = signal(false);
+  /** Valore corrente di `intermediato` (per gli asterischi di GLN e Stazione). */
+  readonly intermediato = signal(true);
 
   readonly form = this.fb.nonNullable.group({
     idDominio: ['', [Validators.required, Validators.pattern(ID_PATTERN)]],
@@ -74,6 +77,7 @@ export class DominioFormComponent implements OnInit {
     abilitato: [true],
     intermediato: [true],
     scaricaFr: [false],
+    pagamentoSito: [false],
     gln: [''],
     idStazione: [''],
     cbill: [''],
@@ -94,6 +98,32 @@ export class DominioFormComponent implements OnInit {
     web: [''],
     area: [''],
   });
+
+  constructor() {
+    this.form.controls.intermediato.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.applyIntermediato(v));
+    this.applyIntermediato(this.form.controls.intermediato.value);
+  }
+
+  /**
+   * Vincolo del backend (422): GLN e Stazione sono obbligatori per i domini
+   * intermediati e devono essere assenti per gli altri. Per i non intermediati
+   * i due campi sono disabilitati e non vengono inviati.
+   */
+  private applyIntermediato(on: boolean): void {
+    this.intermediato.set(on);
+    for (const c of [this.form.controls.gln, this.form.controls.idStazione]) {
+      if (on) {
+        c.addValidators(Validators.required);
+        c.enable({ emitEvent: false });
+      } else {
+        c.removeValidators(Validators.required);
+        c.disable({ emitEvent: false });
+      }
+      c.updateValueAndValidity({ emitEvent: false });
+    }
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('idDominio');
@@ -127,6 +157,7 @@ export class DominioFormComponent implements OnInit {
             abilitato: d.abilitato ?? true,
             intermediato: d.intermediato ?? true,
             scaricaFr: d.scaricaFr ?? false,
+            pagamentoSito: d.pagamentoSito ?? false,
             gln: d.gln ?? '',
             idStazione: d.idStazione ?? '',
             cbill: d.cbill ?? '',
@@ -147,6 +178,11 @@ export class DominioFormComponent implements OnInit {
             web: d.web ?? '',
             area: d.area ?? '',
           });
+          // Dati incompleti (es. intermediato senza GLN): mostra subito l'errore
+          // sui campi, altrimenti il pulsante Salva resta disabilitato senza motivo visibile.
+          for (const c of [this.form.controls.gln, this.form.controls.idStazione]) {
+            if (c.invalid) c.markAsTouched();
+          }
         });
     }
   }
@@ -182,9 +218,10 @@ export class DominioFormComponent implements OnInit {
       ragioneSociale: r.ragioneSociale,
       abilitato: r.abilitato,
       scaricaFr: r.scaricaFr,
+      pagamentoSito: r.pagamentoSito,
       intermediato: r.intermediato,
-      gln: s(r.gln),
-      idStazione: s(r.idStazione),
+      gln: r.intermediato ? s(r.gln) : undefined,
+      idStazione: r.intermediato ? s(r.idStazione) : undefined,
       cbill: s(r.cbill),
       iuvPrefix: s(r.iuvPrefix),
       auxDigit: r.auxDigit ?? undefined,

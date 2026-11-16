@@ -44,17 +44,25 @@
               <label class="flex items-center gap-2"><input type="checkbox" formControlName="abilitato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Detail.Abilitato' | translate }}</span></label>
               <label class="flex items-center gap-2"><input type="checkbox" formControlName="intermediato" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Detail.Intermediato' | translate }}</span></label>
               <label class="flex items-center gap-2"><input type="checkbox" formControlName="scaricaFr" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Detail.ScaricaFr' | translate }}</span></label>
+              <label class="flex items-center gap-2"><input type="checkbox" formControlName="pagamentoSito" class="h-4 w-4 accent-[var(--primary)]" /><span class="text-sm">{{ 'Domini.Detail.PagamentoSito' | translate }}</span></label>
             </div>
             <p class="text-xs text-[var(--muted-foreground)]">{{ 'Domini.Form.IntermediatoHint' | translate }}</p>
+            <p class="text-xs text-[var(--muted-foreground)]">{{ 'Domini.Form.PagamentoSitoHint' | translate }}</p>
           </div>
         </lnk-detail-section>
 
         <lnk-detail-section variant="plain" titleDivider titleKey="Domini.Form.SezionePagoPA">
           <div class="grid grid-cols-2 gap-4">
-            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.Gln' | translate }}</span>
-              <input type="text" formControlName="gln" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
-            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.IdStazione' | translate }}</span>
-              <input type="text" formControlName="idStazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="intermediato() ? form.controls.gln : null">{{ 'Domini.Detail.Gln' | translate }}</span>
+              <input type="text" formControlName="gln" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60" />
+              @if (form.controls.gln.touched && form.controls.gln.invalid) {
+                <span class="text-xs text-[var(--danger)]">{{ 'Domini.Form.Obbligatorio' | translate }}</span>
+              }</label>
+            <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]" [lnkRequiredLabel]="intermediato() ? form.controls.idStazione : null">{{ 'Domini.Detail.IdStazione' | translate }}</span>
+              <input type="text" formControlName="idStazione" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-60" />
+              @if (form.controls.idStazione.touched && form.controls.idStazione.invalid) {
+                <span class="text-xs text-[var(--danger)]">{{ 'Domini.Form.Obbligatorio' | translate }}</span>
+              }</label>
             <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.AuxDigit' | translate }}</span>
               <input type="number" min="0" max="3" formControlName="auxDigit" class="px-3 py-2 rounded border border-[var(--border)] bg-[var(--card-bg)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]" /></label>
             <label class="flex flex-col gap-1"><span class="text-xs font-medium text-[var(--muted-foreground)]">{{ 'Domini.Detail.SegregationCode' | translate }}</span>
