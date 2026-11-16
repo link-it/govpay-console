@@ -86,6 +86,14 @@ describe('DominiConsoleApi', () => {
     expect((calls[0].params as { ifMatch: string }).ifMatch).toBe('W/"1"');
   });
 
+  it('create()/replace() inviano pagamentoSito nel body (#42)', () => {
+    const { svc, calls } = makeApi();
+    svc.create({ idDominio: '12345678901', ragioneSociale: 'X', abilitato: true, scaricaFr: false, pagamentoSito: true });
+    svc.replace('12345678901', { ragioneSociale: 'X', abilitato: true, scaricaFr: false, pagamentoSito: false }, 'W/"1"');
+    expect(calls[0].params).toMatchObject({ pagamentoSito: true });
+    expect((calls[1].params as { body: unknown }).body).toMatchObject({ pagamentoSito: false });
+  });
+
   it('logo: getLogo/putLogo/deleteLogo puntano a …/logo', () => {
     const { svc, calls } = makeApi();
     svc.getLogo('12345678901');

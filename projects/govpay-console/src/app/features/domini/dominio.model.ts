@@ -54,6 +54,8 @@ export interface Dominio extends AnagraficaBase {
   tassonomiaPagoPA?: string;
   intermediato?: boolean;
   scaricaFr?: boolean;
+  /** GovPay 3.11: l'avviso riporta "oppure sul sito di <ente>". */
+  pagamentoSito?: boolean;
   abilitato?: boolean;
   idStazione?: string;
   /** Sola lettura: derivato dalla stazione. */
@@ -66,6 +68,8 @@ export interface DominioCreate extends AnagraficaBase {
   ragioneSociale: string;
   abilitato: boolean;
   scaricaFr: boolean;
+  /** GovPay 3.11, default `false`: va sempre inviato, il replace lo azzera se assente. */
+  pagamentoSito?: boolean;
   gln?: string;
   cbill?: string;
   iuvPrefix?: string;

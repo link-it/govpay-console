@@ -43,6 +43,15 @@
     - Libreria `@linkit/shared-ui` 0.38.0: `ConfigService.pageSize` e
       `requestTimeout`, chiusura con Esc di `lnk-confirm-dialog`.
 
+  * [Frontend] feat(domini): campo "Pagamento dal sito dell'ente"
+    (`pagamentoSito`, GovPay 3.11, issue #42) nel form di creazione e modifica
+    e nel dettaglio del dominio. Se attivo, l'avviso di pagamento riporta
+    anche "oppure sul sito di <ente>". Il valore è sempre inviato: la
+    sostituzione del dominio lo azzererebbe se assente.
+    - fix: nel form, GLN e Stazione sono obbligatori per i domini intermediati
+      e disabilitati (non inviati) per gli altri, come richiede il backend:
+      prima il salvataggio falliva con 422.
+
   * [Frontend] feat(eventi): nuova timeline eventi `<lnk-eventi-timeline>`
     riutilizzabile nei dettagli: eventi del giornale filtrati per contesto,
     nodi espandibili (categoria, componente, sottotipo, esito, transactionId)
